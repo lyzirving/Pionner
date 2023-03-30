@@ -1,0 +1,8 @@
+# ninja log v5
+2	32	0	D:/Visual Studio Project/Pionner/out/build/x64-debug/CMakeFiles/cmake.verify_globs	5a9e918c6142c536
+37	335	7018970996445785	engine/source/runtime/CMakeFiles/Engine.dir/Engine.cpp.obj	62ee4e1d273a9979
+43	346	7018970996445785	engine/source/editor/CMakeFiles/Editor.dir/source/Editor.cpp.obj	a7b25b7cdaa74fb9
+346	418	7018970997226845	engine/source/editor/Editor.lib	978756864b9dc859
+337	419	7018970997226845	engine/source/runtime/Engine.lib	690be760e212a932
+33	721	7018971000281179	engine/CMakeFiles/Pionner.dir/main.cpp.obj	b254f0f1ab39828a
+723	1139	7018971004030644	engine/Pionner.exe	a441bc22f54d10ad
