@@ -1,7 +1,22 @@
 ﻿#include <iostream>
+#include <memory>
+
+#include "Editor.h"
+#include "Engine.h"
+
+using namespace Pionner;
 
 int main()
 {
-	std::cout << "Hello CMake!" << std::endl;
+	std::shared_ptr<Engine> engine = std::make_shared<Engine>();
+	engine->initialize();
+
+	std::shared_ptr<Editor> editor = std::make_shared<Editor>(engine);
+	editor->initialize();
+
+	editor->run();
+
+	editor->destroy();
+	engine->destroy();
 	return 0;
 }

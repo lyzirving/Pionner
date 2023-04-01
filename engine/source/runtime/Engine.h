@@ -1,13 +1,16 @@
 #ifndef __ENGINE_H__
 #define __ENGINE_H__
 
-namespace runtime
+namespace Pionner
 {
 	class Engine
 	{
 	public:
 		Engine();
 		virtual ~Engine();
+
+		void initialize();
+		void destroy();
 
 	private:
 

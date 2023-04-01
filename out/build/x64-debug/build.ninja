@@ -18,7 +18,7 @@
 #############################################
 # Minimal version of Ninja required by this file
 
-ninja_required_version = 1.8
+ninja_required_version = 1.5
 
 
 #############################################
@@ -75,11 +75,12 @@ build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 #############################################
 # Order-only phony target for Pionner
 
-build cmake_object_order_depends_target_Pionner: phony || cmake_object_order_depends_target_Editor cmake_object_order_depends_target_Engine
+build cmake_object_order_depends_target_Pionner: phony || cmake_object_order_depends_target_Editor cmake_object_order_depends_target_Engine cmake_object_order_depends_target_spdlog
 
 build engine\CMakeFiles\Pionner.dir\main.cpp.obj: CXX_COMPILER__Pionner_Debug D$:\Visual$ Studio$ Project\Pionner\engine\main.cpp || cmake_object_order_depends_target_Pionner
+  DEFINES = -DSPDLOG_COMPILED_LIB
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
-  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\Engine" -I"D:\Visual Studio Project\Pionner\engine\Editor" -I"D:\Visual Studio Project\Pionner\engine\source\runtime" -I"D:\Visual Studio Project\Pionner\engine\source\editor\include"
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\Editor" -I"D:\Visual Studio Project\Pionner\engine\source\editor\Engine" -I"D:\Visual Studio Project\Pionner\engine\source\editor\include" -I"D:\Visual Studio Project\Pionner\engine\source\runtime" -I"D:\Visual Studio Project\Pionner\engine\source\runtime\spdlog::spdlog" -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
   OBJECT_DIR = engine\CMakeFiles\Pionner.dir
   OBJECT_FILE_DIR = engine\CMakeFiles\Pionner.dir
   TARGET_COMPILE_PDB = engine\CMakeFiles\Pionner.dir\
@@ -93,10 +94,10 @@ build engine\CMakeFiles\Pionner.dir\main.cpp.obj: CXX_COMPILER__Pionner_Debug D$
 #############################################
 # Link the executable engine\Pionner.exe
 
-build engine\Pionner.exe: CXX_EXECUTABLE_LINKER__Pionner_Debug engine\CMakeFiles\Pionner.dir\main.cpp.obj | engine\source\runtime\Engine.lib engine\source\editor\Editor.lib || engine\source\editor\Editor.lib engine\source\runtime\Engine.lib
+build engine\Pionner.exe: CXX_EXECUTABLE_LINKER__Pionner_Debug engine\CMakeFiles\Pionner.dir\main.cpp.obj | engine\source\editor\Editor.lib engine\source\runtime\Engine.lib engine\3rdparty\spdlog\spdlogd.lib || engine\3rdparty\spdlog\spdlogd.lib engine\source\editor\Editor.lib engine\source\runtime\Engine.lib
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
-  LINK_LIBRARIES = engine\source\runtime\Engine.lib  engine\source\editor\Editor.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_LIBRARIES = engine\source\editor\Editor.lib  engine\source\runtime\Engine.lib  engine\3rdparty\spdlog\spdlogd.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = engine\CMakeFiles\Pionner.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
@@ -133,6 +134,152 @@ build engine\rebuild_cache: phony engine\CMakeFiles\rebuild_cache.util
 # D:/Visual Studio Project/Pionner/engine/CMakeLists.txt
 # =============================================================================
 
+
+#############################################
+# Utility command for edit_cache
+
+build engine\3rdparty\CMakeFiles\edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cmd.exe /C "cd /D "D:\Visual Studio Project\Pionner\out\build\x64-debug\engine\3rdparty" && D:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  DESC = No interactive CMake dialog available...
+  restat = 1
+
+build engine\3rdparty\edit_cache: phony engine\3rdparty\CMakeFiles\edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build engine\3rdparty\CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cmd.exe /C "cd /D "D:\Visual Studio Project\Pionner\out\build\x64-debug\engine\3rdparty" && D:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe --regenerate-during-build -S"D:\Visual Studio Project\Pionner" -B"D:\Visual Studio Project\Pionner\out\build\x64-debug""
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build engine\3rdparty\rebuild_cache: phony engine\3rdparty\CMakeFiles\rebuild_cache.util
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# D:/Visual Studio Project/Pionner/engine/3rdparty/CMakeLists.txt
+# =============================================================================
+
+# =============================================================================
+# Object build statements for STATIC_LIBRARY target spdlog
+
+
+#############################################
+# Order-only phony target for spdlog
+
+build cmake_object_order_depends_target_spdlog: phony || engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+
+build engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\spdlog.cpp.obj: CXX_COMPILER__spdlog_Debug D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\src\spdlog.cpp || cmake_object_order_depends_target_spdlog
+  DEFINES = -DSPDLOG_COMPILED_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /Zc:__cplusplus /MP /MDd /Zi /Ob0 /Od /RTC1
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
+  OBJECT_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+  OBJECT_FILE_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src
+  TARGET_COMPILE_PDB = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\spdlog.pdb
+  TARGET_PDB = engine\3rdparty\spdlog\spdlogd.pdb
+
+build engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\stdout_sinks.cpp.obj: CXX_COMPILER__spdlog_Debug D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\src\stdout_sinks.cpp || cmake_object_order_depends_target_spdlog
+  DEFINES = -DSPDLOG_COMPILED_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /Zc:__cplusplus /MP /MDd /Zi /Ob0 /Od /RTC1
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
+  OBJECT_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+  OBJECT_FILE_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src
+  TARGET_COMPILE_PDB = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\spdlog.pdb
+  TARGET_PDB = engine\3rdparty\spdlog\spdlogd.pdb
+
+build engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\color_sinks.cpp.obj: CXX_COMPILER__spdlog_Debug D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\src\color_sinks.cpp || cmake_object_order_depends_target_spdlog
+  DEFINES = -DSPDLOG_COMPILED_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /Zc:__cplusplus /MP /MDd /Zi /Ob0 /Od /RTC1
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
+  OBJECT_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+  OBJECT_FILE_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src
+  TARGET_COMPILE_PDB = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\spdlog.pdb
+  TARGET_PDB = engine\3rdparty\spdlog\spdlogd.pdb
+
+build engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\file_sinks.cpp.obj: CXX_COMPILER__spdlog_Debug D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\src\file_sinks.cpp || cmake_object_order_depends_target_spdlog
+  DEFINES = -DSPDLOG_COMPILED_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /Zc:__cplusplus /MP /MDd /Zi /Ob0 /Od /RTC1
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
+  OBJECT_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+  OBJECT_FILE_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src
+  TARGET_COMPILE_PDB = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\spdlog.pdb
+  TARGET_PDB = engine\3rdparty\spdlog\spdlogd.pdb
+
+build engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\async.cpp.obj: CXX_COMPILER__spdlog_Debug D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\src\async.cpp || cmake_object_order_depends_target_spdlog
+  DEFINES = -DSPDLOG_COMPILED_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /Zc:__cplusplus /MP /MDd /Zi /Ob0 /Od /RTC1
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
+  OBJECT_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+  OBJECT_FILE_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src
+  TARGET_COMPILE_PDB = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\spdlog.pdb
+  TARGET_PDB = engine\3rdparty\spdlog\spdlogd.pdb
+
+build engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\cfg.cpp.obj: CXX_COMPILER__spdlog_Debug D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\src\cfg.cpp || cmake_object_order_depends_target_spdlog
+  DEFINES = -DSPDLOG_COMPILED_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /Zc:__cplusplus /MP /MDd /Zi /Ob0 /Od /RTC1
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
+  OBJECT_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+  OBJECT_FILE_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src
+  TARGET_COMPILE_PDB = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\spdlog.pdb
+  TARGET_PDB = engine\3rdparty\spdlog\spdlogd.pdb
+
+build engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\bundled_fmtlib_format.cpp.obj: CXX_COMPILER__spdlog_Debug D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\src\bundled_fmtlib_format.cpp || cmake_object_order_depends_target_spdlog
+  DEFINES = -DSPDLOG_COMPILED_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /Zc:__cplusplus /MP /MDd /Zi /Ob0 /Od /RTC1
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
+  OBJECT_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+  OBJECT_FILE_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src
+  TARGET_COMPILE_PDB = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\spdlog.pdb
+  TARGET_PDB = engine\3rdparty\spdlog\spdlogd.pdb
+
+
+# =============================================================================
+# Link build statements for STATIC_LIBRARY target spdlog
+
+
+#############################################
+# Link the static library engine\3rdparty\spdlog\spdlogd.lib
+
+build engine\3rdparty\spdlog\spdlogd.lib: CXX_STATIC_LIBRARY_LINKER__spdlog_Debug engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\spdlog.cpp.obj engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\stdout_sinks.cpp.obj engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\color_sinks.cpp.obj engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\file_sinks.cpp.obj engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\async.cpp.obj engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\cfg.cpp.obj engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\src\bundled_fmtlib_format.cpp.obj
+  LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /Zc:__cplusplus /MP /MDd /Zi /Ob0 /Od /RTC1
+  LINK_FLAGS = /machine:x64
+  OBJECT_DIR = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = engine\3rdparty\spdlog\CMakeFiles\spdlog.dir\spdlog.pdb
+  TARGET_FILE = engine\3rdparty\spdlog\spdlogd.lib
+  TARGET_PDB = engine\3rdparty\spdlog\spdlogd.pdb
+
+
+#############################################
+# Utility command for edit_cache
+
+build engine\3rdparty\spdlog\CMakeFiles\edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cmd.exe /C "cd /D "D:\Visual Studio Project\Pionner\out\build\x64-debug\engine\3rdparty\spdlog" && D:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  DESC = No interactive CMake dialog available...
+  restat = 1
+
+build engine\3rdparty\spdlog\edit_cache: phony engine\3rdparty\spdlog\CMakeFiles\edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build engine\3rdparty\spdlog\CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cmd.exe /C "cd /D "D:\Visual Studio Project\Pionner\out\build\x64-debug\engine\3rdparty\spdlog" && D:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe --regenerate-during-build -S"D:\Visual Studio Project\Pionner" -B"D:\Visual Studio Project\Pionner\out\build\x64-debug""
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build engine\3rdparty\spdlog\rebuild_cache: phony engine\3rdparty\spdlog\CMakeFiles\rebuild_cache.util
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# D:/Visual Studio Project/Pionner/engine/CMakeLists.txt
+# =============================================================================
+
 # =============================================================================
 # Object build statements for STATIC_LIBRARY target Engine
 
@@ -140,13 +287,23 @@ build engine\rebuild_cache: phony engine\CMakeFiles\rebuild_cache.util
 #############################################
 # Order-only phony target for Engine
 
-build cmake_object_order_depends_target_Engine: phony || engine\source\runtime\CMakeFiles\Engine.dir
+build cmake_object_order_depends_target_Engine: phony || cmake_object_order_depends_target_spdlog
 
 build engine\source\runtime\CMakeFiles\Engine.dir\Engine.cpp.obj: CXX_COMPILER__Engine_Debug D$:\Visual$ Studio$ Project\Pionner\engine\source\runtime\Engine.cpp || cmake_object_order_depends_target_Engine
+  DEFINES = -DSPDLOG_COMPILED_LIB
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
-  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\source\runtime"
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\source\runtime" -I"D:\Visual Studio Project\Pionner\engine\source\runtime\spdlog::spdlog" -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
   OBJECT_DIR = engine\source\runtime\CMakeFiles\Engine.dir
   OBJECT_FILE_DIR = engine\source\runtime\CMakeFiles\Engine.dir
+  TARGET_COMPILE_PDB = engine\source\runtime\CMakeFiles\Engine.dir\Engine.pdb
+  TARGET_PDB = engine\source\runtime\Engine.pdb
+
+build engine\source\runtime\CMakeFiles\Engine.dir\core\log\LogSystem.cpp.obj: CXX_COMPILER__Engine_Debug D$:\Visual$ Studio$ Project\Pionner\engine\source\runtime\core\log\LogSystem.cpp || cmake_object_order_depends_target_Engine
+  DEFINES = -DSPDLOG_COMPILED_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\source\runtime" -I"D:\Visual Studio Project\Pionner\engine\source\runtime\spdlog::spdlog" -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
+  OBJECT_DIR = engine\source\runtime\CMakeFiles\Engine.dir
+  OBJECT_FILE_DIR = engine\source\runtime\CMakeFiles\Engine.dir\core\log
   TARGET_COMPILE_PDB = engine\source\runtime\CMakeFiles\Engine.dir\Engine.pdb
   TARGET_PDB = engine\source\runtime\Engine.pdb
 
@@ -158,7 +315,7 @@ build engine\source\runtime\CMakeFiles\Engine.dir\Engine.cpp.obj: CXX_COMPILER__
 #############################################
 # Link the static library engine\source\runtime\Engine.lib
 
-build engine\source\runtime\Engine.lib: CXX_STATIC_LIBRARY_LINKER__Engine_Debug engine\source\runtime\CMakeFiles\Engine.dir\Engine.cpp.obj
+build engine\source\runtime\Engine.lib: CXX_STATIC_LIBRARY_LINKER__Engine_Debug engine\source\runtime\CMakeFiles\Engine.dir\Engine.cpp.obj engine\source\runtime\CMakeFiles\Engine.dir\core\log\LogSystem.cpp.obj || engine\3rdparty\spdlog\spdlogd.lib
   LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
   LINK_FLAGS = /machine:x64
   OBJECT_DIR = engine\source\runtime\CMakeFiles\Engine.dir
@@ -203,11 +360,12 @@ build engine\source\runtime\rebuild_cache: phony engine\source\runtime\CMakeFile
 #############################################
 # Order-only phony target for Editor
 
-build cmake_object_order_depends_target_Editor: phony || engine\source\editor\CMakeFiles\Editor.dir
+build cmake_object_order_depends_target_Editor: phony || cmake_object_order_depends_target_Engine cmake_object_order_depends_target_spdlog
 
 build engine\source\editor\CMakeFiles\Editor.dir\source\Editor.cpp.obj: CXX_COMPILER__Editor_Debug D$:\Visual$ Studio$ Project\Pionner\engine\source\editor\source\Editor.cpp || cmake_object_order_depends_target_Editor
+  DEFINES = -DSPDLOG_COMPILED_LIB
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
-  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\source\editor\include"
+  INCLUDES = -I"D:\Visual Studio Project\Pionner\engine\source\editor\Engine" -I"D:\Visual Studio Project\Pionner\engine\source\editor\include" -I"D:\Visual Studio Project\Pionner\engine\source\runtime" -I"D:\Visual Studio Project\Pionner\engine\source\runtime\spdlog::spdlog" -I"D:\Visual Studio Project\Pionner\engine\3rdparty\spdlog\include"
   OBJECT_DIR = engine\source\editor\CMakeFiles\Editor.dir
   OBJECT_FILE_DIR = engine\source\editor\CMakeFiles\Editor.dir\source
   TARGET_COMPILE_PDB = engine\source\editor\CMakeFiles\Editor.dir\Editor.pdb
@@ -221,7 +379,7 @@ build engine\source\editor\CMakeFiles\Editor.dir\source\Editor.cpp.obj: CXX_COMP
 #############################################
 # Link the static library engine\source\editor\Editor.lib
 
-build engine\source\editor\Editor.lib: CXX_STATIC_LIBRARY_LINKER__Editor_Debug engine\source\editor\CMakeFiles\Editor.dir\source\Editor.cpp.obj
+build engine\source\editor\Editor.lib: CXX_STATIC_LIBRARY_LINKER__Editor_Debug engine\source\editor\CMakeFiles\Editor.dir\source\Editor.cpp.obj || engine\3rdparty\spdlog\spdlogd.lib engine\source\runtime\Engine.lib
   LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
   LINK_FLAGS = /machine:x64
   OBJECT_DIR = engine\source\editor\CMakeFiles\Editor.dir
@@ -269,6 +427,10 @@ build Pionner: phony engine\Pionner.exe
 
 build Pionner.exe: phony engine\Pionner.exe
 
+build spdlog: phony engine\3rdparty\spdlog\spdlogd.lib
+
+build spdlogd.lib: phony engine\3rdparty\spdlog\spdlogd.lib
+
 # =============================================================================
 # Folder targets.
 
@@ -284,7 +446,21 @@ build all: phony engine\all
 #############################################
 # Folder: D:/Visual Studio Project/Pionner/out/build/x64-debug/engine
 
-build engine\all: phony engine\Pionner.exe engine\source\runtime\all engine\source\editor\all
+build engine\all: phony engine\Pionner.exe engine\3rdparty\all engine\source\runtime\all engine\source\editor\all
+
+# =============================================================================
+
+#############################################
+# Folder: D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/3rdparty
+
+build engine\3rdparty\all: phony engine\3rdparty\spdlog\all
+
+# =============================================================================
+
+#############################################
+# Folder: D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/3rdparty/spdlog
+
+build engine\3rdparty\spdlog\all: phony engine\3rdparty\spdlog\spdlogd.lib
 
 # =============================================================================
 
@@ -305,30 +481,16 @@ build engine\source\runtime\all: phony engine\source\runtime\Engine.lib
 
 
 #############################################
-# Phony target to force glob verification run.
-
-build D$:\Visual$ Studio$ Project\Pionner\out\build\x64-debug\CMakeFiles\VerifyGlobs.cmake_force: phony
-
-
-#############################################
-# Re-run CMake to check if globbed directories changed.
-
-build D$:\Visual$ Studio$ Project\Pionner\out\build\x64-debug\CMakeFiles\cmake.verify_globs: VERIFY_GLOBS | D$:\Visual$ Studio$ Project\Pionner\out\build\x64-debug\CMakeFiles\VerifyGlobs.cmake_force
-  pool = console
-  restat = 1
-
-
-#############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE D$:\Visual$ Studio$ Project\Pionner\out\build\x64-debug\CMakeFiles\cmake.verify_globs | CMakeCache.txt CMakeFiles\3.24.202208181-MSVC_2\CMakeCCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeCXXCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeRCCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeSystem.cmake D$:\Visual$ Studio$ Project\Pionner\out\build\x64-debug\CMakeFiles\VerifyGlobs.cmake D$:\Visual$ Studio$ Project\Pionner\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\source\editor\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\source\runtime\CMakeLists.txt D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCXXInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCommonLanguageInclude.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeGenericSystem.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeInitializeConfigs.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeLanguageInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeRCInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInitialize.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\CMakeCommonCompilerMacros.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC-C.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC-CXX.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-C.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-CXX.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\WindowsPaths.cmake
+build build.ninja: RERUN_CMAKE | CMakeCache.txt CMakeFiles\3.24.202208181-MSVC_2\CMakeCCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeCXXCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeRCCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeSystem.cmake D$:\Visual$ Studio$ Project\Pionner\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\cmake\ide.cmake D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\cmake\utils.cmake D$:\Visual$ Studio$ Project\Pionner\engine\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\source\editor\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\source\runtime\CMakeLists.txt D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCXXInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCommonLanguageInclude.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeGenericSystem.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeInitializeConfigs.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeLanguageInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeRCInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInitialize.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CheckCSourceCompiles.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CheckIncludeFile.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CheckLibraryExists.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\CMakeCommonCompilerMacros.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC-C.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC-CXX.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\FindPackageHandleStandardArgs.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\FindPackageMessage.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\FindThreads.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\GNUInstallDirs.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Internal\CheckSourceCompiles.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-C.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-CXX.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\WindowsPaths.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build CMakeCache.txt CMakeFiles\3.24.202208181-MSVC_2\CMakeCCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeCXXCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeRCCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeSystem.cmake D$:\Visual$ Studio$ Project\Pionner\out\build\x64-debug\CMakeFiles\VerifyGlobs.cmake D$:\Visual$ Studio$ Project\Pionner\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\source\editor\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\source\runtime\CMakeLists.txt D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCXXInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCommonLanguageInclude.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeGenericSystem.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeInitializeConfigs.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeLanguageInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeRCInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInitialize.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\CMakeCommonCompilerMacros.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC-C.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC-CXX.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-C.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-CXX.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\WindowsPaths.cmake: phony
+build CMakeCache.txt CMakeFiles\3.24.202208181-MSVC_2\CMakeCCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeCXXCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeRCCompiler.cmake CMakeFiles\3.24.202208181-MSVC_2\CMakeSystem.cmake D$:\Visual$ Studio$ Project\Pionner\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\cmake\ide.cmake D$:\Visual$ Studio$ Project\Pionner\engine\3rdparty\spdlog\cmake\utils.cmake D$:\Visual$ Studio$ Project\Pionner\engine\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\source\editor\CMakeLists.txt D$:\Visual$ Studio$ Project\Pionner\engine\source\runtime\CMakeLists.txt D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCXXInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeCommonLanguageInclude.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeGenericSystem.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeInitializeConfigs.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeLanguageInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeRCInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInformation.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CMakeSystemSpecificInitialize.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CheckCSourceCompiles.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CheckIncludeFile.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\CheckLibraryExists.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\CMakeCommonCompilerMacros.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC-C.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC-CXX.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Compiler\MSVC.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\FindPackageHandleStandardArgs.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\FindPackageMessage.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\FindThreads.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\GNUInstallDirs.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Internal\CheckSourceCompiles.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-C.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC-CXX.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows-MSVC.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\Windows.cmake D$:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.24\Modules\Platform\WindowsPaths.cmake: phony
 
 
 #############################################

@@ -46,6 +46,24 @@ rule CXX_EXECUTABLE_LINKER__Pionner_Debug
 #############################################
 # Rule for compiling CXX files.
 
+rule CXX_COMPILER__spdlog_Debug
+  deps = msvc
+  command = D:\VisualStudio2022\VC\Tools\MSVC\14.34.31933\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
+  description = Building CXX object $out
+
+
+#############################################
+# Rule for linking CXX static library.
+
+rule CXX_STATIC_LIBRARY_LINKER__spdlog_Debug
+  command = cmd.exe /C "$PRE_LINK && D:\VisualStudio2022\VC\Tools\MSVC\14.34.31933\bin\Hostx64\x64\lib.exe /nologo $LINK_FLAGS /out:$TARGET_FILE $in  && $POST_BUILD"
+  description = Linking CXX static library $TARGET_FILE
+  restat = $RESTAT
+
+
+#############################################
+# Rule for compiling CXX files.
+
 rule CXX_COMPILER__Engine_Debug
   deps = msvc
   command = D:\VisualStudio2022\VC\Tools\MSVC\14.34.31933\bin\Hostx64\x64\cl.exe  /nologo /TP $DEFINES $INCLUDES $FLAGS /showIncludes /Fo$out /Fd$TARGET_COMPILE_PDB /FS -c $in
@@ -85,15 +103,6 @@ rule CXX_STATIC_LIBRARY_LINKER__Editor_Debug
 rule RERUN_CMAKE
   command = D:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe --regenerate-during-build -S"D:\Visual Studio Project\Pionner" -B"D:\Visual Studio Project\Pionner\out\build\x64-debug"
   description = Re-running CMake...
-  generator = 1
-
-
-#############################################
-# Rule for re-checking globbed directories.
-
-rule VERIFY_GLOBS
-  command = D:\VisualStudio2022\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -P "D:\Visual Studio Project\Pionner\out\build\x64-debug\CMakeFiles\VerifyGlobs.cmake"
-  description = Re-checking globbed directories...
   generator = 1
 
 

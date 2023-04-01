@@ -3,6 +3,11 @@ D:/Visual Studio Project/Pionner/out/build/x64-debug/CMakeFiles/rebuild_cache.di
 D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/CMakeFiles/Pionner.dir
 D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/CMakeFiles/edit_cache.dir
 D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/CMakeFiles/rebuild_cache.dir
+D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/3rdparty/CMakeFiles/edit_cache.dir
+D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/3rdparty/CMakeFiles/rebuild_cache.dir
+D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/3rdparty/spdlog/CMakeFiles/spdlog.dir
+D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/3rdparty/spdlog/CMakeFiles/edit_cache.dir
+D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/3rdparty/spdlog/CMakeFiles/rebuild_cache.dir
 D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/source/runtime/CMakeFiles/Engine.dir
 D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/source/runtime/CMakeFiles/edit_cache.dir
 D:/Visual Studio Project/Pionner/out/build/x64-debug/engine/source/runtime/CMakeFiles/rebuild_cache.dir

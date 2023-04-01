@@ -2,6 +2,6 @@
 
 project ("Pionner")
 
-set(PIONNER_ROOT_DIR      "${CMAKE_CURRENT_SOURCE_DIR}")
+set(PIONNER_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(engine)

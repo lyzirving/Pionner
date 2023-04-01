@@ -1,0 +1,184 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "engine",
+					"childIndexes" : 
+					[
+						2,
+						4,
+						5
+					],
+					"jsonFile" : "directory-engine-Debug-776e2b00c6520ab49d05.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "engine",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "engine/3rdparty",
+					"childIndexes" : 
+					[
+						3
+					],
+					"jsonFile" : "directory-engine.3rdparty-Debug-a01bddc6c96620f7cf58.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "engine/3rdparty"
+				},
+				{
+					"build" : "engine/3rdparty/spdlog",
+					"jsonFile" : "directory-engine.3rdparty.spdlog-Debug-fa01a80782eb1f6aac50.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 1,
+					"source" : "engine/3rdparty/spdlog",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "engine/source/runtime",
+					"jsonFile" : "directory-engine.source.runtime-Debug-de26ffd8537ce3617b7f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "engine/source/runtime",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "engine/source/editor",
+					"jsonFile" : "directory-engine.source.editor-Debug-703521419b5d61b12b4c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 0,
+					"source" : "engine/source/editor",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						4,
+						5
+					],
+					"name" : "Pionner",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "spdlog",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 5,
+					"id" : "Editor::@a2a08a0b55f399eba4b5",
+					"jsonFile" : "target-Editor-Debug-472bac9a716cf5acf6cb.json",
+					"name" : "Editor",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "Engine::@0e9222390ef2a3c3b428",
+					"jsonFile" : "target-Engine-Debug-51035dd77cd497b04208.json",
+					"name" : "Engine",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "Pionner::@4088515cb4035b412499",
+					"jsonFile" : "target-Pionner-Debug-18a86af5182030f57600.json",
+					"name" : "Pionner",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "spdlog::@794170df5570e3076823",
+					"jsonFile" : "target-spdlog-Debug-a2f8ebf585286bdb77e2.json",
+					"name" : "spdlog",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Visual Studio Project/Pionner/out/build/x64-debug",
+		"source" : "D:/Visual Studio Project/Pionner"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

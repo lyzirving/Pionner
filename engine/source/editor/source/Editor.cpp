@@ -1,8 +1,28 @@
+#include <iostream>
+
 #include "Editor.h"
 
-namespace edit
+#include "Engine.h"
+
+namespace Pionner
 {
-	Editor::Editor() {}
+	Editor::Editor(const std::shared_ptr<Engine>& engine) 
+		: m_engine_runtime(engine)
+	{
+	}
 
 	Editor::~Editor() = default;
+
+	void Editor::initialize()
+	{
+		std::cout << "Editor initialize" << std::endl;
+	}
+
+	void Editor::destroy()
+	{
+	}
+
+	void Editor::run()
+	{
+	}
 }

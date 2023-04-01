@@ -1,8 +1,28 @@
 # ninja log v5
-2	32	0	D:/Visual Studio Project/Pionner/out/build/x64-debug/CMakeFiles/cmake.verify_globs	5a9e918c6142c536
-37	335	7018970996445785	engine/source/runtime/CMakeFiles/Engine.dir/Engine.cpp.obj	62ee4e1d273a9979
-43	346	7018970996445785	engine/source/editor/CMakeFiles/Editor.dir/source/Editor.cpp.obj	a7b25b7cdaa74fb9
-346	418	7018970997226845	engine/source/editor/Editor.lib	978756864b9dc859
-337	419	7018970997226845	engine/source/runtime/Engine.lib	690be760e212a932
-33	721	7018971000281179	engine/CMakeFiles/Pionner.dir/main.cpp.obj	b254f0f1ab39828a
-723	1139	7018971004030644	engine/Pionner.exe	a441bc22f54d10ad
+17	1220	7020335913953519	engine/source/runtime/CMakeFiles/Engine.dir/Engine.cpp.obj	b8ed27d54e07eff5
+26	1216	7020335913797304	engine/source/editor/CMakeFiles/Editor.dir/source/Editor.cpp.obj	c25f8809e2c2f357
+11	1217	7020335913797304	engine/CMakeFiles/Pionner.dir/main.cpp.obj	770fb1c5ca2ae08
+19	2065	7020346203707591	engine/3rdparty/spdlog/CMakeFiles/spdlog.dir/src/stdout_sinks.cpp.obj	95367f9369ee3e1d
+3538	3633	7020335937876775	engine/source/runtime/Engine.lib	e614c1b8a56c884f
+3634	3684	7020335938501525	engine/source/editor/Editor.lib	978756864b9dc859
+3684	4145	7020335941937915	engine/Pionner.exe	ac0d12089f1effe2
+29	1561	7020346198659171	engine/3rdparty/spdlog/CMakeFiles/spdlog.dir/src/file_sinks.cpp.obj	c7d650ec5a9578c1
+21	3536	7020335936939479	engine/source/runtime/CMakeFiles/Engine.dir/core/log/LogSystem.cpp.obj	346362be11639d52
+35	1773	7020346200846155	engine/3rdparty/spdlog/CMakeFiles/spdlog.dir/src/async.cpp.obj	cb0d42e0a6c759a7
+41	1858	7020346201627233	engine/3rdparty/spdlog/CMakeFiles/spdlog.dir/src/cfg.cpp.obj	f5179dcb7726db66
+24	2107	7020346204176232	engine/3rdparty/spdlog/CMakeFiles/spdlog.dir/src/color_sinks.cpp.obj	68787c781ec3ec75
+49	2133	7020346204488697	engine/3rdparty/spdlog/CMakeFiles/spdlog.dir/src/bundled_fmtlib_format.cpp.obj	d4e2a6d3a59324a4
+12	3462	7020346217621359	engine/3rdparty/spdlog/CMakeFiles/spdlog.dir/src/spdlog.cpp.obj	f5f38fd5e5ad8821
+25	227	7020347915008707	engine/3rdparty/spdlog/spdlogd.lib	6e33fbc99488bb77
+18	714	7020347920007534	engine/CMakeFiles/Pionner.dir/main.cpp.obj	e2ae914c475d82ce
+49	762	7020347920476168	engine/source/editor/CMakeFiles/Editor.dir/source/Editor.cpp.obj	f7eb563f9edff075
+34	768	7020347920632389	engine/source/runtime/CMakeFiles/Engine.dir/Engine.cpp.obj	d324fabb8826703b
+41	1072	7020347923610697	engine/source/runtime/CMakeFiles/Engine.dir/core/log/LogSystem.cpp.obj	9fbc9f9cb74cd875
+1072	1129	7020347924235563	engine/source/runtime/Engine.lib	e614c1b8a56c884f
+1129	1174	7020347924704184	engine/source/editor/Editor.lib	978756864b9dc859
+1174	1530	7020347927359877	engine/Pionner.exe	a5dbadb565472b42
+22	625	7020368388702602	engine/source/runtime/CMakeFiles/Engine.dir/Engine.cpp.obj	d324fabb8826703b
+17	866	7020368391096199	engine/CMakeFiles/Pionner.dir/main.cpp.obj	e2ae914c475d82ce
+28	1139	7020368393821070	engine/source/runtime/CMakeFiles/Engine.dir/core/log/LogSystem.cpp.obj	9fbc9f9cb74cd875
+1139	1204	7020368394479709	engine/source/runtime/Engine.lib	e614c1b8a56c884f
+1204	1570	7020368397351335	engine/Pionner.exe	a5dbadb565472b42

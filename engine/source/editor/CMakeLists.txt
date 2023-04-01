@@ -2,16 +2,13 @@
 
 set(TARGET_NAME Editor)
 
-file(GLOB EDITOR_HEADERS CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
-file(GLOB EDITOR_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp)
+file(GLOB_RECURSE EDITOR_SOURCES ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
-add_library( ${TARGET_NAME} ${EDITOR_HEADERS} ${EDITOR_SOURCES} )
+add_library( ${TARGET_NAME} ${EDITOR_SOURCES} )
 
-set(EDITOR_INCLUDE_DIR 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+set( EDITOR_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
-target_include_directories(
-  ${TARGET_NAME} 
-  PUBLIC ${EDITOR_INCLUDE_DIR}
-)
+target_link_libraries(${TARGET_NAME} PUBLIC Engine)
+
+target_include_directories(${TARGET_NAME} PUBLIC Engine 
+                                          PUBLIC ${EDITOR_INCLUDE_DIR})
