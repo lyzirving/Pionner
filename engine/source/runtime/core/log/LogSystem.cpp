@@ -24,7 +24,7 @@ namespace Pionner
 
 		spdlog::init_thread_pool(8192, 1);
 
-		g_logger = std::make_shared<spdlog::async_logger>("pionner_async_logger",
+		g_logger = std::make_shared<spdlog::async_logger>("logger",
 			sinkList.begin(), sinkList.end(),
 			spdlog::thread_pool(),
 			spdlog::async_overflow_policy::block);
