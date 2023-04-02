@@ -1,0 +1,82 @@
+#include <cassert>
+#include <GLFW/glfw3.h>
+
+#include "function/render/WindowSystem.h"
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "WindowSystem"
+
+namespace Pionner
+{
+	WindowSystem::WindowSystem() 
+		: m_window(nullptr)
+		, m_width(0), m_height(0)
+	{
+	}
+
+	WindowSystem::~WindowSystem()
+	{
+		shutdown();
+	}
+
+	void WindowSystem::initialize(const WindowCreateInfo& info)
+	{
+		if (!glfwInit())
+		{
+			LOG_FATAL("glfw fail to init");
+			assert(0);
+		}
+		m_width = info.width;
+		m_height = info.height;
+
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+		m_window = glfwCreateWindow(info.width, info.height, info.title, nullptr, nullptr);
+		if (!m_window)
+		{
+			LOG_FATAL("fail to create window");
+			glfwTerminate();
+			assert(0);
+		}
+		// set user pointer
+		glfwSetWindowUserPointer(m_window, this);
+		// set function callback
+		glfwSetWindowSizeCallback(m_window, WindowSystem::windowSizeCallback);
+		glfwSetWindowCloseCallback(m_window, WindowSystem::windowCloseCallback);
+
+		glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+
+		glfwMakeContextCurrent(m_window);
+	}
+
+	void WindowSystem::shutdown()
+	{
+		if (m_window)
+		{
+			glfwDestroyWindow(m_window);
+			glfwTerminate();
+			m_window = nullptr;
+		}
+	}
+
+	void WindowSystem::windowSizeCallback(GLFWwindow* window, int width, int height)
+	{
+		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
+		if (app)
+		{
+			app->m_width = width;
+			app->m_height = height;
+		}
+	}
+
+	void WindowSystem::windowCloseCallback(GLFWwindow* window)
+	{
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+}

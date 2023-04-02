@@ -16,7 +16,7 @@ int main()
 
 	editor->run();
 
-	editor->destroy();
-	engine->destroy();
+	editor->shutdown();
+	engine->shutdown();
 	return 0;
 }

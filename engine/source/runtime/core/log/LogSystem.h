@@ -29,7 +29,7 @@ namespace Pionner
 	{
     public:
         static void initialize();
-        static void destroy();
+        static void shutdown();
 
 		static void log(LogLevel level, const char *fmt, ...);
 
@@ -70,7 +70,7 @@ namespace Pionner
 
 	#define LOG_FATAL(fmt, ...)								            \
 	        {												            \
-				LogSystem::log(LogLevel::FATAL "[%s]:[%s][%s][%d] " fmt,\
+				LogSystem::log(LogLevel::FATAL, "[%s]:[%s][%s][%d] " fmt,\
 							     LIB_TAB, LOCAL_TAG, __FUNCTION__,      \
 							     __LINE__, ##__VA_ARGS__);		        \
 			}

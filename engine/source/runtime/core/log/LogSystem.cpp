@@ -33,7 +33,7 @@ namespace Pionner
 		spdlog::register_logger(g_logger);
 	}
 
-	void LogSystem::destroy()
+	void LogSystem::shutdown()
 	{
 		if (g_logger)
 		{

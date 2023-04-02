@@ -14,12 +14,12 @@ namespace Pionner
 		virtual ~Editor();
 
 		void initialize();
-		void destroy();
+		void shutdown();
 
 		void run();
 
 	private:
-		std::shared_ptr<Engine> m_engine_runtime;
+		std::shared_ptr<Engine> m_runtimeEngine;
 	};
 }
 

@@ -1,5 +1,6 @@
 #include "Engine.h"
 
+#include "function/global/GlobalContext.h"
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -15,13 +16,12 @@ namespace Pionner
 
 	void Engine::initialize()
 	{
-		LogSystem::initialize();
-
+		g_runtimeCtx.startSystems();
 		LOG_DEBUG("finish initialization");
 	}
 
-	void Engine::destroy()
+	void Engine::shutdown()
 	{
-		LogSystem::destroy();
+		g_runtimeCtx.shutdownSystems();
 	}
 }

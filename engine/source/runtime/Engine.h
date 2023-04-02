@@ -10,7 +10,7 @@ namespace Pionner
 		virtual ~Engine();
 
 		void initialize();
-		void destroy();
+		void shutdown();
 
 	private:
 

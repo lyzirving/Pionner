@@ -1,13 +1,20 @@
-#include <iostream>
+#include <cassert>
 
 #include "Editor.h"
 
 #include "Engine.h"
 
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Editor"
+
 namespace Pionner
 {
 	Editor::Editor(const std::shared_ptr<Engine>& engine) 
-		: m_engine_runtime(engine)
+		: m_runtimeEngine(engine)
 	{
 	}
 
@@ -15,10 +22,13 @@ namespace Pionner
 
 	void Editor::initialize()
 	{
-		std::cout << "Editor initialize" << std::endl;
+		if (!m_runtimeEngine)
+			assert(0);
+
+		LOG_DEBUG("finish initialization");
 	}
 
-	void Editor::destroy()
+	void Editor::shutdown()
 	{
 	}
 
