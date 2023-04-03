@@ -3,6 +3,7 @@
 set(ENGINE_DIR      ${PIONNER_ROOT_DIR}/engine)
 
 set(RUNTIME_DIR     ${ENGINE_DIR}/source/runtime)
+set(EDITOR_DIR      ${ENGINE_DIR}/source/editor)
 set(THIRD_PARTY_DIR ${ENGINE_DIR}/3rdparty)
 
 add_subdirectory(3rdparty)

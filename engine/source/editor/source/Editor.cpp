@@ -1,8 +1,10 @@
 #include <cassert>
 
 #include "Editor.h"
+#include "EditorUI.h"
 
 #include "Engine.h"
+#include "function/global/GlobalContext.h"
 
 #include "core/log/LogSystem.h"
 
@@ -14,7 +16,8 @@
 namespace Pionner
 {
 	Editor::Editor(const std::shared_ptr<Engine>& engine) 
-		: m_runtimeEngine(engine)
+		  : m_runtimeEngine(engine)
+		  , m_ui(nullptr)
 	{
 	}
 
@@ -25,11 +28,22 @@ namespace Pionner
 		if (!m_runtimeEngine)
 			assert(0);
 
+		m_ui = std::make_shared<EditorUI>();
+		WindowUIInitInfo uiInitInfo;
+		uiInitInfo.windowSystem = g_runtimeCtx.m_windowSystem;
+		uiInitInfo.renderSystem = g_runtimeCtx.m_renderSystem;
+		m_ui->initialize(uiInitInfo);
+
 		LOG_DEBUG("finish initialization");
 	}
 
 	void Editor::shutdown()
 	{
+		if (m_ui)
+		{
+			m_ui->shutdown();
+			m_ui.reset();
+		}
 		m_runtimeEngine.reset();
 	}
 

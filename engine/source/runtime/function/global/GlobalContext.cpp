@@ -1,6 +1,6 @@
 #include "function/global/GlobalContext.h"
 #include "function/render/WindowSystem.h"
-#include "function/render/interface/opengl/RhiOpenGL.h"
+#include "function/render/RenderSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -13,7 +13,10 @@ namespace Pionner
 {
 	GlobalContext g_runtimeCtx{};
 
-	GlobalContext::GlobalContext() {}
+	GlobalContext::GlobalContext() : m_windowSystem(nullptr)
+		                           , m_renderSystem(nullptr) 
+	{
+	}
 
 	GlobalContext::~GlobalContext() = default;
 
@@ -21,25 +24,22 @@ namespace Pionner
 	{
 		LogSystem::initialize();
 
-		WindowCreateInfo info;
+		WindowCreateInfo windowInitInfo;
 		m_windowSystem = std::make_shared<WindowSystem>();
-		m_windowSystem->initialize(info);
+		m_windowSystem->initialize(windowInitInfo);
 
-		OpenGLRhiInitInfo rhiInfo;
-		rhiInfo.window = m_windowSystem;
-		m_rhi = std::shared_ptr<Rhi>(new RhiOpenGL);
-		m_rhi->initialize(&rhiInfo);
+		RenderSystemInitInfo renderInitInfo;
+		renderInitInfo.m_window = m_windowSystem;
+		m_renderSystem = std::make_shared<RenderSystem>();
+		m_renderSystem->initialize(renderInitInfo);
 	}
 
 	void GlobalContext::shutdownSystems()
 	{
-		LOG_DEBUG("shutdown all systems");
-		LogSystem::shutdown();
-
-		if (m_rhi)
+		if (m_renderSystem)
 		{
-			m_rhi->shutdown();
-			m_rhi.reset();
+			m_renderSystem->shutdown();
+			m_renderSystem.reset();
 		}
 
 		if (m_windowSystem)
@@ -47,5 +47,8 @@ namespace Pionner
 			m_windowSystem->shutdown();
 			m_windowSystem.reset();
 		}
+
+		LOG_DEBUG("all systems are shutdown");
+		LogSystem::shutdown();
 	}
 }

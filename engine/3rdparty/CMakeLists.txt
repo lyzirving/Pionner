@@ -7,6 +7,11 @@ if(NOT TARGET spdlog)
     set_target_properties(spdlog PROPERTIES FOLDER ${THIRD_PARTY_DIR}/spdlog)
 endif()
 
+if(NOT TARGET imgui)
+    include(imgui.cmake)
+    set_target_properties(imgui PROPERTIES FOLDER ${THIRD_PARTY_DIR}/imgui)
+endif()
+
 if(NOT TARGET glfw)
     option(GLFW_BUILD_EXAMPLES "" OFF)
     option(GLFW_BUILD_TESTS "" OFF)

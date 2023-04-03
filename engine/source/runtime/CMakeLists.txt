@@ -25,11 +25,13 @@ set( GLEW_LIB ${THIRD_PARTY_DIR}/glew/lib/x64/glew32s.lib)
 set( GLEW_INCLUDE ${THIRD_PARTY_DIR}/glew/include)
 
 target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog
-                                     PRIVATE ${OPENGL_LIBRARIES}
-                                     PRIVATE glfw
-                                     PRIVATE ${GLEW_LIB} )
+                                     PUBLIC ${OPENGL_LIBRARIES}
+                                     PUBLIC glfw
+                                     PUBLIC ${GLEW_LIB}
+                                     PUBLIC imgui )
 
 target_include_directories( ${TARGET_NAME} PUBLIC ${ENGINE_INCLUDE_DIR} 
                                            PUBLIC spdlog::spdlog
-                                           PRIVATE glfw
-                                           PRIVATE ${GLEW_INCLUDE} )
+                                           PUBLIC glfw
+                                           PUBLIC ${GLEW_INCLUDE}
+                                           PUBLIC imgui )

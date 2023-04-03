@@ -17,10 +17,7 @@ namespace Pionner
 	{
 	}
 
-	WindowSystem::~WindowSystem()
-	{
-		shutdown();
-	}
+	WindowSystem::~WindowSystem() = default;
 
 	void WindowSystem::initialize(const WindowCreateInfo& info)
 	{

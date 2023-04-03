@@ -1,12 +1,12 @@
-﻿message("editor dir: ${CMAKE_CURRENT_SOURCE_DIR}")
+﻿message("editor dir: ${EDITOR_DIR}")
 
 set(TARGET_NAME Editor)
 
-file(GLOB_RECURSE EDITOR_SOURCES ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
+file(GLOB_RECURSE EDITOR_SOURCES ${EDITOR_DIR}/source *.cpp)
 
 add_library( ${TARGET_NAME} STATIC ${EDITOR_SOURCES} )
 
-set( EDITOR_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include )
+set( EDITOR_INCLUDE_DIR ${EDITOR_DIR}/include )
 
 target_link_libraries(${TARGET_NAME} PUBLIC Engine)
 

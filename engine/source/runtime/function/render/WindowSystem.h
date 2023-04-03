@@ -17,10 +17,11 @@ namespace Pionner
 	{
 	public:
 		WindowSystem();
-		virtual ~WindowSystem();
+		~WindowSystem();
 
 		inline int getWidth() const { return m_width; }
 		inline int getHeight() const { return m_height; }
+		inline GLFWwindow* getWindow() const { return m_window; }
 
 		void initialize(const WindowCreateInfo& info);
 		void shutdown();

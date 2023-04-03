@@ -6,6 +6,7 @@
 namespace Pionner
 {
 	class Engine;
+	class EditorUI;
 
 	class Editor
 	{
@@ -19,7 +20,8 @@ namespace Pionner
 		void run();
 
 	private:
-		std::shared_ptr<Engine> m_runtimeEngine;
+		std::shared_ptr<Engine>   m_runtimeEngine;
+		std::shared_ptr<EditorUI> m_ui;
 	};
 }
 
