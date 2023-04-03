@@ -30,9 +30,21 @@ namespace Pionner
 
 	void Editor::shutdown()
 	{
+		m_runtimeEngine.reset();
 	}
 
 	void Editor::run()
 	{
+		if (!m_runtimeEngine)
+		{
+			LOG_FATAL("engine is null");
+			assert(0);
+		}
+		while (true)
+		{
+			float delta = m_runtimeEngine->calculateDeltaTime();
+			if (!m_runtimeEngine->tickFrame(delta))
+				return;
+		}
 	}
 }

@@ -33,6 +33,7 @@ namespace Pionner
 
 	void GlobalContext::shutdownSystems()
 	{
+		LOG_DEBUG("shutdown all systems");
 		LogSystem::shutdown();
 
 		if (m_rhi)

@@ -25,6 +25,10 @@ namespace Pionner
 		void initialize(const WindowCreateInfo& info);
 		void shutdown();
 
+		bool shouldClose();
+		void swapBuffers();
+		void pollEvents();
+
 	protected:
 		static void windowSizeCallback(GLFWwindow *window, int width, int height);
 		static void windowCloseCallback(GLFWwindow* window);

@@ -79,4 +79,34 @@ namespace Pionner
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
+
+	bool WindowSystem::shouldClose()
+	{
+		if (m_window)
+		{
+			return glfwWindowShouldClose(m_window);
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	void WindowSystem::swapBuffers()
+	{
+		if (m_window)
+		{
+			glfwSwapBuffers(m_window);
+		}
+		else
+		{
+			LOG_FATAL("window is null");
+			assert(0);
+		}
+	}
+
+	void WindowSystem::pollEvents()
+	{
+		glfwPollEvents();
+	}
 }

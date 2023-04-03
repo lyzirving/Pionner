@@ -1,6 +1,8 @@
 #ifndef __ENGINE_H__
 #define __ENGINE_H__
 
+#include <chrono>
+
 namespace Pionner
 {
 	class Engine
@@ -12,8 +14,11 @@ namespace Pionner
 		void initialize();
 		void shutdown();
 
-	private:
+		float calculateDeltaTime();
+		bool tickFrame(float deltaTime);
 
+	private:
+		std::chrono::steady_clock::time_point m_lastTickTimePoint;
 	};
 }
 
