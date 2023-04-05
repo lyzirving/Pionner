@@ -28,10 +28,14 @@ target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog
                                      PUBLIC ${OPENGL_LIBRARIES}
                                      PUBLIC glfw
                                      PUBLIC ${GLEW_LIB}
-                                     PUBLIC imgui )
+                                     PUBLIC imgui
+                                     PUBLIC glm
+                                     PUBLIC stb )
 
 target_include_directories( ${TARGET_NAME} PUBLIC ${ENGINE_INCLUDE_DIR} 
                                            PUBLIC spdlog::spdlog
                                            PUBLIC glfw
                                            PUBLIC ${GLEW_INCLUDE}
-                                           PUBLIC imgui )
+                                           PUBLIC imgui
+                                           PUBLIC glm 
+                                           PUBLIC stb )

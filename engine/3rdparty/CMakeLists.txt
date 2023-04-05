@@ -22,3 +22,13 @@ if(NOT TARGET glfw)
     set_target_properties(update_mappings PROPERTIES FOLDER ${THIRD_PARTY_DIR}/glfw)
 endif()
 
+if(NOT TARGET glm)
+    option(BUILD_STATIC_LIBS "" ON)
+    add_subdirectory(glm)
+    option(BUILD_STATIC_LIBS "" OFF)
+endif()
+
+if(NOT TARGET stb)
+    include(stb.cmake)
+    set_target_properties(stb PROPERTIES FOLDER ${THIRD_PARTY_DIR}/stb)
+endif()

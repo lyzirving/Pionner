@@ -34,6 +34,8 @@ namespace Pionner
 
 	void RenderPipeline::forwardRender()
 	{
+		m_rhi->viewportFull();
+
 		m_uiPass->draw();
 	}
 }

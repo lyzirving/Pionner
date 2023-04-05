@@ -16,8 +16,13 @@ namespace Pionner
 		virtual void shutdownUIRenderBackend() override;
 		virtual void shutdown() override;
 
+		virtual void viewportFull() override;
+
 	protected:
 		virtual void createInstance() override;
+
+	private:
+		glm::vec3 m_clearColor;
 	};
 }
 

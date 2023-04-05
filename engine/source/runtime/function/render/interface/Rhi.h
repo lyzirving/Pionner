@@ -1,6 +1,8 @@
 #ifndef __RHI_H__
 #define __RHI_H__
 
+#include <glm/glm.hpp>
+
 #include "function/render/interface/RhiStruct.h"
 
 struct GLFWwindow;
@@ -22,6 +24,9 @@ namespace Pionner
 		virtual void initUIRenderBackend() = 0;
 		virtual void shutdownUIRenderBackend() = 0;
 		virtual void shutdown() = 0;
+
+		virtual void viewportFull() {};
+		virtual void viewportSub(int x, int y, int width, int height) {};
 
 	protected:
 		virtual void createInstance() {};

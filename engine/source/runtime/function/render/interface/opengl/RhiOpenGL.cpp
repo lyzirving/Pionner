@@ -19,6 +19,7 @@
 namespace Pionner
 {
 	RhiOpenGL::RhiOpenGL() : Rhi()
+		                   , m_clearColor(1.f)
 	{
 	}
 
@@ -80,5 +81,12 @@ namespace Pionner
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
 
 		LOG_DEBUG("gl version[%d.%d]", major, minor);
+	}
+
+	void RhiOpenGL::viewportFull()
+	{
+		glViewport((GLint)m_viewport.x, (GLint)m_viewport.y, (GLint)m_viewport.width, (GLint)m_viewport.height);
+		glClearColor(m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }
