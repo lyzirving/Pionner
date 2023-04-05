@@ -3,6 +3,9 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
+
 #include "function/render/interface/opengl/RhiOpenGL.h"
 #include "function/render/WindowSystem.h"
 
@@ -31,6 +34,33 @@ namespace Pionner
 		m_viewport = {0.f, 0.f, float(m_window->getWidth()), float(m_window->getHeight()), 0.f, 1.f};
 
 		createInstance();
+	}
+
+	void RhiOpenGL::initUIRenderBackend()
+	{
+		if (!m_window || !m_window->getWindow())
+		{
+			LOG_FATAL("rhi's window is invalid");
+			assert(0);
+		}
+		const char* version{ "#version 430" };
+		bool ret0 = ImGui_ImplOpenGL3_Init(version);
+		bool ret1 = ImGui_ImplGlfw_InitForOpenGL(m_window->getWindow(), true);
+
+		if (!ret0 || !ret1)
+		{
+			LOG_FATAL("fail to init ui render backend, imgui for opengl[%s], imgui glfw[%s]"
+			          , ret0 ? "true" : "false", ret1 ? "true" : "false");
+			assert(0);
+		}
+
+		LOG_DEBUG("Imgui opengl window[%s] inits success", version);
+	}
+
+	void RhiOpenGL::shutdownUIRenderBackend()
+	{
+		ImGui_ImplGlfw_Shutdown();
+		ImGui_ImplOpenGL3_Shutdown();
 	}
 
 	void RhiOpenGL::shutdown()

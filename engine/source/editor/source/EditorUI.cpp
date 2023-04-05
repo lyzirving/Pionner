@@ -24,6 +24,13 @@ namespace Pionner
 	void EditorUI::initialize(WindowUIInitInfo& info)
 	{
 		ImGui::CreateContext();
+		ImGui::StyleColorsDark();
+		ImGuiIO &io = ImGui::GetIO();
+		(void)io;
+
+		ImGuiStyle &style = ImGui::GetStyle();
+		setColorStyle(style);
+
 		info.renderSystem->initializeUIRenderBackend(this);
 	}
 
@@ -34,5 +41,10 @@ namespace Pionner
 	void EditorUI::shutdown()
 	{
 		ImGui::DestroyContext();
+	}
+
+	void EditorUI::setColorStyle(ImGuiStyle& style)
+	{
+		// to be implemented
 	}
 }

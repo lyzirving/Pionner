@@ -1,14 +1,12 @@
 #ifndef __RHI_H__
 #define __RHI_H__
 
-#include <memory>
-
 #include "function/render/interface/RhiStruct.h"
+
+struct GLFWwindow;
 
 namespace Pionner
 {
-	class WindowSystem;
-
 	// render hardware interface
 	class Rhi
 	{
@@ -21,6 +19,8 @@ namespace Pionner
 		}
 
 		virtual void initialize(void* param) = 0;
+		virtual void initUIRenderBackend() = 0;
+		virtual void shutdownUIRenderBackend() = 0;
 		virtual void shutdown() = 0;
 
 	protected:

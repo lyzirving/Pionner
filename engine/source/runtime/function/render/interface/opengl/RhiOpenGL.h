@@ -5,11 +5,6 @@
 
 namespace Pionner
 {
-	struct OpenGLRhiInitInfo
-	{
-		std::shared_ptr<WindowSystem> window;
-	};
-
 	class RhiOpenGL : public Rhi
 	{
 	public:
@@ -17,6 +12,8 @@ namespace Pionner
 		virtual ~RhiOpenGL();
 
 		virtual void initialize(void* param) override;
+		virtual void initUIRenderBackend() override;
+		virtual void shutdownUIRenderBackend() override;
 		virtual void shutdown() override;
 
 	protected:

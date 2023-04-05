@@ -1,18 +1,10 @@
 #ifndef __WINDOW_SYSTEM_H__
 #define __WINDOW_SYSTEM_H__
 
-struct GLFWwindow;
+#include "function/render/RenderDef.h"
 
 namespace Pionner
 {
-	struct WindowCreateInfo
-	{
-		int         width{ 1280 };
-		int         height{ 720 };
-		const char* title{ "Pionner" };
-		bool        fullscreen{ false };
-	};
-
 	class WindowSystem
 	{
 	public:

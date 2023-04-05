@@ -5,6 +5,7 @@
 
 #include "Engine.h"
 #include "function/global/GlobalContext.h"
+#include "function/render/RenderSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -41,6 +42,7 @@ namespace Pionner
 	{
 		if (m_ui)
 		{
+			g_runtimeCtx.m_renderSystem->shutdownUIRenderBackend();
 			m_ui->shutdown();
 			m_ui.reset();
 		}

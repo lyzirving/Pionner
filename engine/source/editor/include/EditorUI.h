@@ -3,6 +3,8 @@
 
 #include "function/ui/WindowUI.h"
 
+struct ImGuiStyle;
+
 namespace Pionner
 {
 	class EditorUI : public WindowUI
@@ -15,6 +17,9 @@ namespace Pionner
 		virtual void preRender() override;
 
 		void shutdown();
+
+	private:
+		void setColorStyle(ImGuiStyle& style);
 	};
 }
 

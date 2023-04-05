@@ -29,7 +29,7 @@ namespace Pionner
 		m_windowSystem->initialize(windowInitInfo);
 
 		RenderSystemInitInfo renderInitInfo;
-		renderInitInfo.m_window = m_windowSystem;
+		renderInitInfo.window = m_windowSystem;
 		m_renderSystem = std::make_shared<RenderSystem>();
 		m_renderSystem->initialize(renderInitInfo);
 	}
