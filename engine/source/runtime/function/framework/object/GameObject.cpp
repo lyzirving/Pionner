@@ -15,11 +15,10 @@ namespace Pionner
 
 	GameObject::~GameObject()
 	{
-		auto itr = m_components.begin();
-		while (itr != m_components.end())
+		for (int i = 0; i < CMP_COUNT; ++i)
 		{
-			(*itr).reset();
-			itr = m_components.erase(itr);
+			if (m_components[i])
+				m_components[i].reset();
 		}
 	}
 

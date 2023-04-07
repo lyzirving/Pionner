@@ -6,6 +6,7 @@ namespace Pionner
 	Component::Component()
 		: m_parent()
 		, m_dirty(false)
+		, m_type(CMP_NONE)
 	{
 	}
 

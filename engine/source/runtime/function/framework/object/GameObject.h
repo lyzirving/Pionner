@@ -7,6 +7,8 @@
 #include <vector>
 #include <memory>
 
+#include "function/framework/components/ComponentDef.h"
+
 namespace Pionner
 {
 	class Component;
@@ -29,7 +31,7 @@ namespace Pionner
 		std::string m_name;
 		std::string m_resUrl;
 
-		std::vector<std::shared_ptr<Component>> m_components;
+		std::shared_ptr<Component> m_components[CMP_COUNT];
 	};
 }
 

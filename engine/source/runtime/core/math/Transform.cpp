@@ -22,7 +22,7 @@ namespace Pionner
 		return m_mat;
 	}
 
-	bool Rotation::rotateX(float angle, bool reverse)
+	bool Rotation::rotateByX(float angle, bool reverse)
 	{
 		bool change{ false };
 		if (m_x.first != angle || m_x.second != reverse)
@@ -34,7 +34,7 @@ namespace Pionner
 		return change;
 	}
 
-	bool Rotation::rotateY(float angle, bool reverse)
+	bool Rotation::rotateByY(float angle, bool reverse)
 	{
 		bool change{ false };
 		if (m_y.first != angle || m_y.second != reverse)
@@ -46,7 +46,7 @@ namespace Pionner
 		return change;
 	}
 
-	bool Rotation::rotateZ(float angle, bool reverse)
+	bool Rotation::rotateByZ(float angle, bool reverse)
 	{
 		bool change{ false };
 		if (m_z.first != angle || m_z.second != reverse)
@@ -78,49 +78,59 @@ namespace Pionner
 		return m_mat;
 	}
 
-	void Transform::position(float x, float y, float z)
+	bool Transform::position(float x, float y, float z)
 	{
+		bool change{ false };
 		if (m_position.x != x || m_position.y != y || m_position.z != z)
 		{
 			m_position.x = x;
 			m_position.y = y;
 			m_position.z = z;
-			m_dirty = true;
+			change = m_dirty = true;
 		}
+		return change;
 	}
 
-	void Transform::scale(float x, float y, float z)
+	bool Transform::scale(float x, float y, float z)
 	{
+		bool change{ false };
 		if (m_scale.x != x || m_scale.y != y || m_scale.z != z)
 		{
 			m_scale.x = x;
 			m_scale.y = y;
 			m_scale.z = z;
-			m_dirty = true;
+			change = m_dirty = true;
 		}
+		return change;
 	}
 
-	void Transform::rotateX(float angle, bool reverse)
+	bool Transform::rotateByX(float angle, bool reverse)
 	{
-		if (m_rotaion.rotateX(angle, reverse))
+		bool change{ false };
+		if (m_rotaion.rotateByX(angle, reverse))
 		{
-			m_dirty = true;
+			change = m_dirty = true;
 		}
+		return change;
 	}
 
-	void Transform::rotateY(float angle, bool reverse)
+	bool Transform::rotateByY(float angle, bool reverse)
 	{
-		if (m_rotaion.rotateY(angle, reverse))
+		bool change{ false };
+		if (m_rotaion.rotateByY(angle, reverse))
 		{
-			m_dirty = true;
+			change = m_dirty = true;
 		}
+		return change;
 	}
 
-	void Transform::rotateZ(float angle, bool reverse)
+	bool Transform::rotateByZ(float angle, bool reverse)
 	{
-		if (m_rotaion.rotateZ(angle, reverse))
+		bool change{ false };
+		if (m_rotaion.rotateByZ(angle, reverse))
 		{
-			m_dirty = true;
+			change = m_dirty = true;
 		}
+		return change;
 	}
 }
