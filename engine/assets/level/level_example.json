@@ -18,11 +18,17 @@
               "y": 3,
               "z": 0
             },
-            "rotation": {
+            "rotateX": {
               "angle": 0,
-              "x": 1,
-              "y": 0,
-              "z": 0
+              "reverse": "false"
+            },
+            "rotateY": {
+              "angle": 0,
+              "reverse": "false"
+            },
+            "rotateZ": {
+              "angle": 0,
+              "reverse": "false"
             },
             "scale": {
               "x": 1,
@@ -45,11 +51,17 @@
               "y": 0,
               "z": 1
             },
-            "rotation": {
+            "rotateX": {
               "angle": 0,
-              "x": 1,
-              "y": 0,
-              "z": 0
+              "reverse": "false"
+            },
+            "rotateY": {
+              "angle": 0,
+              "reverse": "false"
+            },
+            "rotateZ": {
+              "angle": 0,
+              "reverse": "false"
             },
             "scale": {
               "x": 1,
