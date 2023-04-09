@@ -55,8 +55,12 @@ namespace Pionner
 			}
 			if (job)
 			{
-				job->work();
-				if (job->m_observer) job->m_observer->onJobEnd();
+				JobResult ret{};
+				job->work(ret);
+
+				if (job->m_ob) { job->m_ob->onJobEnd(ret); }
+
+				delete ret.param;
 			}
 		}
 		m_state = STATE_END;

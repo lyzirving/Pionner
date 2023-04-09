@@ -5,6 +5,13 @@
 #include "function/framework/job/JobTask.h"
 #include "function/framework/job/Job.h"
 
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "JobProcessor"
+
 namespace Pionner
 {
 	JobProcessor::JobProcessor()
@@ -33,6 +40,10 @@ namespace Pionner
 		if (m_tasks[type])
 		{
 			m_tasks[type]->addJob(job);
+		}
+		else
+		{
+			LOG_ERR("task[%d] is invalid", type);
 		}
 	}
 

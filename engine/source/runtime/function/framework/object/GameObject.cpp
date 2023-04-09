@@ -28,6 +28,7 @@ namespace Pionner
 		if (!compTypeValid(type)) return false;
 
 		m_components[type] = comp;
+		return true;
 	}
 
 	std::shared_ptr<Component> GameObject::getComponent(ComponentType type)

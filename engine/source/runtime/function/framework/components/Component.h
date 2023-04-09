@@ -23,8 +23,8 @@ namespace Pionner
 
 	protected:
 		std::weak_ptr<GameObject> m_parent;
-		ComponentType m_type;
-		bool m_dirty;
+		ComponentType             m_type;
+		bool                      m_dirty;
 	};
 }
 

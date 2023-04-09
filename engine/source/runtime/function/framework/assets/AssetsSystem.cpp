@@ -21,4 +21,9 @@ namespace Pionner
 	{
 		m_processor->shutdown();
 	}
+
+	void AssetsSystem::addJob(const std::shared_ptr<Job>& job)
+	{
+		m_processor->addJob(job);
+	}
 }

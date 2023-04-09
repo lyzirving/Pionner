@@ -6,6 +6,7 @@
 namespace Pionner
 {
 	class JobProcessor;
+	class Job;
 
 	class AssetsSystem
 	{
@@ -15,6 +16,8 @@ namespace Pionner
 
 		void initialize();
 		void shutdown();
+
+		void addJob(const std::shared_ptr<Job>& job);
 
 	private:
 		std::shared_ptr<JobProcessor> m_processor;

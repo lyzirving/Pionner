@@ -1,26 +1,32 @@
 #ifndef __JOB_H__
 #define __JOB_H__
 
+#include <memory>
 #include "function/framework/job/JobDef.h"
 
 namespace Pionner
 {
+	struct JobResult
+	{
+		void *param;
+	};
+
 	class JobObserver
 	{
 	public:
 		JobObserver() {}
 		virtual ~JobObserver() = default;
 
-		virtual void onJobEnd() = 0;
+		virtual void onJobEnd(JobResult& result) = 0;
 	};
 
 	class Job
 	{
 		friend class JobTask;
 	public:
-		Job(JobType type, JobObserver *observer = nullptr) 
+		Job(JobType type, JobObserver *ob)
 			: m_type(type)
-			, m_observer(observer) 
+			, m_ob(ob)
 		{
 		}
 
@@ -28,11 +34,11 @@ namespace Pionner
 
 		inline JobType getType() { return m_type; }
 
-		virtual void work() = 0;
+		virtual void work(JobResult &result) = 0;
 
-	private:
-		JobObserver* m_observer;
-		JobType      m_type;
+	protected:
+		JobObserver *m_ob;
+		JobType     m_type;
 	};
 }
 
