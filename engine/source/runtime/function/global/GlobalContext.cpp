@@ -1,6 +1,7 @@
 #include "function/global/GlobalContext.h"
 #include "function/render/WindowSystem.h"
 #include "function/render/RenderSystem.h"
+#include "function/framework/assets/AssetsSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -15,6 +16,7 @@ namespace Pionner
 
 	GlobalContext::GlobalContext() : m_windowSystem(nullptr)
 		                           , m_renderSystem(nullptr) 
+		                           , m_assetsSystem(nullptr)
 	{
 	}
 
@@ -32,10 +34,19 @@ namespace Pionner
 		renderInitInfo.window = m_windowSystem;
 		m_renderSystem = std::make_shared<RenderSystem>();
 		m_renderSystem->initialize(renderInitInfo);
+
+		m_assetsSystem = std::make_shared<AssetsSystem>();
+		m_assetsSystem->initialize();
 	}
 
 	void GlobalContext::shutdownSystems()
 	{
+		if (m_assetsSystem)
+		{
+			m_assetsSystem->shutdown();
+			m_assetsSystem.reset();
+		}
+
 		if (m_renderSystem)
 		{
 			m_renderSystem->shutdown();

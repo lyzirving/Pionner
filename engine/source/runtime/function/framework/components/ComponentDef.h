@@ -3,10 +3,11 @@
 
 namespace Pionner
 {
-	enum ComponentType
+	enum ComponentType : uint8_t
 	{
 		CMP_NONE,
 		CMP_TRANSFORM,
+		CMP_MESH,
 		CMP_COUNT
 	};
 }

@@ -1,10 +1,8 @@
 #ifndef __GAME_OBJECT_H__
 #define __GAME_OBJECT_H__
 
-#include <cstdint>
 #include <string>
 #include <atomic>
-#include <vector>
 #include <memory>
 
 #include "function/framework/components/ComponentDef.h"
@@ -21,6 +19,11 @@ namespace Pionner
 
 		inline uint32_t getId() const { return m_id; }
 		inline const std::string getName() const { return m_name; }
+		inline bool compTypeValid(ComponentType type) { return (type > CMP_NONE && type < CMP_COUNT); }
+
+		bool addComponent(const std::shared_ptr<Component> &cmp);
+		std::shared_ptr<Component> getComponent(ComponentType type);
+		bool hasComponent(ComponentType type);
 
 		void tick(float delta);
 
