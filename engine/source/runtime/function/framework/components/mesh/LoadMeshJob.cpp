@@ -16,6 +16,6 @@ namespace Pionner
 
 	void LoadMeshJob::work(JobResult& result)
 	{
-
+		
 	}
 }

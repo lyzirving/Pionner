@@ -24,15 +24,20 @@ set( ENGINE_INCLUDE_DIR ${RUNTIME_DIR} )
 set( GLEW_LIB ${THIRD_PARTY_DIR}/glew/lib/x64/glew32s.lib)
 set( GLEW_INCLUDE ${THIRD_PARTY_DIR}/glew/include)
 
+add_library(assimp STATIC IMPORTED)
+set_target_properties(assimp PROPERTIES IMPORTED_LOCATION ${THIRD_PARTY_DIR}/libs/assimp-vc143-mt.lib )
+
 target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog
                                      PUBLIC ${OPENGL_LIBRARIES}
                                      PUBLIC glfw
                                      PUBLIC ${GLEW_LIB}
                                      PUBLIC imgui
                                      PUBLIC glm
-                                     PUBLIC stb )
+                                     PUBLIC stb
+                                     PUBLIC assimp)
 
-target_include_directories( ${TARGET_NAME} PUBLIC ${ENGINE_INCLUDE_DIR} 
+target_include_directories( ${TARGET_NAME} PUBLIC ${ENGINE_INCLUDE_DIR}
+                                           PUBLIC ${THIRD_PARTY_DIR}
                                            PUBLIC spdlog::spdlog
                                            PUBLIC glfw
                                            PUBLIC ${GLEW_INCLUDE}

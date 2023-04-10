@@ -6,6 +6,11 @@
 
 namespace Pionner
 {
+	struct GameObjDesc
+	{
+		std::string m_srcPath;
+	};
+
 	struct GameObjMeshDesc
 	{
 		std::string m_meshFile;
@@ -23,9 +28,10 @@ namespace Pionner
 
 	struct GameObjPartDesc
 	{
-		GameObjMeshDesc      m_meshDesc;
+		GameObjDesc          m_fileDesc;
+		/*GameObjMeshDesc      m_meshDesc;
 		GameObjMaterialDesc  m_materialDesc;
-		GameObjTransformDesc m_transformDesc;
+		GameObjTransformDesc m_transformDesc;*/
 	};
 }
 

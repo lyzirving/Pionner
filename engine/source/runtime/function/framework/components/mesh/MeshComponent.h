@@ -21,7 +21,7 @@ namespace Pionner
 
 	private:
 		using MeshHolder = std::vector<GameObjPartDesc>;
-		MeshHolder m_meshes[2];
+		MeshHolder m_meshRes[2];
 		int        m_curIndex;
 		int        m_nextIndex;
 		bool       m_dirty;

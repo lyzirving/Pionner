@@ -19,3 +19,8 @@ target_include_directories(${TARGET_NAME} PRIVATE Editor)
 
 set_property(TARGET Pionner PROPERTY CXX_STANDARD 11)
 
+add_custom_command(TARGET Pionner POST_BUILD                     # Adds a post-build event to Pionner
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory    # which executes "cmake - E copy_directory/copy_if_different..."
+                   "${THIRD_PARTY_DIR}/libs/bin"                 # <--this is in-file
+                   $<TARGET_FILE_DIR:Pionner>)
+
