@@ -28,7 +28,7 @@ namespace Pionner
 
 	struct GameObjPartDesc
 	{
-		GameObjDesc          m_fileDesc;
+		GameObjDesc          m_objDesc;
 		/*GameObjMeshDesc      m_meshDesc;
 		GameObjMaterialDesc  m_materialDesc;
 		GameObjTransformDesc m_transformDesc;*/
