@@ -59,8 +59,6 @@ namespace Pionner
 				job->work(ret);
 
 				if (job->m_ob) { job->m_ob->onJobEnd(ret); }
-
-				delete ret.param;
 			}
 		}
 		m_state = STATE_END;

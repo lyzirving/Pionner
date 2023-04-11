@@ -12,6 +12,7 @@ struct aiMesh;
 namespace Pionner
 {
 	struct GameObjPartDesc;
+	class RenderEntity;
 
 	class LoadMeshJob : public Job
 	{
@@ -23,9 +24,9 @@ namespace Pionner
 		virtual void work(JobResult& result) override;
 
 	private:
-		void parseObj(const std::string &path, JobResult& result);
-		void processNode(aiNode* node, const aiScene* scene, JobResult& result);
-		void processMesh(aiMesh* mesh, const aiScene* scene, JobResult& result);
+		void parseObj(const std::string &path, std::shared_ptr<RenderEntity> & root);
+		void processNode(aiNode* node, const aiScene* scene, const std::string &rootDir, std::shared_ptr<RenderEntity>& entity);
+		void processMesh(int meshIndex, aiMesh* mesh, const aiScene* scene, const std::string& rootDir, std::shared_ptr<RenderEntity>& entity);
 
 		std::vector<GameObjPartDesc> m_meshToLoad;
 	};

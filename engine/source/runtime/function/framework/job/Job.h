@@ -2,13 +2,17 @@
 #define __JOB_H__
 
 #include <memory>
+#include <vector>
+
 #include "function/framework/job/JobDef.h"
 
 namespace Pionner
 {
+	class RenderEntity;
+
 	struct JobResult
 	{
-		void *param;
+		std::vector<std::shared_ptr<RenderEntity>> entities;
 	};
 
 	class JobObserver

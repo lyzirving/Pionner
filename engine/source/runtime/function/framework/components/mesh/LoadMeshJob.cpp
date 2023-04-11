@@ -3,11 +3,14 @@
 #include <assimp/postprocess.h>
 #include <assimp/material.h>
 #include <string.h>
+#include <climits>
+#include <cassert>
 
 #include "function/framework/components/mesh/LoadMeshJob.h"
 #include "function/framework/object/GameObjectDef.h"
 
 #include "function/render/entity/RenderEntity.h"
+#include "function/render/entity/EntityDef.h"
 
 #include "core/log/LogSystem.h"
 
@@ -31,30 +34,45 @@ namespace Pionner
 
 	void LoadMeshJob::work(JobResult& result)
 	{
-		for (auto& item : m_meshToLoad)
+		for (int i = 0; i < m_meshToLoad.size(); ++i)
 		{
-			// parse obj file
-			if (!item.m_objDesc.m_srcPath.empty())
+			auto& item = m_meshToLoad[i];
+			std::string path = item.m_objDesc.m_srcPath;
+			int dot = std::string::npos;
+			std::string fmt;
+
+			assert(!path.empty());
+
+			dot = path.find_last_of('.');
+			if (dot == std::string::npos)
 			{
-				parseObj(item.m_objDesc.m_srcPath, result);
+				LOG_ERR("invalid path[%s]", path.c_str());
+				continue;
+			}
+			fmt = path.substr(dot + 1);
+
+			//empty root
+			std::shared_ptr<RenderEntity> root;
+			if (std::strcmp(fmt.c_str(), "obj") == 0)
+			{
+				parseObj(path, root);
+			}
+			else
+			{
+				LOG_FATAL("unknown format[%s]", fmt.c_str());
+				assert(0);
+			}
+
+			if (root)
+			{
+				result.entities.push_back(std::move(root));
 			}
 		}
 	}
 
-	void LoadMeshJob::parseObj(const std::string& path, JobResult& result)
+	void LoadMeshJob::parseObj(const std::string& path, std::shared_ptr<RenderEntity>& root)
 	{
-		int dotPos = path.find_last_of('.');
-		if (dotPos == std::string::npos)
-		{
-			LOG_ERR("invalid pos after dot");
-			return;
-		}
-		std::string fmt = path.substr(dotPos + 1);
-		if (std::strcmp(fmt.c_str(), "obj") != 0)
-		{
-			LOG_ERR("file fmt is not obj");
-			return;
-		}
+		std::string rootDir = path.substr(0, path.find_last_of('/'));
 
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate/*| aiProcess_FlipUVs*/);
@@ -64,31 +82,121 @@ namespace Pionner
 			return;
 		}
 		LOG_DEBUG("start to load obj from[%s]", path.c_str());
-		processNode(scene->mRootNode, scene, result);
+		root = std::shared_ptr<RenderEntity>(new RenderEntity);
+		processNode(scene->mRootNode, scene, rootDir, root);
 		LOG_DEBUG("finish loading obj[%s]", path.c_str());
 	}
 
-	void LoadMeshJob::processNode(aiNode* node, const aiScene* scene, JobResult& result)
+	void LoadMeshJob::processNode(aiNode* node, const aiScene* scene, const std::string& rootDir, std::shared_ptr<RenderEntity>& entity)
 	{
+		//TODO: add node structure
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			if (mesh != nullptr)
 			{
-				processMesh(mesh, scene, result);
+				processMesh(i, mesh, scene, rootDir, entity);
 			}
 		}
+
+		entity->m_childNum = node->mNumChildren;
 
 		// process the children for current node
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			processNode(node->mChildren[i], scene, result);
+			std::shared_ptr<RenderEntity> child = std::shared_ptr<RenderEntity>(new RenderEntity);
+			entity->m_children.push_back(child);
+			processNode(node->mChildren[i], scene, rootDir, child);
 		}
 	}
 
-	void LoadMeshJob::processMesh(aiMesh* mesh, const aiScene* scene, JobResult& result)
+	void LoadMeshJob::processMesh(int meshIndex, aiMesh* mesh, const aiScene* scene, const std::string& rootDir, std::shared_ptr<RenderEntity>& entity)
 	{
+		glm::vec3 min{ FLT_MAX }, max{ FLT_MIN };
+		std::shared_ptr<EntityPart> part = std::shared_ptr<EntityPart>(new EntityPart);
 
+		part->m_partIndex = meshIndex;
+
+		// parse vertex array
+		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+		{
+			Vertex vertex;
+			vertex.pos = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
+			vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+			min = glm::min(min, vertex.pos);
+			max = glm::max(max, vertex.pos);
+			if (mesh->mTextureCoords[0])
+			{
+				vertex.texCoord = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
+			}
+
+			part->m_vertexs.push_back(std::move(vertex));
+		}
+
+		part->m_aabb.setAA(min);
+		part->m_aabb.setBB(max);
+
+		// process the indices
+		// every face represent a primitive
+		// we use flag aiProcess_Triangulate to import the model, so a single primitive is a triangle
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+		{
+			aiFace face = mesh->mFaces[i];
+			for (int j = 0; j < face.mNumIndices; ++j)
+			{
+				part->m_indices.push_back(face.mIndices[j]);
+			}
+		}
+
+		// every mesh only has one GfxMaterial
+		if (mesh->mMaterialIndex >= 0)
+		{
+			aiMaterial* mt = scene->mMaterials[mesh->mMaterialIndex];
+			if (mt)
+			{
+				aiString texName;
+				if (mt->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+				{
+					mt->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
+					part->m_material.m_type = MAT_DIFFUSE;
+					part->m_material.m_path = rootDir + '/' + texName.C_Str();
+				}
+				else if (mt->GetTextureCount(aiTextureType_SPECULAR) > 0)
+				{
+					mt->GetTexture(aiTextureType_SPECULAR, 0, &texName);
+					part->m_material.m_type = MAT_SPECULAR;
+					part->m_material.m_path = rootDir + '/' + texName.C_Str();
+				}
+				else if (mt->GetTextureCount(aiTextureType_AMBIENT) > 0)
+				{
+					mt->GetTexture(aiTextureType_AMBIENT, 0, &texName);
+					part->m_material.m_type = MAT_AMBIENT;
+					part->m_material.m_path = rootDir + '/' + texName.C_Str();
+				}
+
+				aiColor3D color;
+				ai_real val;
+				if (mt->Get(AI_MATKEY_COLOR_DIFFUSE, color) == aiReturn_SUCCESS)
+				{
+					part->m_material.m_colorDiffuse = glm::vec3(color.r, color.g, color.b);
+				}
+				if (mt->Get(AI_MATKEY_COLOR_SPECULAR, color) == aiReturn_SUCCESS)
+				{
+					part->m_material.m_colorSpecular = glm::vec3(color.r, color.g, color.b);
+				}
+				if (mt->Get(AI_MATKEY_COLOR_AMBIENT, color) == aiReturn_SUCCESS)
+				{
+					part->m_material.m_colorAmbient = glm::vec3(color.r, color.g, color.b);
+				}
+				if (mt->Get(AI_MATKEY_SHININESS, val) == aiReturn_SUCCESS)
+				{
+					part->m_material.m_shiness = val;
+				}
+			}
+		}
+
+		// insert mesh as part into the entity
+		entity->m_parts.push_back(std::move(part));
 	}
 
 }
