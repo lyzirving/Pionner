@@ -23,9 +23,9 @@ namespace Pionner
 		virtual void work(JobResult& result) override;
 
 	private:
-		void parseObj(const std::string &path);
-		void processNode(aiNode* node, const aiScene* scene);
-		void processMesh(aiMesh* mesh, const aiScene* scene);
+		void parseObj(const std::string &path, JobResult& result);
+		void processNode(aiNode* node, const aiScene* scene, JobResult& result);
+		void processMesh(aiMesh* mesh, const aiScene* scene, JobResult& result);
 
 		std::vector<GameObjPartDesc> m_meshToLoad;
 	};

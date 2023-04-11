@@ -7,6 +7,8 @@
 #include "function/framework/components/mesh/LoadMeshJob.h"
 #include "function/framework/object/GameObjectDef.h"
 
+#include "function/render/entity/RenderEntity.h"
+
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -34,12 +36,12 @@ namespace Pionner
 			// parse obj file
 			if (!item.m_objDesc.m_srcPath.empty())
 			{
-				parseObj(item.m_objDesc.m_srcPath);
+				parseObj(item.m_objDesc.m_srcPath, result);
 			}
 		}
 	}
 
-	void LoadMeshJob::parseObj(const std::string& path)
+	void LoadMeshJob::parseObj(const std::string& path, JobResult& result)
 	{
 		int dotPos = path.find_last_of('.');
 		if (dotPos == std::string::npos)
@@ -62,30 +64,31 @@ namespace Pionner
 			return;
 		}
 		LOG_DEBUG("start to load obj from[%s]", path.c_str());
-		processNode(scene->mRootNode, scene);
+		processNode(scene->mRootNode, scene, result);
 		LOG_DEBUG("finish loading obj[%s]", path.c_str());
 	}
 
-	void LoadMeshJob::processNode(aiNode* node, const aiScene* scene)
+	void LoadMeshJob::processNode(aiNode* node, const aiScene* scene, JobResult& result)
 	{
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			if (mesh != nullptr)
 			{
-				processMesh(mesh, scene);
+				processMesh(mesh, scene, result);
 			}
 		}
 
 		// process the children for current node
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			processNode(node->mChildren[i], scene);
+			processNode(node->mChildren[i], scene, result);
 		}
 	}
 
-	void LoadMeshJob::processMesh(aiMesh* mesh, const aiScene* scene)
+	void LoadMeshJob::processMesh(aiMesh* mesh, const aiScene* scene, JobResult& result)
 	{
+
 	}
 
 }
