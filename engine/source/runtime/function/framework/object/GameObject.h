@@ -10,6 +10,7 @@
 namespace Pionner
 {
 	class Component;
+	class EventSlot;
 
 	class GameObject
 	{
@@ -26,6 +27,7 @@ namespace Pionner
 		bool hasComponent(ComponentType type);
 
 		void tick(float delta);
+		void tickLogicEvent(const std::shared_ptr<EventSlot> &slot);
 
 	protected:
 		static std::atomic<uint32_t> g_objectId;

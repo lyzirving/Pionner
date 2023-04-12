@@ -1,5 +1,6 @@
 #include "function/framework/object/GameObject.h"
 #include "function/framework/components/Component.h"
+#include "function/framework/event/EventDef.h"
 
 namespace Pionner
 {
@@ -55,6 +56,14 @@ namespace Pionner
 		{
 			if (m_components[i])
 				m_components[i]->tick(delta);
+		}
+	}
+
+	void GameObject::tickLogicEvent(const std::shared_ptr<EventSlot>& slot)
+	{
+		if (hasComponent(slot->m_comp->getType()))
+		{
+			slot->m_comp->tickLogicEvent(slot->m_type, slot->m_arg);
 		}
 	}
 }

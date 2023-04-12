@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "function/framework/components/ComponentDef.h"
+#include "function/framework/event/EventDef.h"
 
 namespace Pionner
 {
@@ -20,6 +21,7 @@ namespace Pionner
 
 		virtual void postLoadResource(const std::weak_ptr<GameObject>& parent);
 		virtual void tick(float delta);
+		virtual void tickLogicEvent(EventType type, const std::shared_ptr<EventArg> &arg);
 
 	protected:
 		std::weak_ptr<GameObject> m_parent;
