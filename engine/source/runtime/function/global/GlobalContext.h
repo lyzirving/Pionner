@@ -8,6 +8,7 @@ namespace Pionner
 	class WindowSystem;
 	class RenderSystem;
 	class AssetsSystem;
+	class EventSystem;
 
 	class GlobalContext
 	{
@@ -22,6 +23,7 @@ namespace Pionner
 		std::shared_ptr<WindowSystem> m_windowSystem;
 		std::shared_ptr<RenderSystem> m_renderSystem;
 		std::shared_ptr<AssetsSystem> m_assetsSystem;
+		std::shared_ptr<EventSystem>  m_eventSystem;
 	};
 
 	extern GlobalContext g_runtimeCtx;

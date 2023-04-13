@@ -4,11 +4,18 @@
 #include <vector>
 #include "function/framework/components/Component.h"
 #include "function/framework/job/Job.h"
+#include "function/framework/event/EventDef.h"
 
 namespace Pionner
 {
 	struct GameObjPartDesc;
 	class  RenderEntity;
+
+	class MeshEventArg : public EventArg
+	{
+	public:
+		std::vector<std::shared_ptr<RenderEntity>> m_entities;
+	};
 
 	class MeshComponent : public Component, public JobObserver
 	{

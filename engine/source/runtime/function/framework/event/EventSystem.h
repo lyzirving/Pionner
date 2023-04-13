@@ -2,6 +2,7 @@
 #define __EVENT_SYSTEM_H__
 
 #include <vector>
+#include <atomic>
 #include <memory>
 
 #include "function/framework/event/EventDef.h"
@@ -20,10 +21,11 @@ namespace Pionner
 
 		void addEvent(const std::shared_ptr<GameObject>& obj, const std::shared_ptr<EventSlot> &slot);
 		void clear();
-		void tick();
+		void tickLogic(float delta);
 
 	private:
-		std::vector<SLOT> m_events;
+		std::vector<SLOT> m_logicEvents;
+		std::atomic<bool> m_tickingLogic;
 	};
 }
 

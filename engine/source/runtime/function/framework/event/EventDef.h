@@ -25,6 +25,9 @@ namespace Pionner
 	{
 	public:
 		EventSlot() : m_comp(nullptr), m_arg(nullptr), m_type(EVT_INVALID) {}
+		EventSlot(EventType type, const std::shared_ptr<Component> &comp, const std::shared_ptr<EventArg> &arg) 
+			: m_comp(comp), m_arg(arg), m_type(type) {}
+
 		~EventSlot()
 		{
 			m_comp.reset();

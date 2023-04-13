@@ -3,7 +3,8 @@
 
 namespace Pionner
 {
-	EventSystem::EventSystem() : m_events()
+	EventSystem::EventSystem() : m_logicEvents()
+		                       , m_tickingLogic(false)
 	{
 	}
 
@@ -14,30 +15,41 @@ namespace Pionner
 
 	void EventSystem::addEvent(const std::shared_ptr<GameObject>& obj, const std::shared_ptr<EventSlot>& slot)
 	{
+		if (m_tickingLogic.load())
+		{
+
+		}
+		else
+		{
+			SLOT logicEvent = std::pair<std::shared_ptr<GameObject>, std::shared_ptr<EventSlot>>{ obj, slot };
+			m_logicEvents.push_back(std::move(logicEvent));
+		}
 	}
 
 	void EventSystem::clear()
 	{
-		auto itr = m_events.begin();
-		while (itr != m_events.end())
+		auto itr = m_logicEvents.begin();
+		while (itr != m_logicEvents.end())
 		{
 			(*itr).first.reset();
 			(*itr).second.reset();
-			itr = m_events.erase(itr);
+			itr = m_logicEvents.erase(itr);
 		}
 	}
 
-	void EventSystem::tick()
+	void EventSystem::tickLogic(float delta)
 	{
-		while (!m_events.empty())
+		m_tickingLogic.store(true);
+		while (!m_logicEvents.empty())
 		{
-			auto &evt = m_events.back();
+			auto &evt = m_logicEvents.back();
 			std::shared_ptr<GameObject>& object = evt.first;
 			std::shared_ptr<EventSlot>& slot = evt.second;
 			object->tickLogicEvent(slot);
 			object.reset();
 			slot.reset();
-			m_events.pop_back();
+			m_logicEvents.pop_back();
 		}
+		m_tickingLogic.store(false);
 	}
 }

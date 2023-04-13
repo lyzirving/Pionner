@@ -4,6 +4,8 @@
 #include "function/global/GlobalContext.h"
 #include "function/framework/assets/AssetsSystem.h"
 #include "function/framework/components/mesh/LoadMeshJob.h"
+#include "function/framework/object/GameObject.h"
+#include "function/framework/event/EventSystem.h"
 
 namespace Pionner
 {
@@ -55,7 +57,17 @@ namespace Pionner
     // this method is called in data parsing thread
     void MeshComponent::onJobEnd(JobResult& result)
     {
+        std::shared_ptr<GameObject> parent = m_parent.lock();
+        if (parent && !result.entities.empty())
+        {
+            std::shared_ptr<Component> comp = parent->getComponent(CMP_MESH);
+            std::shared_ptr<EventArg>  arg = std::shared_ptr<EventArg>(new MeshEventArg);
+            MeshEventArg* meshArg = static_cast<MeshEventArg *>(arg.get());
+            meshArg->m_entities.swap(result.entities);
 
+            std::shared_ptr<EventSlot> slot = std::make_shared<EventSlot>(EVT_MESH_ADD, comp, arg);
+            g_runtimeCtx.m_eventSystem->addEvent(parent, slot);
+        }
     }
 
     void MeshComponent::MeshCompData::clear()

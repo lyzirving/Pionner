@@ -6,6 +6,8 @@
 #include "function/render/WindowSystem.h"
 #include "function/render/RenderSystem.h"
 
+#include "function/framework/event/EventSystem.h"
+
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -88,6 +90,7 @@ namespace Pionner
 
 	void Engine::tickLogic(float deltaTime)
 	{
+		g_runtimeCtx.m_eventSystem->tickLogic(deltaTime);
 		// TODO: to be implemented
 	}
 

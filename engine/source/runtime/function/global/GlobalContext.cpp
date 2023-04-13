@@ -1,7 +1,9 @@
 #include "function/global/GlobalContext.h"
 #include "function/render/WindowSystem.h"
 #include "function/render/RenderSystem.h"
+
 #include "function/framework/assets/AssetsSystem.h"
+#include "function/framework/event/EventSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -37,10 +39,15 @@ namespace Pionner
 
 		m_assetsSystem = std::make_shared<AssetsSystem>();
 		m_assetsSystem->initialize();
+
+		m_eventSystem = std::make_shared<EventSystem>();
 	}
 
 	void GlobalContext::shutdownSystems()
 	{
+		if (m_eventSystem)
+			m_eventSystem.reset();
+
 		if (m_assetsSystem)
 		{
 			m_assetsSystem->shutdown();
