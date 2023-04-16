@@ -18,9 +18,11 @@ namespace Pionner
 		std::vector<uint32_t>().swap(m_indices);
 	}
 
-	RenderEntity::RenderEntity() : m_entityId(g_entityId++), m_childNum(0)
+	RenderEntity::RenderEntity() : m_type(ENTITY_NONE)
+		                         , m_entityId(g_entityId++), m_childNum(0)
 		                         , m_parts()
 		                         , m_children()
+		                         , m_parent()
 	{
 	}
 
@@ -39,5 +41,6 @@ namespace Pionner
 			(*itr1).reset();
 			itr1 = m_children.erase(itr1);
 		}
+		m_parent.reset();
 	}
 }

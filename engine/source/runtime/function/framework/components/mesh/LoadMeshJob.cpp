@@ -83,6 +83,7 @@ namespace Pionner
 		}
 		LOG_DEBUG("start to load obj from[%s]", path.c_str());
 		root = std::shared_ptr<RenderEntity>(new RenderEntity);
+		root->m_type = ENTITY_MODEL;
 		processNode(scene->mRootNode, scene, rootDir, root);
 		LOG_DEBUG("finish loading obj[%s]", path.c_str());
 	}
@@ -105,6 +106,8 @@ namespace Pionner
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
 			std::shared_ptr<RenderEntity> child = std::shared_ptr<RenderEntity>(new RenderEntity);
+			child->m_type = entity->m_type;
+			child->m_parent = entity;
 			entity->m_children.push_back(child);
 			processNode(node->mChildren[i], scene, rootDir, child);
 		}
@@ -160,18 +163,21 @@ namespace Pionner
 					mt->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
 					part->m_material.m_type = MAT_DIFFUSE;
 					part->m_material.m_path = rootDir + '/' + texName.C_Str();
+					part->m_material.loadRawData();
 				}
 				else if (mt->GetTextureCount(aiTextureType_SPECULAR) > 0)
 				{
 					mt->GetTexture(aiTextureType_SPECULAR, 0, &texName);
 					part->m_material.m_type = MAT_SPECULAR;
 					part->m_material.m_path = rootDir + '/' + texName.C_Str();
+					part->m_material.loadRawData();
 				}
 				else if (mt->GetTextureCount(aiTextureType_AMBIENT) > 0)
 				{
 					mt->GetTexture(aiTextureType_AMBIENT, 0, &texName);
 					part->m_material.m_type = MAT_AMBIENT;
 					part->m_material.m_path = rootDir + '/' + texName.C_Str();
+					part->m_material.loadRawData();
 				}
 
 				aiColor3D color;

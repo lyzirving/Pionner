@@ -33,10 +33,12 @@ namespace Pionner
 		RenderEntity();
 		~RenderEntity();
 
-		uint32_t  m_entityId;
-		uint32_t  m_childNum;
+		EntityType m_type;
+ 		uint32_t   m_entityId;
+		uint32_t   m_childNum;
 		std::vector<std::shared_ptr<EntityPart>>   m_parts;
 		std::vector<std::shared_ptr<RenderEntity>> m_children;
+		std::weak_ptr<RenderEntity>                m_parent;
 
 	private:
 		static uint32_t g_entityId;
