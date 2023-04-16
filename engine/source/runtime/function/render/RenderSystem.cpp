@@ -1,7 +1,7 @@
 #include "function/render/RenderSystem.h"
 #include "function/render/interface/opengl/RhiOpenGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
-
+#include "function/render/swap/SwapContext.h"
 #include "function/render/WindowSystem.h"
 
 #include "function/ui/WindowUI.h"
@@ -57,6 +57,14 @@ namespace Pionner
 		{
 			m_rhi->shutdown();
 			m_rhi.reset();
+		}
+	}
+
+	void RenderSystem::processSwapData(const SwapData& data)
+	{
+		if (!data.m_entities.empty())
+		{
+
 		}
 	}
 

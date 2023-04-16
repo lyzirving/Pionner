@@ -59,11 +59,11 @@ namespace Pionner
 		}
 	}
 
-	void GameObject::tickLogicEvent(const std::shared_ptr<EventSlot>& slot)
+	void GameObject::tickLogicEvent(float delta, const std::shared_ptr<EventSlot>& slot)
 	{
 		if (hasComponent(slot->m_comp->getType()))
 		{
-			slot->m_comp->tickLogicEvent(slot->m_type, slot->m_arg);
+			slot->m_comp->tickLogicEvent(delta, slot->m_type, slot->m_arg);
 		}
 	}
 }

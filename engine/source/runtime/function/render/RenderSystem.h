@@ -5,6 +5,8 @@
 
 namespace Pionner
 {
+	struct SwapData;
+
 	class RenderSystem
 	{
 	public:
@@ -15,6 +17,8 @@ namespace Pionner
 		void initializeUIRenderBackend(WindowUI *windowUI);
 		void shutdownUIRenderBackend();
 		void shutdown();
+
+		void processSwapData(const SwapData &data);
 
 		void tick(float delta);
 

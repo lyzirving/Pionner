@@ -25,6 +25,7 @@ namespace Pionner
 
 	private:
 		std::vector<SLOT> m_logicEvents;
+		std::vector<SLOT> m_tmpEvents;
 		std::atomic<bool> m_tickingLogic;
 	};
 }

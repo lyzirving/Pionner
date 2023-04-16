@@ -25,7 +25,7 @@ namespace Pionner
 
 		virtual void postLoadResource(const std::weak_ptr<GameObject>& parent) override;
 		virtual void tick(float delta) override;
-		virtual void tickLogicEvent(EventType type, const std::shared_ptr<EventArg>& arg) override;
+		virtual void tickLogicEvent(float delta, EventType type, const std::shared_ptr<EventArg>& arg) override;
 		virtual void onJobEnd(JobResult& result) override;
 
 	private:

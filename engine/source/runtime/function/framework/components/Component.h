@@ -21,7 +21,7 @@ namespace Pionner
 
 		virtual void postLoadResource(const std::weak_ptr<GameObject>& parent);
 		virtual void tick(float delta);
-		virtual void tickLogicEvent(EventType type, const std::shared_ptr<EventArg> &arg);
+		virtual void tickLogicEvent(float delta, EventType type, const std::shared_ptr<EventArg> &arg);
 
 	protected:
 		std::weak_ptr<GameObject> m_parent;

@@ -5,6 +5,7 @@
 #include "function/global/GlobalContext.h"
 #include "function/render/WindowSystem.h"
 #include "function/render/RenderSystem.h"
+#include "function/render/swap/SwapContext.h"
 
 #include "function/framework/event/EventSystem.h"
 
@@ -96,6 +97,11 @@ namespace Pionner
 
 	void Engine::tickRender(float deltaTime)
 	{
+		if (g_runtimeCtx.m_swapContext->needSwap())
+		{
+			g_runtimeCtx.m_swapContext->swapData();
+			g_runtimeCtx.m_renderSystem->processSwapData(g_runtimeCtx.m_swapContext->renderData());
+		}
 		g_runtimeCtx.m_renderSystem->tick(deltaTime);
 	}
 }

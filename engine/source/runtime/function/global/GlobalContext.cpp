@@ -1,6 +1,7 @@
 #include "function/global/GlobalContext.h"
 #include "function/render/WindowSystem.h"
 #include "function/render/RenderSystem.h"
+#include "function/render/swap/SwapContext.h"
 
 #include "function/framework/assets/AssetsSystem.h"
 #include "function/framework/event/EventSystem.h"
@@ -19,6 +20,8 @@ namespace Pionner
 	GlobalContext::GlobalContext() : m_windowSystem(nullptr)
 		                           , m_renderSystem(nullptr) 
 		                           , m_assetsSystem(nullptr)
+		                           , m_eventSystem(nullptr)
+		                           , m_swapContext(nullptr)
 	{
 	}
 
@@ -41,10 +44,15 @@ namespace Pionner
 		m_assetsSystem->initialize();
 
 		m_eventSystem = std::make_shared<EventSystem>();
+
+		m_swapContext = std::make_shared<SwapContext>();
 	}
 
 	void GlobalContext::shutdownSystems()
 	{
+		if (m_swapContext)
+			m_swapContext.reset();
+
 		if (m_eventSystem)
 			m_eventSystem.reset();
 

@@ -26,7 +26,7 @@ namespace Pionner
 	{
 	}
 
-	void Component::tickLogicEvent(EventType type, const std::shared_ptr<EventArg>& arg)
+	void Component::tickLogicEvent(float delta, EventType type, const std::shared_ptr<EventArg>& arg)
 	{
 	}
 
