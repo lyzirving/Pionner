@@ -1,6 +1,7 @@
 #include "function/render/RenderSystem.h"
 #include "function/render/interface/opengl/RhiOpenGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
+#include "function/render/scene/RenderScene.h"
 #include "function/render/swap/SwapContext.h"
 #include "function/render/WindowSystem.h"
 
@@ -17,6 +18,7 @@ namespace Pionner
 {
 	RenderSystem::RenderSystem() : m_rhi(nullptr)
 		                         , m_pipeLine(nullptr)
+		                         , m_scene(nullptr)
 	{
 	}
 
@@ -33,6 +35,9 @@ namespace Pionner
 		m_pipeLine->m_rhi = m_rhi;
 		RenderPipelineInitInfo pipelineInfo;
 		m_pipeLine->initialize(pipelineInfo);
+
+		m_scene = std::make_shared<RenderScene>(m_rhi);
+		m_scene->initialize();
 	}
 
 	void RenderSystem::initializeUIRenderBackend(WindowUI* windowUI)
@@ -47,6 +52,12 @@ namespace Pionner
 
 	void RenderSystem::shutdown()
 	{
+		if (m_scene)
+		{
+			m_scene->shutdown();
+			m_scene.reset();
+		}
+
 		if (m_pipeLine)
 		{
 			m_pipeLine->shutdown();

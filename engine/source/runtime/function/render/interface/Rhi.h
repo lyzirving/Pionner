@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-#include "function/render/interface/RhiStruct.h"
+#include "function/render/interface/RhiDef.h"
 
 struct GLFWwindow;
 

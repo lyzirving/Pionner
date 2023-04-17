@@ -6,6 +6,7 @@
 namespace Pionner
 {
 	struct SwapData;
+	class  RenderScene;
 
 	class RenderSystem
 	{
@@ -23,9 +24,9 @@ namespace Pionner
 		void tick(float delta);
 
 	private:
-		std::shared_ptr<Rhi> m_rhi;
-
+		std::shared_ptr<Rhi>                m_rhi;
 		std::shared_ptr<RenderPipelineBase> m_pipeLine;
+		std::shared_ptr<RenderScene>        m_scene;
 	};
 }
 

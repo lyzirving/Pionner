@@ -1,5 +1,5 @@
-#ifndef __RHI_STRUCT_H__
-#define __RHI_STRUCT_H__
+#ifndef __RHI_DEF_H__
+#define __RHI_DEF_H__
 
 #include <memory>
 
