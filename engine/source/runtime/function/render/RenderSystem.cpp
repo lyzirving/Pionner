@@ -17,14 +17,14 @@
 namespace Pionner
 {
 	RenderSystem::RenderSystem() : m_rhi(nullptr)
-		                         , m_pipeLine(nullptr)
-		                         , m_scene(nullptr)
+		, m_pipeLine(nullptr)
+		, m_scene(nullptr)
 	{
 	}
 
 	RenderSystem::~RenderSystem() = default;
 
-	void RenderSystem::initialize(RenderSystemInitInfo& info)
+	void RenderSystem::initialize(RenderSystemInitInfo &info)
 	{
 		OpenGLRhiInitInfo rhiInfo;
 		rhiInfo.window = info.window;
@@ -36,11 +36,11 @@ namespace Pionner
 		RenderPipelineInitInfo pipelineInfo;
 		m_pipeLine->initialize(pipelineInfo);
 
-		m_scene = std::make_shared<RenderScene>(m_rhi);
-		m_scene->initialize();
+		m_scene = std::make_shared<RenderScene>();
+		m_scene->initialize(m_rhi);
 	}
 
-	void RenderSystem::initializeUIRenderBackend(WindowUI* windowUI)
+	void RenderSystem::initializeUIRenderBackend(WindowUI *windowUI)
 	{
 		m_pipeLine->initializeUIRenderBackend(windowUI);
 	}
@@ -71,7 +71,7 @@ namespace Pionner
 		}
 	}
 
-	void RenderSystem::processSwapData(const SwapData& data)
+	void RenderSystem::processSwapData(const SwapData &data)
 	{
 		if (!data.m_entities.empty())
 		{
@@ -83,6 +83,6 @@ namespace Pionner
 	{
 		m_pipeLine->preparePassData();
 
-		m_pipeLine->forwardRender();
+		m_pipeLine->forwardRender(m_scene);
 	}
 }

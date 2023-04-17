@@ -11,7 +11,7 @@ namespace Pionner
 		RhiOpenGL();
 		virtual ~RhiOpenGL();
 
-		virtual void initialize(void* param) override;
+		virtual void initialize(void *param) override;
 		virtual void initUIRenderBackend() override;
 		virtual void shutdownUIRenderBackend() override;
 		virtual void shutdown() override;
@@ -20,9 +20,6 @@ namespace Pionner
 
 	protected:
 		virtual void createInstance() override;
-
-	private:
-		glm::vec3 m_clearColor;
 	};
 }
 

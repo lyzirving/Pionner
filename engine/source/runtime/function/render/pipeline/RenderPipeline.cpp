@@ -1,4 +1,5 @@
 #include "function/render/pipeline/RenderPipeline.h"
+#include "function/render/scene/RenderScene.h"
 #include "function/render/interface/Rhi.h"
 #include "function/render/pass/UIPass.h"
 
@@ -10,7 +11,7 @@ namespace Pionner
 
 	RenderPipeline::~RenderPipeline() = default;
 
-	void RenderPipeline::initialize(RenderPipelineInitInfo& info)
+	void RenderPipeline::initialize(RenderPipelineInitInfo &info)
 	{
 		RenderPassCommonInfo passCommon;
 		passCommon.rhi = m_rhi;
@@ -32,9 +33,12 @@ namespace Pionner
 		m_uiPass->shutdown();
 	}
 
-	void RenderPipeline::forwardRender()
+	void RenderPipeline::forwardRender(const std::shared_ptr<RenderScene> &scene)
 	{
 		m_rhi->viewportFull();
+
+		if (scene)
+			scene->forwardRender();
 
 		m_uiPass->draw();
 	}

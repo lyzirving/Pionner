@@ -1,5 +1,5 @@
 #include "function/render/scene/RenderScene.h"
-#include "function/render/scene/layer/RenderLayer.h"
+#include "function/render/scene/layer/ClearLayer.h"
 #include "function/render/interface/Rhi.h"
 
 #include "core/log/LogSystem.h"
@@ -11,12 +11,27 @@
 
 namespace Pionner
 {
-	RenderScene::RenderScene(const std::shared_ptr<Rhi>& rhi) 
-		: m_rhi(rhi), m_layers()
+	RenderScene::RenderScene() : m_rhi(nullptr), m_layers()
 	{
 	}
 
 	RenderScene::~RenderScene()
+	{
+		shutdown();
+	}
+
+	void RenderScene::initialize(const std::shared_ptr<Rhi> &rhi)
+	{
+		m_rhi = rhi;
+
+		for (uint8_t type = 0; type < LAYER_COUNT; type++)
+		{
+			std::shared_ptr<RenderLayer> layer = createLayer(SceneLayerType(type), m_rhi);
+			if (layer) m_layers[type] = layer;
+		}
+	}
+
+	void RenderScene::shutdown()
 	{
 		for (uint8_t i = 0; i < LAYER_COUNT; i++)
 		{
@@ -25,34 +40,31 @@ namespace Pionner
 		m_rhi.reset();
 	}
 
-	void RenderScene::initialize()
+	void RenderScene::forwardRender()
 	{
-		/*for (uint8_t type = 0; type < LAYER_COUNT; type++)
+		for (uint8_t type = 0; type < LAYER_COUNT; type++)
 		{
-			std::shared_ptr<RenderLayer> layer = createLayer(SceneLayerType(type));
-			if (layer) m_layers[type] = layer;
-		}*/
+			if (m_layers[type])
+				m_layers[type]->draw();
+		}
 	}
 
-	void RenderScene::shutdown()
+	std::shared_ptr<RenderLayer> RenderScene::createLayer(SceneLayerType type, const std::shared_ptr<Rhi> &rhi)
 	{
-	}
-
-	std::shared_ptr<RenderLayer> RenderScene::createLayer(SceneLayerType type)
-	{
+		std::shared_ptr<RenderLayer> layer{ nullptr };
 		switch (type)
 		{
-		case Pionner::LAYER_CLEAR:
-			break;
-		case Pionner::LAYER_MODEL:
-			break;
-		case Pionner::LAYER_COUNT:
-		default:
-		{
-			LOG_ERR("invalid type[%u] for layer", type);
-			return std::shared_ptr<RenderLayer>();
+			case Pionner::LAYER_CLEAR:
+				layer = std::shared_ptr<RenderLayer>(new ClearLayer(rhi));
+				break;
+			case Pionner::LAYER_MODEL:
+				break;
+			case Pionner::LAYER_COUNT:
+			default:
+				LOG_ERR("invalid type[%u] for layer", type);
+				break;
 		}
-		}
+		return layer;
 	}
 
 }

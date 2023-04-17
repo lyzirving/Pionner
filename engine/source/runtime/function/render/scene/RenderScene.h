@@ -13,14 +13,16 @@ namespace Pionner
 	class RenderScene
 	{
 	public:
-		RenderScene(const std::shared_ptr<Rhi> &rhi);
+		RenderScene();
 		~RenderScene();
 
-		void initialize();
+		void initialize(const std::shared_ptr<Rhi> &rhi);
 		void shutdown();
 
+		void forwardRender();
+
 	private:
-		std::shared_ptr<RenderLayer> createLayer(SceneLayerType type);
+		static std::shared_ptr<RenderLayer> createLayer(SceneLayerType type, const std::shared_ptr<Rhi> &rhi);
 
 	private:
 		std::shared_ptr<Rhi>         m_rhi;

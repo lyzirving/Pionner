@@ -5,6 +5,8 @@
 
 namespace Pionner
 {
+	class RenderScene;
+
 	class RenderPipelineBase
 	{
 		friend class RenderSystem;
@@ -16,7 +18,7 @@ namespace Pionner
 		virtual void initialize(RenderPipelineInitInfo &info) = 0;
 		virtual void shutdown() = 0;
 
-		virtual void forwardRender();
+		virtual void forwardRender(const std::shared_ptr<RenderScene> &scene);
 		virtual void initializeUIRenderBackend(WindowUI *ui);
 		virtual void shutdownUIRenderBackend();
 		virtual void preparePassData();

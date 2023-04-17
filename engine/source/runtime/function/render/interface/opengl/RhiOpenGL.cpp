@@ -18,7 +18,6 @@
 namespace Pionner
 {
 	RhiOpenGL::RhiOpenGL() : Rhi()
-		                   , m_clearColor(1.f)
 	{
 	}
 
@@ -28,10 +27,10 @@ namespace Pionner
 
 	void RhiOpenGL::initialize(void *param)
 	{
-		OpenGLRhiInitInfo* info = (OpenGLRhiInitInfo*)param;
+		OpenGLRhiInitInfo *info = (OpenGLRhiInitInfo *)param;
 		m_window = info->window;
 
-		m_viewport = {0.f, 0.f, float(m_window->getWidth()), float(m_window->getHeight()), 0.f, 1.f};
+		m_viewport = { 0.f, 0.f, float(m_window->getWidth()), float(m_window->getHeight()), 0.f, 1.f };
 
 		createInstance();
 	}
@@ -43,14 +42,14 @@ namespace Pionner
 			LOG_FATAL("rhi's window is invalid");
 			assert(0);
 		}
-		const char* version{ "#version 430" };
+		const char *version{ "#version 430" };
 		bool ret0 = ImGui_ImplOpenGL3_Init(version);
 		bool ret1 = ImGui_ImplGlfw_InitForOpenGL(m_window->getWindow(), true);
 
 		if (!ret0 || !ret1)
 		{
 			LOG_FATAL("fail to init ui render backend, imgui for opengl[%s], imgui glfw[%s]"
-			          , ret0 ? "true" : "false", ret1 ? "true" : "false");
+					  , ret0 ? "true" : "false", ret1 ? "true" : "false");
 			assert(0);
 		}
 
@@ -85,7 +84,5 @@ namespace Pionner
 	void RhiOpenGL::viewportFull()
 	{
 		glViewport((GLint)m_viewport.x, (GLint)m_viewport.y, (GLint)m_viewport.width, (GLint)m_viewport.height);
-		glClearColor(m_clearColor.x, m_clearColor.y, m_clearColor.z, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }

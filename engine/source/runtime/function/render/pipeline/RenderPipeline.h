@@ -11,11 +11,11 @@ namespace Pionner
 		RenderPipeline();
 		virtual ~RenderPipeline();
 
-		virtual void initialize(RenderPipelineInitInfo& info) override;
+		virtual void initialize(RenderPipelineInitInfo &info) override;
 		virtual void shutdownUIRenderBackend() override;
 		virtual void shutdown() override;
 
-		virtual void forwardRender() override;
+		virtual void forwardRender(const std::shared_ptr<RenderScene> &scene) override;
 	};
 }
 

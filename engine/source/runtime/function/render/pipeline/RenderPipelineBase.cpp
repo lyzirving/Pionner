@@ -1,12 +1,13 @@
 #include "function/render/pipeline/RenderPipelineBase.h"
 #include "function/render/interface/Rhi.h"
 #include "function/render/pass/RenderPassBase.h"
+#include "function/render/scene/RenderScene.h"
 
 #include "function/ui/WindowUI.h"
 
 namespace Pionner
 {
-	RenderPipelineBase::RenderPipelineBase() 
+	RenderPipelineBase::RenderPipelineBase()
 		: m_rhi(nullptr)
 		, m_uiPass(nullptr)
 		, m_mainCameraPass(nullptr)
@@ -20,13 +21,13 @@ namespace Pionner
 		m_rhi.reset();
 	}
 
-	void RenderPipelineBase::forwardRender()
+	void RenderPipelineBase::forwardRender(const std::shared_ptr<RenderScene> &scene)
 	{
 	}
 
 	void RenderPipelineBase::initializeUIRenderBackend(WindowUI *ui)
 	{
-		if(m_uiPass) m_uiPass->initializeUIRenderBackend(ui);
+		if (m_uiPass) m_uiPass->initializeUIRenderBackend(ui);
 	}
 
 	void RenderPipelineBase::shutdownUIRenderBackend()
