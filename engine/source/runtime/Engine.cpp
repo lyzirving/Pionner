@@ -21,8 +21,8 @@ namespace Pionner
 	const float Engine::s_fpsAlpha = 1.f / 100.f;
 
 	Engine::Engine() : m_lastTickTimePoint(std::chrono::steady_clock::now())
-					 , m_averageDuration(0.f)
-					 , m_frameCnt(0), m_fps(0)
+		, m_averageDuration(0.f)
+		, m_frameCnt(0), m_fps(0)
 	{
 	}
 
@@ -59,7 +59,7 @@ namespace Pionner
 
 	float Engine::calculateDeltaTime()
 	{
-		float deltaTime{0.f};
+		float deltaTime{ 0.f };
 		{
 			using namespace std::chrono;
 
@@ -100,7 +100,9 @@ namespace Pionner
 		if (g_runtimeCtx.m_swapContext->needSwap())
 		{
 			g_runtimeCtx.m_swapContext->swapData();
-			g_runtimeCtx.m_renderSystem->processSwapData(g_runtimeCtx.m_swapContext->renderData());
+			SwapData &data = g_runtimeCtx.m_swapContext->renderData();
+			g_runtimeCtx.m_renderSystem->processSwapData(data);
+			data.clear();
 		}
 		g_runtimeCtx.m_renderSystem->tick(deltaTime);
 	}

@@ -12,6 +12,23 @@ namespace Pionner
 		ENTITY_TYPE_COUNT
 	};
 
+	enum DrawOrder : uint8_t
+	{
+		ORDER_TOP,
+		ORDER_HIGH_0,
+		ORDER_HIGH_1,
+		ORDER_HIGH_2,
+		ORDER_MIDDLE_3,
+		ORDER_MIDDLE_4,
+		ORDER_MIDDLE_5,
+		ORDER_MIDDLE_6,
+		ORDER_MIDDLE_7,
+		ORDER_LOW_8,
+		ORDER_LOW_9,
+		ORDER_LOW_10,
+		ORDER_COUNT
+	};
+
 	struct Vertex
 	{
 		glm::vec3 pos;

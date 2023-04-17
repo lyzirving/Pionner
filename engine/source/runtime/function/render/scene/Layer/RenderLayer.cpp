@@ -2,7 +2,7 @@
 
 namespace Pionner
 {
-	RenderLayer::RenderLayer(const std::shared_ptr<Rhi>& rhi)
+	RenderLayer::RenderLayer(const std::shared_ptr<Rhi> &rhi)
 		: m_rhi(rhi)
 	{
 	}
@@ -10,6 +10,10 @@ namespace Pionner
 	RenderLayer::~RenderLayer()
 	{
 		m_rhi.reset();
+	}
+
+	void RenderLayer::clear()
+	{
 	}
 
 }

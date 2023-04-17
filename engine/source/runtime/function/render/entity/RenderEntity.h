@@ -34,7 +34,8 @@ namespace Pionner
 		~RenderEntity();
 
 		EntityType m_type;
- 		uint32_t   m_entityId;
+		DrawOrder  m_order;
+		uint32_t   m_entityId;
 		uint32_t   m_childNum;
 		std::vector<std::shared_ptr<EntityPart>>   m_parts;
 		std::vector<std::shared_ptr<RenderEntity>> m_children;

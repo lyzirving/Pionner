@@ -2,6 +2,7 @@
 #define __RENDER_SCENE_H__
 
 #include <memory>
+#include <vector>
 
 #include "function/render/scene/RenderSceneDef.h"
 
@@ -9,6 +10,7 @@ namespace Pionner
 {
 	class Rhi;
 	class RenderLayer;
+	class RenderEntity;
 
 	class RenderScene
 	{
@@ -19,6 +21,7 @@ namespace Pionner
 		void initialize(const std::shared_ptr<Rhi> &rhi);
 		void shutdown();
 
+		void addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities);
 		void forwardRender();
 
 	private:

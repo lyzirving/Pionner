@@ -75,7 +75,7 @@ namespace Pionner
 	{
 		if (!data.m_entities.empty())
 		{
-
+			m_scene->addEntities(data.m_entities);
 		}
 	}
 

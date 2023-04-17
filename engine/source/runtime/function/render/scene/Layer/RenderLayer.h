@@ -10,9 +10,10 @@ namespace Pionner
 	class RenderLayer
 	{
 	public:
-		RenderLayer(const std::shared_ptr<Rhi>& rhi);
+		RenderLayer(const std::shared_ptr<Rhi> &rhi);
 		virtual ~RenderLayer();
 
+		virtual void clear();
 		virtual void draw() = 0;
 
 	protected:

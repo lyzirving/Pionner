@@ -7,7 +7,7 @@ namespace Pionner
 	{
 	}
 
-	void SwapData::addEntities(std::vector<std::shared_ptr<RenderEntity>>& entities)
+	void SwapData::addEntities(std::vector<std::shared_ptr<RenderEntity>> &entities)
 	{
 		m_changeFlag.set(SOURCE_RENDER_ENTITY);
 		m_entities.insert(m_entities.end(), entities.begin(), entities.end());
@@ -16,6 +16,7 @@ namespace Pionner
 	void SwapData::clear()
 	{
 		clearEntity();
+		m_changeFlag.reset();
 	}
 
 	void SwapData::clearEntity()
@@ -32,9 +33,9 @@ namespace Pionner
 		}
 	}
 
-	SwapContext::SwapContext() : m_data()   
-		                       , m_logicInd(TYPE_LOGIC)
-		                       , m_renderInd(TYPE_RENDER)
+	SwapContext::SwapContext() : m_data()
+		, m_logicInd(TYPE_LOGIC)
+		, m_renderInd(TYPE_RENDER)
 	{
 		logicData().m_changeFlag.reset();
 		renderData().m_changeFlag.reset();
@@ -48,7 +49,7 @@ namespace Pionner
 
 	bool SwapContext::needSwap()
 	{
-		SwapData& logic = logicData();
+		SwapData &logic = logicData();
 		for (uint8_t src = SOURCE_RENDER_ENTITY; src < SWAP_SOURCE_COUNT; ++src)
 		{
 			if (logic.m_changeFlag.test(src))
@@ -59,7 +60,7 @@ namespace Pionner
 
 	void SwapContext::swapData()
 	{
-		SwapData& render = renderData();
+		SwapData &render = renderData();
 
 		render.m_changeFlag.reset();
 		render.clearEntity();
@@ -67,12 +68,12 @@ namespace Pionner
 		std::swap(m_logicInd, m_renderInd);
 	}
 
-	SwapData& SwapContext::logicData()
+	SwapData &SwapContext::logicData()
 	{
 		return m_data[m_logicInd];
 	}
 
-	SwapData& SwapContext::renderData()
+	SwapData &SwapContext::renderData()
 	{
 		return m_data[m_renderInd];
 	}

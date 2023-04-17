@@ -1,5 +1,7 @@
 #include "function/render/scene/RenderScene.h"
 #include "function/render/scene/layer/ClearLayer.h"
+#include "function/render/scene/layer/ModelLayer.h"
+#include "function/render/entity/RenderEntity.h"
 #include "function/render/interface/Rhi.h"
 
 #include "core/log/LogSystem.h"
@@ -40,6 +42,15 @@ namespace Pionner
 		m_rhi.reset();
 	}
 
+	void RenderScene::addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities)
+	{
+		if (m_layers[LAYER_MODEL])
+		{
+			ModelLayer *layer = (ModelLayer *)(m_layers[LAYER_MODEL].get());
+			layer->addEntities(entities);
+		}
+	}
+
 	void RenderScene::forwardRender()
 	{
 		for (uint8_t type = 0; type < LAYER_COUNT; type++)
@@ -58,6 +69,7 @@ namespace Pionner
 				layer = std::shared_ptr<RenderLayer>(new ClearLayer(rhi));
 				break;
 			case Pionner::LAYER_MODEL:
+				layer = std::shared_ptr<RenderLayer>(new ModelLayer(rhi));
 				break;
 			case Pionner::LAYER_COUNT:
 			default:
