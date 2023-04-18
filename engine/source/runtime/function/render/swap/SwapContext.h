@@ -8,10 +8,10 @@
 namespace Pionner
 {
 	class RenderEntity;
-	
+
 	enum SwapDataSource : uint8_t
 	{
-		SOURCE_RENDER_ENTITY,
+		SOURCE_OBJ_ENTITY,
 		SWAP_SOURCE_COUNT
 	};
 
@@ -25,11 +25,11 @@ namespace Pionner
 	struct SwapData
 	{
 		std::bitset<SWAP_SOURCE_COUNT>             m_changeFlag;
-		std::vector<std::shared_ptr<RenderEntity>> m_entities;
+		std::vector<std::shared_ptr<RenderEntity>> m_objEntities;
 
 		SwapData();
 
-		void addEntities(std::vector<std::shared_ptr<RenderEntity>> &entities);
+		void addObjEntities(std::vector<std::shared_ptr<RenderEntity>> &entities);
 
 		void clear();
 		void clearEntity();
@@ -44,8 +44,8 @@ namespace Pionner
 		bool needSwap();
 		void swapData();
 
-		SwapData& logicData();
-		SwapData& renderData();
+		SwapData &logicData();
+		SwapData &renderData();
 
 	public:
 		SwapData     m_data[2];

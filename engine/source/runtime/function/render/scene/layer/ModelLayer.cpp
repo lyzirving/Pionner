@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "function/render/scene/layer/ModelLayer.h"
 #include "function/render/entity/RenderEntity.h"
 
@@ -27,10 +29,15 @@ namespace Pionner
 
 	void ModelLayer::draw()
 	{
+		if (m_entities.empty())
+			return;
+
 		if (m_needSort)
 		{
 			m_needSort = false;
+			std::sort(m_entities.begin(), m_entities.end(), ModelLayer::entitySorter);
 		}
+
 		for (auto &entity : m_entities)
 		{
 
@@ -44,5 +51,10 @@ namespace Pionner
 			m_entities.insert(m_entities.end(), entities.begin(), entities.end());
 			m_needSort = true;
 		}
+	}
+
+	bool ModelLayer::entitySorter(const std::shared_ptr<RenderEntity> &lhs, const std::shared_ptr<RenderEntity> &rhs)
+	{
+		return lhs->m_order < rhs->m_order;
 	}
 }

@@ -21,6 +21,9 @@ namespace Pionner
 		void addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities);
 
 	private:
+		static bool entitySorter(const std::shared_ptr<RenderEntity> &lhs, const std::shared_ptr<RenderEntity> &rhs);
+
+	private:
 		std::vector<std::shared_ptr<RenderEntity>> m_entities;
 		bool                                       m_needSort;
 	};

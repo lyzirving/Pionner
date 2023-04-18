@@ -20,7 +20,7 @@ namespace Pionner
 			m_window.reset();
 		}
 
-		virtual void initialize(void* param) = 0;
+		virtual void initialize(void *param) = 0;
 		virtual void initUIRenderBackend() = 0;
 		virtual void shutdownUIRenderBackend() = 0;
 		virtual void shutdown() = 0;

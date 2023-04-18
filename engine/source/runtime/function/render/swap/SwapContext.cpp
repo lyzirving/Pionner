@@ -3,14 +3,14 @@
 
 namespace Pionner
 {
-	SwapData::SwapData() : m_changeFlag(), m_entities()
+	SwapData::SwapData() : m_changeFlag(), m_objEntities()
 	{
 	}
 
-	void SwapData::addEntities(std::vector<std::shared_ptr<RenderEntity>> &entities)
+	void SwapData::addObjEntities(std::vector<std::shared_ptr<RenderEntity>> &entities)
 	{
-		m_changeFlag.set(SOURCE_RENDER_ENTITY);
-		m_entities.insert(m_entities.end(), entities.begin(), entities.end());
+		m_changeFlag.set(SOURCE_OBJ_ENTITY);
+		m_objEntities.insert(m_objEntities.end(), entities.begin(), entities.end());
 	}
 
 	void SwapData::clear()
@@ -21,15 +21,15 @@ namespace Pionner
 
 	void SwapData::clearEntity()
 	{
-		if (!m_entities.empty())
+		if (!m_objEntities.empty())
 		{
-			auto itr = m_entities.begin();
-			while (itr != m_entities.end())
+			auto itr = m_objEntities.begin();
+			while (itr != m_objEntities.end())
 			{
 				(*itr).reset();
-				itr = m_entities.erase(itr);
+				itr = m_objEntities.erase(itr);
 			}
-			std::vector<std::shared_ptr<RenderEntity>>().swap(m_entities);
+			std::vector<std::shared_ptr<RenderEntity>>().swap(m_objEntities);
 		}
 	}
 
@@ -50,7 +50,7 @@ namespace Pionner
 	bool SwapContext::needSwap()
 	{
 		SwapData &logic = logicData();
-		for (uint8_t src = SOURCE_RENDER_ENTITY; src < SWAP_SOURCE_COUNT; ++src)
+		for (uint8_t src = SOURCE_OBJ_ENTITY; src < SWAP_SOURCE_COUNT; ++src)
 		{
 			if (logic.m_changeFlag.test(src))
 				return true;

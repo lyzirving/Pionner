@@ -73,9 +73,9 @@ namespace Pionner
 
 	void RenderSystem::processSwapData(const SwapData &data)
 	{
-		if (!data.m_entities.empty())
+		if (!data.m_objEntities.empty())
 		{
-			m_scene->addEntities(data.m_entities);
+			m_scene->addEntities(data.m_objEntities);
 		}
 	}
 
