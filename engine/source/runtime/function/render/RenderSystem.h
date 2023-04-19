@@ -7,6 +7,8 @@ namespace Pionner
 {
 	struct SwapData;
 	class  RenderScene;
+	class  Camera;
+	class  Frustum;
 
 	class RenderSystem
 	{
@@ -27,6 +29,8 @@ namespace Pionner
 		std::shared_ptr<Rhi>                m_rhi;
 		std::shared_ptr<RenderPipelineBase> m_pipeLine;
 		std::shared_ptr<RenderScene>        m_scene;
+		std::shared_ptr<Camera>             m_camera;
+		std::shared_ptr<Frustum>            m_frustum;
 	};
 }
 

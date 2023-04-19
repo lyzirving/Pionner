@@ -16,6 +16,9 @@ namespace Pionner
 		static bool nearZeroF(float val);
 		static bool nearZeroVec3(const glm::vec3 &val);
 
+		static bool equalF(float lhs, float rhs);
+		static bool equalVec3(const glm::vec3 &lhs, const glm::vec3 &rhs);
+
 	private:
 		MathLib() {}
 		~MathLib() = default;

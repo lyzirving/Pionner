@@ -6,6 +6,8 @@
 namespace Pionner
 {
 	class RenderScene;
+	class Camera;
+	class Frustum;
 
 	class RenderPipelineBase
 	{
@@ -18,7 +20,9 @@ namespace Pionner
 		virtual void initialize(RenderPipelineInitInfo &info) = 0;
 		virtual void shutdown() = 0;
 
-		virtual void forwardRender(const std::shared_ptr<RenderScene> &scene);
+		virtual void forwardRender(const std::shared_ptr<RenderScene> &scene,
+								   const std::shared_ptr<Camera> &camera,
+								   const std::shared_ptr<Frustum> &frustum);
 		virtual void initializeUIRenderBackend(WindowUI *ui);
 		virtual void shutdownUIRenderBackend();
 		virtual void preparePassData();

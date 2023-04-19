@@ -1,4 +1,6 @@
 #include "function/render/scene/RenderScene.h"
+#include "function/render/scene/Camera.h"
+#include "function/render/scene/Frustum.h"
 #include "function/render/scene/layer/ClearLayer.h"
 #include "function/render/scene/layer/ModelLayer.h"
 #include "function/render/entity/RenderEntity.h"
@@ -51,12 +53,12 @@ namespace Pionner
 		}
 	}
 
-	void RenderScene::forwardRender()
+	void RenderScene::forwardRender(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Frustum> &frustum)
 	{
 		for (uint8_t type = 0; type < LAYER_COUNT; type++)
 		{
 			if (m_layers[type])
-				m_layers[type]->draw();
+				m_layers[type]->draw(camera);
 		}
 	}
 

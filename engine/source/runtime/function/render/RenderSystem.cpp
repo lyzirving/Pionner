@@ -2,6 +2,8 @@
 #include "function/render/interface/opengl/RhiOpenGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
 #include "function/render/scene/RenderScene.h"
+#include "function/render/scene/Camera.h"
+#include "function/render/scene/Frustum.h"
 #include "function/render/swap/SwapContext.h"
 #include "function/render/WindowSystem.h"
 
@@ -19,6 +21,8 @@ namespace Pionner
 	RenderSystem::RenderSystem() : m_rhi(nullptr)
 		, m_pipeLine(nullptr)
 		, m_scene(nullptr)
+		, m_camera(nullptr)
+		, m_frustum(nullptr)
 	{
 	}
 
@@ -38,6 +42,11 @@ namespace Pionner
 
 		m_scene = std::make_shared<RenderScene>();
 		m_scene->initialize(m_rhi);
+
+		m_camera = std::make_shared<Camera>();
+		m_camera->setPosition(glm::vec3(0.f, 3.f, 5.f));
+
+		m_frustum = std::make_shared<Frustum>();
 	}
 
 	void RenderSystem::initializeUIRenderBackend(WindowUI *windowUI)
@@ -52,6 +61,9 @@ namespace Pionner
 
 	void RenderSystem::shutdown()
 	{
+		m_frustum.reset();
+		m_camera.reset();
+
 		if (m_scene)
 		{
 			m_scene->shutdown();
@@ -83,6 +95,6 @@ namespace Pionner
 	{
 		m_pipeLine->preparePassData();
 
-		m_pipeLine->forwardRender(m_scene);
+		m_pipeLine->forwardRender(m_scene, m_camera, m_frustum);
 	}
 }

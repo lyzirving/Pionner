@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <atomic>
+#include <list>
 
 namespace Pionner
 {
@@ -20,6 +21,25 @@ namespace Pionner
 		void setPosition(float theta, float phi, float r);
 		void setPosition(const glm::vec3 &pos);
 		void setLookAt(const glm::vec3 &lookAt);
+
+		void restoreState();
+		void popState();
+
+	private:
+		struct CameraState
+		{
+			float m_theta, m_phi;
+			float m_radius;
+			float m_viewTheta, m_viewPhi;
+
+			CameraState() : m_theta(0.f), m_phi(0.f), m_radius(0.f), m_viewTheta(0.f), m_viewPhi(0.f)
+			{}
+
+			CameraState(float posTheta, float posPhi, float posRadius, float viewTheta, float viewPhi)
+				: m_theta(posTheta), m_phi(posPhi), m_radius(posRadius)
+				, m_viewTheta(viewTheta), m_viewPhi(viewPhi)
+			{}
+		};
 
 	private:
 		void calcViewMat();
@@ -52,6 +72,8 @@ namespace Pionner
 
 		glm::mat4 m_viewMat;
 		std::atomic<bool> m_dataChange;
+
+		std::list<CameraState> m_stateStack;
 	};
 }
 

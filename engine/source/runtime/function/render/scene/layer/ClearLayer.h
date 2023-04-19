@@ -10,12 +10,12 @@ namespace Pionner
 	class ClearLayer : public RenderLayer
 	{
 	public:
-		ClearLayer(const std::shared_ptr<Rhi>& rhi);
+		ClearLayer(const std::shared_ptr<Rhi> &rhi);
 		virtual ~ClearLayer();
 
-		inline void setColor(const glm::vec3& color) { m_color = color; }
+		inline void setColor(const glm::vec3 &color) { m_color = color; }
 
-		virtual void draw() override;
+		virtual void draw(const std::shared_ptr<Camera> &camera) override;
 
 	private:
 		glm::vec3 m_color;

@@ -1,5 +1,7 @@
 #include "function/render/pipeline/RenderPipeline.h"
 #include "function/render/scene/RenderScene.h"
+#include "function/render/scene/Camera.h"
+#include "function/render/scene/Frustum.h"
 #include "function/render/interface/Rhi.h"
 #include "function/render/pass/UIPass.h"
 
@@ -33,12 +35,14 @@ namespace Pionner
 		m_uiPass->shutdown();
 	}
 
-	void RenderPipeline::forwardRender(const std::shared_ptr<RenderScene> &scene)
+	void RenderPipeline::forwardRender(const std::shared_ptr<RenderScene> &scene,
+									   const std::shared_ptr<Camera> &camera,
+									   const std::shared_ptr<Frustum> &frustum)
 	{
 		m_rhi->viewportFull();
 
 		if (scene)
-			scene->forwardRender();
+			scene->forwardRender(camera, frustum);
 
 		m_uiPass->draw();
 	}

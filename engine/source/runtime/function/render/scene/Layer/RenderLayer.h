@@ -6,6 +6,7 @@
 namespace Pionner
 {
 	class Rhi;
+	class Camera;
 
 	class RenderLayer
 	{
@@ -14,7 +15,7 @@ namespace Pionner
 		virtual ~RenderLayer();
 
 		virtual void clear();
-		virtual void draw() = 0;
+		virtual void draw(const std::shared_ptr<Camera> &camera) = 0;
 
 	protected:
 		std::shared_ptr<Rhi> m_rhi;

@@ -2,6 +2,8 @@
 #include "function/render/interface/Rhi.h"
 #include "function/render/pass/RenderPassBase.h"
 #include "function/render/scene/RenderScene.h"
+#include "function/render/scene/Camera.h"
+#include "function/render/scene/Frustum.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -21,7 +23,9 @@ namespace Pionner
 		m_rhi.reset();
 	}
 
-	void RenderPipelineBase::forwardRender(const std::shared_ptr<RenderScene> &scene)
+	void RenderPipelineBase::forwardRender(const std::shared_ptr<RenderScene> &scene,
+										   const std::shared_ptr<Camera> &camera,
+										   const std::shared_ptr<Frustum> &frustum)
 	{
 	}
 

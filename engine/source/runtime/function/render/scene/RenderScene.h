@@ -11,6 +11,8 @@ namespace Pionner
 	class Rhi;
 	class RenderLayer;
 	class RenderEntity;
+	class Camera;
+	class Frustum;
 
 	class RenderScene
 	{
@@ -22,7 +24,7 @@ namespace Pionner
 		void shutdown();
 
 		void addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities);
-		void forwardRender();
+		void forwardRender(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Frustum> &frustum);
 
 	private:
 		static std::shared_ptr<RenderLayer> createLayer(SceneLayerType type, const std::shared_ptr<Rhi> &rhi);

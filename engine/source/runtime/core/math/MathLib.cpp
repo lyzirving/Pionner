@@ -64,6 +64,7 @@ namespace Pionner
 			}
 		}
 	}
+
 	bool MathLib::nearZeroF(float val)
 	{
 		return std::abs(val) < 1e-3;
@@ -72,5 +73,15 @@ namespace Pionner
 	bool MathLib::nearZeroVec3(const glm::vec3 &val)
 	{
 		return nearZeroF(val.x) && nearZeroF(val.y) && nearZeroF(val.z);
+	}
+
+	bool MathLib::equalF(float lhs, float rhs)
+	{
+		return nearZeroF(lhs - rhs);
+	}
+
+	bool MathLib::equalVec3(const glm::vec3 &lhs, const glm::vec3 &rhs)
+	{
+		return equalF(lhs.x, rhs.x) && equalF(lhs.y, rhs.y) && equalF(lhs.z, rhs.z);
 	}
 }

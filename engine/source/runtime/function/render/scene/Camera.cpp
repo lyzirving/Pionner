@@ -2,7 +2,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "function/render/scene/Camera.h"
+
 #include "core/math/MathLib.h"
+#include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -18,6 +20,7 @@ namespace Pionner
 		, m_theta(theta), m_phi(phi), m_radius(radius)
 		, m_viewTheta(viewTheta), m_viewPhi(viewPhi)
 		, m_viewMat(1.f), m_dataChange(true)
+		, m_stateStack()
 	{
 		// compute view direction at first
 		// camera always look at the origin of world by now
@@ -43,7 +46,8 @@ namespace Pionner
 
 	void Camera::setPosition(float theta, float phi, float r)
 	{
-		bool equal = MathLib::nearZeroF(m_radius - r) && MathLib::nearZeroF(m_theta - theta) && MathLib::nearZeroF(m_phi - phi);
+		bool equal = MathLib::equalF(m_theta, theta) && MathLib::equalF(m_phi, phi)
+			&& MathLib::equalF(m_radius, r);
 		if (!equal)
 		{
 			m_theta = theta;
@@ -56,8 +60,7 @@ namespace Pionner
 
 	void Camera::setPosition(const glm::vec3 &pos)
 	{
-		bool equal = MathLib::nearZeroVec3(m_camPos - pos);
-		if (!equal)
+		if (!MathLib::equalVec3(m_camPos, pos))
 		{
 			glm::vec3 camPosSCS;
 			MathLib::CCStoSCS(pos, camPosSCS);
@@ -78,6 +81,32 @@ namespace Pionner
 		m_viewTheta = out.x;
 		m_viewPhi = out.y;
 		m_dataChange.store(true);
+	}
+
+	void Camera::restoreState()
+	{
+		CameraState state{ m_theta, m_phi, m_radius, m_viewTheta, m_viewPhi };
+		m_stateStack.push_back(state);
+	}
+
+	void Camera::popState()
+	{
+		if (m_stateStack.empty())
+		{
+			LOG_ERR("state stack is empty, err operation");
+			return;
+		}
+		CameraState &state = m_stateStack.front();
+		m_theta = state.m_theta;
+		m_phi = state.m_phi;
+		m_radius = state.m_radius;
+		m_viewTheta = state.m_viewTheta;
+		m_viewPhi = state.m_viewPhi;
+		calcCameraPosition();
+		calcViewDirection();
+		m_dataChange.store(true);
+
+		m_stateStack.pop_front();
 	}
 
 	void Camera::calcViewMat()

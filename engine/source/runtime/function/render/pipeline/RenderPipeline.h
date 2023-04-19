@@ -15,7 +15,9 @@ namespace Pionner
 		virtual void shutdownUIRenderBackend() override;
 		virtual void shutdown() override;
 
-		virtual void forwardRender(const std::shared_ptr<RenderScene> &scene) override;
+		virtual void forwardRender(const std::shared_ptr<RenderScene> &scene,
+								   const std::shared_ptr<Camera> &camera,
+								   const std::shared_ptr<Frustum> &frustum) override;
 	};
 }
 
