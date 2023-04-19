@@ -1,5 +1,5 @@
 #include "function/render/pipeline/RenderPipelineBase.h"
-#include "function/render/interface/Rhi.h"
+#include "function/render/rhi/Rhi.h"
 #include "function/render/pass/RenderPassBase.h"
 #include "function/render/scene/RenderScene.h"
 #include "function/render/scene/Camera.h"

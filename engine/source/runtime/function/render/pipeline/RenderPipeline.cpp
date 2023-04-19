@@ -2,7 +2,7 @@
 #include "function/render/scene/RenderScene.h"
 #include "function/render/scene/Camera.h"
 #include "function/render/scene/Frustum.h"
-#include "function/render/interface/Rhi.h"
+#include "function/render/rhi/Rhi.h"
 #include "function/render/pass/UIPass.h"
 
 namespace Pionner

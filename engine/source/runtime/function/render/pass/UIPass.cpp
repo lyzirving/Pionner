@@ -3,7 +3,7 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "function/render/pass/UIPass.h"
-#include "function/render/interface/Rhi.h"
+#include "function/render/rhi/Rhi.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -17,7 +17,7 @@
 namespace Pionner
 {
 	UIPass::UIPass() : RenderPassBase()
-		             , m_ui(nullptr)
+		, m_ui(nullptr)
 	{
 	}
 
@@ -26,7 +26,7 @@ namespace Pionner
 		m_ui = nullptr;
 	}
 
-	void UIPass::initialize(const RenderPassInitInfo& info)
+	void UIPass::initialize(const RenderPassInitInfo &info)
 	{
 	}
 
@@ -34,7 +34,7 @@ namespace Pionner
 	{
 	}
 
-	void UIPass::initializeUIRenderBackend(WindowUI* ui)
+	void UIPass::initializeUIRenderBackend(WindowUI *ui)
 	{
 		m_ui = ui;
 		m_rhi->initUIRenderBackend();

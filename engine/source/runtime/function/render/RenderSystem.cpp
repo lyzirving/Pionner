@@ -1,5 +1,5 @@
 #include "function/render/RenderSystem.h"
-#include "function/render/interface/opengl/RhiOpenGL.h"
+#include "function/render/rhi/opengl/RhiOpenGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
 #include "function/render/scene/RenderScene.h"
 #include "function/render/scene/Camera.h"

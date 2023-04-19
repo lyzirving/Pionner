@@ -3,9 +3,9 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_glfw.h>
 
-#include "function/render/interface/RhiHeader.h"
+#include "function/render/rhi/RhiHeader.h"
 
-#include "function/render/interface/opengl/RhiOpenGL.h"
+#include "function/render/rhi/opengl/RhiOpenGL.h"
 #include "function/render/WindowSystem.h"
 
 #include "core/log/LogSystem.h"

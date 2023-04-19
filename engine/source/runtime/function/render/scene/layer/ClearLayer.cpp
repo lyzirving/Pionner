@@ -1,6 +1,7 @@
 #include "function/render/scene/layer/ClearLayer.h"
 #include "function/render/scene/Camera.h"
-#include "function/render/interface/RhiHeader.h"
+#include "function/render/scene/Frustum.h"
+#include "function/render/rhi/RhiHeader.h"
 
 namespace Pionner
 {
@@ -14,7 +15,7 @@ namespace Pionner
 	{
 	}
 
-	void ClearLayer::draw(const std::shared_ptr<Camera> &camera)
+	void ClearLayer::draw(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Frustum> &frustum)
 	{
 		glClearColor(m_color.r, m_color.g, m_color.b, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

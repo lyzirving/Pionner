@@ -4,7 +4,7 @@
 #include "function/render/scene/layer/ClearLayer.h"
 #include "function/render/scene/layer/ModelLayer.h"
 #include "function/render/entity/RenderEntity.h"
-#include "function/render/interface/Rhi.h"
+#include "function/render/rhi/Rhi.h"
 
 #include "core/log/LogSystem.h"
 
@@ -58,7 +58,7 @@ namespace Pionner
 		for (uint8_t type = 0; type < LAYER_COUNT; type++)
 		{
 			if (m_layers[type])
-				m_layers[type]->draw(camera);
+				m_layers[type]->draw(camera, frustum);
 		}
 	}
 

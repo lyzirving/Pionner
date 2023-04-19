@@ -2,6 +2,7 @@
 
 #include "function/render/scene/layer/ModelLayer.h"
 #include "function/render/scene/Camera.h"
+#include "function/render/scene/Frustum.h"
 #include "function/render/entity/RenderEntity.h"
 
 namespace Pionner
@@ -28,7 +29,7 @@ namespace Pionner
 		std::vector<std::shared_ptr<RenderEntity>>().swap(m_entities);
 	}
 
-	void ModelLayer::draw(const std::shared_ptr<Camera> &camera)
+	void ModelLayer::draw(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Frustum> &frustum)
 	{
 		if (m_entities.empty())
 			return;

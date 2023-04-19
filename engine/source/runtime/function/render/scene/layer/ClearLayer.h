@@ -15,7 +15,7 @@ namespace Pionner
 
 		inline void setColor(const glm::vec3 &color) { m_color = color; }
 
-		virtual void draw(const std::shared_ptr<Camera> &camera) override;
+		virtual void draw(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Frustum> &frustum) override;
 
 	private:
 		glm::vec3 m_color;

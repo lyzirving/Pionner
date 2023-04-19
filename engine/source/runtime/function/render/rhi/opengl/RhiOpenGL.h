@@ -1,7 +1,7 @@
 #ifndef __RHI_OPENGL_H__
 #define __RHI_OPENGL_H__
 
-#include "function/render/interface/Rhi.h"
+#include "function/render/rhi/Rhi.h"
 
 namespace Pionner
 {

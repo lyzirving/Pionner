@@ -6,6 +6,7 @@ set(RUNTIME_DIR     ${ENGINE_DIR}/source/runtime)
 set(EDITOR_DIR      ${ENGINE_DIR}/source/editor)
 set(THIRD_PARTY_DIR ${ENGINE_DIR}/3rdparty)
 set(ASSETS_DIR      ${ENGINE_DIR}/assets)
+set(SHADER_DIR      ${ENGINE_DIR}/shader)
 
 add_subdirectory(3rdparty)
 add_subdirectory(source/runtime)
@@ -29,4 +30,9 @@ add_custom_command(TARGET Pionner POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory    
                    "${ASSETS_DIR}"                           
                    $<TARGET_FILE_DIR:Pionner>/assets)
+
+add_custom_command(TARGET Pionner POST_BUILD                  
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory    
+                   "${SHADER_DIR}"                           
+                   $<TARGET_FILE_DIR:Pionner>/shader)
 
