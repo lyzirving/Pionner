@@ -1,5 +1,15 @@
+#include <glm/gtc/type_ptr.hpp>
+
 #include "function/render/rhi/opengl/RhiShaderGL.h"
+#include "function/render/rhi/opengl/GLHelper.h"
 #include "function/render/rhi/RhiHeader.h"
+
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "RhiShaderGL"
 
 namespace Pionner
 {
@@ -11,49 +21,128 @@ namespace Pionner
 	{
 	}
 
-	bool RhiShaderGL::initialize()
+	bool RhiShaderGL::build(const char *vert, const char *frag, uint32_t &program)
 	{
+		if (vert == nullptr || frag == nullptr)
+		{
+			LOG_ERR("input src is invalid");
+			goto fail;
+		}
+		program = GLHelper::buildProgram(vert, frag);
+		if (program <= 0)
+			goto fail;
+
+		return true;
+
+	fail:
+		program = 0;
 		return false;
 	}
 
-	void RhiShaderGL::activate(bool active)
+	void RhiShaderGL::activate(uint32_t program, bool active)
 	{
+		if (isInit(program))
+		{
+			glUseProgram(active ? program : 0);
+		}
 	}
 
-	bool RhiShaderGL::shutdown()
+	void RhiShaderGL::destroy(uint32_t &program)
 	{
-		return false;
+		if (isInit(program))
+		{
+			glDeleteProgram(program);
+			program = 0;
+		}
 	}
 
-	bool RhiShaderGL::isInit() const
+	void RhiShaderGL::setInt(uint32_t program, const std::string &name, int val) const
 	{
-		return false;
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniform1i(ind, val);
+		}
 	}
 
-	void RhiShaderGL::setInt(const std::string &name, int val) const
+	void RhiShaderGL::setFloat(uint32_t program, const std::string &name, float val) const
 	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniform1f(ind, val);
+		}
 	}
 
-	void RhiShaderGL::setFloat(const std::string &name, float val) const
+	void RhiShaderGL::setMat3(uint32_t program, const std::string &name, const glm::mat3 &val) const
 	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniformMatrix3fv(ind, 1, GL_FALSE, glm::value_ptr(val));
+		}
 	}
 
-	void RhiShaderGL::setMat3(const std::string &name, const glm::mat3 &val) const
+	void RhiShaderGL::setMat4(uint32_t program, const std::string &name, const glm::mat4 &val) const
 	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniformMatrix4fv(ind, 1, GL_FALSE, glm::value_ptr(val));
+		}
 	}
 
-	void RhiShaderGL::setMat4(const std::string &name, const glm::mat4 &val) const
+	void RhiShaderGL::setVec2(uint32_t program, const std::string &name, const glm::vec2 &val) const
 	{
-	}
-	void RhiShaderGL::setVec2(const std::string &name, const glm::vec2 &val) const
-	{
-	}
-
-	void RhiShaderGL::setVec3(const std::string &name, const glm::vec3 &val) const
-	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniform2f(ind, val.x, val.y);
+		}
 	}
 
-	void RhiShaderGL::setVec4(const std::string &name, const glm::vec4 &val) const
+	void RhiShaderGL::setVec2(uint32_t program, const std::string &name, float val0, float val1) const
 	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniform2f(ind, val0, val1);
+		}
+	}
+
+	void RhiShaderGL::setVec3(uint32_t program, const std::string &name, const glm::vec3 &val) const
+	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniform3f(ind, val.x, val.y, val.z);
+		}
+	}
+
+	void RhiShaderGL::setVec3(uint32_t program, const std::string &name, float val0, float val1, float val2) const
+	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniform3f(ind, val0, val1, val2);
+		}
+	}
+
+	void RhiShaderGL::setVec4(uint32_t program, const std::string &name, const glm::vec4 &val) const
+	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniform4f(ind, val.x, val.y, val.z, val.w);
+		}
+	}
+
+	void RhiShaderGL::setVec4(uint32_t program, const std::string &name, float val0, float val1, float val2, float val3) const
+	{
+		if (isInit(program))
+		{
+			GLint ind = glGetUniformLocation(program, name.c_str());
+			glUniform4f(ind, val0, val1, val2, val3);
+		}
 	}
 }
