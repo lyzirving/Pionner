@@ -1,5 +1,5 @@
 #include "function/render/RenderSystem.h"
-#include "function/render/rhi/opengl/RhiOpenGL.h"
+#include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
 #include "function/render/scene/RenderScene.h"
 #include "function/render/scene/Camera.h"
@@ -32,7 +32,7 @@ namespace Pionner
 	{
 		OpenGLRhiInitInfo rhiInfo;
 		rhiInfo.window = info.window;
-		m_rhi = std::shared_ptr<Rhi>(new RhiOpenGL);
+		m_rhi = std::shared_ptr<Rhi>(new RhiGL);
 		m_rhi->initialize(&rhiInfo);
 
 		m_pipeLine = std::shared_ptr<RenderPipelineBase>(new RenderPipeline);

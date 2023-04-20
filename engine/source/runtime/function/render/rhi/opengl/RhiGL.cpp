@@ -4,8 +4,9 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "function/render/rhi/RhiHeader.h"
+#include "function/render/rhi/opengl/RhiShaderGL.h"
 
-#include "function/render/rhi/opengl/RhiOpenGL.h"
+#include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/WindowSystem.h"
 
 #include "core/log/LogSystem.h"
@@ -13,19 +14,19 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "RhiOpenGL"
+#define LOCAL_TAG "RhiGL"
 
 namespace Pionner
 {
-	RhiOpenGL::RhiOpenGL() : Rhi()
+	RhiGL::RhiGL() : Rhi()
 	{
 	}
 
-	RhiOpenGL::~RhiOpenGL()
+	RhiGL::~RhiGL()
 	{
 	}
 
-	void RhiOpenGL::initialize(void *param)
+	void RhiGL::initialize(void *param)
 	{
 		OpenGLRhiInitInfo *info = (OpenGLRhiInitInfo *)param;
 		m_window = info->window;
@@ -35,7 +36,7 @@ namespace Pionner
 		createInstance();
 	}
 
-	void RhiOpenGL::initUIRenderBackend()
+	void RhiGL::initUIRenderBackend()
 	{
 		if (!m_window || !m_window->getWindow())
 		{
@@ -56,18 +57,27 @@ namespace Pionner
 		LOG_DEBUG("Imgui opengl window[%s] inits success", version);
 	}
 
-	void RhiOpenGL::shutdownUIRenderBackend()
+	void RhiGL::shutdownUIRenderBackend()
 	{
 		ImGui_ImplGlfw_Shutdown();
 		ImGui_ImplOpenGL3_Shutdown();
 	}
 
-	void RhiOpenGL::shutdown()
+	void RhiGL::shutdown()
 	{
 		m_window.reset();
 	}
 
-	void RhiOpenGL::createInstance()
+	std::shared_ptr<RhiShader> RhiGL::getRhiShader()
+	{
+		if (!m_rhiShader.get())
+		{
+			m_rhiShader = std::shared_ptr<RhiShader>(new RhiShaderGL);
+		}
+		return m_rhiShader;
+	}
+
+	void RhiGL::createInstance()
 	{
 		if (glewInit() != GLEW_OK)
 		{
@@ -81,7 +91,7 @@ namespace Pionner
 		LOG_DEBUG("gl version[%d.%d]", major, minor);
 	}
 
-	void RhiOpenGL::viewportFull()
+	void RhiGL::viewportFull()
 	{
 		glViewport((GLint)m_viewport.x, (GLint)m_viewport.y, (GLint)m_viewport.width, (GLint)m_viewport.height);
 	}

@@ -24,6 +24,7 @@ namespace Pionner
 		virtual void initUIRenderBackend() = 0;
 		virtual void shutdownUIRenderBackend() = 0;
 		virtual void shutdown() = 0;
+		virtual std::shared_ptr<RhiShader> getRhiShader() = 0;
 
 		virtual void viewportFull() {};
 		virtual void viewportSub(int x, int y, int width, int height) {};
@@ -33,6 +34,7 @@ namespace Pionner
 		virtual void createWindowSurface() {};
 
 		std::shared_ptr<WindowSystem> m_window;
+		std::shared_ptr<RhiShader>    m_rhiShader;
 		RhiViewport m_viewport;
 	};
 }

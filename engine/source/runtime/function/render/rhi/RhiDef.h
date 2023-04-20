@@ -6,6 +6,7 @@
 namespace Pionner
 {
 	class WindowSystem;
+	class RhiShader;
 
 	struct OpenGLRhiInitInfo
 	{
