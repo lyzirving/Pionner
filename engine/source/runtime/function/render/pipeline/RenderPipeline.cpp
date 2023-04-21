@@ -35,14 +35,12 @@ namespace Pionner
 		m_uiPass->shutdown();
 	}
 
-	void RenderPipeline::forwardRender(const std::shared_ptr<RenderScene> &scene,
-									   const std::shared_ptr<Camera> &camera,
-									   const std::shared_ptr<Frustum> &frustum)
+	void RenderPipeline::forwardRender(const std::shared_ptr<RenderScene> &scene, const RenderParam &param)
 	{
 		m_rhi->viewportFull();
 
 		if (scene)
-			scene->forwardRender(camera, frustum);
+			scene->forwardRender(param);
 
 		m_uiPass->draw();
 	}

@@ -12,12 +12,20 @@ namespace Pionner
 	class WindowUI;
 	class RenderPassBase;
 	class RenderPipelineBase;
+	class Camera;
+	class Frustum;
+
+	struct RenderParam
+	{
+		std::shared_ptr<Camera>  camera;
+		std::shared_ptr<Frustum> frustum;
+	};
 
 	struct WindowCreateInfo
 	{
 		int         width{ 1280 };
 		int         height{ 720 };
-		const char* title{ "Pionner" };
+		const char *title{ "Pionner" };
 		bool        fullscreen{ false };
 	};
 

@@ -72,7 +72,22 @@ namespace Pionner
 			return false;
 		}
 
-		return m_rhi->build(m_vert.c_str(), m_frag.c_str(), m_program);
+		bool success = m_rhi->build(m_vert.c_str(), m_frag.c_str(), m_program);
+
+		if (success)
+		{
+			LOG_DEBUG("succeed to init shader[%s]", m_name.c_str());
+		}
+
+		return success;
+	}
+
+	void Shader::destroy()
+	{
+		if (isInit() && m_rhi)
+		{
+			m_rhi->destroy(m_program);
+		}
 	}
 
 	void Shader::use(bool active)

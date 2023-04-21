@@ -5,6 +5,7 @@
 #include "function/render/scene/layer/ModelLayer.h"
 #include "function/render/entity/RenderEntity.h"
 #include "function/render/rhi/Rhi.h"
+#include "function/render/RenderDef.h"
 
 #include "core/log/LogSystem.h"
 
@@ -53,12 +54,12 @@ namespace Pionner
 		}
 	}
 
-	void RenderScene::forwardRender(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Frustum> &frustum)
+	void RenderScene::forwardRender(const RenderParam &param)
 	{
 		for (uint8_t type = 0; type < LAYER_COUNT; type++)
 		{
 			if (m_layers[type])
-				m_layers[type]->draw(camera, frustum);
+				m_layers[type]->draw(param);
 		}
 	}
 

@@ -16,7 +16,7 @@ namespace Pionner
 		virtual ~ModelLayer();
 
 		virtual void clear() override;
-		virtual void draw(const std::shared_ptr<Camera> &camera, const std::shared_ptr<Frustum> &frustum) override;
+		virtual void draw(const RenderParam &param) override;
 
 		void addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities);
 

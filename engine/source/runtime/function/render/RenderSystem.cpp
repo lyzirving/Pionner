@@ -6,6 +6,7 @@
 #include "function/render/scene/Frustum.h"
 #include "function/render/swap/SwapContext.h"
 #include "function/render/WindowSystem.h"
+#include "function/render/shader/ShaderMgr.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -64,6 +65,8 @@ namespace Pionner
 		m_frustum.reset();
 		m_camera.reset();
 
+		ShaderMgr::instance()->destroy();
+
 		if (m_scene)
 		{
 			m_scene->shutdown();
@@ -95,6 +98,8 @@ namespace Pionner
 	{
 		m_pipeLine->preparePassData();
 
-		m_pipeLine->forwardRender(m_scene, m_camera, m_frustum);
+		RenderParam param{ m_camera, m_frustum };
+
+		m_pipeLine->forwardRender(m_scene, param);
 	}
 }

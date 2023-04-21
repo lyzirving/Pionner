@@ -20,6 +20,7 @@ namespace Pionner
 		inline const std::string &name() { return m_name; }
 
 		bool init();
+		void destroy();
 
 		void use(bool active);
 		void setFloat(const std::string &name, float value) const;
