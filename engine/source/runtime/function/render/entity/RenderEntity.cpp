@@ -4,11 +4,12 @@ namespace Pionner
 {
 	uint32_t RenderEntity::g_entityId{ 0 };
 
-	EntityPart::EntityPart() : m_partIndex(0)
-		                     , m_vertexs(), m_indices()
-		                     , m_material()
-		                     , m_aabb()
-		                     , m_modelMat(1.f)						 
+	EntityPart::EntityPart()
+		: m_partIndex(0)
+		, m_vertexs(), m_indices()
+		, m_material()
+		, m_aabb()
+		, m_modelMat(1.f)
 	{
 	}
 
@@ -18,12 +19,13 @@ namespace Pionner
 		std::vector<uint32_t>().swap(m_indices);
 	}
 
-	RenderEntity::RenderEntity() : m_type(ENTITY_NONE)
-		                         , m_order(ORDER_LOWEST)
-		                         , m_entityId(g_entityId++), m_childNum(0)
-		                         , m_parts()
-		                         , m_children()
-		                         , m_parent()
+	RenderEntity::RenderEntity()
+		: m_type(ENTITY_NONE)
+		, m_order(ORDER_LOWEST)
+		, m_entityId(g_entityId++), m_childNum(0)
+		, m_parts()
+		, m_children()
+		, m_parent()
 	{
 	}
 

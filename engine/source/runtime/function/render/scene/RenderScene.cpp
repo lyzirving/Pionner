@@ -54,7 +54,7 @@ namespace Pionner
 		}
 	}
 
-	void RenderScene::forwardRender(const RenderParam &param)
+	void RenderScene::forwardRender(RenderParam &param)
 	{
 		for (uint8_t type = 0; type < LAYER_COUNT; type++)
 		{

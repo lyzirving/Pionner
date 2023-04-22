@@ -19,6 +19,8 @@ namespace Pionner
 		EntityPart();
 		~EntityPart();
 
+	public:
+
 		uint32_t              m_partIndex;
 		std::vector<Vertex>   m_vertexs;
 		std::vector<uint32_t> m_indices;
@@ -32,6 +34,8 @@ namespace Pionner
 	public:
 		RenderEntity();
 		~RenderEntity();
+
+	public:
 
 		EntityType m_type;
 		DrawOrder  m_order;

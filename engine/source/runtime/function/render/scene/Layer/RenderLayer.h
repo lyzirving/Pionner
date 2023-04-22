@@ -17,7 +17,7 @@ namespace Pionner
 		virtual ~RenderLayer();
 
 		virtual void clear();
-		virtual void draw(const RenderParam &param) = 0;
+		virtual void draw(RenderParam &param) = 0;
 
 	protected:
 		std::shared_ptr<Rhi> m_rhi;

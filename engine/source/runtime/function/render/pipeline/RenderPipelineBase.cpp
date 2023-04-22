@@ -23,7 +23,7 @@ namespace Pionner
 		m_rhi.reset();
 	}
 
-	void RenderPipelineBase::forwardRender(const std::shared_ptr<RenderScene> &scene, const RenderParam &param)
+	void RenderPipelineBase::forwardRender(const std::shared_ptr<RenderScene> &scene, RenderParam &param)
 	{
 	}
 

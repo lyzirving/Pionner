@@ -31,7 +31,7 @@ namespace Pionner
 		std::vector<std::shared_ptr<RenderEntity>>().swap(m_entities);
 	}
 
-	void ModelLayer::draw(const RenderParam &param)
+	void ModelLayer::draw(RenderParam &param)
 	{
 		if (m_entities.empty())
 			return;

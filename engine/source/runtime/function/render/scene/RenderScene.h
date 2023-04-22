@@ -25,7 +25,7 @@ namespace Pionner
 		void shutdown();
 
 		void addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities);
-		void forwardRender(const RenderParam &param);
+		void forwardRender(RenderParam &param);
 
 	private:
 		static std::shared_ptr<RenderLayer> createLayer(SceneLayerType type, const std::shared_ptr<Rhi> &rhi);

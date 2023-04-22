@@ -35,7 +35,7 @@ namespace Pionner
 		m_uiPass->shutdown();
 	}
 
-	void RenderPipeline::forwardRender(const std::shared_ptr<RenderScene> &scene, const RenderParam &param)
+	void RenderPipeline::forwardRender(const std::shared_ptr<RenderScene> &scene, RenderParam &param)
 	{
 		m_rhi->viewportFull();
 

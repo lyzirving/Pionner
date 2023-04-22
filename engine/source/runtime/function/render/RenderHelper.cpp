@@ -4,11 +4,11 @@
 
 namespace Pionner
 {
-	void RenderHelper::drawEntity(const std::shared_ptr<RenderEntity> &entity)
+	void RenderHelper::drawEntity(const std::shared_ptr<RenderEntity> &entity, RenderParam &param)
 	{
 		for (auto &part : entity->m_parts)
 		{
-			drawPart(part);
+			drawPart(part, param);
 		}
 
 		if (!entity->m_children.empty())
@@ -18,13 +18,13 @@ namespace Pionner
 			{
 				if (children[i].get())
 				{
-					drawEntity(children[i]);
+					drawEntity(children[i], param);
 				}
 			}
 		}
 	}
 
-	void RenderHelper::drawPart(const std::shared_ptr<EntityPart> &part)
+	void RenderHelper::drawPart(const std::shared_ptr<EntityPart> &part, RenderParam &param)
 	{
 	}
 }
