@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "function/render/rhi/RhiDef.h"
+#include "function/render/resource/ResourceDef.h"
 
 struct GLFWwindow;
 

@@ -21,6 +21,48 @@ namespace Pionner
 	{
 	}
 
+	RenderResourceMgr::Buffer RenderResourceMgr::allocate(BufferType type)
+	{
+		Buffer ret{ nullptr };
+		switch (type)
+		{
+			case Pionner::BUF_MEM_ARRAY:
+				break;
+			case Pionner::BUF_VBO:
+				break;
+			case Pionner::BUF_EBO:
+				break;
+			case Pionner::BUF_CNT:
+				break;
+			default:
+				break;
+		}
+		return ret;
+	}
+
+	void RenderResourceMgr::release(BufferType type, uint32_t id)
+	{
+		switch (type)
+		{
+			case Pionner::BUF_MEM_ARRAY:
+			{
+				if (m_vertexArray.exist(id))
+				{
+					m_vertexArray.release(id);
+				}
+				break;
+			}
+			case Pionner::BUF_VBO:
+				break;
+			case Pionner::BUF_EBO:
+				break;
+			case Pionner::BUF_CNT:
+				break;
+			default:
+				break;
+		}
+	}
+
 	RenderResourceMgr::BufferArray::BufferArray(const std::shared_ptr<Rhi> &rhi)
 		: m_rhi(rhi)
 		, m_activeBuffers()
@@ -77,9 +119,30 @@ namespace Pionner
 		return m_activeBuffers.empty();
 	}
 
+	bool RenderResourceMgr::BufferArray::exist(uint32_t id)
+	{
+		return id < m_activeBuffers.size() && m_activeBuffers[id].get();
+	}
+
 	RenderResourceMgr::Buffer RenderResourceMgr::BufferArray::find(uint32_t id)
 	{
-		return Buffer();
+		Buffer ret{ nullptr };
+		if (exist(id))
+		{
+			ret = m_activeBuffers[id];
+		}
+		return ret;
+	}
+
+	void RenderResourceMgr::BufferArray::release(uint32_t id)
+	{
+		if (exist(id))
+		{
+			Buffer abandoned = m_activeBuffers[id];
+			m_abandoned.push_back(abandoned);
+			m_availableSlots.push_back(abandoned->m_id);
+			m_activeBuffers[id].reset();
+		}
 	}
 
 	uint32_t RenderResourceMgr::BufferArray::size()

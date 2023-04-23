@@ -15,13 +15,17 @@ namespace Pionner
 	class RenderResourceMgr
 	{
 	public:
-
 		RenderResourceMgr(const std::shared_ptr<Rhi> &rhi);
 		~RenderResourceMgr();
 
-	private:
 		using Buffer = std::shared_ptr<GfxBuffer>;
 
+		inline std::shared_ptr<Rhi> getRhi() const { return m_rhi; };
+
+		Buffer   allocate(BufferType type);
+		void     release(BufferType type, uint32_t id);
+
+	private:
 		class BufferArray
 		{
 		public:
@@ -30,7 +34,9 @@ namespace Pionner
 
 			Buffer   allocate(BufferType type);
 			bool     empty();
+			bool     exist(uint32_t id);
 			Buffer   find(uint32_t id);
+			void     release(uint32_t id);
 			uint32_t size();
 
 		private:
