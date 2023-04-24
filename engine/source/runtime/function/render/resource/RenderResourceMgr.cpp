@@ -1,6 +1,8 @@
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
-#include "function/render/rhi/opengl/buffer/VertexBuffer.h"
+
+#include "function/render/rhi/opengl/buffer/GLVertexBuffer.h"
+#include "function/render/rhi/opengl/buffer/GLIndexBuffer.h"
 
 #include "core/log/LogSystem.h"
 
@@ -48,15 +50,15 @@ namespace Pionner
 		return ret;
 	}
 
-	void RenderResourceMgr::release(BufferType type, uint32_t id)
+	void RenderResourceMgr::release(BufferType type, uint32_t slot)
 	{
 		switch (type)
 		{
 			case Pionner::BUF_MEM_ARRAY:
 			{
-				if (m_vertexArray.exist(id))
+				if (m_vertexArray.exist(slot))
 				{
-					m_vertexArray.release(id);
+					m_vertexArray.release(slot);
 				}
 				break;
 			}
@@ -96,7 +98,7 @@ namespace Pionner
 		{
 			uint32_t slot = m_activeBuffers.size();
 			ret = createBuffer(type, mgr);
-			ret->m_id = slot;
+			ret->m_slot = slot;
 			m_activeBuffers.push_back(ret);
 		}
 		else
@@ -110,7 +112,7 @@ namespace Pionner
 				LOG_ERR("available slot is invalid, slot[%u] >= size[%u], ignore the slot", availableSlot, size);
 				uint32_t slot = m_activeBuffers.size();
 				ret = createBuffer(type, mgr);
-				ret->m_id = slot;
+				ret->m_slot = slot;
 				m_activeBuffers.push_back(ret);
 			}
 			else
@@ -121,7 +123,7 @@ namespace Pionner
 					m_abandoned.push_back(m_activeBuffers[availableSlot]);
 				}
 				m_activeBuffers[availableSlot] = createBuffer(type, mgr);
-				m_activeBuffers[availableSlot]->m_id = availableSlot;
+				m_activeBuffers[availableSlot]->m_slot = availableSlot;
 				ret = m_activeBuffers[availableSlot];
 			}
 		}
@@ -133,29 +135,29 @@ namespace Pionner
 		return m_activeBuffers.empty();
 	}
 
-	bool RenderResourceMgr::BufferArray::exist(uint32_t id)
+	bool RenderResourceMgr::BufferArray::exist(uint32_t slot)
 	{
-		return id < m_activeBuffers.size() && m_activeBuffers[id].get();
+		return slot < m_activeBuffers.size() && m_activeBuffers[slot].get();
 	}
 
-	RenderResourceMgr::Buffer RenderResourceMgr::BufferArray::find(uint32_t id)
+	RenderResourceMgr::Buffer RenderResourceMgr::BufferArray::find(uint32_t slot)
 	{
 		Buffer ret{ nullptr };
-		if (exist(id))
+		if (exist(slot))
 		{
-			ret = m_activeBuffers[id];
+			ret = m_activeBuffers[slot];
 		}
 		return ret;
 	}
 
-	void RenderResourceMgr::BufferArray::release(uint32_t id)
+	void RenderResourceMgr::BufferArray::release(uint32_t slot)
 	{
-		if (exist(id))
+		if (exist(slot))
 		{
-			Buffer abandoned = m_activeBuffers[id];
+			Buffer abandoned = m_activeBuffers[slot];
 			m_abandoned.push_back(abandoned);
-			m_availableSlots.push_back(abandoned->m_id);
-			m_activeBuffers[id].reset();
+			m_availableSlots.push_back(abandoned->m_slot);
+			m_activeBuffers[slot].reset();
 		}
 	}
 
@@ -166,7 +168,23 @@ namespace Pionner
 
 	RenderResourceMgr::Buffer RenderResourceMgr::BufferArray::createBuffer(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr)
 	{
-		return Buffer();
+		Buffer ret{ nullptr };
+		switch (type)
+		{
+			case Pionner::BUF_MEM_ARRAY:
+				ret = Buffer(new GLVertexBuffer(mgr));
+				break;
+			case Pionner::BUF_VBO:
+				break;
+			case Pionner::BUF_EBO:
+				ret = Buffer(new GLIndexBuffer(mgr));
+				break;
+			case Pionner::BUF_CNT:
+				break;
+			default:
+				break;
+		}
+		return ret;
 	}
 
 }

@@ -21,7 +21,7 @@ namespace Pionner
 		DATA_TYPE_COUNT
 	};
 
-	struct GfxVertex
+	struct Vertex
 	{
 		glm::vec3 pos;
 		glm::vec3 normal;

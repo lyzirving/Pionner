@@ -23,7 +23,7 @@ namespace Pionner
 		inline std::shared_ptr<Rhi> getRhi() const { return m_rhi; };
 
 		Buffer allocate(BufferType type);
-		void release(BufferType type, uint32_t id);
+		void release(BufferType type, uint32_t slot);
 		void makeSelfWeak(const std::shared_ptr<RenderResourceMgr> &self);
 
 	private:
@@ -35,9 +35,9 @@ namespace Pionner
 
 			Buffer   allocate(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr);
 			bool     empty();
-			bool     exist(uint32_t id);
-			Buffer   find(uint32_t id);
-			void     release(uint32_t id);
+			bool     exist(uint32_t slot);
+			Buffer   find(uint32_t slot);
+			void     release(uint32_t slot);
 			uint32_t size();
 
 		private:

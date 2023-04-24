@@ -2,7 +2,7 @@
 #define __GFX_BUFFER_H__
 
 #include <memory>
-
+#include <vector>
 #include "function/render/resource/ResourceDef.h"
 
 namespace Pionner
@@ -19,14 +19,20 @@ namespace Pionner
 		virtual void upload() = 0;
 		virtual void release() = 0;
 
-		virtual void insertData(uint32_t size, void *data);
+		virtual void bind();
 		virtual void bindToTarget(uint32_t target);
 
 		inline uint32_t getId() const { return m_id; }
-		inline BufferType bufferType() const { return m_bufferType; }
-		inline DataType dataType() const { return m_dataType; }
+		inline uint32_t getSlot() const { return m_slot; }
+		inline BufferType getBufferType() const { return m_bufferType; }
+		inline DataType getDataType() const { return m_dataType; }
 		inline bool isLoad() const { return m_loaded; }
-		inline bool is(DataType type) { return m_dataType == type; }
+
+		template<class T>
+		bool is() const;
+
+		template<class T>
+		void insertData(std::vector<T> &data);
 
 	protected:
 		friend class RenderResourceMgr;
@@ -35,6 +41,7 @@ namespace Pionner
 
 		std::weak_ptr<RenderResourceMgr> m_mgr;
 		uint32_t   m_id;
+		uint32_t   m_slot;
 		BufferType m_bufferType;
 		DataType   m_dataType;
 		bool       m_loaded;

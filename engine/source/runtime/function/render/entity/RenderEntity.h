@@ -22,9 +22,8 @@ namespace Pionner
 	public:
 
 		uint32_t              m_partIndex;
-		uint32_t              m_vertexBufId;
-		uint32_t              m_indicesBufId;
-		std::vector<Vertex>   m_vertexs;
+		uint32_t              m_vertexSlot;
+		uint32_t              m_indicesSlot;
 		std::vector<uint32_t> m_indices;
 		Material              m_material;
 		AABB                  m_aabb;

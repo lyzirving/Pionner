@@ -16,6 +16,7 @@
 #include "function/render/RenderSystem.h"
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
+#include "function/render/rhi/opengl/buffer/GLVertexBuffer.h"
 
 #include "core/log/LogSystem.h"
 
@@ -132,13 +133,13 @@ namespace Pionner
 		}
 
 		part->m_partIndex = meshIndex;
-		part->m_vertexBufId = buffer->getId();
-		//TODO: add vertex into buffer object
+		part->m_vertexSlot = buffer->getSlot();
 
+		std::vector<Vertex> vertexArray;
 		// parse vertex array
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
-			Vertex vertex;
+			Vertex vertex{};
 			vertex.pos = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
 			vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
 			min = glm::min(min, vertex.pos);
@@ -147,8 +148,11 @@ namespace Pionner
 			{
 				vertex.texCoord = { mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y };
 			}
-
-			part->m_vertexs.push_back(std::move(vertex));
+			vertexArray.push_back(std::move(vertex));
+		}
+		if (!vertexArray.empty())
+		{
+			buffer->insertData(vertexArray);
 		}
 
 		part->m_aabb.setAA(min);
