@@ -12,6 +12,11 @@
 #include "function/render/entity/RenderEntity.h"
 #include "function/render/entity/EntityDef.h"
 
+#include "function/global/GlobalContext.h"
+#include "function/render/RenderSystem.h"
+#include "function/render/resource/RenderResourceMgr.h"
+#include "function/render/resource/buffer/GfxBuffer.h"
+
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -21,7 +26,7 @@
 
 namespace Pionner
 {
-	LoadMeshJob::LoadMeshJob(JobType type, JobObserver* ob)
+	LoadMeshJob::LoadMeshJob(JobType type, JobObserver *ob)
 		: Job(type, ob)
 		, m_meshToLoad()
 	{
@@ -32,11 +37,11 @@ namespace Pionner
 		m_ob = nullptr;
 	}
 
-	void LoadMeshJob::work(JobResult& result)
+	void LoadMeshJob::work(JobResult &result)
 	{
 		for (int i = 0; i < m_meshToLoad.size(); ++i)
 		{
-			auto& item = m_meshToLoad[i];
+			auto &item = m_meshToLoad[i];
 			std::string path = item.m_objDesc.m_srcPath;
 			int dot = std::string::npos;
 			std::string fmt;
@@ -70,13 +75,13 @@ namespace Pionner
 		}
 	}
 
-	void LoadMeshJob::parseObj(const std::string& path, std::shared_ptr<RenderEntity>& root)
+	void LoadMeshJob::parseObj(const std::string &path, std::shared_ptr<RenderEntity> &root)
 	{
 		std::string rootDir = path.substr(0, path.find_last_of('/'));
 
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate/*| aiProcess_FlipUVs*/);
-		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
+		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate/*| aiProcess_FlipUVs*/);
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			LOG_ERR("fail to load obj from [%s], reason[%s]", path.c_str(), importer.GetErrorString());
 			return;
@@ -88,12 +93,11 @@ namespace Pionner
 		LOG_DEBUG("finish loading obj[%s]", path.c_str());
 	}
 
-	void LoadMeshJob::processNode(aiNode* node, const aiScene* scene, const std::string& rootDir, std::shared_ptr<RenderEntity>& entity)
+	void LoadMeshJob::processNode(aiNode *node, const aiScene *scene, const std::string &rootDir, std::shared_ptr<RenderEntity> &entity)
 	{
-		//TODO: add node structure
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
-			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 			if (mesh != nullptr)
 			{
 				processMesh(i, mesh, scene, rootDir, entity);
@@ -113,12 +117,23 @@ namespace Pionner
 		}
 	}
 
-	void LoadMeshJob::processMesh(int meshIndex, aiMesh* mesh, const aiScene* scene, const std::string& rootDir, std::shared_ptr<RenderEntity>& entity)
+	void LoadMeshJob::processMesh(int meshIndex, aiMesh *mesh, const aiScene *scene, const std::string &rootDir, std::shared_ptr<RenderEntity> &entity)
 	{
 		glm::vec3 min{ FLT_MAX }, max{ FLT_MIN };
 		std::shared_ptr<EntityPart> part = std::shared_ptr<EntityPart>(new EntityPart);
 
+		std::shared_ptr<RenderResourceMgr> resource = g_runtimeCtx.m_renderSystem->getResourceMgr();
+		std::shared_ptr<GfxBuffer> buffer = resource->allocate(BUF_MEM_ARRAY);
+
+		if (!buffer)
+		{
+			LOG_ERR("fail to allocate array buffer for mesh");
+			return;
+		}
+
 		part->m_partIndex = meshIndex;
+		part->m_vertexBufId = buffer->getId();
+		//TODO: add vertex into buffer object
 
 		// parse vertex array
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
@@ -154,7 +169,7 @@ namespace Pionner
 		// every mesh only has one GfxMaterial
 		if (mesh->mMaterialIndex >= 0)
 		{
-			aiMaterial* mt = scene->mMaterials[mesh->mMaterialIndex];
+			aiMaterial *mt = scene->mMaterials[mesh->mMaterialIndex];
 			if (mt)
 			{
 				aiString texName;

@@ -9,12 +9,15 @@ namespace Pionner
 	class  RenderScene;
 	class  Camera;
 	class  Frustum;
+	class  RenderResourceMgr;
 
 	class RenderSystem
 	{
 	public:
 		RenderSystem();
 		~RenderSystem();
+
+		inline std::shared_ptr<RenderResourceMgr> getResourceMgr() { return m_resourceMgr; }
 
 		void initialize(RenderSystemInitInfo &info);
 		void initializeUIRenderBackend(WindowUI *windowUI);
@@ -31,6 +34,7 @@ namespace Pionner
 		std::shared_ptr<RenderScene>        m_scene;
 		std::shared_ptr<Camera>             m_camera;
 		std::shared_ptr<Frustum>            m_frustum;
+		std::shared_ptr<RenderResourceMgr>  m_resourceMgr;
 	};
 }
 

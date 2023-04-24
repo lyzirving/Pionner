@@ -21,15 +21,19 @@ namespace Pionner
 
 		virtual void bindToTarget(uint32_t target);
 
+		inline uint32_t getId() const { return m_id; }
+		inline BufferType getType() const { return m_type; }
+		inline bool isLoad() const { return m_loaded; }
+
 	protected:
 		friend class RenderResourceMgr;
 
 		inline bool isCreated() { return m_id > 0; }
 
 		std::weak_ptr<RenderResourceMgr> m_mgr;
-		uint32_t                         m_id;
-		BufferType                       m_type;
-		bool                             m_loaded;
+		uint32_t   m_id;
+		BufferType m_type;
+		bool       m_loaded;
 	};
 }
 

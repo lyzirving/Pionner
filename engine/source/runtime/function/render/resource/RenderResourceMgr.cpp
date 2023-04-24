@@ -1,5 +1,6 @@
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
+#include "function/render/rhi/opengl/buffer/VertexBuffer.h"
 
 #include "core/log/LogSystem.h"
 
@@ -19,23 +20,30 @@ namespace Pionner
 
 	RenderResourceMgr::~RenderResourceMgr()
 	{
+		m_rhi.reset();
+		m_weakSelf.reset();
 	}
 
 	RenderResourceMgr::Buffer RenderResourceMgr::allocate(BufferType type)
 	{
 		Buffer ret{ nullptr };
-		switch (type)
+		std::shared_ptr<RenderResourceMgr> mgr = m_weakSelf.lock();
+		if (mgr)
 		{
-			case Pionner::BUF_MEM_ARRAY:
-				break;
-			case Pionner::BUF_VBO:
-				break;
-			case Pionner::BUF_EBO:
-				break;
-			case Pionner::BUF_CNT:
-				break;
-			default:
-				break;
+			switch (type)
+			{
+				case Pionner::BUF_MEM_ARRAY:
+					ret = m_vertexArray.allocate(type, mgr);
+					break;
+				case Pionner::BUF_VBO:
+					break;
+				case Pionner::BUF_EBO:
+					break;
+				case Pionner::BUF_CNT:
+					break;
+				default:
+					break;
+			}
 		}
 		return ret;
 	}
@@ -63,6 +71,11 @@ namespace Pionner
 		}
 	}
 
+	void RenderResourceMgr::makeSelfWeak(const std::shared_ptr<RenderResourceMgr> &self)
+	{
+		m_weakSelf = self;
+	}
+
 	RenderResourceMgr::BufferArray::BufferArray(const std::shared_ptr<Rhi> &rhi)
 		: m_rhi(rhi)
 		, m_activeBuffers()
@@ -73,15 +86,16 @@ namespace Pionner
 
 	RenderResourceMgr::BufferArray::~BufferArray()
 	{
+		m_rhi.reset();
 	}
 
-	RenderResourceMgr::Buffer RenderResourceMgr::BufferArray::allocate(BufferType type)
+	RenderResourceMgr::Buffer RenderResourceMgr::BufferArray::allocate(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr)
 	{
 		Buffer ret{ nullptr };
 		if (m_availableSlots.empty())
 		{
 			uint32_t slot = m_activeBuffers.size();
-			ret = createBuffer(type);
+			ret = createBuffer(type, mgr);
 			ret->m_id = slot;
 			m_activeBuffers.push_back(ret);
 		}
@@ -95,7 +109,7 @@ namespace Pionner
 			{
 				LOG_ERR("available slot is invalid, slot[%u] >= size[%u], ignore the slot", availableSlot, size);
 				uint32_t slot = m_activeBuffers.size();
-				ret = createBuffer(type);
+				ret = createBuffer(type, mgr);
 				ret->m_id = slot;
 				m_activeBuffers.push_back(ret);
 			}
@@ -106,7 +120,7 @@ namespace Pionner
 					LOG_ERR("buffer already exists in slot[%u], release it", availableSlot);
 					m_abandoned.push_back(m_activeBuffers[availableSlot]);
 				}
-				m_activeBuffers[availableSlot] = createBuffer(type);
+				m_activeBuffers[availableSlot] = createBuffer(type, mgr);
 				m_activeBuffers[availableSlot]->m_id = availableSlot;
 				ret = m_activeBuffers[availableSlot];
 			}
@@ -150,7 +164,7 @@ namespace Pionner
 		return m_activeBuffers.size();
 	}
 
-	RenderResourceMgr::Buffer RenderResourceMgr::BufferArray::createBuffer(BufferType type)
+	RenderResourceMgr::Buffer RenderResourceMgr::BufferArray::createBuffer(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr)
 	{
 		return Buffer();
 	}

@@ -7,6 +7,7 @@
 #include "function/render/swap/SwapContext.h"
 #include "function/render/WindowSystem.h"
 #include "function/render/shader/ShaderMgr.h"
+#include "function/render/resource/RenderResourceMgr.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -24,6 +25,7 @@ namespace Pionner
 		, m_scene(nullptr)
 		, m_camera(nullptr)
 		, m_frustum(nullptr)
+		, m_resourceMgr(nullptr)
 	{
 	}
 
@@ -48,6 +50,9 @@ namespace Pionner
 		m_camera->setPosition(glm::vec3(0.f, 3.f, 5.f));
 
 		m_frustum = std::make_shared<Frustum>();
+
+		m_resourceMgr = std::make_shared<RenderResourceMgr>(m_rhi);
+		RESOURCE_MGR_MAKE_SELF_WEAK(m_resourceMgr);
 	}
 
 	void RenderSystem::initializeUIRenderBackend(WindowUI *windowUI)
@@ -62,7 +67,10 @@ namespace Pionner
 
 	void RenderSystem::shutdown()
 	{
+		m_resourceMgr.reset();
+
 		m_frustum.reset();
+
 		m_camera.reset();
 
 		ShaderMgr::instance()->destroy();

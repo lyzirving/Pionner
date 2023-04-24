@@ -22,8 +22,9 @@ namespace Pionner
 
 		inline std::shared_ptr<Rhi> getRhi() const { return m_rhi; };
 
-		Buffer   allocate(BufferType type);
-		void     release(BufferType type, uint32_t id);
+		Buffer allocate(BufferType type);
+		void release(BufferType type, uint32_t id);
+		void makeSelfWeak(const std::shared_ptr<RenderResourceMgr> &self);
 
 	private:
 		class BufferArray
@@ -32,7 +33,7 @@ namespace Pionner
 			BufferArray(const std::shared_ptr<Rhi> &rhi);
 			~BufferArray();
 
-			Buffer   allocate(BufferType type);
+			Buffer   allocate(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr);
 			bool     empty();
 			bool     exist(uint32_t id);
 			Buffer   find(uint32_t id);
@@ -40,7 +41,7 @@ namespace Pionner
 			uint32_t size();
 
 		private:
-			static Buffer createBuffer(BufferType type);
+			static Buffer createBuffer(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr);
 
 		private:
 			std::shared_ptr<Rhi> m_rhi;
@@ -55,7 +56,15 @@ namespace Pionner
 		std::shared_ptr<Rhi> m_rhi;
 		BufferArray          m_vertexArray;
 		BufferArray          m_indiceArray;
+
+		std::weak_ptr<RenderResourceMgr> m_weakSelf;
 	};
 }
+
+#define RESOURCE_MGR_MAKE_SELF_WEAK(shared_self)                  \
+        {							                              \
+			std::shared_ptr<RenderResourceMgr> obj = shared_self; \
+            shared_self->makeSelfWeak(obj);                       \
+		}
 
 #endif

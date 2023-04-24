@@ -6,6 +6,7 @@ namespace Pionner
 
 	EntityPart::EntityPart()
 		: m_partIndex(0)
+		, m_vertexBufId(0), m_indicesBufId(0)
 		, m_vertexs(), m_indices()
 		, m_material()
 		, m_aabb()
