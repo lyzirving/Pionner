@@ -14,6 +14,13 @@ namespace Pionner
 		BUF_CNT
 	};
 
+	enum DataType : uint8_t
+	{
+		DATA_VERTEX,
+		DATA_INDICE,
+		DATA_TYPE_COUNT
+	};
+
 	struct GfxVertex
 	{
 		glm::vec3 pos;

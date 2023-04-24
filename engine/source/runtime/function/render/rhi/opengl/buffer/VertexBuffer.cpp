@@ -9,7 +9,8 @@ namespace Pionner
 	VertexBuffer::VertexBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
 		: GfxBuffer(mgr), m_vertex()
 	{
-		m_type = BUF_MEM_ARRAY;
+		m_bufferType = BUF_MEM_ARRAY;
+		m_dataType = DATA_VERTEX;
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -42,7 +43,7 @@ namespace Pionner
 			std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
 			if (mgr)
 			{
-				mgr->release(m_type, m_id);
+				mgr->release(m_bufferType, m_id);
 			}
 		}
 	}
