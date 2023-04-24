@@ -152,7 +152,7 @@ namespace Pionner
 		}
 		if (!vertexArray.empty())
 		{
-			buffer->insertData(vertexArray);
+			buffer->insertData<Vertex>(vertexArray);
 		}
 
 		part->m_aabb.setAA(min);

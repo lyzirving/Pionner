@@ -24,20 +24,10 @@ namespace Pionner
 	};
 
 	template<>
-	bool GfxBuffer::is<GLVertexBuffer>() const
-	{
-		return getDataType() == DATA_VERTEX;
-	}
+	bool GfxBuffer::is<GLVertexBuffer>() const;
 
 	template<>
-	void GfxBuffer::insertData<Vertex>(std::vector<Vertex> &data)
-	{
-		if (is<GLVertexBuffer>())
-		{
-			GLVertexBuffer *ptr = static_cast<GLVertexBuffer *>(this);
-			ptr->m_vertex.assign(data.begin(), data.end());
-		}
-	}
+	void GfxBuffer::insertData<Vertex>(std::vector<Vertex> &data);
 }
 
 #endif

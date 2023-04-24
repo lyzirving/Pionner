@@ -22,20 +22,10 @@ namespace Pionner
 	};
 
 	template<>
-	bool GfxBuffer::is<GLIndexBuffer>() const
-	{
-		return getDataType() == DATA_INDICE;
-	}
+	bool GfxBuffer::is<GLIndexBuffer>() const;
 
 	template<>
-	void GfxBuffer::insertData<uint32_t>(std::vector<uint32_t> &data)
-	{
-		if (is<GLIndexBuffer>())
-		{
-			GLIndexBuffer *ptr = static_cast<GLIndexBuffer *>(this);
-			ptr->m_indices.assign(data.begin(), data.end());
-		}
-	}
+	void GfxBuffer::insertData<uint32_t>(std::vector<uint32_t> &data);
 }
 
 #endif

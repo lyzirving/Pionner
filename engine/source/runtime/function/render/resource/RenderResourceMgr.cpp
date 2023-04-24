@@ -40,6 +40,7 @@ namespace Pionner
 				case Pionner::BUF_VBO:
 					break;
 				case Pionner::BUF_EBO:
+					ret = m_indiceArray.allocate(type, mgr);
 					break;
 				case Pionner::BUF_CNT:
 					break;
@@ -65,7 +66,13 @@ namespace Pionner
 			case Pionner::BUF_VBO:
 				break;
 			case Pionner::BUF_EBO:
+			{
+				if (m_indiceArray.exist(slot))
+				{
+					m_indiceArray.release(slot);
+				}
 				break;
+			}
 			case Pionner::BUF_CNT:
 				break;
 			default:

@@ -39,6 +39,11 @@ namespace Pionner
 
 	void GLIndexBuffer::release()
 	{
+		std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
+		if (mgr)
+		{
+			mgr->release(m_bufferType, m_slot);
+		}
 	}
 
 	void GLIndexBuffer::bind()
@@ -51,6 +56,22 @@ namespace Pionner
 		if (isLoad())
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+		}
+	}
+
+	template<>
+	bool GfxBuffer::is<GLIndexBuffer>() const
+	{
+		return getDataType() == DATA_INDICE;
+	}
+
+	template<>
+	void GfxBuffer::insertData<uint32_t>(std::vector<uint32_t> &data)
+	{
+		if (is<GLIndexBuffer>())
+		{
+			GLIndexBuffer *ptr = static_cast<GLIndexBuffer *>(this);
+			ptr->m_indices.assign(data.begin(), data.end());
 		}
 	}
 }

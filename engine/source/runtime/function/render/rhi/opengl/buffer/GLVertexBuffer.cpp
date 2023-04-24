@@ -38,13 +38,10 @@ namespace Pionner
 
 	void GLVertexBuffer::release()
 	{
-		if (isLoad())
+		std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
+		if (mgr)
 		{
-			std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
-			if (mgr)
-			{
-				mgr->release(m_bufferType, m_slot);
-			}
+			mgr->release(m_bufferType, m_slot);
 		}
 	}
 
@@ -60,5 +57,21 @@ namespace Pionner
 
 		glEnableVertexAttribArray(target + 2);
 		glVertexAttribPointer(target + 2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoord));
+	}
+
+	template<>
+	bool GfxBuffer::is<GLVertexBuffer>() const
+	{
+		return getDataType() == DATA_VERTEX;
+	}
+
+	template<>
+	void GfxBuffer::insertData<Vertex>(std::vector<Vertex> &data)
+	{
+		if (is<GLVertexBuffer>())
+		{
+			GLVertexBuffer *ptr = static_cast<GLVertexBuffer *>(this);
+			ptr->m_vertex.assign(data.begin(), data.end());
+		}
 	}
 }
