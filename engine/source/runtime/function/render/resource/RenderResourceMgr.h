@@ -56,6 +56,7 @@ namespace Pionner
 		std::shared_ptr<Rhi> m_rhi;
 		BufferArray          m_vertexArray;
 		BufferArray          m_indiceArray;
+		BufferArray          m_textureArray;
 
 		std::weak_ptr<RenderResourceMgr> m_weakSelf;
 	};

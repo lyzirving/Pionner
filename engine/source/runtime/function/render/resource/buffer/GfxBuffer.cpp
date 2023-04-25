@@ -24,4 +24,9 @@ namespace Pionner
 	{
 		//empty implementation by default
 	}
+
+	void GfxBuffer::load()
+	{
+		//empty implementation by default
+	}
 }

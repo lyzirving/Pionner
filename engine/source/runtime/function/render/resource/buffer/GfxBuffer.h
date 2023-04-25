@@ -21,6 +21,7 @@ namespace Pionner
 
 		virtual void bind();
 		virtual void bindToTarget(uint32_t target);
+		virtual void load();
 
 		inline uint32_t getId() const { return m_id; }
 		inline uint32_t getSlot() const { return m_slot; }

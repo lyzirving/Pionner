@@ -20,6 +20,9 @@ namespace Pionner
 
 	void GLVertexBuffer::upload()
 	{
+		if (isLoad())
+			return;
+
 		if (m_vertex.empty())
 			return;
 
@@ -28,20 +31,20 @@ namespace Pionner
 			glGenBuffers(1, &m_id);
 		}
 
-		if (!isLoad())
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, m_id);
-			glBufferData(GL_ARRAY_BUFFER, m_vertex.size() * sizeof(Vertex), &m_vertex[0], GL_STATIC_DRAW);
-			m_loaded = true;
-		}
+		glBindBuffer(GL_ARRAY_BUFFER, m_id);
+		glBufferData(GL_ARRAY_BUFFER, m_vertex.size() * sizeof(Vertex), &m_vertex[0], GL_STATIC_DRAW);
+		m_loaded = true;
 	}
 
 	void GLVertexBuffer::release()
 	{
-		std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
-		if (mgr)
+		if (isCreated())
 		{
-			mgr->release(m_bufferType, m_slot);
+			std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
+			if (mgr)
+			{
+				mgr->release(m_bufferType, m_slot);
+			}
 		}
 	}
 

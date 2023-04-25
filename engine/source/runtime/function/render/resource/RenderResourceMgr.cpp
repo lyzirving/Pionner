@@ -3,6 +3,7 @@
 
 #include "function/render/rhi/opengl/buffer/GLVertexBuffer.h"
 #include "function/render/rhi/opengl/buffer/GLIndexBuffer.h"
+#include "function/render/rhi/opengl/buffer/GLTetxure.h"
 
 #include "core/log/LogSystem.h"
 
@@ -17,6 +18,7 @@ namespace Pionner
 		: m_rhi(rhi)
 		, m_vertexArray(rhi)
 		, m_indiceArray(rhi)
+		, m_textureArray(rhi)
 	{
 	}
 
@@ -42,8 +44,10 @@ namespace Pionner
 				case Pionner::BUF_EBO:
 					ret = m_indiceArray.allocate(type, mgr);
 					break;
-				case Pionner::BUF_CNT:
+				case Pionner::BUF_TEXTURE:
+					ret = m_textureArray.allocate(type, mgr);
 					break;
+				case Pionner::BUF_CNT:
 				default:
 					break;
 			}
@@ -72,6 +76,13 @@ namespace Pionner
 					m_indiceArray.release(slot);
 				}
 				break;
+			}
+			case Pionner::BUF_TEXTURE:
+			{
+				if (m_textureArray.exist(slot))
+				{
+					m_textureArray.release(slot);
+				}
 			}
 			case Pionner::BUF_CNT:
 				break;
@@ -186,8 +197,10 @@ namespace Pionner
 			case Pionner::BUF_EBO:
 				ret = Buffer(new GLIndexBuffer(mgr));
 				break;
-			case Pionner::BUF_CNT:
+			case Pionner::BUF_TEXTURE:
+				ret = Buffer(new GLTexture(mgr));
 				break;
+			case Pionner::BUF_CNT:
 			default:
 				break;
 		}

@@ -1,5 +1,5 @@
-#ifndef __VERTEX_BUFFER_H__
-#define __VERTEX_BUFFER_H__
+#ifndef __GL_VERTEX_BUFFER_H__
+#define __GL_VERTEX_BUFFER_H__
 
 #include "function/render/resource/buffer/GfxBuffer.h"
 

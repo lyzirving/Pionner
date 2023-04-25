@@ -17,6 +17,7 @@
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
 #include "function/render/rhi/opengl/buffer/GLVertexBuffer.h"
+#include "function/render/rhi/opengl/buffer/GLIndexBuffer.h"
 
 #include "core/log/LogSystem.h"
 
@@ -121,21 +122,33 @@ namespace Pionner
 	void LoadMeshJob::processMesh(int meshIndex, aiMesh *mesh, const aiScene *scene, const std::string &rootDir, std::shared_ptr<RenderEntity> &entity)
 	{
 		glm::vec3 min{ FLT_MAX }, max{ FLT_MIN };
+		std::vector<Vertex> vertexArray{};
+		std::vector<uint32_t> indices{};
+
+		std::shared_ptr<GfxBuffer> vBuffer{ nullptr }, indBuffer{ nullptr };
 		std::shared_ptr<EntityPart> part = std::shared_ptr<EntityPart>(new EntityPart);
-
 		std::shared_ptr<RenderResourceMgr> resource = g_runtimeCtx.m_renderSystem->getResourceMgr();
-		std::shared_ptr<GfxBuffer> buffer = resource->allocate(BUF_MEM_ARRAY);
 
-		if (!buffer)
+		vBuffer = resource->allocate(BUF_MEM_ARRAY);
+
+		if (!vBuffer)
 		{
 			LOG_ERR("fail to allocate array buffer for mesh");
 			return;
 		}
 
-		part->m_partIndex = meshIndex;
-		part->m_vertexSlot = buffer->getSlot();
+		indBuffer = resource->allocate(BUF_EBO);
 
-		std::vector<Vertex> vertexArray;
+		if (!indBuffer)
+		{
+			LOG_ERR("fail to allocate indice buffer for mesh");
+			resource->release(vBuffer->getBufferType(), vBuffer->getSlot());
+			return;
+		}
+
+		part->m_partIndex = meshIndex;
+		part->m_vertexSlot = vBuffer->getSlot();
+
 		// parse vertex array
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
@@ -152,7 +165,7 @@ namespace Pionner
 		}
 		if (!vertexArray.empty())
 		{
-			buffer->insertData<Vertex>(vertexArray);
+			vBuffer->insertData<Vertex>(vertexArray);
 		}
 
 		part->m_aabb.setAA(min);
@@ -166,9 +179,10 @@ namespace Pionner
 			aiFace face = mesh->mFaces[i];
 			for (int j = 0; j < face.mNumIndices; ++j)
 			{
-				part->m_indices.push_back(face.mIndices[j]);
+				indices.push_back(face.mIndices[j]);
 			}
 		}
+		indBuffer->insertData<uint32_t>(indices);
 
 		// every mesh only has one GfxMaterial
 		if (mesh->mMaterialIndex >= 0)
@@ -177,7 +191,7 @@ namespace Pionner
 			if (mt)
 			{
 				aiString texName;
-				if (mt->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+				/*if (mt->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 				{
 					mt->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
 					part->m_material.m_type = MAT_DIFFUSE;
@@ -197,7 +211,7 @@ namespace Pionner
 					part->m_material.m_type = MAT_AMBIENT;
 					part->m_material.m_path = rootDir + '/' + texName.C_Str();
 					part->m_material.loadRawData();
-				}
+				}*/
 
 				aiColor3D color;
 				ai_real val;

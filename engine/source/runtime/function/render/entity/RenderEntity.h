@@ -24,7 +24,6 @@ namespace Pionner
 		uint32_t              m_partIndex;
 		uint32_t              m_vertexSlot;
 		uint32_t              m_indicesSlot;
-		std::vector<uint32_t> m_indices;
 		Material              m_material;
 		AABB                  m_aabb;
 		glm::mat4             m_modelMat;

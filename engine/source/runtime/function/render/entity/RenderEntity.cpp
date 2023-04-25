@@ -7,7 +7,6 @@ namespace Pionner
 	EntityPart::EntityPart()
 		: m_partIndex(0)
 		, m_vertexSlot(0), m_indicesSlot(0)
-		, m_indices()
 		, m_material()
 		, m_aabb()
 		, m_modelMat(1.f)
@@ -16,7 +15,6 @@ namespace Pionner
 
 	EntityPart::~EntityPart()
 	{
-		std::vector<uint32_t>().swap(m_indices);
 	}
 
 	RenderEntity::RenderEntity()
