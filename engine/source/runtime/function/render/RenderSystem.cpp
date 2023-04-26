@@ -106,7 +106,7 @@ namespace Pionner
 	{
 		m_pipeLine->preparePassData();
 
-		RenderParam param{ m_camera, m_frustum };
+		RenderParam param{ m_camera, m_frustum, m_resourceMgr };
 
 		m_pipeLine->forwardRender(m_scene, param);
 	}

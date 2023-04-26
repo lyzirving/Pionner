@@ -8,12 +8,12 @@
 
 namespace Pionner
 {
-	class RhiShader;
+	class ShaderRhi;
 
 	class Shader
 	{
 	public:
-		Shader(const std::shared_ptr<RhiShader> &rhi, const char *name, const char *vertName, const char *fragName);
+		Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName);
 		virtual ~Shader();
 
 		inline bool isInit() { return m_program > 0; }
@@ -37,7 +37,7 @@ namespace Pionner
 		void setVec4(const std::string &name, float x0, float x1, float x2, float x3) const;
 
 	protected:
-		std::shared_ptr<RhiShader> m_rhi;
+		std::shared_ptr<ShaderRhi> m_rhi;
 		std::string m_name;
 		std::string m_vert, m_frag;
 		uint32_t m_program;

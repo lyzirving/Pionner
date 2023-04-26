@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include "function/render/shader/Shader.h"
-#include "function/render/rhi/RhiShader.h"
+#include "function/render/rhi/ShaderRhi.h"
 
 #include "core/log/LogSystem.h"
 
@@ -14,7 +14,7 @@
 
 namespace Pionner
 {
-	Shader::Shader(const std::shared_ptr<RhiShader> &rhi, const char *name, const char *vertName, const char *fragName)
+	Shader::Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName)
 		: m_rhi(rhi), m_name(name)
 		, m_vert(), m_frag(), m_program(0)
 	{

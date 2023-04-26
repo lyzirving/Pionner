@@ -4,7 +4,8 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "function/render/rhi/RhiHeader.h"
-#include "function/render/rhi/opengl/RhiShaderGL.h"
+#include "function/render/rhi/opengl/shader/ShaderRhiGL.h"
+#include "function/render/rhi/opengl/cmd/DrawCmdGL.h"
 
 #include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/WindowSystem.h"
@@ -20,6 +21,7 @@ namespace Pionner
 {
 	RhiGL::RhiGL() : Rhi()
 	{
+		m_type = RHI_OPENGL;
 	}
 
 	RhiGL::~RhiGL()
@@ -68,13 +70,22 @@ namespace Pionner
 		m_window.reset();
 	}
 
-	std::shared_ptr<RhiShader> RhiGL::getRhiShader()
+	std::shared_ptr<ShaderRhi> RhiGL::getShaderRhi()
 	{
-		if (!m_rhiShader.get())
+		if (!m_shaderRhi.get())
 		{
-			m_rhiShader = std::shared_ptr<RhiShader>(new RhiShaderGL);
+			m_shaderRhi = std::shared_ptr<ShaderRhi>(new ShaderRhiGL);
 		}
-		return m_rhiShader;
+		return m_shaderRhi;
+	}
+
+	std::shared_ptr<DrawCmd> RhiGL::getDrawCmd()
+	{
+		if (!m_drawCmd.get())
+		{
+			m_drawCmd = std::shared_ptr<DrawCmd>(new DrawCmdGL);
+		}
+		return m_drawCmd;
 	}
 
 	void RhiGL::createInstance()

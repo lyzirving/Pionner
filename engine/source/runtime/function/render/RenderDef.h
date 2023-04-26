@@ -14,11 +14,13 @@ namespace Pionner
 	class RenderPipelineBase;
 	class Camera;
 	class Frustum;
+	class RenderResourceMgr;
 
 	struct RenderParam
 	{
-		std::shared_ptr<Camera>  camera;
-		std::shared_ptr<Frustum> frustum;
+		std::shared_ptr<Camera>            camera;
+		std::shared_ptr<Frustum>           frustum;
+		std::shared_ptr<RenderResourceMgr> resource;
 	};
 
 	struct WindowCreateInfo

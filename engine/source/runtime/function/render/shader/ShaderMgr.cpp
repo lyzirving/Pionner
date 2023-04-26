@@ -1,7 +1,7 @@
 #include "function/render/shader/ShaderMgr.h"
 #include "function/render/shader/Shader.h"
 #include "function/render/rhi/Rhi.h"
-#include "function/render/rhi/RhiShader.h"
+#include "function/render/rhi/ShaderRhi.h"
 
 #include "core/log/LogSystem.h"
 
@@ -47,8 +47,7 @@ namespace Pionner
 				{
 					case Pionner::SHADER_TYPE_MESH:
 					{
-						m_shaders[type] = std::make_shared<Shader>(rhi->getRhiShader(), "mesh",
-																   "mesh", "mesh");
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "mesh", "mesh", "mesh");
 						m_shaders[type]->init();
 						ret = m_shaders[type];
 						break;

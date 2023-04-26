@@ -6,11 +6,11 @@
 
 namespace Pionner
 {
-	class RhiShader
+	class ShaderRhi
 	{
 	public:
-		RhiShader() {};
-		virtual ~RhiShader() = default;
+		ShaderRhi() {};
+		virtual ~ShaderRhi() = default;
 
 		virtual bool build(const char *vert, const char *frag, uint32_t &program) = 0;
 		virtual void activate(uint32_t program, bool active) = 0;

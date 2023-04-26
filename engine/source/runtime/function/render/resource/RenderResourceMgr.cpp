@@ -55,6 +55,32 @@ namespace Pionner
 		return ret;
 	}
 
+	RenderResourceMgr::Buffer RenderResourceMgr::find(DataType type, uint32_t slot)
+	{
+		Buffer ret{ nullptr };
+		switch (type)
+		{
+			case DATA_VERTEX:
+			{
+				ret = m_vertexArray.find(slot);
+				break;
+			}
+			case DATA_INDICE:
+			{
+				ret = m_indiceArray.find(slot);
+				break;
+			}
+			case DATA_TEXTURE:
+			{
+				ret = m_textureArray.find(slot);
+				break;
+			}
+			default:
+				break;
+		}
+		return ret;
+	}
+
 	void RenderResourceMgr::release(BufferType type, uint32_t slot)
 	{
 		switch (type)

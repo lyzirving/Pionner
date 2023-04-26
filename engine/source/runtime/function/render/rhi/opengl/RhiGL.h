@@ -15,7 +15,8 @@ namespace Pionner
 		virtual void initUIRenderBackend() override;
 		virtual void shutdownUIRenderBackend() override;
 		virtual void shutdown() override;
-		virtual std::shared_ptr<RhiShader> getRhiShader() override;
+		virtual std::shared_ptr<ShaderRhi> getShaderRhi() override;
+		virtual std::shared_ptr<DrawCmd> getDrawCmd() override;
 
 		virtual void viewportFull() override;
 

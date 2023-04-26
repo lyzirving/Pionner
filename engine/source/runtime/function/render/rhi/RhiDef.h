@@ -6,7 +6,14 @@
 namespace Pionner
 {
 	class WindowSystem;
-	class RhiShader;
+	class ShaderRhi;
+
+	enum RhiType : uint8_t
+	{
+		RHI_OPENGL,
+		RHI_VULKAN,
+		RHI_COUNT
+	};
 
 	struct OpenGLRhiInitInfo
 	{

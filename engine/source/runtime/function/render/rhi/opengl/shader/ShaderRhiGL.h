@@ -1,15 +1,15 @@
 #ifndef __RHI_SHADER_GL_H__
 #define __RHI_SHADER_GL_H__
 
-#include "function/render/rhi/RhiShader.h"
+#include "function/render/rhi/ShaderRhi.h"
 
 namespace Pionner
 {
-	class RhiShaderGL : public RhiShader
+	class ShaderRhiGL : public ShaderRhi
 	{
 	public:
-		RhiShaderGL();
-		virtual ~RhiShaderGL();
+		ShaderRhiGL();
+		virtual ~ShaderRhiGL();
 
 		virtual bool build(const char *vert, const char *frag, uint32_t &program) override;
 		virtual void activate(uint32_t program, bool active) override;
