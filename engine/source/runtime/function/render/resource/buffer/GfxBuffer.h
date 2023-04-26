@@ -33,6 +33,9 @@ namespace Pionner
 		bool is() const;
 
 		template<class T>
+		void insertData(T &data);
+
+		template<class T>
 		void insertData(std::vector<T> &data);
 
 	protected:

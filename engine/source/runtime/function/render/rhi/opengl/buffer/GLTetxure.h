@@ -35,6 +35,9 @@ namespace Pionner
 
 	template<>
 	bool GfxBuffer::is<GLTexture>() const;
+
+	template<>
+	void GfxBuffer::insertData<std::string>(std::string &data);
 }
 
 #endif

@@ -100,4 +100,20 @@ namespace Pionner
 		else
 			return GL_RGBA;
 	}
+
+	template<>
+	bool GfxBuffer::is<GLTexture>() const
+	{
+		return getDataType() == DATA_TEXTURE;
+	}
+
+	template<>
+	void GfxBuffer::insertData<std::string>(std::string &data)
+	{
+		if (is<GLTexture>())
+		{
+			GLTexture *ptr = (GLTexture *)this;
+			ptr->m_path = data;
+		}
+	}
 }

@@ -124,27 +124,13 @@ namespace Pionner
 		glm::vec3 min{ FLT_MAX }, max{ FLT_MIN };
 		std::vector<Vertex> vertexArray{};
 		std::vector<uint32_t> indices{};
+		std::shared_ptr<GfxBuffer> vBuffer{ nullptr }, indBuffer{ nullptr }, texture{ nullptr };
 
-		std::shared_ptr<GfxBuffer> vBuffer{ nullptr }, indBuffer{ nullptr };
 		std::shared_ptr<EntityPart> part = std::shared_ptr<EntityPart>(new EntityPart);
 		std::shared_ptr<RenderResourceMgr> resource = g_runtimeCtx.m_renderSystem->getResourceMgr();
 
 		vBuffer = resource->allocate(BUF_MEM_ARRAY);
-
-		if (!vBuffer)
-		{
-			LOG_ERR("fail to allocate array buffer for mesh");
-			return;
-		}
-
 		indBuffer = resource->allocate(BUF_EBO);
-
-		if (!indBuffer)
-		{
-			LOG_ERR("fail to allocate indice buffer for mesh");
-			resource->release(vBuffer->getBufferType(), vBuffer->getSlot());
-			return;
-		}
 
 		part->m_partIndex = meshIndex;
 		part->m_vertexSlot = vBuffer->getSlot();
@@ -163,6 +149,7 @@ namespace Pionner
 			}
 			vertexArray.push_back(std::move(vertex));
 		}
+
 		if (!vertexArray.empty())
 		{
 			vBuffer->insertData<Vertex>(vertexArray);
@@ -191,27 +178,36 @@ namespace Pionner
 			if (mt)
 			{
 				aiString texName;
-				/*if (mt->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+				bool found{ false };
+				if (mt->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 				{
 					mt->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
 					part->m_material.m_type = MAT_DIFFUSE;
-					part->m_material.m_path = rootDir + '/' + texName.C_Str();
-					part->m_material.loadRawData();
+					found = true;
 				}
 				else if (mt->GetTextureCount(aiTextureType_SPECULAR) > 0)
 				{
 					mt->GetTexture(aiTextureType_SPECULAR, 0, &texName);
 					part->m_material.m_type = MAT_SPECULAR;
-					part->m_material.m_path = rootDir + '/' + texName.C_Str();
-					part->m_material.loadRawData();
+					found = true;
 				}
 				else if (mt->GetTextureCount(aiTextureType_AMBIENT) > 0)
 				{
 					mt->GetTexture(aiTextureType_AMBIENT, 0, &texName);
 					part->m_material.m_type = MAT_AMBIENT;
-					part->m_material.m_path = rootDir + '/' + texName.C_Str();
-					part->m_material.loadRawData();
-				}*/
+					found = true;
+				}
+
+				if (found)
+				{
+					std::string srcPath = rootDir + '/' + texName.C_Str();
+
+					texture = resource->allocate(BUF_TEXTURE);
+					texture->insertData(srcPath);
+					texture->load();
+
+					part->m_material.m_slot = texture->getSlot();
+				}
 
 				aiColor3D color;
 				ai_real val;
