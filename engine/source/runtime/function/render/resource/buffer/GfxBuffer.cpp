@@ -6,7 +6,7 @@ namespace Pionner
 	Pionner::GfxBuffer::GfxBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
 		: m_mgr(mgr), m_id(0), m_slot(0)
 		, m_bufferType(BUF_CNT), m_dataType(DATA_TYPE_COUNT)
-		, m_loaded(false)
+		, m_uploaded(false)
 	{
 	}
 
@@ -23,6 +23,11 @@ namespace Pionner
 	void GfxBuffer::bindToTarget(uint32_t target)
 	{
 		//empty implementation by default
+	}
+
+	uint32_t GfxBuffer::size()
+	{
+		return 0;
 	}
 
 	void GfxBuffer::load()

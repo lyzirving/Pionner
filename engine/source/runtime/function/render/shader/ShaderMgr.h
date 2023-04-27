@@ -12,20 +12,15 @@ namespace Pionner
 
 	class ShaderMgr
 	{
+		friend class RenderSystem;
 	public:
-		static ShaderMgr *instance();
+		ShaderMgr();
+		~ShaderMgr();
 
 		std::shared_ptr<Shader> get(ShaderType type, const std::shared_ptr<Rhi> &rhi);
 		void destroy();
 
 	private:
-		ShaderMgr();
-		~ShaderMgr();
-
-	private:
-		static ShaderMgr *g_instance;
-		static std::mutex g_mutex;
-
 		std::shared_ptr<Shader> m_shaders[SHADER_TYPE_CNT];
 	};
 }

@@ -1,13 +1,15 @@
 #include "function/render/RenderSystem.h"
+#include "function/render/WindowSystem.h"
+
 #include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
+#include "function/render/swap/SwapContext.h"
+#include "function/render/shader/ShaderMgr.h"
+#include "function/render/resource/RenderResourceMgr.h"
+
 #include "function/render/scene/RenderScene.h"
 #include "function/render/scene/Camera.h"
 #include "function/render/scene/Frustum.h"
-#include "function/render/swap/SwapContext.h"
-#include "function/render/WindowSystem.h"
-#include "function/render/shader/ShaderMgr.h"
-#include "function/render/resource/RenderResourceMgr.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -25,6 +27,7 @@ namespace Pionner
 		, m_scene(nullptr)
 		, m_camera(nullptr)
 		, m_frustum(nullptr)
+		, m_shaderMgr(nullptr)
 		, m_resourceMgr(nullptr)
 	{
 	}
@@ -50,6 +53,9 @@ namespace Pionner
 		m_camera->setPosition(glm::vec3(0.f, 3.f, 5.f));
 
 		m_frustum = std::make_shared<Frustum>();
+		m_frustum->setAspect(float(info.window->getWidth()) / float(info.window->getHeight()));
+
+		m_shaderMgr = std::make_shared<ShaderMgr>();
 
 		m_resourceMgr = std::make_shared<RenderResourceMgr>(m_rhi);
 		RESOURCE_MGR_MAKE_SELF_WEAK(m_resourceMgr);
@@ -73,12 +79,16 @@ namespace Pionner
 
 		m_camera.reset();
 
-		ShaderMgr::instance()->destroy();
-
 		if (m_scene)
 		{
 			m_scene->shutdown();
 			m_scene.reset();
+		}
+
+		if (m_shaderMgr)
+		{
+			m_shaderMgr->destroy();
+			m_shaderMgr.reset();
 		}
 
 		if (m_pipeLine)
@@ -106,7 +116,7 @@ namespace Pionner
 	{
 		m_pipeLine->preparePassData();
 
-		RenderParam param{ m_camera, m_frustum, m_resourceMgr };
+		RenderParam param{ m_camera, m_frustum, m_resourceMgr, m_shaderMgr, m_rhi };
 
 		m_pipeLine->forwardRender(m_scene, param);
 	}

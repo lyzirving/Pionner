@@ -21,7 +21,7 @@ namespace Pionner
 
 	void GLIndexBuffer::upload()
 	{
-		if (isLoad())
+		if (isUpload())
 			return;
 
 		if (m_indices.empty())
@@ -34,7 +34,7 @@ namespace Pionner
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), &m_indices[0], GL_STATIC_DRAW);
-		m_loaded = true;
+		m_uploaded = true;
 	}
 
 	void GLIndexBuffer::release()
@@ -51,12 +51,12 @@ namespace Pionner
 
 	void GLIndexBuffer::bind()
 	{
-		if (!isLoad())
+		if (!isUpload())
 		{
 			upload();
 		}
 
-		if (isLoad())
+		if (isUpload())
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		}

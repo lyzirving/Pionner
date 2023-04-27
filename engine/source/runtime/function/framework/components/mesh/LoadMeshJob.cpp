@@ -106,8 +106,6 @@ namespace Pionner
 			}
 		}
 
-		entity->m_childNum = node->mNumChildren;
-
 		// process the children for current node
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{

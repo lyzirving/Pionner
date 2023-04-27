@@ -16,6 +16,7 @@ namespace Pionner
 		virtual void release() override;
 
 		virtual void bind() override;
+		virtual uint32_t size() override { return m_indices.size(); }
 
 	private:
 		std::vector<uint32_t> m_indices;

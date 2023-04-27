@@ -27,7 +27,7 @@ namespace Pionner
 
 	void GLTexture::upload()
 	{
-		if (isLoad())
+		if (isUpload())
 			return;
 
 		if (!m_data)
@@ -57,7 +57,7 @@ namespace Pionner
 		stbi_image_free(m_data);
 		m_data = nullptr;
 
-		m_loaded = true;
+		m_uploaded = true;
 	}
 
 	void GLTexture::release()
@@ -74,8 +74,16 @@ namespace Pionner
 
 	void GLTexture::bindToTarget(uint32_t target)
 	{
-		glActiveTexture(GL_TEXTURE0 + target);
-		glBindTexture(GL_TEXTURE_2D, m_id);
+		if (!isUpload())
+		{
+			upload();
+		}
+
+		if (isUpload())
+		{
+			glActiveTexture(GL_TEXTURE0 + target);
+			glBindTexture(GL_TEXTURE_2D, m_id);
+		}
 	}
 
 	void GLTexture::load()

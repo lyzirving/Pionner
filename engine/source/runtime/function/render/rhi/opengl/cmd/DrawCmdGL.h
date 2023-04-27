@@ -5,6 +5,8 @@
 
 namespace Pionner
 {
+	class EntityPart;
+
 	class DrawCmdGL : public DrawCmd
 	{
 	public:
@@ -12,6 +14,9 @@ namespace Pionner
 		virtual ~DrawCmdGL();
 
 		virtual void drawEntity(std::shared_ptr<RenderEntity> &entity, RenderParam &param) override;
+
+	private:
+		void drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param);
 	};
 }
 

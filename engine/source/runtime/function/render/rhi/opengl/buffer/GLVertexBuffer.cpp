@@ -20,7 +20,7 @@ namespace Pionner
 
 	void GLVertexBuffer::upload()
 	{
-		if (isLoad())
+		if (isUpload())
 			return;
 
 		if (m_vertex.empty())
@@ -33,7 +33,7 @@ namespace Pionner
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ARRAY_BUFFER, m_vertex.size() * sizeof(Vertex), &m_vertex[0], GL_STATIC_DRAW);
-		m_loaded = true;
+		m_uploaded = true;
 	}
 
 	void GLVertexBuffer::release()

@@ -7,7 +7,6 @@
 
 #include "function/render/rhi/Rhi.h"
 #include "function/render/cmd/DrawCmd.h"
-#include "function/render/resource/RenderResourceMgr.h"
 
 #include "function/render/RenderDef.h"
 
@@ -46,7 +45,7 @@ namespace Pionner
 			std::sort(m_entities.begin(), m_entities.end(), ModelLayer::entitySorter);
 		}
 
-		std::shared_ptr<DrawCmd> drawCmd = param.resource->getRhi()->getDrawCmd();
+		std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
 
 		for (auto &entity : m_entities)
 		{

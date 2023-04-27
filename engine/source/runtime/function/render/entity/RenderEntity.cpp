@@ -20,7 +20,7 @@ namespace Pionner
 	RenderEntity::RenderEntity()
 		: m_type(ENTITY_NONE)
 		, m_order(ORDER_LOWEST)
-		, m_entityId(g_entityId++), m_childNum(0)
+		, m_entityId(g_entityId++)
 		, m_parts()
 		, m_children()
 		, m_parent()

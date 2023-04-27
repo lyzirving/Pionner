@@ -12,28 +12,12 @@
 
 namespace Pionner
 {
-	ShaderMgr *ShaderMgr::g_instance{ nullptr };
-	std::mutex ShaderMgr::g_mutex{};
-
 	ShaderMgr::ShaderMgr() : m_shaders()
 	{
 	}
 
 	ShaderMgr::~ShaderMgr()
 	{
-	}
-
-	ShaderMgr *ShaderMgr::instance()
-	{
-		if (!g_instance)
-		{
-			std::lock_guard<std::mutex> guard{ g_mutex };
-			if (!g_instance)
-			{
-				g_instance = new ShaderMgr;
-			}
-		}
-		return g_instance;
 	}
 
 	std::shared_ptr<Shader> ShaderMgr::get(ShaderType type, const std::shared_ptr<Rhi> &rhi)
@@ -77,8 +61,10 @@ namespace Pionner
 		for (int i = 0; i < SHADER_TYPE_CNT; i++)
 		{
 			if (m_shaders[i])
+			{
 				m_shaders[i]->destroy();
-			m_shaders[i].reset();
+				m_shaders[i].reset();
+			}
 		}
 	}
 }

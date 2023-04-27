@@ -15,12 +15,15 @@ namespace Pionner
 	class Camera;
 	class Frustum;
 	class RenderResourceMgr;
+	class ShaderMgr;
 
 	struct RenderParam
 	{
 		std::shared_ptr<Camera>            camera;
 		std::shared_ptr<Frustum>           frustum;
 		std::shared_ptr<RenderResourceMgr> resource;
+		std::shared_ptr<ShaderMgr>         shaderMgr;
+		std::shared_ptr<Rhi>               rhi;
 	};
 
 	struct WindowCreateInfo

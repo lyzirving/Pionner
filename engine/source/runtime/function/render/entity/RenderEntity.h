@@ -40,7 +40,6 @@ namespace Pionner
 		EntityType m_type;
 		DrawOrder  m_order;
 		uint32_t   m_entityId;
-		uint32_t   m_childNum;
 		std::vector<std::shared_ptr<EntityPart>>   m_parts;
 		std::vector<std::shared_ptr<RenderEntity>> m_children;
 		std::weak_ptr<RenderEntity>                m_parent;
