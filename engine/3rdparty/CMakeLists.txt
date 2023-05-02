@@ -32,3 +32,10 @@ if(NOT TARGET stb)
     include(stb.cmake)
     set_target_properties(stb PROPERTIES FOLDER ${THIRD_PARTY_DIR}/stb)
 endif()
+
+if(NOT TARGET Decs)
+    add_library(Decs INTERFACE)
+
+    target_include_directories(
+        Decs INTERFACE ${THIRD_PARTY_DIR}/decs)
+endif()

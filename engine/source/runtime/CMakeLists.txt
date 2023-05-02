@@ -34,7 +34,8 @@ target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog
                                      PUBLIC imgui
                                      PUBLIC glm
                                      PUBLIC stb
-                                     PUBLIC assimp)
+                                     PUBLIC assimp
+                                     PUBLIC Decs)
 
 target_include_directories( ${TARGET_NAME} PUBLIC ${ENGINE_INCLUDE_DIR}
                                            PUBLIC ${THIRD_PARTY_DIR}
@@ -43,4 +44,5 @@ target_include_directories( ${TARGET_NAME} PUBLIC ${ENGINE_INCLUDE_DIR}
                                            PUBLIC ${GLEW_INCLUDE}
                                            PUBLIC imgui
                                            PUBLIC glm 
-                                           PUBLIC stb )
+                                           PUBLIC stb
+                                           PUBLIC Decs )
