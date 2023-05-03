@@ -3,6 +3,8 @@
 #include "function/render/RenderSystem.h"
 #include "function/render/swap/SwapContext.h"
 
+#include "function/framework/world/World.h"
+
 #include "function/framework/assets/AssetsSystem.h"
 #include "function/framework/event/EventSystem.h"
 
@@ -17,11 +19,13 @@ namespace Pionner
 {
 	GlobalContext g_runtimeCtx{};
 
-	GlobalContext::GlobalContext() : m_windowSystem(nullptr)
-		                           , m_renderSystem(nullptr) 
-		                           , m_assetsSystem(nullptr)
-		                           , m_eventSystem(nullptr)
-		                           , m_swapContext(nullptr)
+	GlobalContext::GlobalContext()
+		: m_windowSystem(nullptr)
+		, m_world(nullptr)
+		, m_renderSystem(nullptr)
+		, m_assetsSystem(nullptr)
+		, m_eventSystem(nullptr)
+		, m_swapContext(nullptr)
 	{
 	}
 
@@ -34,6 +38,9 @@ namespace Pionner
 		WindowCreateInfo windowInitInfo;
 		m_windowSystem = std::make_shared<WindowSystem>();
 		m_windowSystem->initialize(windowInitInfo);
+
+		m_world = std::make_shared<World>();
+		m_world->initialize();
 
 		RenderSystemInitInfo renderInitInfo;
 		renderInitInfo.window = m_windowSystem;
@@ -60,6 +67,12 @@ namespace Pionner
 		{
 			m_assetsSystem->shutdown();
 			m_assetsSystem.reset();
+		}
+
+		if (m_world)
+		{
+			m_world->shutdown();
+			m_world.reset();
 		}
 
 		if (m_renderSystem)

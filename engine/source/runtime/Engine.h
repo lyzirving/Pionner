@@ -28,7 +28,7 @@ namespace Pionner
 	private:
 		std::chrono::steady_clock::time_point m_lastTickTimePoint;
 		float m_averageDuration;
-		int m_frameCnt, m_fps;
+		int   m_frameCnt, m_fps;
 	};
 }
 

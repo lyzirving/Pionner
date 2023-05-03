@@ -6,6 +6,7 @@
 namespace Pionner
 {
 	class WindowSystem;
+	class World;
 	class RenderSystem;
 	class AssetsSystem;
 	class EventSystem;
@@ -22,6 +23,7 @@ namespace Pionner
 
 	public:
 		std::shared_ptr<WindowSystem> m_windowSystem;
+		std::shared_ptr<World>        m_world;
 		std::shared_ptr<RenderSystem> m_renderSystem;
 		std::shared_ptr<AssetsSystem> m_assetsSystem;
 		std::shared_ptr<EventSystem>  m_eventSystem;
