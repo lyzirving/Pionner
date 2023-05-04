@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include "function/render/WindowSystem.h"
+#include "function/framework/world/World.h"
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -11,15 +12,16 @@
 
 namespace Pionner
 {
-	WindowSystem::WindowSystem() 
-		: m_window(nullptr)
+	WindowSystem::WindowSystem(const std::shared_ptr<World> &world)
+		: BaseSystem(world)
+		, m_window(nullptr)
 		, m_width(0), m_height(0)
 	{
 	}
 
 	WindowSystem::~WindowSystem() = default;
 
-	void WindowSystem::initialize(const WindowCreateInfo& info)
+	void WindowSystem::initialize(const WindowCreateInfo &info)
 	{
 		if (!glfwInit())
 		{
@@ -62,7 +64,7 @@ namespace Pionner
 		}
 	}
 
-	void WindowSystem::windowSizeCallback(GLFWwindow* window, int width, int height)
+	void WindowSystem::windowSizeCallback(GLFWwindow *window, int width, int height)
 	{
 		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
 		if (app)
@@ -72,7 +74,7 @@ namespace Pionner
 		}
 	}
 
-	void WindowSystem::windowCloseCallback(GLFWwindow* window)
+	void WindowSystem::windowCloseCallback(GLFWwindow *window)
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}

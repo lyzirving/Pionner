@@ -22,6 +22,9 @@ namespace Pionner
 		template <class ... CompTypes>
 		std::shared_ptr<Entity> createEntity(const std::string &name);
 
+		template<typename Func>
+		void iterate(Func &&function);
+
 	private:
 		static uint32_t g_entityId;
 
@@ -45,6 +48,12 @@ namespace Pionner
 		entity->m_id = m_worldImpl->new_entity<CompTypes...>();
 		m_entityMap.emplace(entity->m_name, entity);
 		return entity;
+	}
+
+	template<typename Func>
+	void World::iterate(Func &&function)
+	{
+		m_worldImpl->for_each(std::move(function));
 	}
 }
 

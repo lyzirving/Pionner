@@ -2,6 +2,7 @@
 #define __RENDER_SYSTEM_H__
 
 #include "function/render/RenderDef.h"
+#include "function/framework/system/BaseSystem.h"
 
 namespace Pionner
 {
@@ -11,11 +12,11 @@ namespace Pionner
 	class  ShaderMgr;
 	class  RenderResourceMgr;
 
-	class RenderSystem
+	class RenderSystem : public BaseSystem
 	{
 	public:
-		RenderSystem();
-		~RenderSystem();
+		RenderSystem(const std::shared_ptr<World> &world);
+		virtual ~RenderSystem();
 
 		inline std::shared_ptr<RenderResourceMgr> getResourceMgr() { return m_resourceMgr; }
 
@@ -24,7 +25,7 @@ namespace Pionner
 		void shutdownUIRenderBackend();
 		void shutdown();
 
-		void tick(float delta);
+		virtual void tick(float deltaTime) override;
 
 	private:
 		std::shared_ptr<Rhi>                m_rhi;

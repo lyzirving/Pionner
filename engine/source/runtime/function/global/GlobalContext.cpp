@@ -28,27 +28,21 @@ namespace Pionner
 	{
 		LogSystem::initialize();
 
-		WindowCreateInfo windowInitInfo;
-		m_windowSystem = std::make_shared<WindowSystem>();
-		m_windowSystem->initialize(windowInitInfo);
-
 		m_world = std::make_shared<World>();
 		m_world->initialize();
 
+		WindowCreateInfo windowInitInfo;
+		m_windowSystem = std::make_shared<WindowSystem>(m_world);
+		m_windowSystem->initialize(windowInitInfo);
+
 		RenderSystemInitInfo renderInitInfo;
 		renderInitInfo.window = m_windowSystem;
-		m_renderSystem = std::make_shared<RenderSystem>();
+		m_renderSystem = std::make_shared<RenderSystem>(m_world);
 		m_renderSystem->initialize(renderInitInfo);
 	}
 
 	void GlobalContext::shutdownSystems()
 	{
-		if (m_world)
-		{
-			m_world->shutdown();
-			m_world.reset();
-		}
-
 		if (m_renderSystem)
 		{
 			m_renderSystem->shutdown();
@@ -59,6 +53,12 @@ namespace Pionner
 		{
 			m_windowSystem->shutdown();
 			m_windowSystem.reset();
+		}
+
+		if (m_world)
+		{
+			m_world->shutdown();
+			m_world.reset();
 		}
 
 		LOG_DEBUG("all systems are shutdown");

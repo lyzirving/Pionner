@@ -5,8 +5,13 @@
 
 namespace Pionner
 {
-	struct MeshComp : public Comp
+	class MeshComp
 	{
+	public:
+		MeshComp() : Comp() {};
+		virtual ~MeshComp() = default;
+
+	private:
 	};
 }
 

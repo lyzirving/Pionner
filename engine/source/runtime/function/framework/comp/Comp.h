@@ -3,8 +3,11 @@
 
 namespace Pionner
 {
-	struct Comp
+	class Comp
 	{
+	public:
+		Comp() {};
+		~Comp() = default;
 	};
 }
 

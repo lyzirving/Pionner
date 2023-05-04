@@ -1,6 +1,8 @@
 #include "function/render/RenderSystem.h"
 #include "function/render/WindowSystem.h"
 
+#include "function/framework/world/World.h"
+
 #include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
 #include "function/render/shader/ShaderMgr.h"
@@ -21,7 +23,9 @@
 
 namespace Pionner
 {
-	RenderSystem::RenderSystem() : m_rhi(nullptr)
+	RenderSystem::RenderSystem(const std::shared_ptr<World> &world)
+		: BaseSystem(world)
+		, m_rhi(nullptr)
 		, m_pipeLine(nullptr)
 		, m_scene(nullptr)
 		, m_camera(nullptr)
@@ -103,7 +107,7 @@ namespace Pionner
 		}
 	}
 
-	void RenderSystem::tick(float delta)
+	void RenderSystem::tick(float deltaTime)
 	{
 		m_pipeLine->preparePassData();
 
