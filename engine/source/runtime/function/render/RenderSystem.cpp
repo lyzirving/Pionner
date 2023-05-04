@@ -3,7 +3,6 @@
 
 #include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
-#include "function/render/swap/SwapContext.h"
 #include "function/render/shader/ShaderMgr.h"
 #include "function/render/resource/RenderResourceMgr.h"
 
@@ -101,14 +100,6 @@ namespace Pionner
 		{
 			m_rhi->shutdown();
 			m_rhi.reset();
-		}
-	}
-
-	void RenderSystem::processSwapData(const SwapData &data)
-	{
-		if (!data.m_objEntities.empty())
-		{
-			m_scene->addEntities(data.m_objEntities);
 		}
 	}
 

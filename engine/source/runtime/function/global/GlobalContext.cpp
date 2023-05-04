@@ -1,12 +1,8 @@
 #include "function/global/GlobalContext.h"
 #include "function/render/WindowSystem.h"
 #include "function/render/RenderSystem.h"
-#include "function/render/swap/SwapContext.h"
 
 #include "function/framework/world/World.h"
-
-#include "function/framework/assets/AssetsSystem.h"
-#include "function/framework/event/EventSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -20,12 +16,9 @@ namespace Pionner
 	GlobalContext g_runtimeCtx{};
 
 	GlobalContext::GlobalContext()
-		: m_windowSystem(nullptr)
-		, m_world(nullptr)
+		: m_world(nullptr)
+		, m_windowSystem(nullptr)
 		, m_renderSystem(nullptr)
-		, m_assetsSystem(nullptr)
-		, m_eventSystem(nullptr)
-		, m_swapContext(nullptr)
 	{
 	}
 
@@ -46,29 +39,10 @@ namespace Pionner
 		renderInitInfo.window = m_windowSystem;
 		m_renderSystem = std::make_shared<RenderSystem>();
 		m_renderSystem->initialize(renderInitInfo);
-
-		m_assetsSystem = std::make_shared<AssetsSystem>();
-		m_assetsSystem->initialize();
-
-		m_eventSystem = std::make_shared<EventSystem>();
-
-		m_swapContext = std::make_shared<SwapContext>();
 	}
 
 	void GlobalContext::shutdownSystems()
 	{
-		if (m_swapContext)
-			m_swapContext.reset();
-
-		if (m_eventSystem)
-			m_eventSystem.reset();
-
-		if (m_assetsSystem)
-		{
-			m_assetsSystem->shutdown();
-			m_assetsSystem.reset();
-		}
-
 		if (m_world)
 		{
 			m_world->shutdown();

@@ -20,15 +20,11 @@ namespace Pionner
 	protected:
 		static const float s_fpsAlpha;
 
-		void calculateFps(float deltaTime);
-
 		void tickLogic(float deltaTime);
 		void tickRender(float deltaTime);
 
 	private:
 		std::chrono::steady_clock::time_point m_lastTickTimePoint;
-		float m_averageDuration;
-		int   m_frameCnt, m_fps;
 	};
 }
 

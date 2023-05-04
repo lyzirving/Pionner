@@ -5,7 +5,6 @@
 
 namespace Pionner
 {
-	struct SwapData;
 	class  RenderScene;
 	class  Camera;
 	class  Frustum;
@@ -24,8 +23,6 @@ namespace Pionner
 		void initializeUIRenderBackend(WindowUI *windowUI);
 		void shutdownUIRenderBackend();
 		void shutdown();
-
-		void processSwapData(const SwapData &data);
 
 		void tick(float delta);
 
