@@ -1,4 +1,7 @@
 #include "function/framework/world/World.h"
+#include "function/framework/comp/RenderComp.h"
+
+#include "function/framework/load/Loader.h"
 
 #include "core/log/LogSystem.h"
 
@@ -23,9 +26,11 @@ namespace Pionner
 		m_worldImpl.reset();
 	}
 
-	void World::initialize()
+	void World::build()
 	{
-
+		std::shared_ptr<Entity> entity = createEntity<RenderComp>();
+		auto &comp = entity->getComp<RenderComp>();
+		comp.m_entity = Loader::load("assets/objects/basic/Marry/Marry.obj");
 	}
 
 	void World::shutdown()

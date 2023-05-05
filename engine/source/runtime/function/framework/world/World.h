@@ -13,7 +13,7 @@ namespace Pionner
 		World();
 		~World();
 
-		void initialize();
+		void build();
 		void shutdown();
 
 		template <class ... CompTypes>

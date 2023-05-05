@@ -15,6 +15,7 @@ namespace Pionner
 
 	EntityPart::~EntityPart()
 	{
+		//TODO: release the buffer 
 	}
 
 	RenderEntity::RenderEntity()

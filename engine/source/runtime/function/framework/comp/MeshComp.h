@@ -10,8 +10,6 @@ namespace Pionner
 	public:
 		MeshComp() : Comp() {};
 		virtual ~MeshComp() = default;
-
-	private:
 	};
 }
 

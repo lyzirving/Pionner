@@ -7,7 +7,7 @@ namespace Pionner
 	{
 	public:
 		Comp() {};
-		~Comp() = default;
+		virtual ~Comp() = default;
 	};
 }
 

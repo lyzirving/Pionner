@@ -22,6 +22,9 @@ namespace Pionner
 		void addComp(typename std::enable_if<std::is_base_of<Comp, T>::value, T>::type &comp);
 
 		template <class T>
+		T &getComp();
+
+		template <class T>
 		bool hasComp(typename std::enable_if<std::is_base_of<Comp, T>::value, T>::type *placeholder = nullptr);
 
 		template <class T>
@@ -36,38 +39,31 @@ namespace Pionner
 		decs::EntityID    m_id;
 
 	private:
-		std::weak_ptr<decs::ECSWorld> m_worldImpl;
+		std::shared_ptr<decs::ECSWorld> m_worldImpl;
 	};
 
 	template <class T>
 	void Entity::addComp(typename std::enable_if<std::is_base_of<Comp, T>::value, T>::type &comp)
 	{
-		std::shared_ptr<decs::ECSWorld> world = m_worldImpl.lock();
-		if (world)
-		{
-			world->add_component<T>(m_id, comp);
-		}
+		m_worldImpl->add_component<T>(m_id, comp);
+	}
+
+	template <class T>
+	T &Entity::getComp()
+	{
+		return m_worldImpl->get_component<T>(m_id);
 	}
 
 	template <class T>
 	bool Entity::hasComp(typename std::enable_if<std::is_base_of<Comp, T>::value, T>::type *)
 	{
-		std::shared_ptr<decs::ECSWorld> world = m_worldImpl.lock();
-		if (world)
-		{
-			return world->has_component<T>(m_id);
-		}
-		return false;
+		return m_worldImpl->has_component<T>(m_id);
 	}
 
 	template <class T>
 	void Entity::removeComp(typename std::enable_if<std::is_base_of<Comp, T>::value, T>::type *)
 	{
-		std::shared_ptr<decs::ECSWorld> world = m_worldImpl.lock();
-		if (world)
-		{
-			world->remove_component<T>(m_id);
-		}
+		m_worldImpl->remove_component<T>(m_id);
 	}
 }
 

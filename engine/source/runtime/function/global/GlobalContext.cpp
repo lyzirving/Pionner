@@ -29,7 +29,6 @@ namespace Pionner
 		LogSystem::initialize();
 
 		m_world = std::make_shared<World>();
-		m_world->initialize();
 
 		WindowCreateInfo windowInitInfo;
 		m_windowSystem = std::make_shared<WindowSystem>(m_world);
@@ -39,6 +38,8 @@ namespace Pionner
 		renderInitInfo.window = m_windowSystem;
 		m_renderSystem = std::make_shared<RenderSystem>(m_world);
 		m_renderSystem->initialize(renderInitInfo);
+
+		m_world->build();
 	}
 
 	void GlobalContext::shutdownSystems()
