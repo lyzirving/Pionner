@@ -55,6 +55,32 @@ namespace Pionner
 		return ret;
 	}
 
+	void RenderResourceMgr::checkAbandoned()
+	{
+		m_vertexArray.checkAbandoned();
+		m_indiceArray.checkAbandoned();
+		m_textureArray.checkAbandoned();
+	}
+
+	void RenderResourceMgr::deleteResource(DataType type, uint32_t slot)
+	{
+		switch (type)
+		{
+			case Pionner::DATA_VERTEX:
+				m_vertexArray.release(slot);
+				break;
+			case Pionner::DATA_INDICE:
+				m_indiceArray.release(slot);
+				break;
+			case Pionner::DATA_TEXTURE:
+				m_textureArray.release(slot);
+				break;
+			case Pionner::DATA_TYPE_COUNT:
+			default:
+				break;
+		}
+	}
+
 	RenderResourceMgr::Buffer RenderResourceMgr::find(DataType type, uint32_t slot)
 	{
 		Buffer ret{ nullptr };
@@ -117,6 +143,14 @@ namespace Pionner
 		}
 	}
 
+	void RenderResourceMgr::shutdown()
+	{
+		m_vertexArray.clearActive();
+		m_indiceArray.clearActive();
+		m_textureArray.clearActive();
+		checkAbandoned();
+	}
+
 	void RenderResourceMgr::makeSelfWeak(const std::shared_ptr<RenderResourceMgr> &self)
 	{
 		m_weakSelf = self;
@@ -172,6 +206,28 @@ namespace Pionner
 			}
 		}
 		return ret;
+	}
+
+	void RenderResourceMgr::BufferArray::checkAbandoned()
+	{
+		if (!m_abandoned.empty())
+		{
+			auto itr = m_abandoned.begin();
+			while (itr != m_abandoned.end())
+			{
+				(*itr).reset();
+				itr = m_abandoned.erase(itr);
+			}
+		}
+	}
+
+	void RenderResourceMgr::BufferArray::clearActive()
+	{
+		for (auto &active : m_activeBuffers)
+		{
+			active.reset();
+		}
+		std::vector<Buffer>().swap(m_activeBuffers);
 	}
 
 	bool RenderResourceMgr::BufferArray::empty()

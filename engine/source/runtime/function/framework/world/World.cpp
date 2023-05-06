@@ -28,6 +28,7 @@ namespace Pionner
 
 	void World::build()
 	{
+		// insert default entity
 		std::shared_ptr<Entity> entity = createEntity<RenderComp>();
 		auto &comp = entity->getComp<RenderComp>();
 		comp.m_entity = Loader::load("assets/objects/basic/Marry/Marry.obj");

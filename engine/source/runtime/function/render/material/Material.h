@@ -14,9 +14,11 @@ namespace Pionner
 		Material();
 		~Material();
 
+		bool slotValid() const { return m_slot >= 0; }
+
 	public:
 		MaterialType m_type;
-		uint32_t     m_slot;
+		int32_t      m_slot;
 
 		glm::vec3    m_colorDiffuse;
 		glm::vec3    m_colorSpecular;

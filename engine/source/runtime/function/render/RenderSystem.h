@@ -2,6 +2,7 @@
 #define __RENDER_SYSTEM_H__
 
 #include "function/render/RenderDef.h"
+#include "function/render/resource/ResourceDef.h"
 #include "function/framework/system/BaseSystem.h"
 
 namespace Pionner
@@ -23,6 +24,9 @@ namespace Pionner
 		void initialize(RenderSystemInitInfo &info);
 		void initializeUIRenderBackend(WindowUI *windowUI);
 		void shutdownUIRenderBackend();
+
+		void deleteResource(DataType type, uint32_t slot);
+
 		void shutdown();
 
 		virtual void tick(float deltaTime) override;

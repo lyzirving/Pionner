@@ -1,4 +1,6 @@
 #include "function/render/entity/RenderEntity.h"
+#include "function/global/GlobalContext.h"
+#include "function/render/RenderSystem.h"
 
 namespace Pionner
 {
@@ -6,7 +8,7 @@ namespace Pionner
 
 	EntityPart::EntityPart()
 		: m_partIndex(0)
-		, m_vertexSlot(0), m_indicesSlot(0)
+		, m_vertexSlot(-1), m_indicesSlot(-1)
 		, m_material()
 		, m_aabb()
 		, m_modelMat(1.f)
@@ -15,7 +17,23 @@ namespace Pionner
 
 	EntityPart::~EntityPart()
 	{
-		//TODO: release the buffer 
+		if (!g_runtimeCtx.m_renderSystem)
+		{
+			return;
+		}
+
+		if (vetexSlotValid())
+		{
+			g_runtimeCtx.m_renderSystem->deleteResource(DATA_VERTEX, m_vertexSlot);
+		}
+		if (indiceSlotValid())
+		{
+			g_runtimeCtx.m_renderSystem->deleteResource(DATA_INDICE, m_indicesSlot);
+		}
+		if (m_material.slotValid())
+		{
+			g_runtimeCtx.m_renderSystem->deleteResource(DATA_TEXTURE, m_material.m_slot);
+		}
 	}
 
 	RenderEntity::RenderEntity()

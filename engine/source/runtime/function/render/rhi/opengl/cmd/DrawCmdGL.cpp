@@ -49,6 +49,10 @@ namespace Pionner
 
 	void DrawCmdGL::drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param)
 	{
+		if (!part->vetexSlotValid() || !part->indiceSlotValid())
+		{
+			return;
+		}
 		std::shared_ptr<RenderResourceMgr> resource = param.resource;
 		auto vertexBuf = resource->find(DATA_VERTEX, part->m_vertexSlot);
 		auto indiceBuf = resource->find(DATA_INDICE, part->m_indicesSlot);
@@ -72,13 +76,17 @@ namespace Pionner
 		shader->setMat4("u_prjMat", param.frustum->getProjectMat());
 		shader->setMat4("u_modelMat", part->m_modelMat);
 
-		auto texture = resource->find(DATA_TEXTURE, part->m_material.m_slot);
-		if (texture)
+		if (part->m_material.slotValid())
 		{
-			texture->bindToTarget(part->m_partIndex);
-			std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_diffuse" : "u_spec";
-			shader->setInt(sampler, part->m_partIndex);
+			auto texture = resource->find(DATA_TEXTURE, part->m_material.m_slot);
+			if (texture)
+			{
+				texture->bindToTarget(part->m_partIndex);
+				std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_diffuse" : "u_spec";
+				shader->setInt(sampler, part->m_partIndex);
+			}
 		}
+
 		vertexBuf->bindToTarget(0);
 		indiceBuf->bind();
 

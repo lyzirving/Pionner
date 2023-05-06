@@ -19,11 +19,14 @@ namespace Pionner
 		EntityPart();
 		~EntityPart();
 
+		bool vetexSlotValid() const { return m_vertexSlot >= 0; }
+		bool indiceSlotValid() const { return m_indicesSlot >= 0; }
+
 	public:
 
 		uint32_t              m_partIndex;
-		uint32_t              m_vertexSlot;
-		uint32_t              m_indicesSlot;
+		int32_t               m_vertexSlot;
+		int32_t               m_indicesSlot;
 		Material              m_material;
 		AABB                  m_aabb;
 		glm::mat4             m_modelMat;

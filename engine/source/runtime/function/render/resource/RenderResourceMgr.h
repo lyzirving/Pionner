@@ -23,9 +23,12 @@ namespace Pionner
 		inline std::shared_ptr<Rhi> getRhi() const { return m_rhi; };
 
 		Buffer allocate(BufferType type);
+		void checkAbandoned();
+		void deleteResource(DataType type, uint32_t slot);
 		Buffer find(DataType type, uint32_t slot);
-		void release(BufferType type, uint32_t slot);
 		void makeSelfWeak(const std::shared_ptr<RenderResourceMgr> &self);
+		void release(BufferType type, uint32_t slot);
+		void shutdown();
 
 	private:
 		class BufferArray
@@ -35,6 +38,8 @@ namespace Pionner
 			~BufferArray();
 
 			Buffer   allocate(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr);
+			void     checkAbandoned();
+			void     clearActive();
 			bool     empty();
 			bool     exist(uint32_t slot);
 			Buffer   find(uint32_t slot);

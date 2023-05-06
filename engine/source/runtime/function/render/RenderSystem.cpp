@@ -66,21 +66,39 @@ namespace Pionner
 
 	void RenderSystem::initializeUIRenderBackend(WindowUI *windowUI)
 	{
-		m_pipeLine->initializeUIRenderBackend(windowUI);
+		if (m_pipeLine)
+		{
+			m_pipeLine->initializeUIRenderBackend(windowUI);
+		}
 	}
 
 	void RenderSystem::shutdownUIRenderBackend()
 	{
-		m_pipeLine->shutdownUIRenderBackend();
+		if (m_pipeLine)
+		{
+			m_pipeLine->shutdownUIRenderBackend();
+		}
+	}
+
+	void RenderSystem::deleteResource(DataType type, uint32_t slot)
+	{
+		if (m_resourceMgr)
+		{
+			m_resourceMgr->deleteResource(type, slot);
+		}
 	}
 
 	void RenderSystem::shutdown()
 	{
-		m_resourceMgr.reset();
+		if (m_frustum)
+		{
+			m_frustum.reset();
+		}
 
-		m_frustum.reset();
-
-		m_camera.reset();
+		if (m_camera)
+		{
+			m_camera.reset();
+		}
 
 		if (m_scene)
 		{
@@ -100,6 +118,12 @@ namespace Pionner
 			m_pipeLine.reset();
 		}
 
+		if (m_resourceMgr)
+		{
+			m_resourceMgr->shutdown();
+			m_resourceMgr.reset();
+		}
+
 		if (m_rhi)
 		{
 			m_rhi->shutdown();
@@ -109,6 +133,8 @@ namespace Pionner
 
 	void RenderSystem::tick(float deltaTime)
 	{
+		m_resourceMgr->checkAbandoned();
+
 		m_pipeLine->preparePassData();
 
 		RenderParam param{ m_camera, m_frustum, m_resourceMgr, m_shaderMgr, m_rhi };
