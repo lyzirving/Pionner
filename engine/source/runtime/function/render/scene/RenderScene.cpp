@@ -3,7 +3,6 @@
 #include "function/render/scene/Frustum.h"
 #include "function/render/scene/layer/ClearLayer.h"
 #include "function/render/scene/layer/ModelLayer.h"
-#include "function/render/entity/RenderEntity.h"
 #include "function/render/rhi/Rhi.h"
 #include "function/render/RenderDef.h"
 
@@ -43,15 +42,6 @@ namespace Pionner
 			if (m_layers[i]) m_layers[i].reset();
 		}
 		m_rhi.reset();
-	}
-
-	void RenderScene::addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities)
-	{
-		if (m_layers[LAYER_MODEL])
-		{
-			ModelLayer *layer = (ModelLayer *)(m_layers[LAYER_MODEL].get());
-			layer->addEntities(entities);
-		}
 	}
 
 	void RenderScene::forwardRender(RenderParam &param)

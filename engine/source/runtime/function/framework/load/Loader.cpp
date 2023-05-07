@@ -121,6 +121,7 @@ namespace Pionner
 
 		part->m_partIndex = meshIndex;
 		part->m_vertexSlot = vBuffer->getSlot();
+		part->m_indicesSlot = indBuffer->getSlot();
 
 		// parse vertex array
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)

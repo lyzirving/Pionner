@@ -17,6 +17,7 @@ namespace Pionner
 		virtual void upload() override;
 		virtual void release() override;
 
+		virtual void bind() override;
 		virtual void bindToTarget(uint32_t target = 0) override;
 		virtual uint32_t size() override { return m_vertex.size(); }
 

@@ -8,14 +8,15 @@
 #include "function/render/rhi/Rhi.h"
 #include "function/render/cmd/DrawCmd.h"
 
+#include "function/framework/world/World.h"
+#include "function/framework/comp/RenderComp.h"
+
 #include "function/render/RenderDef.h"
 
 namespace Pionner
 {
 	ModelLayer::ModelLayer(const std::shared_ptr<Rhi> &rhi)
 		: RenderLayer(rhi)
-		, m_entities()
-		, m_needSort(false)
 	{
 	}
 
@@ -23,47 +24,15 @@ namespace Pionner
 	{
 	}
 
-	void ModelLayer::clear()
-	{
-		auto itr = m_entities.begin();
-		while (itr != m_entities.end())
-		{
-			(*itr).reset();
-			itr = m_entities.erase(itr);
-		}
-		std::vector<std::shared_ptr<RenderEntity>>().swap(m_entities);
-	}
-
 	void ModelLayer::draw(RenderParam &param)
 	{
-		if (m_entities.empty())
-			return;
-
-		if (m_needSort)
-		{
-			m_needSort = false;
-			std::sort(m_entities.begin(), m_entities.end(), ModelLayer::entitySorter);
-		}
-
+		std::shared_ptr<World> world = param.world;
 		std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
 
-		for (auto &entity : m_entities)
+		world->iterate([&](decs::EntityID id, RenderComp &comp)
 		{
-			drawCmd->drawEntity(entity, param);
-		}
-	}
+			drawCmd->drawEntity(comp.m_entity, param);
+		});
 
-	void ModelLayer::addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities)
-	{
-		if (!entities.empty())
-		{
-			m_entities.insert(m_entities.end(), entities.begin(), entities.end());
-			m_needSort = true;
-		}
-	}
-
-	bool ModelLayer::entitySorter(const std::shared_ptr<RenderEntity> &lhs, const std::shared_ptr<RenderEntity> &rhs)
-	{
-		return lhs->m_order < rhs->m_order;
 	}
 }

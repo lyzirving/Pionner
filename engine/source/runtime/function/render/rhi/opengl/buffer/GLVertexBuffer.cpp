@@ -2,6 +2,8 @@
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/RhiHeader.h"
 
+#include "function/render/rhi/opengl/GLHelper.h"
+
 #include "function/render/resource/RenderResourceMgr.h"
 
 namespace Pionner
@@ -48,9 +50,24 @@ namespace Pionner
 		}
 	}
 
+	void GLVertexBuffer::bind()
+	{
+		if (!isUpload())
+		{
+			upload();
+		}
+
+		if (isUpload())
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, m_id);
+		}
+	}
+
 	void GLVertexBuffer::bindToTarget(uint32_t target)
 	{
 		GLVertexBuffer::upload();
+
+		GLVertexBuffer::bind();
 
 		glEnableVertexAttribArray(target);
 		glVertexAttribPointer(target, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)nullptr);

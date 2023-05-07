@@ -10,7 +10,6 @@ namespace Pionner
 {
 	class  Rhi;
 	class  RenderLayer;
-	class  RenderEntity;
 	class  Camera;
 	class  Frustum;
 	struct RenderParam;
@@ -24,7 +23,6 @@ namespace Pionner
 		void initialize(const std::shared_ptr<Rhi> &rhi);
 		void shutdown();
 
-		void addEntities(const std::vector<std::shared_ptr<RenderEntity>> &entities);
 		void forwardRender(RenderParam &param);
 
 	private:

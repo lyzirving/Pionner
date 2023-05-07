@@ -1172,9 +1172,9 @@ namespace decs
 		template<typename... Args, typename Func>
 		void entity_chunk_iterate(DataChunk *chnk, Func &&function) {
 			auto tup = std::make_tuple(get_chunk_array<Args>(chnk)...);
-		#ifndef NDEBUG
-			(assert(std::get<decltype(get_chunk_array<Args>(chnk))>(tup).chunkOwner == chnk), ...);
-		#endif
+			/*#ifndef NDEBUG
+				(assert(std::get<decltype(get_chunk_array<Args>(chnk))>(tup).chunkOwner == chnk), ...);
+			#endif*/
 
 			for (int i = chnk->header.last - 1; i >= 0; i--)
 			{

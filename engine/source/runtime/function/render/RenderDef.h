@@ -16,6 +16,7 @@ namespace Pionner
 	class Frustum;
 	class RenderResourceMgr;
 	class ShaderMgr;
+	class World;
 
 	struct RenderParam
 	{
@@ -24,6 +25,7 @@ namespace Pionner
 		std::shared_ptr<RenderResourceMgr> resource;
 		std::shared_ptr<ShaderMgr>         shaderMgr;
 		std::shared_ptr<Rhi>               rhi;
+		std::shared_ptr<World>             world;
 	};
 
 	struct WindowCreateInfo
