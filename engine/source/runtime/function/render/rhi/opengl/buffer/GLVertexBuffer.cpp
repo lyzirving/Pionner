@@ -89,6 +89,17 @@ namespace Pionner
 	}
 
 	template<>
+	GLVertexBuffer *GfxBuffer::getPtr<GLVertexBuffer>()
+	{
+		if (m_dataType == DATA_VERTEX)
+		{
+			GLVertexBuffer *ret = dynamic_cast<GLVertexBuffer *>(this);
+			return ret;
+		}
+		return nullptr;
+	}
+
+	template<>
 	void GfxBuffer::insertData<Vertex>(std::vector<Vertex> &data)
 	{
 		if (is<GLVertexBuffer>())

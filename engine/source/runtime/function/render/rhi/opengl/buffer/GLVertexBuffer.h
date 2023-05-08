@@ -29,6 +29,9 @@ namespace Pionner
 	bool GfxBuffer::is<GLVertexBuffer>() const;
 
 	template<>
+	GLVertexBuffer *GfxBuffer::getPtr<GLVertexBuffer>();
+
+	template<>
 	void GfxBuffer::insertData<Vertex>(std::vector<Vertex> &data);
 }
 

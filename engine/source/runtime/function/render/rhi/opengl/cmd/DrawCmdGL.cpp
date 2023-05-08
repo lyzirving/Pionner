@@ -71,7 +71,17 @@ namespace Pionner
 		}
 
 		shader->use(true);
-		// TODO: add vertex array attribute in shader
+
+		int vertexSlot, normalSlot, texCoordSlot;
+		if (!shader->getAttribLoc("a_pos", vertexSlot))
+			return;
+
+		if (!shader->getAttribLoc("a_normal", normalSlot))
+			return;
+
+		if (!shader->getAttribLoc("a_tex", texCoordSlot))
+			return;
+
 		shader->setMat4("u_viewMat", param.camera->getViewMat());
 		shader->setMat4("u_prjMat", param.frustum->getProjectMat());
 		shader->setMat4("u_modelMat", part->m_modelMat);

@@ -56,6 +56,19 @@ namespace Pionner
 		}
 	}
 
+	bool ShaderRhiGL::getAttribLoc(uint32_t program, const std::string &name, int &loc) const
+	{
+		if (isInit(program))
+		{
+			loc = glGetAttribLocation(program, name.c_str());
+			return GLHelper::checkGLErr("failed to get attribute[%s] location", name.c_str());
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	void ShaderRhiGL::setInt(uint32_t program, const std::string &name, int val) const
 	{
 		if (isInit(program))

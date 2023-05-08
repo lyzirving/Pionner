@@ -34,6 +34,9 @@ namespace Pionner
 		bool is() const;
 
 		template<class T>
+		T *getPtr();
+
+		template<class T>
 		void insertData(T &data);
 
 		template<class T>

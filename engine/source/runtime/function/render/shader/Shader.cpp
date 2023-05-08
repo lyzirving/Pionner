@@ -96,6 +96,14 @@ namespace Pionner
 			m_rhi->activate(m_program, active);
 	}
 
+	bool Shader::getAttribLoc(const std::string &name, int &loc)
+	{
+		if (m_rhi)
+			return m_rhi->getAttribLoc(m_program, name, loc);
+
+		return false;
+	}
+
 	void Shader::setFloat(const std::string &name, float value) const
 	{
 		if (m_rhi)
