@@ -69,14 +69,17 @@ namespace Pionner
 
 		GLVertexBuffer::bind();
 
-		glEnableVertexAttribArray(target);
 		glVertexAttribPointer(target, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)nullptr);
-
-		glEnableVertexAttribArray(target + 1);
+		GLHelper::checkGLErr("err happens when binding attri 0");
 		glVertexAttribPointer(target + 1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-
-		glEnableVertexAttribArray(target + 2);
+		GLHelper::checkGLErr("err happens when binding attri 1");
 		glVertexAttribPointer(target + 2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoord));
+		GLHelper::checkGLErr("err happens when binding attri 2");
+
+		glEnableVertexAttribArray(target);
+		glEnableVertexAttribArray(target + 1);
+		glEnableVertexAttribArray(target + 2);
+		GLHelper::checkGLErr("err happens when enabling");
 	}
 
 	template<>

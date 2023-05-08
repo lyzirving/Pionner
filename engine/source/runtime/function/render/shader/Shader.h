@@ -18,6 +18,7 @@ namespace Pionner
 
 		inline bool isInit() { return m_program > 0; }
 		inline const std::string &name() { return m_name; }
+		inline const uint32_t getProgram() { return m_program; }
 
 		bool init();
 		void destroy();
