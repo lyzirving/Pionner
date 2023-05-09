@@ -4,10 +4,11 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "function/render/rhi/RhiHeader.h"
+
+#include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/rhi/opengl/shader/ShaderRhiGL.h"
 #include "function/render/rhi/opengl/cmd/DrawCmdGL.h"
 
-#include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/WindowSystem.h"
 
 #include "core/log/LogSystem.h"
@@ -105,5 +106,79 @@ namespace Pionner
 	void RhiGL::viewportFull()
 	{
 		glViewport((GLint)m_viewport.x, (GLint)m_viewport.y, (GLint)m_viewport.width, (GLint)m_viewport.height);
+	}
+
+	void RhiGL::setClearMode(ClearMode &mode)
+	{
+		glClearColor(mode.m_color.r, mode.m_color.g, mode.m_color.b, mode.m_color.a);
+
+		uint32_t bit{ 0 };
+		if (mode.m_clearColor)
+		{
+			bit |= GL_COLOR_BUFFER_BIT;
+		}
+		if (mode.m_clearDepth)
+		{
+			bit |= GL_DEPTH_BUFFER_BIT;
+		}
+		if (mode.m_clearStencil)
+		{
+			bit |= GL_STENCIL_BUFFER_BIT;
+		}
+		glClear(bit);
+	}
+
+	void RhiGL::setCullMode(CullFace &mode)
+	{
+		if (mode.m_enbale)
+		{
+			glEnable(GL_CULL_FACE);
+			glFrontFace(getGLFaceDir(mode.m_faceDir));
+			glCullFace(getGLCullMode(mode.m_mode));
+		}
+		else
+		{
+			glDisable(GL_CULL_FACE);
+		}
+	}
+
+	void RhiGL::setDepthMode(DepthTest &test)
+	{
+		if (test.m_enbale)
+		{
+			glEnable(GL_DEPTH_TEST);
+		}
+		else
+		{
+			glDisable(GL_DEPTH_TEST);
+		}
+	}
+
+	uint32_t RhiGL::getGLFaceDir(FaceDirection dir)
+	{
+		switch (dir)
+		{
+			case CLOCK_WISE:
+				return GL_CW;
+			case COUNTER_CLOCK_WISE:
+				return GL_CCW;
+			default:
+				return GL_FALSE;
+		}
+	}
+
+	uint32_t RhiGL::getGLCullMode(CullMode mode)
+	{
+		switch (mode)
+		{
+			case CULL_BACK:
+				return GL_BACK;
+			case CULL_FRONT:
+				return GL_FRONT;
+			case CULL_FRONT_AND_BACK:
+				return GL_FRONT_AND_BACK;
+			default:
+				return GL_FALSE;
+		}
 	}
 }

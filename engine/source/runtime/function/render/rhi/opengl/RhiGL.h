@@ -20,8 +20,16 @@ namespace Pionner
 
 		virtual void viewportFull() override;
 
+		virtual void setClearMode(ClearMode &mode) override;
+		virtual void setCullMode(CullFace &mode) override;
+		virtual void setDepthMode(DepthTest &test) override;
+
 	protected:
 		virtual void createInstance() override;
+
+	private:
+		static uint32_t getGLFaceDir(FaceDirection dir);
+		static uint32_t getGLCullMode(CullMode mode);
 	};
 }
 

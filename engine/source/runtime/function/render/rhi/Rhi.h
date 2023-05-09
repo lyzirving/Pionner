@@ -3,8 +3,13 @@
 
 #include <glm/glm.hpp>
 
-#include "function/render/rhi/RhiDef.h"
 #include "function/render/resource/ResourceDef.h"
+
+#include "function/render/rhi/RhiDef.h"
+
+#include "function/render/rhi/attr/ClearMode.h"
+#include "function/render/rhi/attr/CullFace.h"
+#include "function/render/rhi/attr/DepthTest.h"
 
 struct GLFWwindow;
 
@@ -33,6 +38,10 @@ namespace Pionner
 
 		virtual void viewportFull() {};
 		virtual void viewportSub(int x, int y, int width, int height) {};
+
+		virtual void setClearMode(ClearMode &mode) {};
+		virtual void setCullMode(CullFace &mode) {};
+		virtual void setDepthMode(DepthTest &test) {};
 
 		inline RhiType getType() const { return m_type; }
 

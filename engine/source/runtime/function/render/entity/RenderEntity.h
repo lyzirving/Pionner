@@ -19,6 +19,8 @@ namespace Pionner
 		EntityPart();
 		~EntityPart();
 
+		glm::vec3 center();
+
 		bool vetexSlotValid() const { return m_vertexSlot >= 0; }
 		bool indiceSlotValid() const { return m_indicesSlot >= 0; }
 

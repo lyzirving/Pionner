@@ -4,6 +4,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/material.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "function/framework/load/Loader.h"
 
@@ -65,7 +66,7 @@ namespace Pionner
 		std::string rootDir = path.substr(0, path.find_last_of('/'));
 
 		Assimp::Importer importer;
-		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate/*| aiProcess_FlipUVs*/);
+		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			LOG_ERR("fail to load obj from [%s], reason[%s]", path.c_str(), importer.GetErrorString());
@@ -145,6 +146,11 @@ namespace Pionner
 
 		part->m_aabb.setAA(min);
 		part->m_aabb.setBB(max);
+
+		// translate part to center
+		glm::vec3 center = part->center();
+		glm::mat4 mat{ 1.f };
+		part->m_modelMat = glm::translate(mat, -center);
 
 		// process the indices
 		// every face represent a primitive

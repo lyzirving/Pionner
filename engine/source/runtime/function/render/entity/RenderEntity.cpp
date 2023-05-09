@@ -36,6 +36,14 @@ namespace Pionner
 		}
 	}
 
+	glm::vec3 EntityPart::center()
+	{
+		glm::vec3 aa = m_aabb.AA();
+		glm::vec3 bb = m_aabb.BB();
+		glm::vec3 ret = (aa + bb) * 0.5f;
+		return ret;
+	}
+
 	RenderEntity::RenderEntity()
 		: m_type(ENTITY_NONE)
 		, m_order(ORDER_LOWEST)
