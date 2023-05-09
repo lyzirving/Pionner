@@ -91,6 +91,14 @@ namespace Pionner
 		}
 	}
 
+	void WindowSystem::makeCurrent()
+	{
+		if (m_window)
+		{
+			glfwMakeContextCurrent(m_window);
+		}
+	}
+
 	void WindowSystem::swapBuffers()
 	{
 		if (m_window)

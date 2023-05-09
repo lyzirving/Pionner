@@ -76,7 +76,7 @@ namespace Pionner
 
 		if (success)
 		{
-			LOG_DEBUG("succeed to init shader[%s]", m_name.c_str());
+			LOG_DEBUG("succeed to init shader[%s][%u]", m_name.c_str(), m_program);
 		}
 
 		return success;
@@ -94,14 +94,6 @@ namespace Pionner
 	{
 		if (m_rhi)
 			m_rhi->activate(m_program, active);
-	}
-
-	bool Shader::getAttribLoc(const std::string &name, int &loc)
-	{
-		if (m_rhi)
-			return m_rhi->getAttribLoc(m_program, name, loc);
-
-		return false;
 	}
 
 	void Shader::setFloat(const std::string &name, float value) const

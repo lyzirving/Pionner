@@ -17,18 +17,22 @@ namespace Pionner
 		virtual ~GfxBuffer();
 
 		virtual void upload() = 0;
-		virtual void release() = 0;
 
 		virtual void bind();
-		virtual void bindToTarget(uint32_t target);
+		virtual void bindTarget(uint32_t target);
+		virtual void unbind();
+
+		virtual void deleteResource();
+		virtual void loadRawData();
 		virtual uint32_t size();
-		virtual void load();
 
 		inline uint32_t getId() const { return m_id; }
 		inline uint32_t getSlot() const { return m_slot; }
 		inline BufferType getBufferType() const { return m_bufferType; }
 		inline DataType getDataType() const { return m_dataType; }
 		inline bool isUpload() const { return m_uploaded; }
+
+		void notifyRelease();
 
 		template<class T>
 		bool is() const;
@@ -45,6 +49,7 @@ namespace Pionner
 	protected:
 		friend class RenderResourceMgr;
 
+		inline bool isAbandonded() { return m_abandoned; }
 		inline bool isCreated() { return m_id > 0; }
 
 		std::weak_ptr<RenderResourceMgr> m_mgr;
@@ -53,6 +58,7 @@ namespace Pionner
 		BufferType m_bufferType;
 		DataType   m_dataType;
 		bool       m_uploaded;
+		bool       m_abandoned;
 	};
 }
 

@@ -44,6 +44,8 @@ namespace Pionner
 		if (isInit(program))
 		{
 			glUseProgram(active ? program : 0);
+			GLHelper::checkGLErr("call activate err, program[%u], active[%s]",
+								 program, active ? "true" : "false");
 		}
 	}
 
@@ -56,25 +58,14 @@ namespace Pionner
 		}
 	}
 
-	bool ShaderRhiGL::getAttribLoc(uint32_t program, const std::string &name, int &loc) const
-	{
-		if (isInit(program))
-		{
-			loc = glGetAttribLocation(program, name.c_str());
-			return GLHelper::checkGLErr("failed to get attribute[%s] location", name.c_str());
-		}
-		else
-		{
-			return false;
-		}
-	}
-
 	void ShaderRhiGL::setInt(uint32_t program, const std::string &name, int val) const
 	{
 		if (isInit(program))
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniform1i(ind, val);
+			GLHelper::checkGLErr("setInt err, program[%u], name[%s], val[%d]",
+								 program, name.c_str(), val);
 		}
 	}
 
@@ -84,6 +75,8 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniform1f(ind, val);
+			GLHelper::checkGLErr("setFloat err, program[%u], name[%s], val[%f]",
+								 program, name.c_str(), val);
 		}
 	}
 
@@ -93,6 +86,7 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniformMatrix3fv(ind, 1, GL_FALSE, glm::value_ptr(val));
+			GLHelper::checkGLErr("setMat3 err, program[%u], name[%s]", program, name.c_str());
 		}
 	}
 
@@ -102,6 +96,7 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniformMatrix4fv(ind, 1, GL_FALSE, glm::value_ptr(val));
+			GLHelper::checkGLErr("setMat4 err, program[%u], name[%s]", program, name.c_str());
 		}
 	}
 
@@ -111,6 +106,8 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniform2f(ind, val.x, val.y);
+			GLHelper::checkGLErr("setVec2 err, program[%u], name[%s], val[%f, %f]",
+								 program, name.c_str(), val.x, val.y);
 		}
 	}
 
@@ -120,6 +117,8 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniform2f(ind, val0, val1);
+			GLHelper::checkGLErr("setVec2 err, program[%u], name[%s], val[%f, %f]",
+								 program, name.c_str(), val0, val1);
 		}
 	}
 
@@ -129,6 +128,8 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniform3f(ind, val.x, val.y, val.z);
+			GLHelper::checkGLErr("setVec3 err, program[%u], name[%s], val[%f, %f, %f]",
+								 program, name.c_str(), val.x, val.y, val.z);
 		}
 	}
 
@@ -138,6 +139,8 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniform3f(ind, val0, val1, val2);
+			GLHelper::checkGLErr("setVec3 err, program[%u], name[%s], val[%f, %f, %f]",
+								 program, name.c_str(), val0, val1, val2);
 		}
 	}
 
@@ -147,6 +150,8 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniform4f(ind, val.x, val.y, val.z, val.w);
+			GLHelper::checkGLErr("setVec4 err, program[%u], name[%s], val[%f, %f, %f£¬ %f]",
+								 program, name.c_str(), val.x, val.y, val.z, val.w);
 		}
 	}
 
@@ -156,6 +161,8 @@ namespace Pionner
 		{
 			GLint ind = glGetUniformLocation(program, name.c_str());
 			glUniform4f(ind, val0, val1, val2, val3);
+			GLHelper::checkGLErr("setVec4 err, program[%u], name[%s], val[%f, %f, %f£¬ %f]",
+								 program, name.c_str(), val0, val1, val2, val3);
 		}
 	}
 }

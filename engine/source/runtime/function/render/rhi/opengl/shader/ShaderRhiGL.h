@@ -15,8 +15,6 @@ namespace Pionner
 		virtual void activate(uint32_t program, bool active) override;
 		virtual void destroy(uint32_t &program) override;
 
-		virtual bool getAttribLoc(uint32_t program, const std::string &name, int &loc) const override;
-
 		virtual void setInt(uint32_t program, const std::string &name, int val) const override;
 		virtual void setFloat(uint32_t program, const std::string &name, float val) const override;
 		virtual void setMat3(uint32_t program, const std::string &name, const glm::mat3 &val) const override;

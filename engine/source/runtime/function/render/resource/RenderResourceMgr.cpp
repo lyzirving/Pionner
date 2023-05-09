@@ -215,6 +215,7 @@ namespace Pionner
 			auto itr = m_abandoned.begin();
 			while (itr != m_abandoned.end())
 			{
+				(*itr)->deleteResource();
 				(*itr).reset();
 				itr = m_abandoned.erase(itr);
 			}
@@ -225,6 +226,7 @@ namespace Pionner
 	{
 		for (auto &active : m_activeBuffers)
 		{
+			active->deleteResource();
 			active.reset();
 		}
 		std::vector<Buffer>().swap(m_activeBuffers);

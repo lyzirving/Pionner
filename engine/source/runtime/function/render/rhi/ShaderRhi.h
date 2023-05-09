@@ -16,8 +16,6 @@ namespace Pionner
 		virtual void activate(uint32_t program, bool active) = 0;
 		virtual void destroy(uint32_t &program) = 0;
 
-		virtual bool getAttribLoc(uint32_t program, const std::string &name, int &loc) const { return false; }
-
 		virtual void setInt(uint32_t program, const std::string &name, int val) const {}
 		virtual void setFloat(uint32_t program, const std::string &name, float val) const {}
 		virtual void setMat3(uint32_t program, const std::string &name, const glm::mat3 &val) const {}

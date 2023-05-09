@@ -6,10 +6,17 @@
 
 #include "function/render/resource/RenderResourceMgr.h"
 
+#include "core/log/LogSystem.h"	
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "GLVertexBuffer"
+
 namespace Pionner
 {
 	GLVertexBuffer::GLVertexBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
-		: GfxBuffer(mgr), m_vertex()
+		: GfxBuffer(mgr), m_vertex(), m_vao(0)
 	{
 		m_bufferType = BUF_MEM_ARRAY;
 		m_dataType = DATA_VERTEX;
@@ -17,11 +24,16 @@ namespace Pionner
 
 	GLVertexBuffer::~GLVertexBuffer()
 	{
-		GLVertexBuffer::release();
 	}
 
 	void GLVertexBuffer::upload()
 	{
+		if (isAbandonded())
+		{
+			LOG_ERR("buf is already abandoned");
+			return;
+		}
+
 		if (isUpload())
 			return;
 
@@ -30,28 +42,44 @@ namespace Pionner
 
 		if (!isCreated())
 		{
+			glGenVertexArrays(1, &m_vao);
 			glGenBuffers(1, &m_id);
+			LOG_DEBUG("create vertex buffer[%u], vao[%u]", m_id, m_vao);
 		}
 
+		// step 1: upload data 
 		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ARRAY_BUFFER, m_vertex.size() * sizeof(Vertex), &m_vertex[0], GL_STATIC_DRAW);
-		m_uploaded = true;
-	}
 
-	void GLVertexBuffer::release()
-	{
-		if (isCreated())
-		{
-			std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
-			if (mgr)
-			{
-				mgr->release(m_bufferType, m_slot);
-			}
-		}
+		// step 2: bind data to vao 
+		glBindVertexArray(m_vao);
+
+		// bind buffer to vao
+		glBindBuffer(GL_ARRAY_BUFFER, m_id);
+		// set vertex position
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)nullptr);
+		// set vertex normal
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
+		// set texture coordinates
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoord));
+
+		// step 3: unbind vao
+		glBindVertexArray(0);
+
+		m_uploaded = true;
 	}
 
 	void GLVertexBuffer::bind()
 	{
+		if (isAbandonded())
+		{
+			LOG_ERR("buf is already abandoned");
+			return;
+		}
+
 		if (!isUpload())
 		{
 			upload();
@@ -59,27 +87,25 @@ namespace Pionner
 
 		if (isUpload())
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, m_id);
+			glBindVertexArray(m_vao);
 		}
 	}
 
-	void GLVertexBuffer::bindToTarget(uint32_t target)
+	void GLVertexBuffer::unbind()
 	{
-		GLVertexBuffer::upload();
+		glBindVertexArray(0);
+	}
 
-		GLVertexBuffer::bind();
-
-		glVertexAttribPointer(target, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)nullptr);
-		GLHelper::checkGLErr("err happens when binding attri 0");
-		glVertexAttribPointer(target + 1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
-		GLHelper::checkGLErr("err happens when binding attri 1");
-		glVertexAttribPointer(target + 2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texCoord));
-		GLHelper::checkGLErr("err happens when binding attri 2");
-
-		glEnableVertexAttribArray(target);
-		glEnableVertexAttribArray(target + 1);
-		glEnableVertexAttribArray(target + 2);
-		GLHelper::checkGLErr("err happens when enabling");
+	void GLVertexBuffer::deleteResource()
+	{
+		if (isCreated())
+		{
+			//LOG_DEBUG("buf id[%u], vao[%u]", m_id, m_vao);
+			glDeleteBuffers(1, &m_id);
+			glDeleteVertexArrays(1, &m_vao);
+			m_id = 0;
+			m_vao = 0;
+		}
 	}
 
 	template<>
@@ -91,7 +117,7 @@ namespace Pionner
 	template<>
 	GLVertexBuffer *GfxBuffer::getPtr<GLVertexBuffer>()
 	{
-		if (m_dataType == DATA_VERTEX)
+		if (is<GLVertexBuffer>())
 		{
 			GLVertexBuffer *ret = dynamic_cast<GLVertexBuffer *>(this);
 			return ret;

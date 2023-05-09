@@ -5,6 +5,13 @@
 
 #include "function/render/resource/RenderResourceMgr.h"
 
+#include "core/log/LogSystem.h"	
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "GLIndexBuffer"
+
 namespace Pionner
 {
 	GLIndexBuffer::GLIndexBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
@@ -16,11 +23,16 @@ namespace Pionner
 
 	GLIndexBuffer::~GLIndexBuffer()
 	{
-		GLIndexBuffer::release();
 	}
 
 	void GLIndexBuffer::upload()
 	{
+		if (isAbandonded())
+		{
+			LOG_ERR("buf is already abandoned");
+			return;
+		}
+
 		if (isUpload())
 			return;
 
@@ -30,6 +42,7 @@ namespace Pionner
 		if (!isCreated())
 		{
 			glGenBuffers(1, &m_id);
+			LOG_DEBUG("create indice buffer[%u]", m_id);
 		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
@@ -37,20 +50,14 @@ namespace Pionner
 		m_uploaded = true;
 	}
 
-	void GLIndexBuffer::release()
-	{
-		if (isCreated())
-		{
-			std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
-			if (mgr)
-			{
-				mgr->release(m_bufferType, m_slot);
-			}
-		}
-	}
-
 	void GLIndexBuffer::bind()
 	{
+		if (isAbandonded())
+		{
+			LOG_ERR("buf is already abandoned");
+			return;
+		}
+
 		if (!isUpload())
 		{
 			upload();
@@ -59,6 +66,21 @@ namespace Pionner
 		if (isUpload())
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+		}
+	}
+
+	void GLIndexBuffer::unbind()
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	void GLIndexBuffer::deleteResource()
+	{
+		if (isCreated())
+		{
+			//LOG_DEBUG("buf id[%u]", m_id);
+			glDeleteBuffers(1, &m_id);
+			m_id = 0;
 		}
 	}
 

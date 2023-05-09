@@ -20,6 +20,7 @@ namespace Pionner
 		void shutdown();
 
 		bool shouldClose();
+		void makeCurrent();
 		void swapBuffers();
 		void pollEvents();
 

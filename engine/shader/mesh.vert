@@ -3,9 +3,9 @@
 
 precision mediump float;
 
-attribute vec3 a_pos;
-attribute vec3 a_normal;
-attribute vec2 a_tex;
+layout (location = 0) in vec3 a_pos;
+layout (location = 1) in vec3 a_normal;
+layout (location = 2) in vec2 a_tex;
 
 uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;

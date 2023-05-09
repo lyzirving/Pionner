@@ -13,9 +13,10 @@ namespace Pionner
 		virtual ~GLIndexBuffer();
 
 		virtual void upload() override;
-		virtual void release() override;
 
 		virtual void bind() override;
+		virtual void unbind() override;
+		virtual void deleteResource() override;
 		virtual uint32_t size() override { return m_indices.size(); }
 
 	private:

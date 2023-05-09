@@ -18,10 +18,10 @@ namespace Pionner
 		inline std::string getPath() const { return m_path; }
 
 		virtual void upload() override;
-		virtual void release() override;
 
-		virtual void bindToTarget(uint32_t target = 0) override;
-		virtual void load() override;
+		virtual void bindTarget(uint32_t target = 0) override;
+		virtual void deleteResource() override;
+		virtual void loadRawData() override;
 
 	private:
 		static uint32_t colorFormat(int32_t component);

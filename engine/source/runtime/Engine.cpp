@@ -52,6 +52,8 @@ namespace Pionner
 	{
 		tickLogic(deltaTime);
 
+		g_runtimeCtx.m_windowSystem->makeCurrent();
+
 		tickRender(deltaTime);
 
 		g_runtimeCtx.m_windowSystem->swapBuffers();

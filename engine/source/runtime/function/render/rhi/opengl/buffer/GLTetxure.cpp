@@ -10,6 +10,13 @@
 
 #include "function/render/resource/RenderResourceMgr.h"
 
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "GLTexture"
+
 namespace Pionner
 {
 	GLTexture::GLTexture(const std::shared_ptr<RenderResourceMgr> &mgr)
@@ -22,11 +29,16 @@ namespace Pionner
 
 	GLTexture::~GLTexture()
 	{
-		GLTexture::release();
 	}
 
 	void GLTexture::upload()
 	{
+		if (isAbandonded())
+		{
+			LOG_ERR("buf is already abandoned");
+			return;
+		}
+
 		if (isUpload())
 			return;
 
@@ -60,20 +72,14 @@ namespace Pionner
 		m_uploaded = true;
 	}
 
-	void GLTexture::release()
+	void GLTexture::bindTarget(uint32_t target)
 	{
-		if (isCreated())
+		if (isAbandonded())
 		{
-			std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
-			if (mgr)
-			{
-				mgr->release(m_bufferType, m_slot);
-			}
+			LOG_ERR("buf is already abandoned");
+			return;
 		}
-	}
 
-	void GLTexture::bindToTarget(uint32_t target)
-	{
 		if (!isUpload())
 		{
 			upload();
@@ -86,7 +92,17 @@ namespace Pionner
 		}
 	}
 
-	void GLTexture::load()
+	void GLTexture::deleteResource()
+	{
+		if (isCreated())
+		{
+			//LOG_DEBUG("texture id[%u]", m_id);
+			glDeleteTextures(1, &m_id);
+			m_id = 0;
+		}
+	}
+
+	void GLTexture::loadRawData()
 	{
 		if (m_path.empty())
 			return;

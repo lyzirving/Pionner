@@ -192,7 +192,7 @@ namespace Pionner
 
 					texture = resource->allocate(BUF_TEXTURE);
 					texture->insertData(srcPath);
-					texture->load();
+					texture->loadRawData();
 
 					part->m_material.m_slot = texture->getSlot();
 				}

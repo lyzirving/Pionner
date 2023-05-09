@@ -72,26 +72,9 @@ namespace Pionner
 
 		shader->use(true);
 
-		int vertexSlot, normalSlot, texCoordSlot;
-		if (!shader->getAttribLoc("a_pos", vertexSlot))
-			return;
-
-		if (!shader->getAttribLoc("a_normal", normalSlot))
-			return;
-
-		if (!shader->getAttribLoc("a_tex", texCoordSlot))
-			return;
-
 		shader->setMat4("u_viewMat", param.camera->getViewMat());
 		shader->setMat4("u_prjMat", param.frustum->getProjectMat());
 		shader->setMat4("u_modelMat", part->m_modelMat);
-
-		vertexBuf->upload();
-		indiceBuf->upload();
-		GLHelper::checkGLErr("err happens after upload");
-
-		vertexBuf->bindToTarget(0);
-		indiceBuf->bind();
 
 		if (part->m_material.slotValid())
 		{
@@ -99,14 +82,23 @@ namespace Pionner
 			if (texture)
 			{
 				texture->upload();
-				texture->bindToTarget(part->m_partIndex);
+				texture->bindTarget(part->m_partIndex);
 				std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_diffuse" : "u_spec";
 				shader->setInt(sampler, part->m_partIndex);
 			}
 		}
 
+		vertexBuf->upload();
+		indiceBuf->upload();
+
+		vertexBuf->bind();
+		indiceBuf->bind();
+
 		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::checkGLErr("err happens in draw cmd");
+
+		vertexBuf->unbind();
+		indiceBuf->unbind();
 
 		shader->use(false);
 	}

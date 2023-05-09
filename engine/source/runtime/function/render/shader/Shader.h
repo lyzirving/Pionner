@@ -25,8 +25,6 @@ namespace Pionner
 
 		void use(bool active);
 
-		bool getAttribLoc(const std::string &name, int &loc);
-
 		void setFloat(const std::string &name, float value) const;
 		void setInt(const std::string &name, int value) const;
 
