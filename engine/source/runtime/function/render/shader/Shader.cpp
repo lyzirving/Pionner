@@ -48,7 +48,7 @@ namespace Pionner
 
 		m_vert = vertStream.str();
 		m_frag = fragStream.str();
-		LOG_INFO("succeed to open shader[%s]", m_name.c_str());
+		LOG_DEBUG("succeed to open shader[%s]", m_name.c_str());
 	}
 
 	Shader::~Shader()

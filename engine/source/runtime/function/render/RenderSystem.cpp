@@ -53,7 +53,7 @@ namespace Pionner
 		m_scene->initialize(m_rhi);
 
 		m_camera = std::make_shared<Camera>();
-		m_camera->setPosition(glm::vec3(0.f, 0.f, 5.f));
+		m_camera->setPosition(glm::vec3(5.f, 2.f, 5.f));
 
 		m_frustum = std::make_shared<Frustum>();
 		m_frustum->setAspect(float(info.window->getWidth()) / float(info.window->getHeight()));

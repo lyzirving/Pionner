@@ -11,15 +11,19 @@ namespace Pionner
 		UIPass();
 		virtual ~UIPass();
 
-		virtual void initialize(const RenderPassInitInfo& info) override;
+		virtual void initialize(const RenderPassInitInfo &info) override;
 		virtual void shutdown() override;
 
-		virtual void initializeUIRenderBackend(WindowUI* ui) override;
+		virtual void initializeUIRenderBackend(WindowUI *ui) override;
 		virtual void shutdownUIRenderBackend() override;
 		virtual void draw() override;
 
 	private:
-		WindowUI* m_ui;
+		void drawUI();
+		void drawLeftDropdown();
+
+	private:
+		WindowUI *m_ui;
 	};
 }
 

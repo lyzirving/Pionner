@@ -55,10 +55,50 @@ namespace Pionner
 
 			//>>>>>>do ui rendering
 			//ImGui::ShowDemoWindow();
+			//drawUI();
 			//>>>>>>finish ui rendering
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
+	}
+
+	void UIPass::drawUI()
+	{
+		if (!ImGui::GetCurrentContext())
+		{
+			LOG_ERR("ImGui get current context is null");
+			return;
+		}
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Always);
+
+		ImGuiWindowFlags windowFlags = 0;
+		windowFlags |= ImGuiWindowFlags_NoTitleBar;
+		windowFlags |= ImGuiWindowFlags_NoScrollbar;
+		windowFlags |= ImGuiWindowFlags_NoMove;
+		windowFlags |= ImGuiWindowFlags_NoResize;
+
+		// Main body of the Demo window starts here.
+		// Pass nullptr means no close button
+		if (!ImGui::Begin("PionnerEditor", nullptr, windowFlags))
+		{
+			// Early out if the window is collapsed, as an optimization.
+			ImGui::End();
+			return;
+		}
+		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+
+		drawLeftDropdown();
+
+		// End of show editor
+		ImGui::PopItemWidth();
+		ImGui::End();
+	}
+
+	void UIPass::drawLeftDropdown()
+	{
+		if (!ImGui::CollapsingHeader("Entities"))
+			return;
 	}
 }

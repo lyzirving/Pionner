@@ -37,6 +37,7 @@ namespace Pionner
 
 	void RenderPipeline::forwardRender(const std::shared_ptr<RenderScene> &scene, RenderParam &param)
 	{
+		// TODO: add layout parser
 		m_rhi->viewportFull();
 
 		if (scene)
