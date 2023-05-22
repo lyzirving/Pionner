@@ -7,9 +7,7 @@
 
 namespace Pionner
 {
-	class  RenderScene;
-	class  Camera;
-	class  Frustum;
+	class  SceneMgr;
 	class  ShaderMgr;
 	class  RenderResourceMgr;
 
@@ -34,9 +32,7 @@ namespace Pionner
 	private:
 		std::shared_ptr<Rhi>                m_rhi;
 		std::shared_ptr<RenderPipelineBase> m_pipeLine;
-		std::shared_ptr<RenderScene>        m_scene;
-		std::shared_ptr<Camera>             m_camera;
-		std::shared_ptr<Frustum>            m_frustum;
+		std::shared_ptr<SceneMgr>           m_sceneMgr;
 		std::shared_ptr<ShaderMgr>          m_shaderMgr;
 		std::shared_ptr<RenderResourceMgr>  m_resourceMgr;
 	};

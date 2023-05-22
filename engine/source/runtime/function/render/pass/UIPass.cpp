@@ -4,6 +4,7 @@
 
 #include "function/render/pass/UIPass.h"
 #include "function/render/rhi/Rhi.h"
+#include "function/render/scene/SceneMgr.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -45,33 +46,44 @@ namespace Pionner
 		m_rhi->shutdownUIRenderBackend();
 	}
 
-	void UIPass::draw()
+	void UIPass::draw(std::shared_ptr<SceneMgr> &sceneMgr)
 	{
+		// TODO: finish draw by Layout.cpp
 		if (m_ui)
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			//>>>>>>do ui rendering
 			//ImGui::ShowDemoWindow();
-			//drawUI();
-			//>>>>>>finish ui rendering
+			drawUI(sceneMgr);
 
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
 	}
 
-	void UIPass::drawUI()
+	void UIPass::drawUI(std::shared_ptr<SceneMgr> &sceneMgr)
 	{
 		if (!ImGui::GetCurrentContext())
 		{
 			LOG_ERR("ImGui get current context is null");
 			return;
 		}
-		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-		ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Always);
+		drawLeftPanel(sceneMgr);
+		drawRightPanel(sceneMgr);
+		drawBottomPanel(sceneMgr);
+	}
+
+	void UIPass::drawLeftPanel(std::shared_ptr<SceneMgr> &sceneMgr)
+	{
+		auto layout = sceneMgr->m_layout;
+		LayoutInfo &info = layout->m_leftPanelInfo;
+
+		ImGui::SetNextWindowPos(ImVec2(info.m_left, info.m_top),
+								ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(info.m_width, info.m_height),
+								 ImGuiCond_Always);
 
 		ImGuiWindowFlags windowFlags = 0;
 		windowFlags |= ImGuiWindowFlags_NoTitleBar;
@@ -81,7 +93,7 @@ namespace Pionner
 
 		// Main body of the Demo window starts here.
 		// Pass nullptr means no close button
-		if (!ImGui::Begin("PionnerEditor", nullptr, windowFlags))
+		if (!ImGui::Begin("editor_left", nullptr, windowFlags))
 		{
 			// Early out if the window is collapsed, as an optimization.
 			ImGui::End();
@@ -89,16 +101,82 @@ namespace Pionner
 		}
 		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
 
-		drawLeftDropdown();
+		//>>>>>> draw content 
+		ImGui::CollapsingHeader("Entities");
+		//>>>>>> finish content
 
 		// End of show editor
 		ImGui::PopItemWidth();
 		ImGui::End();
 	}
 
-	void UIPass::drawLeftDropdown()
+	void UIPass::drawRightPanel(std::shared_ptr<SceneMgr> &sceneMgr)
 	{
-		if (!ImGui::CollapsingHeader("Entities"))
+		auto layout = sceneMgr->m_layout;
+		LayoutInfo &info = layout->m_rightPanelInfo;
+
+		ImGui::SetNextWindowPos(ImVec2(info.m_left, info.m_top),
+								ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(info.m_width, info.m_height),
+								 ImGuiCond_Always);
+
+		ImGuiWindowFlags windowFlags = 0;
+		windowFlags |= ImGuiWindowFlags_NoTitleBar;
+		windowFlags |= ImGuiWindowFlags_NoScrollbar;
+		windowFlags |= ImGuiWindowFlags_NoMove;
+		windowFlags |= ImGuiWindowFlags_NoResize;
+
+		// Main body of the Demo window starts here.
+		// Pass nullptr means no close button
+		if (!ImGui::Begin("editor_right", nullptr, windowFlags))
+		{
+			// Early out if the window is collapsed, as an optimization.
+			ImGui::End();
 			return;
+		}
+		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+
+		//>>>>>> draw content 
+
+		//>>>>>> finish drawing content
+
+		// End of show editor
+		ImGui::PopItemWidth();
+		ImGui::End();
+	}
+
+	void UIPass::drawBottomPanel(std::shared_ptr<SceneMgr> &sceneMgr)
+	{
+		auto layout = sceneMgr->m_layout;
+		LayoutInfo &info = layout->m_bottomPanelInfo;
+
+		ImGui::SetNextWindowPos(ImVec2(info.m_left, info.m_top),
+								ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(info.m_width, info.m_height),
+								 ImGuiCond_Always);
+
+		ImGuiWindowFlags windowFlags = 0;
+		windowFlags |= ImGuiWindowFlags_NoTitleBar;
+		windowFlags |= ImGuiWindowFlags_NoScrollbar;
+		windowFlags |= ImGuiWindowFlags_NoMove;
+		windowFlags |= ImGuiWindowFlags_NoResize;
+
+		// Main body of the Demo window starts here.
+		// Pass nullptr means no close button
+		if (!ImGui::Begin("editor_bottom", nullptr, windowFlags))
+		{
+			// Early out if the window is collapsed, as an optimization.
+			ImGui::End();
+			return;
+		}
+		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
+
+		//>>>>>> draw content 
+
+		//>>>>>> finish drawing content
+
+		// End of show editor
+		ImGui::PopItemWidth();
+		ImGui::End();
 	}
 }

@@ -7,8 +7,7 @@
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
 
-#include "function/render/scene/Camera.h"
-#include "function/render/scene/Frustum.h"
+#include "function/render/scene/SceneMgr.h"
 
 #include "function/render/shader/ShaderMgr.h"
 #include "function/render/shader/Shader.h"
@@ -74,8 +73,8 @@ namespace Pionner
 
 		shader->use(true);
 
-		shader->setMat4("u_viewMat", param.camera->getViewMat());
-		shader->setMat4("u_prjMat", param.frustum->getProjectMat());
+		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
 		shader->setMat4("u_modelMat", part->m_modelMat);
 
 		if (part->m_material.slotValid())

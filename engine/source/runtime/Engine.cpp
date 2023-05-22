@@ -15,8 +15,6 @@
 
 namespace Pionner
 {
-	const float Engine::s_fpsAlpha = 1.f / 100.f;
-
 	Engine::Engine() : m_lastTickTimePoint(std::chrono::steady_clock::now())
 	{
 	}

@@ -18,7 +18,6 @@ namespace Pionner
 		bool tickFrame(float deltaTime);
 
 	protected:
-		static const float s_fpsAlpha;
 
 		void tickLogic(float deltaTime);
 		void tickRender(float deltaTime);

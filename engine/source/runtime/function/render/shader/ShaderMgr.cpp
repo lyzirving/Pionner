@@ -56,7 +56,7 @@ namespace Pionner
 		return ret;
 	}
 
-	void ShaderMgr::destroy()
+	void ShaderMgr::shutdown()
 	{
 		for (int i = 0; i < SHADER_TYPE_CNT; i++)
 		{

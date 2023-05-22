@@ -8,9 +8,12 @@
 #include "function/render/shader/ShaderMgr.h"
 #include "function/render/resource/RenderResourceMgr.h"
 
+#include "function/render/scene/SceneMgr.h"
+
 #include "function/render/scene/RenderScene.h"
 #include "function/render/scene/Camera.h"
 #include "function/render/scene/Frustum.h"
+#include "function/render/scene/Layout.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -27,9 +30,7 @@ namespace Pionner
 		: BaseSystem(world)
 		, m_rhi(nullptr)
 		, m_pipeLine(nullptr)
-		, m_scene(nullptr)
-		, m_camera(nullptr)
-		, m_frustum(nullptr)
+		, m_sceneMgr(nullptr)
 		, m_shaderMgr(nullptr)
 		, m_resourceMgr(nullptr)
 	{
@@ -49,14 +50,11 @@ namespace Pionner
 		RenderPipelineInitInfo pipelineInfo;
 		m_pipeLine->initialize(pipelineInfo);
 
-		m_scene = std::make_shared<RenderScene>();
-		m_scene->initialize(m_rhi);
-
-		m_camera = std::make_shared<Camera>();
-		m_camera->setPosition(glm::vec3(5.f, 2.f, 5.f));
-
-		m_frustum = std::make_shared<Frustum>();
-		m_frustum->setAspect(float(info.window->getWidth()) / float(info.window->getHeight()));
+		m_sceneMgr = std::make_shared<SceneMgr>();
+		SceneMgrInitInfo sceneMgrInfo;
+		sceneMgrInfo.window = info.window;
+		sceneMgrInfo.rhi = m_rhi;
+		m_sceneMgr->initialize(sceneMgrInfo);
 
 		m_shaderMgr = std::make_shared<ShaderMgr>();
 
@@ -90,25 +88,15 @@ namespace Pionner
 
 	void RenderSystem::shutdown()
 	{
-		if (m_frustum)
+		if (m_sceneMgr)
 		{
-			m_frustum.reset();
-		}
-
-		if (m_camera)
-		{
-			m_camera.reset();
-		}
-
-		if (m_scene)
-		{
-			m_scene->shutdown();
-			m_scene.reset();
+			m_sceneMgr->shutdown();
+			m_sceneMgr.reset();
 		}
 
 		if (m_shaderMgr)
 		{
-			m_shaderMgr->destroy();
+			m_shaderMgr->shutdown();
 			m_shaderMgr.reset();
 		}
 
@@ -137,8 +125,8 @@ namespace Pionner
 
 		m_pipeLine->preparePassData();
 
-		RenderParam param{ m_camera, m_frustum, m_resourceMgr, m_shaderMgr, m_rhi, m_world };
+		RenderParam param{ m_sceneMgr, m_resourceMgr, m_shaderMgr, m_rhi, m_world };
 
-		m_pipeLine->forwardRender(m_scene, param);
+		m_pipeLine->forwardRender(param);
 	}
 }

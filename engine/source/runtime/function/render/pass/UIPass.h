@@ -13,14 +13,16 @@ namespace Pionner
 
 		virtual void initialize(const RenderPassInitInfo &info) override;
 		virtual void shutdown() override;
+		virtual void draw(std::shared_ptr<SceneMgr> &sceneMgr) override;
 
 		virtual void initializeUIRenderBackend(WindowUI *ui) override;
 		virtual void shutdownUIRenderBackend() override;
-		virtual void draw() override;
 
 	private:
-		void drawUI();
-		void drawLeftDropdown();
+		void drawUI(std::shared_ptr<SceneMgr> &sceneMgr);
+		void drawLeftPanel(std::shared_ptr<SceneMgr> &sceneMgr);
+		void drawRightPanel(std::shared_ptr<SceneMgr> &sceneMgr);
+		void drawBottomPanel(std::shared_ptr<SceneMgr> &sceneMgr);
 
 	private:
 		WindowUI *m_ui;

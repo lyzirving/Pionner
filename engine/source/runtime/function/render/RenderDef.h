@@ -12,16 +12,14 @@ namespace Pionner
 	class WindowUI;
 	class RenderPassBase;
 	class RenderPipelineBase;
-	class Camera;
-	class Frustum;
+	class SceneMgr;
 	class RenderResourceMgr;
 	class ShaderMgr;
 	class World;
 
 	struct RenderParam
 	{
-		std::shared_ptr<Camera>            camera;
-		std::shared_ptr<Frustum>           frustum;
+		std::shared_ptr<SceneMgr>          sceneMgr;
 		std::shared_ptr<RenderResourceMgr> resource;
 		std::shared_ptr<ShaderMgr>         shaderMgr;
 		std::shared_ptr<Rhi>               rhi;

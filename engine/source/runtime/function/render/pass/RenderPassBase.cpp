@@ -22,10 +22,6 @@ namespace Pionner
 	{
 	}
 
-	void RenderPassBase::draw()
-	{
-	}
-
 	void RenderPassBase::setPassCommonInfo(RenderPassCommonInfo &info)
 	{
 		m_rhi = info.rhi;

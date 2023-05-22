@@ -108,6 +108,11 @@ namespace Pionner
 		glViewport((GLint)m_viewport.x, (GLint)m_viewport.y, (GLint)m_viewport.width, (GLint)m_viewport.height);
 	}
 
+	void RhiGL::viewportSub(int x, int y, int width, int height)
+	{
+		glViewport(x, y, width, height);
+	}
+
 	void RhiGL::setClearMode(ClearMode &mode)
 	{
 		glClearColor(mode.m_color.r, mode.m_color.g, mode.m_color.b, mode.m_color.a);
