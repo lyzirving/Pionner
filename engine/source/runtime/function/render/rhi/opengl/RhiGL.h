@@ -20,6 +20,7 @@ namespace Pionner
 
 		virtual void viewportFull() override;
 		virtual void viewportSub(int x, int y, int width, int height) override;
+		virtual void reviseViewport(int width, int height) override;
 
 		virtual void setClearMode(ClearMode &mode) override;
 		virtual void setCullMode(CullFace &mode) override;

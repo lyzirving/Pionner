@@ -16,6 +16,7 @@ namespace Pionner
 		virtual void shutdown() override;
 
 		virtual void forwardRender(RenderParam &param) override;
+		virtual void preparePassData(RenderParam &param) override;
 	};
 }
 

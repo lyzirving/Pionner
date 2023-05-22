@@ -11,6 +11,8 @@
 #include "function/render/rhi/attr/CullFace.h"
 #include "function/render/rhi/attr/DepthTest.h"
 
+#include "function/render/WindowSystem.h"
+
 struct GLFWwindow;
 
 namespace Pionner
@@ -38,12 +40,14 @@ namespace Pionner
 
 		virtual void viewportFull() {};
 		virtual void viewportSub(int x, int y, int width, int height) {};
+		virtual void reviseViewport(int width, int height) {};
 
 		virtual void setClearMode(ClearMode &mode) {};
 		virtual void setCullMode(CullFace &mode) {};
 		virtual void setDepthMode(DepthTest &test) {};
 
 		inline RhiType getType() const { return m_type; }
+		inline std::shared_ptr<WindowSystem> getWindowSystem() const { return m_window; }
 
 	protected:
 		virtual void createInstance() {};

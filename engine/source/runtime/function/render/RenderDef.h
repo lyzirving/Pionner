@@ -28,8 +28,8 @@ namespace Pionner
 
 	struct WindowCreateInfo
 	{
-		int         width{ 1280 };
-		int         height{ 720 };
+		int         width{ 1600 };
+		int         height{ 900 };
 		const char *title{ "Pionner" };
 		bool        fullscreen{ false };
 	};

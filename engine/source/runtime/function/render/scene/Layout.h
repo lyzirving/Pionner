@@ -25,6 +25,7 @@ namespace Pionner
 		~Layout();
 
 		void initialize(const std::shared_ptr<WindowSystem> &windowSystem);
+		bool revise(int width, int height);
 
 	public:
 		LayoutInfo m_drawPanelInfo;

@@ -26,6 +26,8 @@ namespace Pionner
 		void initialize(SceneMgrInitInfo &info);
 		void shutdown();
 
+		void reviseLayout(int width, int height);
+
 	public:
 		std::shared_ptr<RenderScene>  m_scene;
 		std::shared_ptr<Layout>       m_layout;

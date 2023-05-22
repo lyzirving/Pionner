@@ -110,7 +110,22 @@ namespace Pionner
 
 	void RhiGL::viewportSub(int x, int y, int width, int height)
 	{
+		if (x + width > m_viewport.width || y + height > m_viewport.height)
+		{
+			LOG_WARN("sub viewport[%d, %d, %d, %d] is out of bounds[%d, %d, %d, %d]",
+					 x, y, width, height,
+					 m_viewport.x, m_viewport.y, m_viewport.width, m_viewport.height);
+		}
 		glViewport(x, y, width, height);
+	}
+
+	void RhiGL::reviseViewport(int width, int height)
+	{
+		if (width != m_viewport.width || height != m_viewport.height)
+		{
+			m_viewport.width = width;
+			m_viewport.height = height;
+		}
 	}
 
 	void RhiGL::setClearMode(ClearMode &mode)

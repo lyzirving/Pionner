@@ -17,9 +17,10 @@ namespace Pionner
 		virtual void shutdown() = 0;
 
 		virtual void forwardRender(RenderParam &param);
+		virtual void preparePassData(RenderParam &param);
+
 		virtual void initializeUIRenderBackend(WindowUI *ui);
 		virtual void shutdownUIRenderBackend();
-		virtual void preparePassData();
 
 	protected:
 		std::shared_ptr<Rhi> m_rhi;

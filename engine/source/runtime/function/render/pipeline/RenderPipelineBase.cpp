@@ -22,6 +22,10 @@ namespace Pionner
 	{
 	}
 
+	void RenderPipelineBase::preparePassData(RenderParam &param)
+	{
+	}
+
 	void RenderPipelineBase::initializeUIRenderBackend(WindowUI *ui)
 	{
 		if (m_uiPass) m_uiPass->initializeUIRenderBackend(ui);
@@ -30,9 +34,5 @@ namespace Pionner
 	void RenderPipelineBase::shutdownUIRenderBackend()
 	{
 		if (m_uiPass) m_uiPass->shutdownUIRenderBackend();
-	}
-
-	void RenderPipelineBase::preparePassData()
-	{
 	}
 }

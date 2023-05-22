@@ -55,4 +55,13 @@ namespace Pionner
 		}
 	}
 
+	void SceneMgr::reviseLayout(int width, int height)
+	{
+		if (m_layout->revise(width, height))
+		{
+			float aspect = float(m_layout->m_drawPanelInfo.m_width) / float(m_layout->m_drawPanelInfo.m_height);
+			m_frustum->setAspect(aspect);
+		}
+	}
+
 }

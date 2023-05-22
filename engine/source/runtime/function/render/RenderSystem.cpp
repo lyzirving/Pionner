@@ -121,11 +121,11 @@ namespace Pionner
 
 	void RenderSystem::tick(float deltaTime)
 	{
+		RenderParam param{ m_sceneMgr, m_resourceMgr, m_shaderMgr, m_rhi, m_world };
+
 		m_resourceMgr->checkAbandoned();
 
-		m_pipeLine->preparePassData();
-
-		RenderParam param{ m_sceneMgr, m_resourceMgr, m_shaderMgr, m_rhi, m_world };
+		m_pipeLine->preparePassData(param);
 
 		m_pipeLine->forwardRender(param);
 	}

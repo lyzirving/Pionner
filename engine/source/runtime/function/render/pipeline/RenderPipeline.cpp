@@ -9,6 +9,13 @@
 #include "function/render/rhi/Rhi.h"
 #include "function/render/pass/UIPass.h"
 
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "RenderPipeline"
+
 namespace Pionner
 {
 	RenderPipeline::RenderPipeline() : RenderPipelineBase()
@@ -59,5 +66,18 @@ namespace Pionner
 
 		m_rhi->viewportFull();
 		m_uiPass->draw(sceneMgr);
+	}
+
+	void RenderPipeline::preparePassData(RenderParam &param)
+	{
+		auto rhi = param.rhi;
+		auto windowSys = rhi->getWindowSystem();
+		auto sceneMgr = param.sceneMgr;
+
+		int width = windowSys->getWidth();
+		int height = windowSys->getHeight();
+
+		rhi->reviseViewport(width, height);
+		sceneMgr->reviseLayout(width, height);
 	}
 }
