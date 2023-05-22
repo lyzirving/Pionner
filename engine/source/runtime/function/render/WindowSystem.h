@@ -1,6 +1,7 @@
 #ifndef __WINDOW_SYSTEM_H__
 #define __WINDOW_SYSTEM_H__
 
+#include <atomic>
 #include "function/render/RenderDef.h"
 #include "function/framework/system/BaseSystem.h"
 
@@ -24,6 +25,9 @@ namespace Pionner
 		void swapBuffers();
 		void pollEvents();
 
+		inline bool sizeChange() { return m_sizeChange.load(); }
+		inline void setSizeChange(bool change) { m_sizeChange.store(change); }
+
 	protected:
 		static void windowSizeCallback(GLFWwindow *window, int width, int height);
 		static void windowCloseCallback(GLFWwindow *window);
@@ -31,6 +35,7 @@ namespace Pionner
 	private:
 		GLFWwindow *m_window;
 		int m_width, m_height;
+		std::atomic<bool> m_sizeChange;
 	};
 }
 

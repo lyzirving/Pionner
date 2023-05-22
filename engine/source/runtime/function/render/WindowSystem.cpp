@@ -16,6 +16,7 @@ namespace Pionner
 		: BaseSystem(world)
 		, m_window(nullptr)
 		, m_width(0), m_height(0)
+		, m_sizeChange(false)
 	{
 	}
 
@@ -71,6 +72,7 @@ namespace Pionner
 		{
 			app->m_width = width;
 			app->m_height = height;
+			app->setSizeChange(true);
 		}
 	}
 

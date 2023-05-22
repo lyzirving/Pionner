@@ -74,10 +74,14 @@ namespace Pionner
 		auto windowSys = rhi->getWindowSystem();
 		auto sceneMgr = param.sceneMgr;
 
-		int width = windowSys->getWidth();
-		int height = windowSys->getHeight();
+		if (windowSys->sizeChange())
+		{
+			int width = windowSys->getWidth();
+			int height = windowSys->getHeight();
 
-		rhi->reviseViewport(width, height);
-		sceneMgr->reviseLayout(width, height);
+			rhi->reviseViewport(width, height);
+			sceneMgr->reviseLayout(width, height);
+			windowSys->setSizeChange(false);
+		}
 	}
 }
