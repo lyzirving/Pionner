@@ -1,0 +1,56 @@
+#include "function/framework/comp/MeshComp.h"
+
+#include "function/global/GlobalContext.h"
+
+#include "function/render/RenderSystem.h"
+
+#include "function/render/resource/RenderResourceMgr.h"
+#include "function/render/resource/buffer/GfxBuffer.h"
+
+namespace Pionner
+{
+	Pionner::MeshComp::MeshComp()
+		: Comp()
+		, m_mat(1.f)
+		, m_vBufSlot(-1), m_indBufSlot(-1)
+		, m_initialized(false)
+	{
+	}
+
+	MeshComp::~MeshComp()
+	{
+		if (m_initialized)
+		{
+			auto resourceMgr = g_runtimeCtx.m_renderSystem->getResourceMgr();
+			if (m_vBufSlot >= 0) resourceMgr->deleteResource(BUF_MEM_ARRAY, m_vBufSlot);
+			if (m_indBufSlot >= 0) resourceMgr->deleteResource(BUF_EBO, m_indBufSlot);
+			m_vBufSlot = -1;
+			m_indBufSlot = -1;
+			m_initialized = false;
+		}
+	}
+
+	void MeshComp::initialize(std::vector<Vertex> &vertexArray, std::vector<uint32_t> &indiceArray)
+	{
+		if (!m_initialized && !vertexArray.empty() && !indiceArray.empty())
+		{
+			std::shared_ptr<GfxBuffer> vBuffer{ nullptr }, indBuffer{ nullptr };
+
+			auto resourceMgr = g_runtimeCtx.m_renderSystem->getResourceMgr();
+
+			vBuffer = resourceMgr->allocate(BUF_MEM_ARRAY);
+			indBuffer = resourceMgr->allocate(BUF_EBO);
+
+			vBuffer->insertData<Vertex>(vertexArray);
+			indBuffer->insertData<uint32_t>(indiceArray);
+
+			vBuffer->upload();
+			indBuffer->upload();
+
+			m_vBufSlot = vBuffer->getSlot();
+			m_indBufSlot = indBuffer->getSlot();
+
+			m_initialized = true;
+		}
+	}
+}

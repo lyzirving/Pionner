@@ -14,6 +14,8 @@ namespace Pionner
 		~Frustum();
 
 		const glm::mat4 &getProjectMat();
+		const glm::mat4 &getProjectInvMat();
+
 		void setFov(float fov);
 		void setAspect(float aspect);
 		void setNearFar(float near, float far);
@@ -49,8 +51,10 @@ namespace Pionner
 		float m_fov, m_aspect;
 		float m_near, m_far;
 		std::atomic_bool m_change;
-		glm::mat4 m_projectMat;
 		std::list<FrustumState> m_stateStack;
+
+		glm::mat4 m_projectMat;
+		glm::mat4 m_projectInvMat;
 	};
 }
 

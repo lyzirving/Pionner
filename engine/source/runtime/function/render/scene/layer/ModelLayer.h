@@ -7,6 +7,8 @@
 
 namespace Pionner
 {
+	class InfiniteGrid;
+
 	class ModelLayer : public RenderLayer
 	{
 	public:
@@ -14,6 +16,9 @@ namespace Pionner
 		virtual ~ModelLayer();
 
 		virtual void draw(RenderParam &param) override;
+
+	private:
+		std::shared_ptr<InfiniteGrid> m_grid;
 	};
 }
 

@@ -174,6 +174,20 @@ namespace Pionner
 		}
 	}
 
+	void RhiGL::setBlendMode(Blend &blend)
+	{
+		if (blend.m_enable)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(getGLBlendFactor(blend.m_src),
+						getGLBlendFactor(blend.m_dest));
+		}
+		else
+		{
+			glDisable(GL_BLEND);
+		}
+	}
+
 	uint32_t RhiGL::getGLFaceDir(FaceDirection dir)
 	{
 		switch (dir)
@@ -199,6 +213,45 @@ namespace Pionner
 				return GL_FRONT_AND_BACK;
 			default:
 				return GL_FALSE;
+		}
+	}
+
+	uint32_t RhiGL::getGLBlendFactor(BlendFactor blendFactor)
+	{
+		switch (blendFactor)
+		{
+			case Pionner::Bld_Factor_Zero:
+				return GL_ZERO;
+			case Pionner::Bld_Factor_One:
+				return GL_ONE;
+			case Pionner::Bld_Factor_SrcColor:
+				return GL_SRC_COLOR;
+			case Pionner::Bld_Factor_OneMinusSrcColor:
+				return GL_ONE_MINUS_SRC_COLOR;
+			case Pionner::Bld_Factor_SrcAlpha:
+				return GL_SRC_ALPHA;
+			case Pionner::Bld_Factor_OneMinusSrcAlpha:
+				return GL_ONE_MINUS_SRC_ALPHA;
+			case Pionner::Bld_Factor_DstAlpha:
+				return GL_DST_ALPHA;
+			case Pionner::Bld_Factor_OneMinusDstAlpha:
+				return GL_ONE_MINUS_DST_ALPHA;
+			case Pionner::Bld_Factor_DstColor:
+				return GL_DST_COLOR;
+			case Pionner::Bld_Factor_OneMinusDstColor:
+				return GL_ONE_MINUS_DST_COLOR;
+			case Pionner::Bld_Factor_SrcAlphaSaturate:
+				return GL_SRC_ALPHA_SATURATE;
+			case Pionner::Bld_Factor_ConstantColor:
+				return GL_CONSTANT_COLOR;
+			case Pionner::Bld_Factor_OneMinusConstantColor:
+				return GL_ONE_MINUS_CONSTANT_COLOR;
+			case Pionner::Bld_Factor_ConstantAlpha:
+				return GL_CONSTANT_ALPHA;
+			case Pionner::Bld_Factor_OneMinusConstantAlpha:
+				return GL_ONE_MINUS_CONSTANT_ALPHA;
+			default:
+				return 0;
 		}
 	}
 }

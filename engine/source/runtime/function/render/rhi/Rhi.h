@@ -10,6 +10,7 @@
 #include "function/render/rhi/attr/ClearMode.h"
 #include "function/render/rhi/attr/CullFace.h"
 #include "function/render/rhi/attr/DepthTest.h"
+#include "function/render/rhi/attr/Blend.h"
 
 #include "function/render/WindowSystem.h"
 
@@ -45,6 +46,7 @@ namespace Pionner
 		virtual void setClearMode(ClearMode &mode) {};
 		virtual void setCullMode(CullFace &mode) {};
 		virtual void setDepthMode(DepthTest &test) {};
+		virtual void setBlendMode(Blend &blend) {};
 
 		inline RhiType getType() const { return m_type; }
 		inline std::shared_ptr<WindowSystem> getWindowSystem() const { return m_window; }

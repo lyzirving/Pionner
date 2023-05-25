@@ -15,7 +15,8 @@ namespace Pionner
 {
 	Frustum::Frustum(float fov, float aspect, float near, float far)
 		: m_fov(fov), m_aspect(aspect), m_near(near), m_far(far)
-		, m_change(true), m_projectMat(1.f), m_stateStack()
+		, m_change(true), m_stateStack()
+		, m_projectMat(1.f), m_projectInvMat(1.f)
 	{
 	}
 
@@ -32,6 +33,7 @@ namespace Pionner
 				return;
 			}
 			m_projectMat = glm::perspective(glm::radians(m_fov), m_aspect, m_near, m_far);
+			m_projectInvMat = glm::inverse(m_projectMat);
 		}
 	}
 
@@ -39,6 +41,12 @@ namespace Pionner
 	{
 		calcProjectMat();
 		return m_projectMat;
+	}
+
+	const glm::mat4 &Frustum::getProjectInvMat()
+	{
+		calcProjectMat();
+		return m_projectInvMat;
 	}
 
 	void Frustum::setFov(float fov)

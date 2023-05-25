@@ -6,7 +6,9 @@
 #include "function/render/entity/RenderEntity.h"
 
 #include "function/render/rhi/Rhi.h"
-#include "function/render/cmd/DrawCmd.h"
+#include "function/render/rhi/DrawCmd.h"
+
+#include "function/render/entity/InfiniteGrid.h"
 
 #include "function/framework/world/World.h"
 #include "function/framework/comp/RenderComp.h"
@@ -17,11 +19,13 @@ namespace Pionner
 {
 	ModelLayer::ModelLayer(const std::shared_ptr<Rhi> &rhi)
 		: RenderLayer(rhi)
+		, m_grid(new InfiniteGrid(rhi))
 	{
 	}
 
 	ModelLayer::~ModelLayer()
 	{
+		m_grid.reset();
 	}
 
 	void ModelLayer::draw(RenderParam &param)
@@ -34,5 +38,7 @@ namespace Pionner
 			drawCmd->drawEntity(comp.m_entity, param);
 		});
 
+		m_grid->initialize(param);
+		m_grid->draw(param);
 	}
 }

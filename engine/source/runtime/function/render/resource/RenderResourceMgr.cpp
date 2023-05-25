@@ -81,6 +81,34 @@ namespace Pionner
 		}
 	}
 
+	void RenderResourceMgr::deleteResource(BufferType type, uint32_t slot)
+	{
+		switch (type)
+		{
+			case Pionner::BUF_MEM_ARRAY:
+			{
+				m_vertexArray.release(slot);
+				break;
+			}
+			case Pionner::BUF_VBO:
+				break;
+			case Pionner::BUF_EBO:
+			{
+				m_indiceArray.release(slot);
+				break;
+			}
+			case Pionner::BUF_TEXTURE:
+			{
+				m_textureArray.release(slot);
+				break;
+			}
+			case Pionner::BUF_CNT:
+				break;
+			default:
+				break;
+		}
+	}
+
 	RenderResourceMgr::Buffer RenderResourceMgr::find(DataType type, uint32_t slot)
 	{
 		Buffer ret{ nullptr };
@@ -105,42 +133,6 @@ namespace Pionner
 				break;
 		}
 		return ret;
-	}
-
-	void RenderResourceMgr::release(BufferType type, uint32_t slot)
-	{
-		switch (type)
-		{
-			case Pionner::BUF_MEM_ARRAY:
-			{
-				if (m_vertexArray.exist(slot))
-				{
-					m_vertexArray.release(slot);
-				}
-				break;
-			}
-			case Pionner::BUF_VBO:
-				break;
-			case Pionner::BUF_EBO:
-			{
-				if (m_indiceArray.exist(slot))
-				{
-					m_indiceArray.release(slot);
-				}
-				break;
-			}
-			case Pionner::BUF_TEXTURE:
-			{
-				if (m_textureArray.exist(slot))
-				{
-					m_textureArray.release(slot);
-				}
-			}
-			case Pionner::BUF_CNT:
-				break;
-			default:
-				break;
-		}
 	}
 
 	void RenderResourceMgr::shutdown()
@@ -226,8 +218,11 @@ namespace Pionner
 	{
 		for (auto &active : m_activeBuffers)
 		{
-			active->deleteResource();
-			active.reset();
+			if (active)
+			{
+				active->deleteResource();
+				active.reset();
+			}
 		}
 		std::vector<Buffer>().swap(m_activeBuffers);
 	}

@@ -36,6 +36,13 @@ namespace Pionner
 						ret = m_shaders[type];
 						break;
 					}
+					case Pionner::SHADER_TYPE_INFINITE_GRID:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "infinite_grid", "infinite_grid", "infinite_grid");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
 					case Pionner::SHADER_TYPE_CNT:
 					default:
 					{

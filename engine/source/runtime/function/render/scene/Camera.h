@@ -16,6 +16,7 @@ namespace Pionner
 		inline bool isChanged() { return m_dataChange.load(); }
 
 		const glm::mat4 &getViewMat();
+		const glm::mat4 &getViewInvMat();
 		const glm::vec3 &getCamPos();
 
 		void setPosition(float theta, float phi, float r);
@@ -71,6 +72,7 @@ namespace Pionner
 		float m_viewTheta, m_viewPhi;
 
 		glm::mat4 m_viewMat;
+		glm::mat4 m_viewInvMat;
 		std::atomic<bool> m_dataChange;
 
 		std::list<CameraState> m_stateStack;

@@ -62,7 +62,7 @@ namespace Pionner
 			std::shared_ptr<RenderResourceMgr> mgr = m_mgr.lock();
 			if (mgr)
 			{
-				mgr->release(m_bufferType, m_slot);
+				mgr->deleteResource(m_bufferType, m_slot);
 				m_abandoned = true;
 			}
 		}

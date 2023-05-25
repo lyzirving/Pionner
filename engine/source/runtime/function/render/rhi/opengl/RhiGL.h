@@ -25,6 +25,7 @@ namespace Pionner
 		virtual void setClearMode(ClearMode &mode) override;
 		virtual void setCullMode(CullFace &mode) override;
 		virtual void setDepthMode(DepthTest &test) override;
+		virtual void setBlendMode(Blend &blend) override;
 
 	protected:
 		virtual void createInstance() override;
@@ -32,6 +33,7 @@ namespace Pionner
 	private:
 		static uint32_t getGLFaceDir(FaceDirection dir);
 		static uint32_t getGLCullMode(CullMode mode);
+		static uint32_t getGLBlendFactor(BlendFactor blendFactor);
 	};
 }
 

@@ -19,7 +19,8 @@ namespace Pionner
 		, m_camRight(0.f), m_camUp(0.f), m_viewDir(0.f)
 		, m_theta(theta), m_phi(phi), m_radius(radius)
 		, m_viewTheta(viewTheta), m_viewPhi(viewPhi)
-		, m_viewMat(1.f), m_dataChange(true)
+		, m_viewMat(1.f), m_viewInvMat(1.f)
+		, m_dataChange(true)
 		, m_stateStack()
 	{
 		// compute view direction at first
@@ -36,6 +37,12 @@ namespace Pionner
 	{
 		calcViewMat();
 		return m_viewMat;
+	}
+
+	const glm::mat4 &Camera::getViewInvMat()
+	{
+		calcViewMat();
+		return m_viewInvMat;
 	}
 
 	const glm::vec3 &Camera::getCamPos()
@@ -118,6 +125,8 @@ namespace Pionner
 			m_camUp = glm::normalize(glm::cross(m_camRight, m_viewDir));
 
 			m_viewMat = glm::lookAt(m_camPos, m_camPos + m_viewDir, m_camUp);
+			m_viewInvMat = glm::inverse(m_viewMat);
+
 			m_dataChange.store(false);
 		}
 	}

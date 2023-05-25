@@ -15,6 +15,8 @@
 #include "function/render/entity/RenderEntity.h"
 #include "function/render/RenderDef.h"
 
+#include "function/framework/comp/MeshComp.h"
+
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -46,6 +48,51 @@ namespace Pionner
 				DrawCmdGL::drawEntity(child, param);
 			}
 		}
+	}
+
+	void DrawCmdGL::drawInfiniteGrid(std::shared_ptr<MeshComp> &mesh, RenderParam &param)
+	{
+		if (!mesh || !mesh->m_initialized || mesh->m_vBufSlot < 0 || mesh->m_indBufSlot < 0)
+		{
+			return;
+		}
+		std::shared_ptr<RenderResourceMgr> resource = param.resource;
+		auto vertexBuf = resource->find(DATA_VERTEX, mesh->m_vBufSlot);
+		auto indiceBuf = resource->find(DATA_INDICE, mesh->m_indBufSlot);
+
+		if (!vertexBuf || !indiceBuf)
+		{
+			LOG_ERR("buffer is invalid");
+			return;
+		}
+
+		auto shader = param.shaderMgr->get(SHADER_TYPE_INFINITE_GRID, param.rhi);
+
+		if (!shader)
+		{
+			LOG_ERR("mesh shader is invalid");
+			return;
+		}
+
+		shader->use(true);
+
+		shader->setMat4("u_modelMat", mesh->m_mat);
+		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
+
+		vertexBuf->upload();
+		indiceBuf->upload();
+
+		vertexBuf->bind();
+		indiceBuf->bind();
+
+		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::checkGLErr("err happens when drawing grid");
+
+		vertexBuf->unbind();
+		indiceBuf->unbind();
+
+		shader->use(false);
 	}
 
 	void DrawCmdGL::drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param)
@@ -96,7 +143,7 @@ namespace Pionner
 		indiceBuf->bind();
 
 		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::checkGLErr("err happens in draw cmd");
+		GLHelper::checkGLErr("err happens when drawing part");
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();
