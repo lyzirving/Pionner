@@ -12,8 +12,10 @@ uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
 
 out vec2 v_tex;
+out vec3 v_pos;
 
 void main() {
     v_tex = a_tex;
+    v_pos = a_pos;
     gl_Position = u_prjMat * u_viewMat * u_modelMat * vec4(a_pos, 1.0);
 }

@@ -12,6 +12,6 @@ uniform mat4 u_prjMat;
 out vec3 v_pos;
 
 void main() {
-    gl_Position = u_prjMat * u_viewMat * u_modelMat * vec4(a_pos, 1.0);
     v_pos = a_pos;
+    gl_Position = u_prjMat * u_viewMat * u_modelMat * vec4(a_pos, 1.0);
 }

@@ -4,12 +4,26 @@
 precision highp float;
 
 in vec2 v_tex;
+in vec3 v_pos;
 
 uniform sampler2D u_diffuse;
 uniform sampler2D u_spec;
 
+uniform mat4 u_modelMat;
+uniform mat4 u_viewMat;
+uniform mat4 u_prjMat;
+
 out vec4 o_color;
+
+float computeDepth(vec3 pos);
 
 void main() {
     o_color = texture(u_diffuse, v_tex);
+    gl_FragDepth = computeDepth(v_pos);
+}
+
+float computeDepth(vec3 pos)
+{
+    vec4 posClipSpace = u_prjMat * u_viewMat * u_modelMat * vec4(pos, 1.f);
+    return (posClipSpace.z / posClipSpace.w);
 }
