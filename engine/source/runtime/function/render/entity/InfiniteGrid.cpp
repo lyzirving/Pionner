@@ -54,6 +54,7 @@ namespace Pionner
 			m_indiceArray.clear();
 			buildGridData(m_vertexArray, m_indiceArray);
 			m_meshComp->initialize(m_vertexArray, m_indiceArray);
+			m_meshComp->m_color = glm::vec4(0.29f, 0.29f, 0.29f, 1.f);
 		}
 	}
 

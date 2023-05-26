@@ -23,6 +23,7 @@ namespace Pionner
 
 	public:
 		glm::mat4 m_mat;
+		glm::vec4 m_color;
 		int32_t m_vBufSlot, m_indBufSlot;
 		bool m_initialized;
 	};

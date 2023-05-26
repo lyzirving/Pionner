@@ -12,6 +12,7 @@ namespace Pionner
 	Pionner::MeshComp::MeshComp()
 		: Comp()
 		, m_mat(1.f)
+		, m_color(1.f)
 		, m_vBufSlot(-1), m_indBufSlot(-1)
 		, m_initialized(false)
 	{

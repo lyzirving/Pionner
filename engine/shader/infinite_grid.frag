@@ -10,27 +10,58 @@ uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
 
+uniform vec4 u_lineColor;
+
 in vec3 v_pos;
 
 out vec4 o_color;
 
-float isGridLine(vec2 xzCoord);
+bool isXAxis(vec2 xzCoord);
+bool isZAxis(vec2 xzCoord);
+bool isGridLine(vec2 xzCoord);
 float computeDepth(vec3 pos);
 
 void main() {
     vec2 xzCoord;
     xzCoord.x = v_pos.x;
     xzCoord.y = v_pos.z;
-    o_color = vec4(1.f, 0.f, 0.f, isGridLine(xzCoord));
+
+    if(isXAxis(xzCoord))
+    {
+        o_color = vec4(1.f, 0.f, 0.f, 1.f);
+    }
+    else if(isZAxis(xzCoord))
+    {
+        o_color = vec4(0.f, 0.f, 1.f, 1.f);
+    }
+    else if(isGridLine(xzCoord))
+    {
+        o_color = u_lineColor;
+    }
+    else
+    {
+        o_color = vec4(0.f, 0.f, 0.f, 0.f);
+    }
     gl_FragDepth = computeDepth(v_pos);
 }
 
-float isGridLine(vec2 xzCoord)
+bool isXAxis(vec2 xzCoord)
+{
+    float zAbsVal = abs(xzCoord.y);
+    return zAbsVal <= LINE_WIDTH;
+}
+
+bool isZAxis(vec2 xzCoord)
+{
+    float xAbsVal = abs(xzCoord.x);
+    return xAbsVal <= LINE_WIDTH;
+}
+
+bool isGridLine(vec2 xzCoord)
 {
     vec2 fractPart = fract(xzCoord / GRID_SQUARE);
     vec2 coordInOneGrid = fractPart * GRID_SQUARE;
-    bool flag = abs(coordInOneGrid.x) <= LINE_WIDTH || abs(coordInOneGrid.y) <= LINE_WIDTH;
-    return flag ? 1.f : 0.f;
+    return abs(coordInOneGrid.x) <= LINE_WIDTH || abs(coordInOneGrid.y) <= LINE_WIDTH;
 }
 
 float computeDepth(vec3 pos)

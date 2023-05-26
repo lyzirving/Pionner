@@ -10,7 +10,7 @@ namespace Pionner
 {
 	ClearLayer::ClearLayer(const std::shared_ptr<Rhi> &rhi)
 		: RenderLayer(rhi)
-		, m_color(1.f, 1.f, 1.f)
+		, m_color(0.24f, 0.24f, 0.24f)
 	{
 	}
 

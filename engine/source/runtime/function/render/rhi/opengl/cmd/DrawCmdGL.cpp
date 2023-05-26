@@ -76,6 +76,7 @@ namespace Pionner
 
 		shader->use(true);
 
+		shader->setVec4("u_lineColor", mesh->m_color);
 		shader->setMat4("u_modelMat", mesh->m_mat);
 		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
 		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
