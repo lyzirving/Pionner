@@ -20,6 +20,7 @@ namespace Pionner
 		virtual void upload() override;
 
 		virtual void bindTarget(uint32_t target = 0) override;
+		virtual void unbind() override;
 		virtual void deleteResource() override;
 		virtual void loadRawData() override;
 

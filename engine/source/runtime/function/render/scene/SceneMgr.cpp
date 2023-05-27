@@ -24,7 +24,7 @@ namespace Pionner
 		m_scene->initialize(info.rhi);
 
 		m_camera = std::make_shared<Camera>();
-		m_camera->setPosition(glm::vec3(3.f, 2.f, 4.f));
+		m_camera->setPosition(glm::vec3(5.f, 4.f, 5.f));
 
 		m_frustum = std::make_shared<Frustum>();
 		float aspect = float(m_layout->m_drawPanelInfo.m_width) / float(m_layout->m_drawPanelInfo.m_height);

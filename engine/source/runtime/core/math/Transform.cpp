@@ -1,11 +1,15 @@
+#include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "core/math/Transform.h"
+#include "core/math/MathLib.h"
 
 namespace Pionner
 {
-	Rotation::Rotation() : m_x(0.f, false), m_y(0.f, false), m_z(0.f, false)
-		                 , m_mat(1.f)
-		                 , m_dirty(false)
+	Rotation::Rotation()
+		: m_mat(1.f)
+		, m_axis(1.f, 0.f, 0.f), m_angle(0.f)
+		, m_dirty(false)
 	{
 	}
 
@@ -14,52 +18,27 @@ namespace Pionner
 		if (m_dirty)
 		{
 			m_dirty = false;
-			m_mat = glm::mat4(1.f);
-			m_mat = glm::rotate(m_mat, glm::radians(m_z.first), glm::vec3(0.f, 0.f, (m_z.second ? 1.f : -1.f)));
-			m_mat = glm::rotate(m_mat, glm::radians(m_y.first), glm::vec3(0.f, (m_y.second ? 1.f : -1.f), 0.f));
-			m_mat = glm::rotate(m_mat, glm::radians(m_x.first), glm::vec3((m_x.second ? 1.f : -1.f), 0.f, 0.f));
+			m_mat = glm::rotate(glm::radians(m_angle), m_axis);
 		}
 		return m_mat;
 	}
 
-	bool Rotation::rotateByX(float angle, bool reverse)
+	bool Rotation::rotate(float angle, const glm::vec3 &axis)
 	{
 		bool change{ false };
-		if (m_x.first != angle || m_x.second != reverse)
+		if (!MathLib::equalF(angle, m_angle) || !MathLib::equalVec3(m_axis, axis))
 		{
+			m_angle = angle;
+			m_axis = axis;
 			change = m_dirty = true;
-			m_x.first = angle;
-			m_x.second = reverse;
 		}
 		return change;
 	}
 
-	bool Rotation::rotateByY(float angle, bool reverse)
-	{
-		bool change{ false };
-		if (m_y.first != angle || m_y.second != reverse)
-		{
-			change = m_dirty = true;
-			m_y.first = angle;
-			m_y.second = reverse;
-		}
-		return change;
-	}
-
-	bool Rotation::rotateByZ(float angle, bool reverse)
-	{
-		bool change{ false };
-		if (m_z.first != angle || m_z.second != reverse)
-		{
-			change = m_dirty = true;
-			m_z.first = angle;
-			m_z.second = reverse;
-		}
-		return change;
-	}
-
-	Transform::Transform() : m_position(0.f), m_scale(1.f), m_rotaion()
-		                   , m_mat(1.f), m_dirty(false)
+	Transform::Transform()
+		: m_position(0.f), m_scale(1.f), m_rotaion()
+		, m_mat(1.f)
+		, m_dirty(false)
 	{
 	}
 
@@ -68,12 +47,10 @@ namespace Pionner
 		if (m_dirty)
 		{
 			m_dirty = false;
-			m_mat = glm::mat4(1.f);
-			// rotate first, then scale, finally translation
-			m_mat = glm::translate(m_mat, m_position);
-			m_mat = glm::scale(m_mat, m_scale);
+			glm::mat4 scaleMat = glm::scale(m_scale);
+			glm::mat4 transMat = glm::translate(m_position);
 			const glm::mat4 &rotateMat = m_rotaion.matrix();
-			m_mat = m_mat * rotateMat;
+			m_mat = transMat * rotateMat * scaleMat;
 		}
 		return m_mat;
 	}
@@ -81,7 +58,8 @@ namespace Pionner
 	bool Transform::position(float x, float y, float z)
 	{
 		bool change{ false };
-		if (m_position.x != x || m_position.y != y || m_position.z != z)
+		glm::vec3 pos{ x, y, z };
+		if (!MathLib::equalVec3(pos, m_position))
 		{
 			m_position.x = x;
 			m_position.y = y;
@@ -94,7 +72,8 @@ namespace Pionner
 	bool Transform::scale(float x, float y, float z)
 	{
 		bool change{ false };
-		if (m_scale.x != x || m_scale.y != y || m_scale.z != z)
+		glm::vec3 scale{ x, y, z };
+		if (!MathLib::equalVec3(scale, m_scale))
 		{
 			m_scale.x = x;
 			m_scale.y = y;
@@ -104,30 +83,10 @@ namespace Pionner
 		return change;
 	}
 
-	bool Transform::rotateByX(float angle, bool reverse)
+	bool Transform::rotate(float angle, const glm::vec3 &axis)
 	{
 		bool change{ false };
-		if (m_rotaion.rotateByX(angle, reverse))
-		{
-			change = m_dirty = true;
-		}
-		return change;
-	}
-
-	bool Transform::rotateByY(float angle, bool reverse)
-	{
-		bool change{ false };
-		if (m_rotaion.rotateByY(angle, reverse))
-		{
-			change = m_dirty = true;
-		}
-		return change;
-	}
-
-	bool Transform::rotateByZ(float angle, bool reverse)
-	{
-		bool change{ false };
-		if (m_rotaion.rotateByZ(angle, reverse))
+		if (m_rotaion.rotate(angle, axis))
 		{
 			change = m_dirty = true;
 		}

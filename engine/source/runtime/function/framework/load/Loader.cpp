@@ -115,8 +115,9 @@ namespace Pionner
 		std::shared_ptr<GfxBuffer> vBuffer{ nullptr }, indBuffer{ nullptr }, texture{ nullptr };
 
 		std::shared_ptr<EntityPart> part = std::shared_ptr<EntityPart>(new EntityPart);
-		std::shared_ptr<RenderResourceMgr> resource = g_runtimeCtx.m_renderSystem->getResourceMgr();
+		part->m_owner = entity;
 
+		std::shared_ptr<RenderResourceMgr> resource = g_runtimeCtx.m_renderSystem->getResourceMgr();
 		vBuffer = resource->allocate(BUF_MEM_ARRAY);
 		indBuffer = resource->allocate(BUF_EBO);
 
@@ -146,11 +147,6 @@ namespace Pionner
 
 		part->m_aabb.setAA(min);
 		part->m_aabb.setBB(max);
-
-		// translate part to center
-		glm::vec3 center = part->center();
-		glm::mat4 mat{ 1.f };
-		part->m_modelMat = glm::translate(mat, -center);
 
 		// process the indices
 		// every face represent a primitive

@@ -13,7 +13,7 @@ namespace Pionner
 		virtual ~RenderComp();
 
 	public:
-		std::shared_ptr<RenderEntity> m_entity;
+		std::shared_ptr<RenderEntity>  m_entity;
 	};
 }
 

@@ -92,6 +92,11 @@ namespace Pionner
 		}
 	}
 
+	void GLTexture::unbind()
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
 	void GLTexture::deleteResource()
 	{
 		if (isCreated())

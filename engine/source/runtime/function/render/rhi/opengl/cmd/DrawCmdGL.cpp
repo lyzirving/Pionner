@@ -103,6 +103,7 @@ namespace Pionner
 			return;
 		}
 		std::shared_ptr<RenderResourceMgr> resource = param.resource;
+		std::shared_ptr<GfxBuffer> texture{ nullptr };
 		auto vertexBuf = resource->find(DATA_VERTEX, part->m_vertexSlot);
 		auto indiceBuf = resource->find(DATA_INDICE, part->m_indicesSlot);
 
@@ -123,11 +124,11 @@ namespace Pionner
 
 		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
 		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
-		shader->setMat4("u_modelMat", part->m_modelMat);
+		shader->setMat4("u_modelMat", part->getTransform());
 
 		if (part->m_material.slotValid())
 		{
-			auto texture = resource->find(DATA_TEXTURE, part->m_material.m_slot);
+			texture = resource->find(DATA_TEXTURE, part->m_material.m_slot);
 			if (texture)
 			{
 				texture->upload();
@@ -148,6 +149,7 @@ namespace Pionner
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();
+		if (texture) texture->unbind();
 
 		shader->use(false);
 	}

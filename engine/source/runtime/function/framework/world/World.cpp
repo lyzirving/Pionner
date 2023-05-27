@@ -29,9 +29,15 @@ namespace Pionner
 	void World::build()
 	{
 		// insert default entity
-		std::shared_ptr<Entity> entity = createEntity<RenderComp>();
-		auto &comp = entity->getComp<RenderComp>();
-		comp.m_entity = Loader::load("assets/objects/basic/Marry/Marry.obj");
+		std::shared_ptr<Entity> roleEntity = createEntity<RenderComp>();
+		auto &roleComp = roleEntity->getComp<RenderComp>();
+		roleComp.m_entity = Loader::load("assets/objects/basic/Marry/Marry.obj");
+
+		std::shared_ptr<Entity> bulbEntity = createEntity<RenderComp>();
+		auto &bulbComp = bulbEntity->getComp<RenderComp>();
+		bulbComp.m_entity = Loader::load("assets/objects/basic/bulb/bulb.obj");
+		bulbComp.m_entity->m_transComp.translate(0.f, 3.f, 4.f);
+		bulbComp.m_entity->m_transComp.rotate(-90.f, 1.f, 0.f, 0.f);
 	}
 
 	void World::shutdown()
