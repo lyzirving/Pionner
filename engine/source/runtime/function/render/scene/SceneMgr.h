@@ -29,10 +29,10 @@ namespace Pionner
 		void reviseLayout(int width, int height);
 
 	public:
-		std::shared_ptr<RenderScene>  m_scene;
-		std::shared_ptr<Layout>       m_layout;
-		std::shared_ptr<Camera>       m_camera;
-		std::shared_ptr<Frustum>      m_frustum;
+		std::shared_ptr<RenderScene>        m_scene;
+		std::shared_ptr<Layout>             m_layout;
+		std::shared_ptr<Camera>             m_camera;
+		std::shared_ptr<Frustum>            m_frustum;
 	};
 }
 

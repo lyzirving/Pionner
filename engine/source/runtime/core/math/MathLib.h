@@ -19,6 +19,8 @@ namespace Pionner
 		static bool equalF(float lhs, float rhs);
 		static bool equalVec3(const glm::vec3 &lhs, const glm::vec3 &rhs);
 
+		static glm::mat4 normalMat(const glm::mat4 &modelMat);
+
 	private:
 		MathLib() {}
 		~MathLib() = default;

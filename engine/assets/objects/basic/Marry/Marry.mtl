@@ -12,7 +12,7 @@ d 1.000000
 illum 1
 map_Kd MC003_Kozakura_Mari.png
 
-newmtl 材质
+newmtl Material
 Ns 900.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.270588 0.552941 0.874510

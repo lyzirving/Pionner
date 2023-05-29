@@ -37,7 +37,6 @@ namespace Pionner
 		Material                      m_material;
 		AABB                          m_aabb;
 		TransformComp                 m_transComp;
-		glm::mat4                     m_transform;
 		std::shared_ptr<RenderEntity> m_owner;
 	};
 
@@ -49,6 +48,7 @@ namespace Pionner
 
 	public:
 
+		std::string   m_name;
 		EntityType    m_type;
 		DrawOrder     m_order;
 		uint32_t      m_entityId;

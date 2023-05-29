@@ -31,4 +31,10 @@ namespace Pionner
 	{
 		m_transform.scale(x, y, z);
 	}
+
+	const glm::vec3 &TransformComp::getPosition()
+	{
+		glm::vec3 ret = m_transform.getPosition();
+		return ret;
+	}
 }

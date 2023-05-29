@@ -4,16 +4,22 @@
 #include <unordered_map>
 
 #include "function/framework/world/Entity.h"
+#include "function/framework/world/light/Light.h"
 
 namespace Pionner
 {
 	class World
 	{
 	public:
+		static const std::string ENTITY_POINT_LIGHT;
+
+	public:
 		World();
 		~World();
 
 		void build();
+		std::shared_ptr<Entity> getEntity(const std::string &name);
+		std::shared_ptr<Light>  getLight(const std::string &name);
 		void shutdown();
 
 		template <class ... CompTypes>
@@ -30,6 +36,7 @@ namespace Pionner
 
 		std::shared_ptr<decs::ECSWorld>                          m_worldImpl;
 		std::unordered_map<std::string, std::shared_ptr<Entity>> m_entityMap;
+		std::unordered_map<std::string, std::shared_ptr<Light>>  m_lights;
 	};
 
 	template <class ... CompTypes>

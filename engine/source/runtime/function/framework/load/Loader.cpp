@@ -63,7 +63,11 @@ namespace Pionner
 	{
 		std::shared_ptr<RenderEntity> root{ nullptr };
 
-		std::string rootDir = path.substr(0, path.find_last_of('/'));
+		int lastBackslash = path.find_last_of('/');
+		int lastDot = path.find_last_of('.');
+
+		std::string rootDir = path.substr(0, lastBackslash);
+		std::string name = path.substr(lastBackslash + 1, lastDot - lastBackslash - 1);
 
 		Assimp::Importer importer;
 		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -74,6 +78,7 @@ namespace Pionner
 		}
 
 		root = std::shared_ptr<RenderEntity>(new RenderEntity);
+		root->m_name = name;
 		root->m_type = ENTITY_MODEL;
 
 		processNode(scene->mRootNode, scene, rootDir, root);
@@ -101,6 +106,7 @@ namespace Pionner
 			std::shared_ptr<RenderEntity> child = std::shared_ptr<RenderEntity>(new RenderEntity);
 			child->m_type = entity->m_type;
 			child->m_parent = entity;
+			child->m_name = node->mChildren[i]->mName.C_Str();
 			entity->m_children.push_back(child);
 			processNode(node->mChildren[i], scene, rootDir, child);
 		}
@@ -198,9 +204,21 @@ namespace Pionner
 
 					part->m_material.m_slot = texture->getSlot();
 				}
+				else
+				{
+					part->m_material.m_type = MAT_DIFFUSE;
+				}
+
+				part->m_material.m_hasTexture = found;
 
 				aiColor3D color;
-				ai_real val;
+				ai_real   valFloat;
+				aiString  valStr;
+				ai_int    valInt;
+				if (mt->Get(AI_MATKEY_NAME, valStr) == aiReturn_SUCCESS)
+				{
+					part->m_material.m_name = valStr.C_Str();
+				}
 				if (mt->Get(AI_MATKEY_COLOR_DIFFUSE, color) == aiReturn_SUCCESS)
 				{
 					part->m_material.m_colorDiffuse = glm::vec3(color.r, color.g, color.b);
@@ -213,9 +231,16 @@ namespace Pionner
 				{
 					part->m_material.m_colorAmbient = glm::vec3(color.r, color.g, color.b);
 				}
-				if (mt->Get(AI_MATKEY_SHININESS, val) == aiReturn_SUCCESS)
+				if (mt->Get(AI_MATKEY_SHININESS, valFloat) == aiReturn_SUCCESS)
 				{
-					part->m_material.m_shiness = val;
+					part->m_material.m_shiness = valFloat;
+				}
+				if (mt->Get(AI_MATKEY_SHADING_MODEL, valInt) == aiReturn_SUCCESS)
+				{
+					if (valInt == MODE_CONSTANT || valInt == MODE_DIFFUSE || valInt == MODE_DIFFUSE_SPECULAR)
+					{
+						part->m_material.m_mode = ShadingMode(valInt);
+					}
 				}
 			}
 		}

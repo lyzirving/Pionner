@@ -17,6 +17,10 @@
 
 #include "function/framework/comp/MeshComp.h"
 
+#include "function/framework/world/World.h"
+#include "function/framework/world/light/PointLight.h"
+
+#include "core/math/MathLib.h"
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -103,7 +107,11 @@ namespace Pionner
 			return;
 		}
 		std::shared_ptr<RenderResourceMgr> resource = param.resource;
+		std::shared_ptr<World> world = param.world;
+
 		std::shared_ptr<GfxBuffer> texture{ nullptr };
+		std::shared_ptr<Light> light{ nullptr };
+
 		auto vertexBuf = resource->find(DATA_VERTEX, part->m_vertexSlot);
 		auto indiceBuf = resource->find(DATA_INDICE, part->m_indicesSlot);
 
@@ -120,23 +128,44 @@ namespace Pionner
 			return;
 		}
 
+		light = world->getLight(World::ENTITY_POINT_LIGHT);
+
+		if (!light)
+		{
+			LOG_ERR("light is invalid");
+			return;
+		}
+
 		shader->use(true);
 
+		glm::mat4 modelMat = part->getTransform();
+		glm::mat4 normalMat = MathLib::normalMat(modelMat);
+
+		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
 		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
-		shader->setMat4("u_modelMat", part->getTransform());
+		shader->setMat4("u_normalMat", normalMat);
 
-		if (part->m_material.slotValid())
+		light->dealShader(shader);
+
+		shader->setInt("u_material.shadingModel", part->m_material.m_mode);
+		shader->setInt("u_material.texType", part->m_material.m_type);
+		if (part->m_material.slotValid() && (texture = resource->find(DATA_TEXTURE, part->m_material.m_slot)))
 		{
-			texture = resource->find(DATA_TEXTURE, part->m_material.m_slot);
-			if (texture)
-			{
-				texture->upload();
-				texture->bindTarget(part->m_partIndex);
-				std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_diffuse" : "u_spec";
-				shader->setInt(sampler, part->m_partIndex);
-			}
+			texture->upload();
+			texture->bindTarget(part->m_partIndex);
+
+			std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_material.u_diffuse" : "u_material.u_spec";
+			shader->setInt(sampler, part->m_partIndex);
+			shader->setInt("u_material.hasTexture", 1);
 		}
+		else
+		{
+			shader->setInt("u_material.hasTexture", 0);
+		}
+		shader->setVec3("u_material.ka", part->m_material.m_colorAmbient);
+		shader->setVec3("u_material.kd", part->m_material.m_colorDiffuse);
+		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
 
 		vertexBuf->upload();
 		indiceBuf->upload();
