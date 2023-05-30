@@ -18,8 +18,8 @@ struct Material {
     int  texType;      // 1 for diffuse, 2 for specular
     int  hasTexture;   // 0 for no texture, otherwise this mesh has one texture
     vec3 ka, kd, ks;
-    sampler2D u_diffuse;
-    sampler2D u_spec;
+    sampler2D diffuseTexture;
+    sampler2D specTexture;
 };
 
 in vec3 v_pos;
@@ -48,6 +48,7 @@ void main() {
     vec2 texCoord = v_tex;
 
     o_color = lightedSurface(u_light, u_material, fragPos, normal, texCoord);
+    //o_color = materialColor(u_material, texCoord);
 
     // calculate depth for current position
     gl_FragDepth = computeDepth(v_pos);
@@ -71,12 +72,12 @@ vec4 materialColor(Material material, vec2 texCoord)
 
     if(material.texType == 1)
     {
-        color = hasTexture ? texture(material.u_diffuse, texCoord) : vec4(material.kd, 1.f);
+        color = hasTexture ? texture(material.diffuseTexture, texCoord) : vec4(material.kd, 1.f);
     }
     else
     {
         // in this case, if material does not have a texture, we also use kd.
-        color = hasTexture ? texture(material.u_spec, texCoord) : vec4(material.kd, 1.f);
+        color = hasTexture ? texture(material.specTexture, texCoord) : vec4(material.kd, 1.f);
     }
     return color;
 }

@@ -21,7 +21,7 @@ namespace Pionner
 		void rotate(float angle, float x, float y, float z);
 		void scale(float x, float y, float z);
 
-		const glm::vec3 &getPosition();
+		const glm::vec3 getPosition();
 
 	private:
 		Transform m_transform;

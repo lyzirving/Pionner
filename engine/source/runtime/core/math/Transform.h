@@ -31,8 +31,8 @@ namespace Pionner
 		Transform();
 		~Transform() = default;
 
-		inline const glm::vec3 &getPosition() const { return m_position; }
-		inline const glm::vec3 &getScale() const { return m_scale; }
+		inline const glm::vec3 getPosition() const { return m_position; }
+		inline const glm::vec3 getScale() const { return m_scale; }
 		inline const float angle() const { return m_rotaion.angle(); }
 		inline const glm::vec3 axis() const { return m_rotaion.axis(); }
 

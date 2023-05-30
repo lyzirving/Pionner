@@ -155,7 +155,7 @@ namespace Pionner
 			texture->upload();
 			texture->bindTarget(part->m_partIndex);
 
-			std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_material.u_diffuse" : "u_material.u_spec";
+			std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_material.diffuseTexture" : "u_material.specTexture";
 			shader->setInt(sampler, part->m_partIndex);
 			shader->setInt("u_material.hasTexture", 1);
 		}
