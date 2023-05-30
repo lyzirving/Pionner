@@ -26,6 +26,7 @@ in vec3 v_pos;
 in vec3 v_normal;
 in vec2 v_tex;
 
+uniform vec3 u_viewPos;
 uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
@@ -40,17 +41,16 @@ float computeDepth(vec3 pos);
 float computeAttenuation(Light light, float dist);
 
 vec4  materialColor(Material material, vec2 texCoord);
-vec4  lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord);
+vec4  lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir);
 
 void main() {
     vec3 fragPos = vec3(u_modelMat * vec4(v_pos, 1.f));
     vec3 normal  = normalize(vec3(u_normalMat * vec4(v_normal, 0.f)));
     vec2 texCoord = v_tex;
+    vec3 viewDir = normalize(u_viewPos - fragPos);
 
-    o_color = lightedSurface(u_light, u_material, fragPos, normal, texCoord);
-    //o_color = materialColor(u_material, texCoord);
+    o_color = lightedSurface(u_light, u_material, fragPos, normal, texCoord, viewDir);
 
-    // calculate depth for current position
     gl_FragDepth = computeDepth(v_pos);
 }
 
@@ -82,7 +82,7 @@ vec4 materialColor(Material material, vec2 texCoord)
     return color;
 }
 
-vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord)
+vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir)
 {
     vec4 surface;
 
@@ -90,7 +90,7 @@ vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 
     vec4 ld = vec4(light.kd * light.id, 1.f); // light's diffuse
     vec4 ls = vec4(light.ks * light.is, 1.f); // light's specular
 
-    vec4 matColor = materialColor(material, texCoord);
+    vec4 objColor = materialColor(material, texCoord);
 
     vec3 lightDir;
 
@@ -102,29 +102,34 @@ vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 
     {
         lightDir = normalize(light.pos - pos);
         float dist = length(light.pos - pos);
-        float attenu = computeAttenuation(light, dist);
+        float fade = computeAttenuation(light, dist);
 
         if(material.shadingModel == 1) // constant color model
         {
-            surface = ld * matColor * attenu;
+            surface = ld * objColor * fade;
         }
         else if(material.shadingModel == 2) // diffuse model
         {
-            vec4 ambient = la * matColor * attenu;
+            vec4 ambient = la * objColor * fade;
 
             float diff = max(dot(normal, lightDir), 0.f);
-            vec4 diffuse = ld * diff * matColor * attenu;
+            vec4 diffuse = ld * diff * objColor * fade;
 
             surface = ambient + diffuse;
         }
         else if(material.shadingModel == 3) // mixed model
         {
-            vec4 ambient = la * matColor * attenu;
+            vec4 ambient = la * objColor * fade;
 
             float diff = max(dot(normal, lightDir), 0.f);
-            vec4 diffuse = ld * diff * matColor * attenu;
+            vec4 diffuse = ld * diff * objColor * fade;
 
-            surface = ambient + diffuse;
+            // blinn-phong mode
+            vec3 halfwayDir = normalize(lightDir + viewDir);
+            float specFactor = pow(max(dot(halfwayDir, normal), 0.f), light.shininess);
+            vec4 specular = ls * specFactor * objColor * fade;
+
+            surface = ambient + diffuse + specular;
         }
     }
 

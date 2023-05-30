@@ -60,7 +60,7 @@ namespace Pionner
 		{
 			return;
 		}
-		std::shared_ptr<RenderResourceMgr> resource = param.resource;
+		auto resource = param.resource;
 		auto vertexBuf = resource->find(DATA_VERTEX, mesh->m_vBufSlot);
 		auto indiceBuf = resource->find(DATA_INDICE, mesh->m_indBufSlot);
 
@@ -107,7 +107,8 @@ namespace Pionner
 			return;
 		}
 		std::shared_ptr<RenderResourceMgr> resource = param.resource;
-		std::shared_ptr<World> world = param.world;
+		std::shared_ptr<Camera> camera = param.sceneMgr->m_camera;
+		std::shared_ptr<World>  world = param.world;
 
 		std::shared_ptr<GfxBuffer> texture{ nullptr };
 		std::shared_ptr<Light> light{ nullptr };
@@ -140,6 +141,8 @@ namespace Pionner
 
 		glm::mat4 modelMat = part->getTransform();
 		glm::mat4 normalMat = MathLib::normalMat(modelMat);
+
+		shader->setVec3("u_viewPos", camera->getCamPos());
 
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());

@@ -39,7 +39,7 @@ namespace Pionner
 		std::shared_ptr<Entity> bulbEntity = createEntity<RenderComp>(ENTITY_POINT_LIGHT);
 		auto &bulbComp = bulbEntity->getComp<RenderComp>();
 		bulbComp.m_entity = Loader::load("assets/objects/basic/bulb/bulb.obj");
-		bulbComp.m_entity->m_transComp.translate(0.f, 3.f, 4.f);
+		bulbComp.m_entity->m_transComp.translate(0.f, 3.5f, 4.f);
 		bulbComp.m_entity->m_transComp.rotate(-90.f, 1.f, 0.f, 0.f);
 
 		std::shared_ptr<Light> pointLight = std::shared_ptr<Light>(new PointLight(bulbComp.m_entity->m_transComp.getPosition()));

@@ -3,7 +3,7 @@
 namespace Pionner
 {
 	Light::Light() : m_ka(1.f), m_kd(1.f), m_ks(1.f)
-		, m_ia(0.1f), m_id(0.5f), m_is(1.f)
+		, m_ia(0.2f), m_id(0.6f), m_is(0.7f)
 		, m_shininess(64.f)
 		, m_type(LIGHT_TYPE_NONE)
 	{
