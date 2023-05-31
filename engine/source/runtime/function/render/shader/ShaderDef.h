@@ -8,6 +8,8 @@ namespace Pionner
 	enum ShaderType : uint8_t
 	{
 		SHADER_TYPE_MESH,
+		SHADER_TYPE_LIGHTED_MESH,
+		SHADER_TYPE_LIGHT_CASTER,
 		SHADER_TYPE_INFINITE_GRID,
 		SHADER_TYPE_CNT
 	};

@@ -22,17 +22,23 @@ namespace Pionner
 		Light();
 		virtual ~Light();
 
-		const glm::vec3 &ambient();
-		const glm::vec3 &diffuse();
-		const glm::vec3 &specular();
+		static std::shared_ptr<Light> createLight(LightType type);
 
-		float ambientIntensity();
-		float diffuseIntensity();
-		float specularIntensity();
+		inline void setPosition(const glm::vec3 &pos) { m_position = pos; }
 
-		float shininess();
+		inline const glm::vec3 &position() { return m_position; }
 
-		LightType type();
+		inline const glm::vec3 &ambient() { return m_ka; }
+		inline const glm::vec3 &diffuse() { return m_kd; }
+		inline const glm::vec3 &specular() { return m_ks; }
+
+		inline float ambientIntensity() { return m_ia; }
+		inline float diffuseIntensity() { return m_id; }
+		inline float specularIntensity() { return m_is; }
+
+		inline float shininess() { return m_shininess; }
+
+		inline LightType type() { return m_type; }
 
 		virtual void dealShader(const std::shared_ptr<Shader> &shader) = 0;
 
@@ -40,6 +46,9 @@ namespace Pionner
 		bool is() const;
 
 	protected:
+		glm::vec3 m_position;
+
+		glm::vec3 m_direction;
 		/**
 		 * @brief: m_ka, m_kd and m_ks are the color of ambient, diffuse and specular.
 		 *         They are RGB format, and range in [0, 1].
@@ -60,6 +69,12 @@ namespace Pionner
 
 		LightType m_type;
 	};
+
+	template<class T>
+	bool Light::is() const
+	{
+		return false;
+	}
 }
 
 #endif

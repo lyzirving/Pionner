@@ -29,9 +29,16 @@ namespace Pionner
 			{
 				switch (type)
 				{
-					case Pionner::SHADER_TYPE_MESH:
+					case Pionner::SHADER_TYPE_LIGHTED_MESH:
 					{
-						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "mesh", "mesh", "mesh");
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "lighted_mesh", "lighted_mesh", "lighted_mesh");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
+					case Pionner::SHADER_TYPE_LIGHT_CASTER:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "light_caster", "light_caster", "light_caster");
 						m_shaders[type]->init();
 						ret = m_shaders[type];
 						break;

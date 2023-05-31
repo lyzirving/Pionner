@@ -16,9 +16,9 @@
 #include "function/render/RenderDef.h"
 
 #include "function/framework/comp/MeshComp.h"
+#include "function/framework/comp/LightComp.h"
 
 #include "function/framework/world/World.h"
-#include "function/framework/world/light/PointLight.h"
 
 #include "core/math/MathLib.h"
 #include "core/log/LogSystem.h"
@@ -49,7 +49,7 @@ namespace Pionner
 		{
 			for (auto &child : entity->m_children)
 			{
-				DrawCmdGL::drawEntity(child, param);
+				drawEntity(child, param);
 			}
 		}
 	}
@@ -106,12 +106,16 @@ namespace Pionner
 		{
 			return;
 		}
+		std::shared_ptr<GfxBuffer>    texture{ nullptr };
+		std::shared_ptr<Entity>       lightEntity{ nullptr };
+		std::shared_ptr<RenderEntity> lightRenderEntity{ nullptr };
+		std::shared_ptr<Shader>       shader{ nullptr };
+
+		glm::mat4 modelMat{ 1.f }, normalMat{ 1.f };
+
 		std::shared_ptr<RenderResourceMgr> resource = param.resource;
 		std::shared_ptr<Camera> camera = param.sceneMgr->m_camera;
 		std::shared_ptr<World>  world = param.world;
-
-		std::shared_ptr<GfxBuffer> texture{ nullptr };
-		std::shared_ptr<Light> light{ nullptr };
 
 		auto vertexBuf = resource->find(DATA_VERTEX, part->m_vertexSlot);
 		auto indiceBuf = resource->find(DATA_INDICE, part->m_indicesSlot);
@@ -121,26 +125,29 @@ namespace Pionner
 			LOG_ERR("buffer is invalid");
 			return;
 		}
-		auto shader = param.shaderMgr->get(SHADER_TYPE_MESH, param.rhi);
 
-		if (!shader)
+		if (!(lightEntity = world->getEntity(World::ENTITY_POINT_LIGHT)) || !lightEntity->hasComp<LightComp>())
 		{
-			LOG_ERR("mesh shader is invalid");
-			return;
+			goto coloring_without_light;
 		}
 
-		light = world->getLight(World::ENTITY_POINT_LIGHT);
+		LightComp &lightComp = lightEntity->getComp<LightComp>();
 
-		if (!light)
+		if (!lightComp.m_light)
 		{
-			LOG_ERR("light is invalid");
+			goto coloring_without_light;
+		}
+
+		//>>>>>>> coloring with light begin
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHTED_MESH, param.rhi)))
+		{
 			return;
 		}
 
 		shader->use(true);
 
-		glm::mat4 modelMat = part->getTransform();
-		glm::mat4 normalMat = MathLib::normalMat(modelMat);
+		modelMat = part->getTransform();
+		normalMat = MathLib::normalMat(modelMat);
 
 		shader->setVec3("u_viewPos", camera->getCamPos());
 
@@ -149,10 +156,104 @@ namespace Pionner
 		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
 		shader->setMat4("u_normalMat", normalMat);
 
-		light->dealShader(shader);
+		lightComp.m_light->dealShader(shader);
 
 		shader->setInt("u_material.shadingModel", part->m_material.m_mode);
 		shader->setInt("u_material.texType", part->m_material.m_type);
+		if (part->m_material.slotValid() && (texture = resource->find(DATA_TEXTURE, part->m_material.m_slot)))
+		{
+			texture->upload();
+			texture->bindTarget(part->m_partIndex);
+
+			std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_material.diffuseTexture" : "u_material.specTexture";
+			shader->setInt(sampler, part->m_partIndex);
+			shader->setInt("u_material.hasTexture", 1);
+		}
+		else
+		{
+			shader->setInt("u_material.hasTexture", 0);
+		}
+
+		shader->setVec3("u_material.ka", part->m_material.m_colorAmbient);
+		shader->setVec3("u_material.kd", part->m_material.m_colorDiffuse);
+		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
+
+		vertexBuf->upload();
+		indiceBuf->upload();
+
+		vertexBuf->bind();
+		indiceBuf->bind();
+
+		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::checkGLErr("err happens when drawing part");
+
+		vertexBuf->unbind();
+		indiceBuf->unbind();
+		if (texture) texture->unbind();
+
+		shader->use(false);
+
+		lightRenderEntity = lightComp.m_entity;
+		if (lightRenderEntity)
+			drawLightCaster(lightRenderEntity, param);
+
+		return;
+		//>>>>>>> coloring with light end
+
+	coloring_without_light:
+		return;
+	}
+
+	void DrawCmdGL::drawLightCaster(std::shared_ptr<RenderEntity> &entity, RenderParam &param)
+	{
+		for (auto &part : entity->m_parts)
+		{
+			drawLightCasterPart(part, param);
+		}
+
+		if (!entity->m_children.empty())
+		{
+			for (auto &child : entity->m_children)
+			{
+				drawLightCaster(child, param);
+			}
+		}
+	}
+
+	void DrawCmdGL::drawLightCasterPart(std::shared_ptr<EntityPart> &part, RenderParam &param)
+	{
+		if (!part->vetexSlotValid() || !part->indiceSlotValid())
+		{
+			return;
+		}
+		std::shared_ptr<GfxBuffer>  texture{ nullptr };
+		std::shared_ptr<Shader>     shader{ nullptr };
+
+		std::shared_ptr<RenderResourceMgr> resource = param.resource;
+
+		auto vertexBuf = resource->find(DATA_VERTEX, part->m_vertexSlot);
+		auto indiceBuf = resource->find(DATA_INDICE, part->m_indicesSlot);
+
+		if (!vertexBuf || !indiceBuf)
+		{
+			LOG_ERR("buffer is invalid");
+			return;
+		}
+
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHT_CASTER, param.rhi)))
+		{
+			return;
+		}
+
+		shader->use(true);
+
+		shader->setMat4("u_modelMat", part->getTransform());
+		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
+
+		shader->setInt("u_material.shadingModel", part->m_material.m_mode);
+		shader->setInt("u_material.texType", part->m_material.m_type);
+
 		if (part->m_material.slotValid() && (texture = resource->find(DATA_TEXTURE, part->m_material.m_slot)))
 		{
 			texture->upload();
@@ -177,7 +278,7 @@ namespace Pionner
 		indiceBuf->bind();
 
 		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::checkGLErr("err happens when drawing part");
+		GLHelper::checkGLErr("err happens when drawing light caster's part");
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();

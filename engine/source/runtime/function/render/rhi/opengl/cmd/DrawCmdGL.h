@@ -6,6 +6,7 @@
 namespace Pionner
 {
 	class EntityPart;
+	class LightComp;
 
 	class DrawCmdGL : public DrawCmd
 	{
@@ -18,6 +19,9 @@ namespace Pionner
 
 	private:
 		void drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param);
+
+		void drawLightCaster(std::shared_ptr<RenderEntity> &entity, RenderParam &param);
+		void drawLightCasterPart(std::shared_ptr<EntityPart> &part, RenderParam &param);
 	};
 }
 

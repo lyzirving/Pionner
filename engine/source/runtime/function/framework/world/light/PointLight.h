@@ -12,15 +12,11 @@ namespace Pionner
 		PointLight(const glm::vec3 &position);
 		~PointLight();
 
-		inline void setPosition(const glm::vec3 &pos) { m_position = pos; }
-		inline const glm::vec3 &position() { return m_position; }
-
 		virtual void dealShader(const std::shared_ptr<Shader> &shader) override;
 
 		void setAttenuation(float constVal, float linearVal, float quadVal);
 
 	protected:
-		glm::vec3 m_position;
 		float m_attenParamConst, m_attenParamLinear, m_attenParamQuad;
 	};
 

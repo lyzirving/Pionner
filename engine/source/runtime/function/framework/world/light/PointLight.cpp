@@ -3,16 +3,17 @@
 
 namespace Pionner
 {
-	PointLight::PointLight() : Light(), m_position(0.f)
+	PointLight::PointLight() : Light()
 		, m_attenParamConst(1.f), m_attenParamLinear(0.045f), m_attenParamQuad(0.0075f)
 	{
 		m_type = POINT_LIGHT;
 	}
 
-	PointLight::PointLight(const glm::vec3 &position) : Light(), m_position(position)
+	PointLight::PointLight(const glm::vec3 &position) : Light()
 		, m_attenParamConst(1.f), m_attenParamLinear(0.045f), m_attenParamQuad(0.0075f)
 	{
 		m_type = POINT_LIGHT;
+		m_position = position;
 	}
 
 	PointLight::~PointLight()
