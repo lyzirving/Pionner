@@ -14,14 +14,6 @@ namespace Pionner
 		m_rhi.reset();
 	}
 
-	void RenderPassBase::initializeUIRenderBackend(WindowUI *ui)
-	{
-	}
-
-	void RenderPassBase::shutdownUIRenderBackend()
-	{
-	}
-
 	void RenderPassBase::setPassCommonInfo(RenderPassCommonInfo &info)
 	{
 		m_rhi = info.rhi;

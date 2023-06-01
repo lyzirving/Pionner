@@ -16,9 +16,9 @@
 
 namespace Pionner
 {
-	Editor::Editor(const std::shared_ptr<Engine>& engine) 
-		  : m_runtimeEngine(engine)
-		  , m_ui(nullptr)
+	Editor::Editor(const std::shared_ptr<Engine> &engine)
+		: m_runtimeEngine(engine)
+		, m_ui(nullptr)
 	{
 	}
 
@@ -34,6 +34,9 @@ namespace Pionner
 		uiInitInfo.windowSystem = g_runtimeCtx.m_windowSystem;
 		uiInitInfo.renderSystem = g_runtimeCtx.m_renderSystem;
 		m_ui->initialize(uiInitInfo);
+
+		auto pUi = m_ui->getPtr();
+		g_runtimeCtx.m_renderSystem->initializeUIRenderBackend(pUi);
 
 		LOG_DEBUG("finish initialization");
 	}

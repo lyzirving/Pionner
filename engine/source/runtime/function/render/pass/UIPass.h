@@ -1,6 +1,7 @@
 #ifndef __UI_PASS_H__
 #define __UI_PASS_H__
 
+#include "function/ui/WindowView.h"
 #include "function/render/pass/RenderPassBase.h"
 
 namespace Pionner
@@ -15,8 +16,9 @@ namespace Pionner
 		virtual void shutdown() override;
 		virtual void draw(std::shared_ptr<SceneMgr> &sceneMgr) override;
 
-		virtual void initializeUIRenderBackend(WindowUI *ui) override;
-		virtual void shutdownUIRenderBackend() override;
+		ViewLayout getRenderportLayout();
+		void initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui);
+		void shutdownUIRenderBackend();
 
 		void resize(int width, int height);
 
@@ -27,7 +29,7 @@ namespace Pionner
 		void drawBottomPanel(std::shared_ptr<SceneMgr> &sceneMgr);
 
 	private:
-		WindowUI *m_ui;
+		std::shared_ptr<WindowUI> m_ui;
 	};
 }
 

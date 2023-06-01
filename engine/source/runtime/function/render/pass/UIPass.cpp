@@ -24,7 +24,7 @@ namespace Pionner
 
 	UIPass::~UIPass()
 	{
-		m_ui = nullptr;
+		m_ui.reset();
 	}
 
 	void UIPass::initialize(const RenderPassInitInfo &info)
@@ -33,9 +33,24 @@ namespace Pionner
 
 	void UIPass::shutdown()
 	{
+		m_ui.reset();
+		m_rhi.reset();
 	}
 
-	void UIPass::initializeUIRenderBackend(WindowUI *ui)
+	ViewLayout UIPass::getRenderportLayout()
+	{
+		if (m_ui)
+		{
+			return m_ui->getRenderportLayout();
+		}
+		else
+		{
+			LOG_ERR("ui ptr is invalid");
+			return ViewLayout();
+		}
+	}
+
+	void UIPass::initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui)
 	{
 		m_ui = ui;
 		m_rhi->initUIRenderBackend();
@@ -48,18 +63,18 @@ namespace Pionner
 
 	void UIPass::resize(int width, int height)
 	{
+		if (m_ui)
+			m_ui->resize(width, height);
 	}
 
 	void UIPass::draw(std::shared_ptr<SceneMgr> &sceneMgr)
 	{
-		// TODO: finish draw by Layout.cpp
 		if (m_ui)
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
 			ImGui::NewFrame();
 
-			//ImGui::ShowDemoWindow();
 			m_ui->draw(sceneMgr);
 			drawUI(sceneMgr);
 

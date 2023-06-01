@@ -20,7 +20,7 @@ namespace Pionner
 		inline std::shared_ptr<RenderResourceMgr> getResourceMgr() { return m_resourceMgr; }
 
 		void initialize(RenderSystemInitInfo &info);
-		void initializeUIRenderBackend(WindowUI *windowUI);
+		void initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui);
 		void shutdownUIRenderBackend();
 
 		void deleteResource(DataType type, uint32_t slot);

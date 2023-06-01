@@ -62,11 +62,11 @@ namespace Pionner
 		RESOURCE_MGR_MAKE_SELF_WEAK(m_resourceMgr);
 	}
 
-	void RenderSystem::initializeUIRenderBackend(WindowUI *windowUI)
+	void RenderSystem::initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui)
 	{
-		if (m_pipeLine)
+		if (m_pipeLine && ui)
 		{
-			m_pipeLine->initializeUIRenderBackend(windowUI);
+			m_pipeLine->initializeUIRenderBackend(ui);
 		}
 	}
 

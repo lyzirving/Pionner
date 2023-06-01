@@ -20,6 +20,7 @@ namespace Pionner
 
 	private:
 		void setColorStyle(ImGuiStyle &style);
+
 	};
 }
 

@@ -79,7 +79,8 @@ namespace Pionner
 			int width = windowSys->getWidth();
 			int height = windowSys->getHeight();
 
-			if (m_uiPass) m_uiPass->resize(width, height);
+			if (m_uiPass)
+				m_uiPass->resize(width, height);
 			sceneMgr->resize(width, height);
 			rhi->reviseViewport(width, height);
 			windowSys->setSizeChange(false);

@@ -17,8 +17,6 @@ namespace Pionner
 		virtual void shutdown() = 0;
 		virtual void draw(std::shared_ptr<SceneMgr> &sceneMgr) = 0;
 
-		virtual void initializeUIRenderBackend(WindowUI *ui);
-		virtual void shutdownUIRenderBackend();
 		virtual void setPassCommonInfo(RenderPassCommonInfo &info);
 
 	protected:

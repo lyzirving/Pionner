@@ -34,17 +34,20 @@ namespace Pionner
 		ImGuiStyle &style = ImGui::GetStyle();
 		setColorStyle(style);
 
-		info.renderSystem->initializeUIRenderBackend(this);
+		m_windowWidth = info.windowSystem->getWidth();
+		m_windowHeight = info.windowSystem->getHeight();
 	}
 
 	void EditorUI::draw(std::shared_ptr<SceneMgr> &sceneMgr)
 	{
-		/*ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		//ImGui_ImplOpenGL3_NewFrame();
+		//ImGui_ImplGlfw_NewFrame();
+		//ImGui::NewFrame();
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());*/
+		//ImGui::ShowDemoWindow();
+
+		//ImGui::Render();
+		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	void EditorUI::shutdown()

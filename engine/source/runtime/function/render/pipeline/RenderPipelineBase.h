@@ -21,7 +21,7 @@ namespace Pionner
 		virtual void forwardRender(RenderParam &param);
 		virtual void preparePassData(RenderParam &param);
 
-		virtual void initializeUIRenderBackend(WindowUI *ui);
+		virtual void initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui);
 		virtual void shutdownUIRenderBackend();
 
 	protected:

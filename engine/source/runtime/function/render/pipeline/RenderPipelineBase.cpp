@@ -26,7 +26,7 @@ namespace Pionner
 	{
 	}
 
-	void RenderPipelineBase::initializeUIRenderBackend(WindowUI *ui)
+	void RenderPipelineBase::initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui)
 	{
 		if (m_uiPass) m_uiPass->initializeUIRenderBackend(ui);
 	}
