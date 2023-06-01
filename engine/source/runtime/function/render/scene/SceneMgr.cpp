@@ -55,7 +55,7 @@ namespace Pionner
 		}
 	}
 
-	void SceneMgr::reviseLayout(int width, int height)
+	void SceneMgr::resize(int width, int height)
 	{
 		if (m_layout->revise(width, height))
 		{

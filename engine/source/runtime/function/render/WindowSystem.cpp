@@ -46,11 +46,15 @@ namespace Pionner
 		}
 		// set user pointer
 		glfwSetWindowUserPointer(m_window, this);
+
+		glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+
 		// set function callback
 		glfwSetWindowSizeCallback(m_window, WindowSystem::windowSizeCallback);
 		glfwSetWindowCloseCallback(m_window, WindowSystem::windowCloseCallback);
-
-		glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+		glfwSetCursorPosCallback(m_window, WindowSystem::windowMouseMoveCallback);
+		glfwSetMouseButtonCallback(m_window, WindowSystem::windowMouseBtnCallback);
+		glfwSetScrollCallback(m_window, WindowSystem::windowScrollCallback);
 
 		glfwMakeContextCurrent(m_window);
 	}
@@ -79,6 +83,21 @@ namespace Pionner
 	void WindowSystem::windowCloseCallback(GLFWwindow *window)
 	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+
+	void WindowSystem::windowMouseMoveCallback(GLFWwindow *window, double xPos, double yPos)
+	{
+		//LOG_DEBUG("pos[%lf, %lf]", xPos, yPos);
+	}
+
+	void WindowSystem::windowMouseBtnCallback(GLFWwindow *window, int button, int action, int mods)
+	{
+		//LOG_DEBUG("button[%d], action[%d], mods[%d]", button, action, mods);
+	}
+
+	void WindowSystem::windowScrollCallback(GLFWwindow *window, double xPos, double yPos)
+	{
+		//LOG_DEBUG("pos[%lf, %lf]", xPos, yPos);
 	}
 
 	bool WindowSystem::shouldClose()

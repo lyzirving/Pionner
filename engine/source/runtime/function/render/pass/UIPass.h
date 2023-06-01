@@ -18,6 +18,8 @@ namespace Pionner
 		virtual void initializeUIRenderBackend(WindowUI *ui) override;
 		virtual void shutdownUIRenderBackend() override;
 
+		void resize(int width, int height);
+
 	private:
 		void drawUI(std::shared_ptr<SceneMgr> &sceneMgr);
 		void drawLeftPanel(std::shared_ptr<SceneMgr> &sceneMgr);

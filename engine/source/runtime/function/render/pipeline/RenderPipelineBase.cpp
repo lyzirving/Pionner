@@ -1,6 +1,6 @@
 #include "function/render/pipeline/RenderPipelineBase.h"
 #include "function/render/rhi/Rhi.h"
-#include "function/render/pass/RenderPassBase.h"
+#include "function/render/pass/UIPass.h"
 
 #include "function/ui/WindowUI.h"
 

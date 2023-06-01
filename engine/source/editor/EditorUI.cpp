@@ -1,10 +1,13 @@
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
 
 #include "EditorUI.h"
 
 #include "function/render/RenderSystem.h"
 #include "function/render/WindowSystem.h"
+#include "function/render/scene/SceneMgr.h"
 
 #include "core/log/LogSystem.h"
 
@@ -21,7 +24,7 @@ namespace Pionner
 
 	EditorUI::~EditorUI() = default;
 
-	void EditorUI::initialize(WindowUIInitInfo& info)
+	void EditorUI::initialize(WindowUIInitInfo &info)
 	{
 		ImGui::CreateContext();
 		ImGui::StyleColorsDark();
@@ -34,8 +37,14 @@ namespace Pionner
 		info.renderSystem->initializeUIRenderBackend(this);
 	}
 
-	void EditorUI::preRender()
+	void EditorUI::draw(std::shared_ptr<SceneMgr> &sceneMgr)
 	{
+		/*ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());*/
 	}
 
 	void EditorUI::shutdown()
@@ -43,7 +52,7 @@ namespace Pionner
 		ImGui::DestroyContext();
 	}
 
-	void EditorUI::setColorStyle(ImGuiStyle& style)
+	void EditorUI::setColorStyle(ImGuiStyle &style)
 	{
 		// to be implemented
 	}

@@ -29,7 +29,7 @@ namespace Pionner
 		RenderPassCommonInfo passCommon;
 		passCommon.rhi = m_rhi;
 
-		m_uiPass = std::shared_ptr<RenderPassBase>(new UIPass);
+		m_uiPass = std::make_shared<UIPass>();
 		m_uiPass->setPassCommonInfo(passCommon);
 
 		RenderPassInitInfo passInitInfo;
@@ -79,8 +79,9 @@ namespace Pionner
 			int width = windowSys->getWidth();
 			int height = windowSys->getHeight();
 
+			if (m_uiPass) m_uiPass->resize(width, height);
+			sceneMgr->resize(width, height);
 			rhi->reviseViewport(width, height);
-			sceneMgr->reviseLayout(width, height);
 			windowSys->setSizeChange(false);
 		}
 	}

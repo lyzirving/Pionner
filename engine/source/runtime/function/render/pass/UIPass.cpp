@@ -46,6 +46,10 @@ namespace Pionner
 		m_rhi->shutdownUIRenderBackend();
 	}
 
+	void UIPass::resize(int width, int height)
+	{
+	}
+
 	void UIPass::draw(std::shared_ptr<SceneMgr> &sceneMgr)
 	{
 		// TODO: finish draw by Layout.cpp
@@ -56,6 +60,7 @@ namespace Pionner
 			ImGui::NewFrame();
 
 			//ImGui::ShowDemoWindow();
+			m_ui->draw(sceneMgr);
 			drawUI(sceneMgr);
 
 			ImGui::Render();

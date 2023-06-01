@@ -14,12 +14,12 @@ namespace Pionner
 		virtual ~EditorUI();
 
 		virtual void initialize(WindowUIInitInfo &info) override;
-		virtual void preRender() override;
+		virtual void draw(std::shared_ptr<SceneMgr> &sceneMgr) override;
 
 		void shutdown();
 
 	private:
-		void setColorStyle(ImGuiStyle& style);
+		void setColorStyle(ImGuiStyle &style);
 	};
 }
 

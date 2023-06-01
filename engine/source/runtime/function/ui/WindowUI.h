@@ -7,6 +7,7 @@ namespace Pionner
 {
 	class WindowSystem;
 	class RenderSystem;
+	class SceneMgr;
 
 	struct WindowUIInitInfo
 	{
@@ -21,7 +22,7 @@ namespace Pionner
 		virtual ~WindowUI() = default;
 
 		virtual void initialize(WindowUIInitInfo &info) = 0;
-		virtual void preRender() = 0;
+		virtual void draw(std::shared_ptr<SceneMgr> &sceneMgr) = 0;
 	};
 }
 

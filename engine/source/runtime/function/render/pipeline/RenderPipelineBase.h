@@ -5,6 +5,8 @@
 
 namespace Pionner
 {
+	class UIPass;
+
 	class RenderPipelineBase
 	{
 		friend class RenderSystem;
@@ -25,7 +27,7 @@ namespace Pionner
 	protected:
 		std::shared_ptr<Rhi> m_rhi;
 
-		std::shared_ptr<RenderPassBase> m_uiPass;
+		std::shared_ptr<UIPass> m_uiPass;
 	};
 }
 
