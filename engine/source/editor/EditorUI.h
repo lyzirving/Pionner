@@ -14,7 +14,7 @@ namespace Pionner
 		virtual ~EditorUI();
 
 		virtual void initialize(WindowUIInitInfo &info) override;
-		virtual void draw(std::shared_ptr<SceneMgr> &sceneMgr) override;
+		virtual void draw(RenderParam &param) override;
 
 		void shutdown();
 

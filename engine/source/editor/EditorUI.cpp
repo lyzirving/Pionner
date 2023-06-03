@@ -7,7 +7,6 @@
 
 #include "function/render/RenderSystem.h"
 #include "function/render/WindowSystem.h"
-#include "function/render/scene/SceneMgr.h"
 
 #include "core/log/LogSystem.h"
 
@@ -38,21 +37,48 @@ namespace Pionner
 		m_windowHeight = info.windowSystem->getHeight();
 	}
 
-	void EditorUI::draw(std::shared_ptr<SceneMgr> &sceneMgr)
+	void EditorUI::draw(RenderParam &param)
 	{
-		//ImGui_ImplOpenGL3_NewFrame();
-		//ImGui_ImplGlfw_NewFrame();
-		//ImGui::NewFrame();
+		sortView();
+
+		if (!ImGui::GetCurrentContext())
+		{
+			LOG_ERR("ImGui get current context is null");
+			return;
+		}
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
 		//ImGui::ShowDemoWindow();
+		for (size_t i = 0; i < m_viewArray.size(); i++)
+		{
+			if (m_viewArray[i].second)
+				m_viewArray[i].second->draw(param);
+		}
 
-		//ImGui::Render();
-		//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
 	void EditorUI::shutdown()
 	{
 		ImGui::DestroyContext();
+
+		auto itr = m_viewArray.begin();
+		while (itr != m_viewArray.end())
+		{
+			(*itr).second.reset();
+			itr = m_viewArray.erase(itr);
+		}
+
+		auto itr1 = m_viewMap.begin();
+		while (itr1 != m_viewMap.end())
+		{
+			itr1->second.reset();
+			itr1 = m_viewMap.erase(itr1);
+		}
 	}
 
 	void EditorUI::setColorStyle(ImGuiStyle &style)

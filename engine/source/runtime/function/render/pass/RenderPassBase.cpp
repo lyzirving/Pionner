@@ -14,9 +14,4 @@ namespace Pionner
 		m_rhi.reset();
 	}
 
-	void RenderPassBase::setPassCommonInfo(RenderPassCommonInfo &info)
-	{
-		m_rhi = info.rhi;
-	}
-
 }

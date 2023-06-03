@@ -41,15 +41,13 @@ namespace Pionner
 
 	struct RenderPipelineInitInfo
 	{
+		std::shared_ptr<WindowSystem> window;
 	};
 
 	struct RenderPassInitInfo
 	{
-	};
-
-	struct RenderPassCommonInfo
-	{
 		std::shared_ptr<Rhi> rhi;
+		std::shared_ptr<WindowSystem> window;
 	};
 }
 

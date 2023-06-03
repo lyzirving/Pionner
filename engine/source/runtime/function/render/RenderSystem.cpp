@@ -13,7 +13,6 @@
 #include "function/render/scene/RenderScene.h"
 #include "function/render/scene/Camera.h"
 #include "function/render/scene/Frustum.h"
-#include "function/render/scene/Layout.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -48,12 +47,13 @@ namespace Pionner
 		m_pipeLine = std::shared_ptr<RenderPipelineBase>(new RenderPipeline);
 		m_pipeLine->m_rhi = m_rhi;
 		RenderPipelineInitInfo pipelineInfo;
+		pipelineInfo.window = info.window;
 		m_pipeLine->initialize(pipelineInfo);
 
 		m_sceneMgr = std::make_shared<SceneMgr>();
 		SceneMgrInitInfo sceneMgrInfo;
-		sceneMgrInfo.window = info.window;
 		sceneMgrInfo.rhi = m_rhi;
+		sceneMgrInfo.window = info.window;
 		m_sceneMgr->initialize(sceneMgrInfo);
 
 		m_shaderMgr = std::make_shared<ShaderMgr>();

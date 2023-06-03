@@ -1,7 +1,9 @@
 #ifndef __WINDOW_UI_H__
 #define __WINDOW_UI_H__
 
+#include <memory>
 #include <vector>
+#include <map>
 
 #include "function/ui/WindowView.h"
 
@@ -9,7 +11,8 @@ namespace Pionner
 {
 	class WindowSystem;
 	class RenderSystem;
-	class SceneMgr;
+	class WindowView;
+	class RenderParam;
 
 	struct WindowUIInitInfo
 	{
@@ -24,20 +27,27 @@ namespace Pionner
 		virtual ~WindowUI();
 
 		virtual void initialize(WindowUIInitInfo &info) = 0;
-		virtual void draw(std::shared_ptr<SceneMgr> &sceneMgr) = 0;
+		virtual void draw(RenderParam &param) = 0;
 
-		std::shared_ptr<WindowUI> getPtr();
-		ViewLayout getRenderportLayout();
+		void addView(const std::shared_ptr<WindowView> &view);
+		bool contain(const std::shared_ptr<WindowView> &view);
+		void layout();
+
+		std::shared_ptr<WindowUI>   getPtr();
+		std::shared_ptr<WindowView> getView(uint8_t uid);
 
 		void resize(int width, int height);
 
 	protected:
-		static bool viewSorter(std::shared_ptr<WindowView> &lhs, std::shared_ptr<WindowView> &rhs);
+		typedef std::pair<uint8_t, std::shared_ptr<WindowView>> ViewItem;
+
+		static bool pairSorter(const ViewItem &lhs, const ViewItem &rhs);
 
 		void sortView();
 
 	protected:
-		std::vector<std::shared_ptr<WindowView>> m_views;
+		std::map<uint8_t, std::shared_ptr<WindowView>> m_viewMap;
+		std::vector<ViewItem>                          m_viewArray;
 		int32_t m_windowWidth, m_windowHeight;
 		bool    m_needSortView;
 	};

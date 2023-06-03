@@ -7,7 +7,6 @@ namespace Pionner
 {
 	Pionner::SceneMgr::SceneMgr()
 		: m_scene(nullptr)
-		, m_layout(nullptr)
 		, m_camera(nullptr)
 		, m_frustum(nullptr)
 	{
@@ -17,9 +16,6 @@ namespace Pionner
 
 	void SceneMgr::initialize(SceneMgrInitInfo &info)
 	{
-		m_layout = std::shared_ptr<Layout>(new Layout);
-		m_layout->initialize(info.window);
-
 		m_scene = std::make_shared<RenderScene>();
 		m_scene->initialize(info.rhi);
 
@@ -27,7 +23,7 @@ namespace Pionner
 		m_camera->setPosition(glm::vec3(5.f, 4.f, 5.f));
 
 		m_frustum = std::make_shared<Frustum>();
-		float aspect = float(m_layout->m_drawPanelInfo.m_width) / float(m_layout->m_drawPanelInfo.m_height);
+		float aspect = float(info.window->getWidth()) / float(info.window->getHeight());
 		m_frustum->setAspect(aspect);
 	}
 
@@ -43,11 +39,6 @@ namespace Pionner
 			m_camera.reset();
 		}
 
-		if (m_layout)
-		{
-			m_layout.reset();
-		}
-
 		if (m_scene)
 		{
 			m_scene->shutdown();
@@ -57,11 +48,8 @@ namespace Pionner
 
 	void SceneMgr::resize(int width, int height)
 	{
-		if (m_layout->revise(width, height))
-		{
-			float aspect = float(m_layout->m_drawPanelInfo.m_width) / float(m_layout->m_drawPanelInfo.m_height);
-			m_frustum->setAspect(aspect);
-		}
+		float aspect = float(width) / float(height);
+		m_frustum->setAspect(aspect);
 	}
 
 }

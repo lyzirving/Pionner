@@ -5,8 +5,6 @@
 
 namespace Pionner
 {
-	class SceneMgr;
-
 	class RenderPassBase
 	{
 	public:
@@ -15,9 +13,7 @@ namespace Pionner
 
 		virtual void initialize(const RenderPassInitInfo &info) = 0;
 		virtual void shutdown() = 0;
-		virtual void draw(std::shared_ptr<SceneMgr> &sceneMgr) = 0;
-
-		virtual void setPassCommonInfo(RenderPassCommonInfo &info);
+		virtual void draw(RenderParam &param) = 0;
 
 	protected:
 		std::shared_ptr<Rhi> m_rhi;

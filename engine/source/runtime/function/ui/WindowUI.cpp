@@ -4,18 +4,51 @@
 
 namespace Pionner
 {
-	WindowUI::WindowUI() : m_views(), m_windowWidth(0), m_windowHeight(0)
-		, m_needSortView(true)
+	WindowUI::WindowUI() : m_viewMap(), m_viewArray()
+		, m_windowWidth(0), m_windowHeight(0), m_needSortView(true)
 	{
 	}
 
 	WindowUI::~WindowUI()
 	{
-		auto itr = m_views.begin();
-		while (itr != m_views.end())
+		auto itr = m_viewArray.begin();
+		while (itr != m_viewArray.end())
 		{
-			(*itr).reset();
-			itr = m_views.erase(itr);
+			(*itr).second.reset();
+			itr = m_viewArray.erase(itr);
+		}
+
+		auto itr1 = m_viewMap.begin();
+		while (itr1 != m_viewMap.end())
+		{
+			itr1->second.reset();
+			itr1 = m_viewMap.erase(itr1);
+		}
+	}
+
+	void WindowUI::addView(const std::shared_ptr<WindowView> &view)
+	{
+		if (contain(view))
+		{
+			return;
+		}
+		m_needSortView = true;
+		m_viewMap.insert(std::make_pair(view->getUid(), view));
+	}
+
+	bool WindowUI::contain(const std::shared_ptr<WindowView> &view)
+	{
+		return m_viewMap.find(view->getUid()) != m_viewMap.end();
+	}
+
+	void WindowUI::layout()
+	{
+		sortView();
+
+		for (size_t i = 0; i < m_viewArray.size(); i++)
+		{
+			if (m_viewArray[i].second)
+				m_viewArray[i].second->layout(m_windowWidth, m_windowHeight);
 		}
 	}
 
@@ -24,19 +57,17 @@ namespace Pionner
 		return shared_from_this();
 	}
 
-	ViewLayout WindowUI::getRenderportLayout()
+	std::shared_ptr<WindowView> WindowUI::getView(uint8_t uid)
 	{
-		if (m_views.empty())
+		auto itr = m_viewMap.find(uid);
+		if (itr != m_viewMap.end())
 		{
-			ViewLayout ret{};
-			ret.m_width = m_windowWidth;
-			ret.m_height = m_windowHeight;
-			ret.m_left = ret.m_top = 0;
-			return ret;
+			return itr->second;
 		}
-		sortView();
-		// render port should always be rendered firstly
-		return m_views[0]->getLayout();
+		else
+		{
+			return std::shared_ptr<WindowView>();
+		}
 	}
 
 	void WindowUI::resize(int width, int height)
@@ -48,28 +79,21 @@ namespace Pionner
 		m_windowWidth = width;
 		m_windowHeight = height;
 
-		sortView();
-
-		for (size_t i = 0; i < m_views.size(); i++)
-		{
-			if (m_views[i])
-				m_views[i]->layout(width, height);
-		}
+		layout();
 	}
 
-	bool WindowUI::viewSorter(std::shared_ptr<WindowView> &lhs, std::shared_ptr<WindowView> &rhs)
+	bool WindowUI::pairSorter(const ViewItem &lhs, const ViewItem &rhs)
 	{
-		return lhs->getDrawOrder() < rhs->getDrawOrder();
+		return lhs.second->getDrawOrder() < rhs.second->getDrawOrder();
 	}
 
 	void WindowUI::sortView()
 	{
 		if (m_needSortView)
 		{
-			if (m_views.size() > 1)
-			{
-				std::sort(m_views.begin(), m_views.end(), WindowUI::viewSorter);
-			}
+			m_viewArray.clear();
+			m_viewArray.assign(m_viewMap.begin(), m_viewMap.end());
+			std::sort(m_viewArray.begin(), m_viewArray.end(), pairSorter);
 			m_needSortView = false;
 		}
 	}

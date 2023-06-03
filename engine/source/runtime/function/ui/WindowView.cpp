@@ -2,13 +2,16 @@
 
 namespace Pionner
 {
-	WindowView::WindowView() : m_layout(), m_drawOrder(ORDER_RENDER_PORT)
+	WindowView::WindowView() : m_layout(), m_drawOrder(ORDER_NONE), m_uid(UID_NONE)
 	{
 	}
 
-	WindowView::WindowView(uint8_t drawOrder) : m_layout(), m_drawOrder(drawOrder)
+	WindowView::WindowView(uint8_t drawOrder) : m_layout(), m_drawOrder(drawOrder), m_uid(UID_NONE)
 	{
 	}
 
-	WindowView::~WindowView() = default;
+	WindowView::~WindowView()
+	{
+		m_parent.reset();
+	}
 }

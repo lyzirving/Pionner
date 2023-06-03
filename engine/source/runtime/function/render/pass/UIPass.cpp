@@ -1,10 +1,8 @@
-#include <imgui.h>
-#include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_glfw.h>
-
 #include "function/render/pass/UIPass.h"
 #include "function/render/rhi/Rhi.h"
 #include "function/render/scene/SceneMgr.h"
+
+#include "function/render/WindowSystem.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -19,6 +17,7 @@ namespace Pionner
 {
 	UIPass::UIPass() : RenderPassBase()
 		, m_ui(nullptr)
+		, m_windowWidth(0), m_windowHeight(0)
 	{
 	}
 
@@ -29,6 +28,9 @@ namespace Pionner
 
 	void UIPass::initialize(const RenderPassInitInfo &info)
 	{
+		m_rhi = info.rhi;
+		m_windowWidth = info.window->getWidth();
+		m_windowHeight = info.window->getHeight();
 	}
 
 	void UIPass::shutdown()
@@ -39,15 +41,16 @@ namespace Pionner
 
 	ViewLayout UIPass::getRenderportLayout()
 	{
-		if (m_ui)
+		ViewLayout layout{};
+		std::shared_ptr<WindowView> view{ nullptr };
+		if (m_ui && (view = m_ui->getView(UID_RENDER_PORT)))
 		{
-			return m_ui->getRenderportLayout();
+			ViewLayout port = view->getLayout();
+			port.m_top = m_windowHeight - port.m_top - port.m_height;
+			return port;
 		}
-		else
-		{
-			LOG_ERR("ui ptr is invalid");
-			return ViewLayout();
-		}
+		LOG_ERR("fail to get renderport layout");
+		return layout;
 	}
 
 	void UIPass::initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui)
@@ -63,140 +66,15 @@ namespace Pionner
 
 	void UIPass::resize(int width, int height)
 	{
+		m_windowWidth = width;
+		m_windowHeight = height;
 		if (m_ui)
 			m_ui->resize(width, height);
 	}
 
-	void UIPass::draw(std::shared_ptr<SceneMgr> &sceneMgr)
+	void UIPass::draw(RenderParam &param)
 	{
 		if (m_ui)
-		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-
-			m_ui->draw(sceneMgr);
-			drawUI(sceneMgr);
-
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		}
-	}
-
-	void UIPass::drawUI(std::shared_ptr<SceneMgr> &sceneMgr)
-	{
-		if (!ImGui::GetCurrentContext())
-		{
-			LOG_ERR("ImGui get current context is null");
-			return;
-		}
-		drawLeftPanel(sceneMgr);
-		drawRightPanel(sceneMgr);
-		drawBottomPanel(sceneMgr);
-	}
-
-	void UIPass::drawLeftPanel(std::shared_ptr<SceneMgr> &sceneMgr)
-	{
-		auto layout = sceneMgr->m_layout;
-		LayoutInfo &info = layout->m_leftPanelInfo;
-
-		ImGui::SetNextWindowPos(ImVec2(info.m_left, info.m_top),
-								ImGuiCond_Always);
-		ImGui::SetNextWindowSize(ImVec2(info.m_width, info.m_height),
-								 ImGuiCond_Always);
-
-		ImGuiWindowFlags windowFlags = 0;
-		windowFlags |= ImGuiWindowFlags_NoTitleBar;
-		windowFlags |= ImGuiWindowFlags_NoScrollbar;
-		windowFlags |= ImGuiWindowFlags_NoMove;
-		windowFlags |= ImGuiWindowFlags_NoResize;
-
-		// Main body of the Demo window starts here.
-		// Pass nullptr means no close button
-		if (!ImGui::Begin("editor_left", nullptr, windowFlags))
-		{
-			// Early out if the window is collapsed, as an optimization.
-			ImGui::End();
-			return;
-		}
-		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
-
-		//>>>>>> draw content 
-		ImGui::CollapsingHeader("Entities");
-		//>>>>>> finish content
-
-		// End of show editor
-		ImGui::PopItemWidth();
-		ImGui::End();
-	}
-
-	void UIPass::drawRightPanel(std::shared_ptr<SceneMgr> &sceneMgr)
-	{
-		auto layout = sceneMgr->m_layout;
-		LayoutInfo &info = layout->m_rightPanelInfo;
-
-		ImGui::SetNextWindowPos(ImVec2(info.m_left, info.m_top),
-								ImGuiCond_Always);
-		ImGui::SetNextWindowSize(ImVec2(info.m_width, info.m_height),
-								 ImGuiCond_Always);
-
-		ImGuiWindowFlags windowFlags = 0;
-		windowFlags |= ImGuiWindowFlags_NoTitleBar;
-		windowFlags |= ImGuiWindowFlags_NoScrollbar;
-		windowFlags |= ImGuiWindowFlags_NoMove;
-		windowFlags |= ImGuiWindowFlags_NoResize;
-
-		// Main body of the Demo window starts here.
-		// Pass nullptr means no close button
-		if (!ImGui::Begin("editor_right", nullptr, windowFlags))
-		{
-			// Early out if the window is collapsed, as an optimization.
-			ImGui::End();
-			return;
-		}
-		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
-
-		//>>>>>> draw content 
-
-		//>>>>>> finish drawing content
-
-		// End of show editor
-		ImGui::PopItemWidth();
-		ImGui::End();
-	}
-
-	void UIPass::drawBottomPanel(std::shared_ptr<SceneMgr> &sceneMgr)
-	{
-		auto layout = sceneMgr->m_layout;
-		LayoutInfo &info = layout->m_bottomPanelInfo;
-
-		ImGui::SetNextWindowPos(ImVec2(info.m_left, info.m_top),
-								ImGuiCond_Always);
-		ImGui::SetNextWindowSize(ImVec2(info.m_width, info.m_height),
-								 ImGuiCond_Always);
-
-		ImGuiWindowFlags windowFlags = 0;
-		windowFlags |= ImGuiWindowFlags_NoTitleBar;
-		windowFlags |= ImGuiWindowFlags_NoScrollbar;
-		windowFlags |= ImGuiWindowFlags_NoMove;
-		windowFlags |= ImGuiWindowFlags_NoResize;
-
-		// Main body of the Demo window starts here.
-		// Pass nullptr means no close button
-		if (!ImGui::Begin("editor_bottom", nullptr, windowFlags))
-		{
-			// Early out if the window is collapsed, as an optimization.
-			ImGui::End();
-			return;
-		}
-		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
-
-		//>>>>>> draw content 
-
-		//>>>>>> finish drawing content
-
-		// End of show editor
-		ImGui::PopItemWidth();
-		ImGui::End();
+			m_ui->draw(param);
 	}
 }
