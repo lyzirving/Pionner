@@ -51,6 +51,11 @@ namespace Pionner
 		return m_camPos;
 	}
 
+	void Camera::dealScrollPosition(float deltaX, float deltaY)
+	{
+
+	}
+
 	void Camera::setPosition(float theta, float phi, float r)
 	{
 		bool equal = MathLib::equalF(m_theta, theta) && MathLib::equalF(m_phi, phi)

@@ -5,6 +5,8 @@
 
 namespace Pionner
 {
+	class Event;
+
 	class RenderPipeline : public RenderPipelineBase
 	{
 	public:
@@ -17,6 +19,8 @@ namespace Pionner
 
 		virtual void forwardRender(RenderParam &param) override;
 		virtual void preparePassData(RenderParam &param) override;
+
+		bool dealEvent(RenderParam &param, const Event &evt);
 	};
 }
 

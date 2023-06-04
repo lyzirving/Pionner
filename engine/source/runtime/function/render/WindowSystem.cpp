@@ -119,9 +119,15 @@ namespace Pionner
 		}
 	}
 
-	void WindowSystem::windowScrollCallback(GLFWwindow *window, double xPos, double yPos)
+	void WindowSystem::windowScrollCallback(GLFWwindow *window, double deltaX, double deltaY)
 	{
 		//LOG_DEBUG("pos[%lf, %lf]", xPos, yPos);
+		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
+		std::shared_ptr<EventMgr> evtMgr;
+		if (app && (evtMgr = app->getEvtMgr()))
+		{
+			evtMgr->setScroll(deltaX, deltaY);
+		}
 	}
 
 	bool WindowSystem::shouldClose()

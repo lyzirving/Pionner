@@ -19,6 +19,13 @@ namespace Pionner
 		const glm::mat4 &getViewInvMat();
 		const glm::vec3 &getCamPos();
 
+		/*
+		* @brief: move camera's position by scroll on window.
+		* @param: deltaX, scroll delta distance on horizontal, +x is go right on screen.
+		*         deltaY, scroll delta distance on vertical, +y is go down on screen.
+		*/
+		void dealScrollPosition(float deltaX, float deltaY);
+
 		void setPosition(float theta, float phi, float r);
 		void setPosition(const glm::vec3 &pos);
 		void setLookAt(const glm::vec3 &lookAt);

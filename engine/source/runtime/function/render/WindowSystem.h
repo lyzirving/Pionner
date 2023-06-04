@@ -36,7 +36,7 @@ namespace Pionner
 		static void windowCloseCallback(GLFWwindow *window);
 		static void windowMouseMoveCallback(GLFWwindow *window, double xPos, double yPos);
 		static void windowMouseBtnCallback(GLFWwindow *window, int button, int action, int mods);
-		static void windowScrollCallback(GLFWwindow *window, double xPos, double yPos);
+		static void windowScrollCallback(GLFWwindow *window, double deltaX, double deltaY);
 
 	private:
 		GLFWwindow *m_window;

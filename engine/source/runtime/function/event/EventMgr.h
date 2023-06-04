@@ -1,6 +1,7 @@
 #ifndef __EVENT_MGR_H__
 #define __EVENT_MGR_H__
 
+#include "function/event/Event.h"
 #include "function/event/MotionEvent.h"
 
 namespace Pionner
@@ -11,8 +12,9 @@ namespace Pionner
 		EventMgr();
 		~EventMgr();
 
-		void setCursorPos(double x, double y);
-		void processEvent();
+		void  setCursorPos(double x, double y);
+		void  setScroll(double deltaX, double deltaY);
+		Event processEvent();
 
 		inline double getCursorPosX() { return m_cursorPosX; }
 		inline double getCursorPosY() { return m_cursorPosY; }
@@ -35,8 +37,12 @@ namespace Pionner
 		double m_cursorPosX, m_cursorPosY;
 		double m_lastCursorPosX, m_lastCursorPosY;
 
+		double m_curScrollDeltaX, m_curScrollDeltaY;
+		double m_scrollDiffX, m_scrollDiffY;
+
 		int    m_windowWidth, m_windowHeight;
 		bool   m_pressAndMoving;
+		bool   m_scrolling;
 	};
 }
 

@@ -14,8 +14,11 @@ namespace Pionner
 		: m_curEvt(), m_lastEvt()
 		, m_cursorPosX(0), m_cursorPosY(0)
 		, m_lastCursorPosX(0), m_lastCursorPosY(0)
+		, m_curScrollDeltaX(0), m_curScrollDeltaY(0)
+		, m_scrollDiffX(0), m_scrollDiffY(0)
 		, m_windowWidth(0), m_windowHeight(0)
 		, m_pressAndMoving(false)
+		, m_scrolling(false)
 	{
 	}
 
@@ -23,11 +26,23 @@ namespace Pionner
 	{
 	}
 
-	void EventMgr::processEvent()
+	Event EventMgr::processEvent()
 	{
-		if (m_curEvt.m_action == ACTION_BTN_DOWN && m_pressAndMoving)
+		Event evt;
+		if (m_scrolling)
 		{
-			LOG_DEBUG("pressed and moving");
+			// LOG_DEBUG("scrolling, delta[%lf, %lf]", m_curScrollDeltaX, m_curScrollDeltaY);
+			m_scrolling = false;
+			evt.m_type = EVENT_TYPE_SCROLLING;
+			evt.m_scrollDeltaX = m_curScrollDeltaX;
+			evt.m_scrollDeltaY = m_curScrollDeltaY;
+		}
+		else if (m_curEvt.m_action == ACTION_BTN_DOWN && m_pressAndMoving)
+		{
+			// LOG_DEBUG("pressed and moving, cur position[%lf, %lf]", m_cursorPosX, m_cursorPosY);
+			evt.m_type = EVENT_TYPE_PRESSED_MOVING;
+			evt.m_posX = m_cursorPosX;
+			evt.m_posY = m_cursorPosY;
 		}
 		else if (m_curEvt.m_action == ACTION_BTN_UP && m_lastEvt.m_action == ACTION_BTN_DOWN)
 		{
@@ -39,9 +54,13 @@ namespace Pionner
 			}
 			else
 			{
-				LOG_DEBUG("click event");
+				// LOG_DEBUG("click event, cur position[%lf, %lf]", m_cursorPosX, m_cursorPosY);
+				evt.m_type = EVENT_TYPE_CLICK;
+				evt.m_posX = m_cursorPosX;
+				evt.m_posY = m_cursorPosY;
 			}
 		}
+		return evt;
 	}
 
 	void EventMgr::setCursorPos(double x, double y)
@@ -56,5 +75,16 @@ namespace Pionner
 		{
 			m_pressAndMoving = true;
 		}
+	}
+
+	void EventMgr::setScroll(double deltaX, double deltaY)
+	{
+		m_curScrollDeltaX = deltaX;
+		m_curScrollDeltaY = deltaY;
+
+		m_scrollDiffX += deltaX;
+		m_scrollDiffY += deltaY;
+
+		m_scrolling = true;
 	}
 }
