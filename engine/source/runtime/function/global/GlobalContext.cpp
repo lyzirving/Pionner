@@ -3,6 +3,7 @@
 #include "function/render/RenderSystem.h"
 
 #include "function/framework/world/World.h"
+#include "function/event/EventMgr.h"
 
 #include "core/log/LogSystem.h"
 
@@ -30,7 +31,9 @@ namespace Pionner
 
 		m_world = std::make_shared<World>();
 
-		WindowCreateInfo windowInitInfo;
+		std::shared_ptr<EventMgr> evtMgr = std::make_shared<EventMgr>();
+
+		WindowSystemInitInfo windowInitInfo;
 		m_windowSystem = std::make_shared<WindowSystem>(m_world);
 		m_windowSystem->initialize(windowInitInfo);
 

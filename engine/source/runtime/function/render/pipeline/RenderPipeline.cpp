@@ -9,7 +9,9 @@
 #include "function/render/pass/UIPass.h"
 
 #include "function/render/WindowSystem.h"
+#include "function/event/EventMgr.h"
 
+#include "core/system/PlatformUtil.h"
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -66,19 +68,25 @@ namespace Pionner
 	void RenderPipeline::preparePassData(RenderParam &param)
 	{
 		auto rhi = param.rhi;
-		auto windowSys = rhi->getWindowSystem();
+		auto windowSystem = rhi->getWindowSystem();
 		auto sceneMgr = param.sceneMgr;
+		std::shared_ptr<EventMgr> evtMgr{ nullptr };
 
-		if (windowSys->sizeChange())
+		// deal window size-change
+		if (windowSystem->sizeChange())
 		{
-			int width = windowSys->getWidth();
-			int height = windowSys->getHeight();
+			int width = windowSystem->getWidth();
+			int height = windowSystem->getHeight();
 
-			if (m_uiPass)
-				m_uiPass->resize(width, height);
+			if (m_uiPass) m_uiPass->resize(width, height);
 			sceneMgr->resize(width, height);
 			rhi->reviseViewport(width, height);
-			windowSys->setSizeChange(false);
+			windowSystem->setSizeChange(false);
+		}
+
+		if ((evtMgr = windowSystem->getEvtMgr()))
+		{
+			evtMgr->processEvent();
 		}
 	}
 }

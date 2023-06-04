@@ -7,6 +7,8 @@
 
 namespace Pionner
 {
+	class EventMgr;
+
 	class WindowSystem : public BaseSystem
 	{
 	public:
@@ -16,8 +18,9 @@ namespace Pionner
 		inline int getWidth() const { return m_width; }
 		inline int getHeight() const { return m_height; }
 		inline GLFWwindow *getWindow() const { return m_window; }
+		inline std::shared_ptr<EventMgr> getEvtMgr() { return m_evtMgr; }
 
-		void initialize(const WindowCreateInfo &info);
+		void initialize(const WindowSystemInitInfo &info);
 		void shutdown();
 
 		bool shouldClose();
@@ -38,7 +41,8 @@ namespace Pionner
 	private:
 		GLFWwindow *m_window;
 		int m_width, m_height;
-		std::atomic<bool> m_sizeChange;
+		std::atomic<bool>         m_sizeChange;
+		std::shared_ptr<EventMgr> m_evtMgr;
 	};
 }
 

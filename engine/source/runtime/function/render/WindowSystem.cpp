@@ -2,7 +2,10 @@
 #include <GLFW/glfw3.h>
 
 #include "function/render/WindowSystem.h"
+
 #include "function/framework/world/World.h"
+#include "function/event/EventMgr.h"
+
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -20,9 +23,12 @@ namespace Pionner
 	{
 	}
 
-	WindowSystem::~WindowSystem() = default;
+	WindowSystem::~WindowSystem()
+	{
+		m_evtMgr.reset();
+	}
 
-	void WindowSystem::initialize(const WindowCreateInfo &info)
+	void WindowSystem::initialize(const WindowSystemInitInfo &info)
 	{
 		if (!glfwInit())
 		{
@@ -31,6 +37,9 @@ namespace Pionner
 		}
 		m_width = info.width;
 		m_height = info.height;
+
+		m_evtMgr = std::make_shared<EventMgr>();
+		m_evtMgr->setWindowSize(m_width, m_height);
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -77,6 +86,9 @@ namespace Pionner
 			app->m_width = width;
 			app->m_height = height;
 			app->setSizeChange(true);
+
+			auto evtMgr = app->getEvtMgr();
+			if (evtMgr) evtMgr->setWindowSize(width, height);
 		}
 	}
 
@@ -88,11 +100,23 @@ namespace Pionner
 	void WindowSystem::windowMouseMoveCallback(GLFWwindow *window, double xPos, double yPos)
 	{
 		//LOG_DEBUG("pos[%lf, %lf]", xPos, yPos);
+		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
+		std::shared_ptr<EventMgr> evtMgr;
+		if (app && (evtMgr = app->getEvtMgr()))
+		{
+			evtMgr->setCursorPos(xPos, yPos);
+		}
 	}
 
 	void WindowSystem::windowMouseBtnCallback(GLFWwindow *window, int button, int action, int mods)
 	{
 		//LOG_DEBUG("button[%d], action[%d], mods[%d]", button, action, mods);
+		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
+		std::shared_ptr<EventMgr> evtMgr;
+		if (app && (evtMgr = app->getEvtMgr()))
+		{
+			evtMgr->setMotionEvent(button, action, mods);
+		}
 	}
 
 	void WindowSystem::windowScrollCallback(GLFWwindow *window, double xPos, double yPos)

@@ -26,7 +26,7 @@ namespace Pionner
 		std::shared_ptr<World>             world;
 	};
 
-	struct WindowCreateInfo
+	struct WindowSystemInitInfo
 	{
 		int         width{ 1600 };
 		int         height{ 900 };
