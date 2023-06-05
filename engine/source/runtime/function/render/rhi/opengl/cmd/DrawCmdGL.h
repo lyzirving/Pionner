@@ -15,6 +15,7 @@ namespace Pionner
 		virtual ~DrawCmdGL();
 
 		virtual void drawEntity(std::shared_ptr<RenderEntity> &entity, RenderParam &param) override;
+		virtual void drawCircle(std::shared_ptr<MeshComp> &mesh, RenderParam &param) override;
 		virtual void drawInfiniteGrid(std::shared_ptr<MeshComp> &mesh, RenderParam &param) override;
 
 	private:

@@ -7,6 +7,7 @@
 #include "function/render/resource/ResourceDef.h"
 
 #include "function/render/rhi/RhiDef.h"
+#include "function/render/rhi/DrawCmd.h"
 
 #include "function/render/rhi/attr/ClearMode.h"
 #include "function/render/rhi/attr/CullFace.h"
@@ -19,8 +20,6 @@ struct GLFWwindow;
 
 namespace Pionner
 {
-	class DrawCmd;
-
 	// render hardware interface
 	class Rhi
 	{
@@ -54,6 +53,21 @@ namespace Pionner
 		inline RhiType getType() const { return m_type; }
 		inline std::shared_ptr<WindowSystem> getWindowSystem() const { return m_window; }
 
+		inline void restoreViewportState()
+		{
+			m_viewportStateStack.push_back(m_curViewportState);
+		}
+
+		inline void popViewportState()
+		{
+			if (!m_viewportStateStack.empty())
+			{
+				m_curViewportState = m_viewportStateStack.back();
+				m_viewportStateStack.pop_back();
+				viewportSub(m_curViewportState.x, m_curViewportState.y, m_curViewportState.width, m_curViewportState.height);
+			}
+		}
+
 	protected:
 		virtual void createInstance() {};
 		virtual void createWindowSurface() {};
@@ -65,9 +79,9 @@ namespace Pionner
 		RhiType                       m_type;
 
 		// Record the whole render surface, m_viewport changes with the window's size.
-		RhiViewport                   m_viewport;
-		ViewportState                 m_curViewportState;
-		std::list<ViewportState>      m_viewportStateStack;
+		Viewport            m_viewport;
+		Viewport            m_curViewportState;
+		std::list<Viewport> m_viewportStateStack;
 	};
 }
 

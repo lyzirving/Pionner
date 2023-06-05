@@ -1,7 +1,6 @@
 #ifndef __PIONNER_TRANSFORM_COMP_H__
 #define __PIONNER_TRANSFORM_COMP_H__
 
-#include <glm/glm.hpp>
 #include <atomic>
 
 #include "core/math/Transform.h"

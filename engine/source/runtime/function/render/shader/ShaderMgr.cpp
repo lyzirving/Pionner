@@ -50,6 +50,13 @@ namespace Pionner
 						ret = m_shaders[type];
 						break;
 					}
+					case Pionner::SHADER_TYPE_CIRCLE:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "2d_circle", "2d_circle", "2d_circle");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
 					case Pionner::SHADER_TYPE_CNT:
 					default:
 					{

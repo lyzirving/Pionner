@@ -34,7 +34,7 @@ namespace Pionner
 		OpenGLRhiInitInfo *info = (OpenGLRhiInitInfo *)param;
 		m_window = info->window;
 
-		m_viewport = { 0.f, 0.f, float(m_window->getWidth()), float(m_window->getHeight()), 0.f, 1.f };
+		m_viewport = { 0.f, 0.f, float(m_window->getWidth()), float(m_window->getHeight()) };
 
 		createInstance();
 	}

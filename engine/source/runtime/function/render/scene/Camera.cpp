@@ -108,7 +108,7 @@ namespace Pionner
 			LOG_ERR("state stack is empty, err operation");
 			return;
 		}
-		CameraState &state = m_stateStack.front();
+		CameraState &state = m_stateStack.back();
 		m_theta = state.m_theta;
 		m_phi = state.m_phi;
 		m_radius = state.m_radius;
@@ -118,7 +118,7 @@ namespace Pionner
 		calcViewDirection();
 		m_dataChange.store(true);
 
-		m_stateStack.pop_front();
+		m_stateStack.pop_back();
 	}
 
 	void Camera::calcViewMat()
