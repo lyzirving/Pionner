@@ -26,6 +26,23 @@ namespace Pionner
 		float width, height;
 		float minDepth, maxDepth;
 	};
+
+	struct ViewportState
+	{
+		float x, y;
+		float width, height;
+
+		ViewportState() : x(0), y(0), width(0), height(0) {}
+
+		ViewportState &operator=(const RhiViewport &rhiViewport)
+		{
+			this->x = rhiViewport.x;
+			this->y = rhiViewport.y;
+			this->width = rhiViewport.width;
+			this->height = rhiViewport.height;
+			return *this;
+		}
+	};
 }
 
 #endif

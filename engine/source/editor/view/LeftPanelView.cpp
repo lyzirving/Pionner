@@ -14,7 +14,7 @@
 
 namespace Pionner
 {
-	LeftPanelView::LeftPanelView() : WindowView(ORDER_VIEW_1)
+	LeftPanelView::LeftPanelView() : WindowView(ORDER_VIEW_2)
 	{
 		m_uid = UID_LEFT_PANEL;
 	}

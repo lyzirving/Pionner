@@ -96,13 +96,6 @@ namespace Pionner
 		bool consume{ false };
 		switch (evt.m_type)
 		{
-			case EVENT_TYPE_SCROLLING:
-			{
-				auto camera = param.sceneMgr->m_camera;
-				camera->dealScrollPosition(evt.m_scrollDeltaX, evt.m_scrollDeltaY);
-				consume = true;
-				break;
-			}
 			default:
 				break;
 		}

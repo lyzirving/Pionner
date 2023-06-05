@@ -121,7 +121,7 @@ namespace Pionner
 
 	void WindowSystem::windowScrollCallback(GLFWwindow *window, double deltaX, double deltaY)
 	{
-		//LOG_DEBUG("pos[%lf, %lf]", xPos, yPos);
+		//LOG_DEBUG("pos[%lf, %lf]", deltaX, deltaY);
 		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
 		std::shared_ptr<EventMgr> evtMgr;
 		if (app && (evtMgr = app->getEvtMgr()))

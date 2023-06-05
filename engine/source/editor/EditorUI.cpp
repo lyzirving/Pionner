@@ -5,6 +5,12 @@
 
 #include "EditorUI.h"
 
+#include "view/RenderView.h"
+#include "view/VisualAngleView.h"
+#include "view/LeftPanelView.h"
+#include "view/RightPanelView.h"
+#include "view/BottomPanelView.h"
+
 #include "function/render/RenderSystem.h"
 #include "function/render/WindowSystem.h"
 
@@ -60,6 +66,26 @@ namespace Pionner
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void EditorUI::createUI(const std::shared_ptr<WindowUI> &self)
+	{
+		std::shared_ptr<WindowView> render = std::shared_ptr<WindowView>(new RenderView);
+		render->attachParent(self);
+		std::shared_ptr<WindowView> visualAngle = std::shared_ptr<WindowView>(new VisualAngleView);
+		visualAngle->attachParent(self);
+		std::shared_ptr<WindowView> leftPanel = std::shared_ptr<WindowView>(new LeftPanelView);
+		leftPanel->attachParent(self);
+		std::shared_ptr<WindowView> rightPanel = std::shared_ptr<WindowView>(new RightPanelView);
+		rightPanel->attachParent(self);
+		std::shared_ptr<WindowView> bottomPanel = std::shared_ptr<WindowView>(new BottomPanelView);
+		bottomPanel->attachParent(self);
+
+		addView(render);
+		addView(visualAngle);
+		addView(leftPanel);
+		addView(rightPanel);
+		addView(bottomPanel);
 	}
 
 	void EditorUI::shutdown()

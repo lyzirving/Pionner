@@ -106,6 +106,7 @@ namespace Pionner
 	void RhiGL::viewportFull()
 	{
 		glViewport((GLint)m_viewport.x, (GLint)m_viewport.y, (GLint)m_viewport.width, (GLint)m_viewport.height);
+		m_curViewportState = m_viewport;
 	}
 
 	void RhiGL::viewportSub(int x, int y, int width, int height)
@@ -117,6 +118,10 @@ namespace Pionner
 					 m_viewport.x, m_viewport.y, m_viewport.width, m_viewport.height);
 		}
 		glViewport(x, y, width, height);
+		m_curViewportState.x = x;
+		m_curViewportState.y = y;
+		m_curViewportState.width = width;
+		m_curViewportState.height = height;
 	}
 
 	void RhiGL::reviseViewport(int width, int height)

@@ -13,12 +13,14 @@ namespace Pionner
 		Frustum(float fov = 60.f, float aspect = 1.f, float near = 0.1f, float far = 10.f);
 		~Frustum();
 
-		const glm::mat4 &getProjectMat();
-		const glm::mat4 &getProjectInvMat();
+		const glm::mat4 &getPerspectMat();
+		const glm::mat4 &getPerspectInvMat();
+		const glm::mat4 &getOrthoMat();
 
 		void setFov(float fov);
 		void setAspect(float aspect);
 		void setNearFar(float near, float far);
+		void setOrtho(float l, float r, float b, float t);
 
 		void restoreState();
 		void popState();
@@ -27,7 +29,7 @@ namespace Pionner
 		inline float far() { return m_far; }
 		inline float fov() { return m_fov; }
 		inline float aspect() { return m_aspect; };
-		inline bool isChanged() { return m_change.load(); }
+		inline bool  isChanged() { return m_change.load(); }
 
 	private:
 		struct FrustumState
@@ -53,8 +55,12 @@ namespace Pionner
 		std::atomic_bool m_change;
 		std::list<FrustumState> m_stateStack;
 
-		glm::mat4 m_projectMat;
-		glm::mat4 m_projectInvMat;
+		glm::mat4 m_perspectMat;
+		glm::mat4 m_perspectInvMat;
+
+		float m_orthoLeft, m_orthoRight;
+		float m_orthoBottom, m_orthoTop;
+		glm::mat4 m_orthoMat;
 	};
 }
 

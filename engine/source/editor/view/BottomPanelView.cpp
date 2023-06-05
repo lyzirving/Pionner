@@ -14,7 +14,7 @@
 
 namespace Pionner
 {
-	BottomPanelView::BottomPanelView() : WindowView(ORDER_VIEW_3)
+	BottomPanelView::BottomPanelView() : WindowView(ORDER_VIEW_4)
 	{
 		m_uid = UID_BOTTOM_PANEL;
 	}

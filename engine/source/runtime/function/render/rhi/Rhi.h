@@ -2,6 +2,7 @@
 #define __RHI_H__
 
 #include <glm/glm.hpp>
+#include <list>
 
 #include "function/render/resource/ResourceDef.h"
 
@@ -25,7 +26,9 @@ namespace Pionner
 	{
 	public:
 		Rhi() : m_window(nullptr), m_shaderRhi(nullptr), m_drawCmd(nullptr)
-			, m_viewport(), m_type(RHI_COUNT) {}
+			, m_type(RHI_COUNT)
+			, m_viewport(), m_curViewportState(), m_viewportStateStack()
+		{}
 
 		virtual ~Rhi()
 		{
@@ -58,8 +61,13 @@ namespace Pionner
 		std::shared_ptr<WindowSystem> m_window;
 		std::shared_ptr<ShaderRhi>    m_shaderRhi;
 		std::shared_ptr<DrawCmd>      m_drawCmd;
-		RhiViewport                   m_viewport;
+
 		RhiType                       m_type;
+
+		// Record the whole render surface, m_viewport changes with the window's size.
+		RhiViewport                   m_viewport;
+		ViewportState                 m_curViewportState;
+		std::list<ViewportState>      m_viewportStateStack;
 	};
 }
 

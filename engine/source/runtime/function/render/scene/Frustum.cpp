@@ -16,7 +16,10 @@ namespace Pionner
 	Frustum::Frustum(float fov, float aspect, float near, float far)
 		: m_fov(fov), m_aspect(aspect), m_near(near), m_far(far)
 		, m_change(true), m_stateStack()
-		, m_projectMat(1.f), m_projectInvMat(1.f)
+		, m_perspectMat(1.f), m_perspectInvMat(1.f)
+		, m_orthoLeft(0.f), m_orthoRight(1.f)
+		, m_orthoBottom(0.f), m_orthoTop(1.f)
+		, m_orthoMat(1.f)
 	{
 	}
 
@@ -32,21 +35,28 @@ namespace Pionner
 				LOG_ERR("err, invalid value, near[%.2f] and far[%.2f]", m_near, m_far);
 				return;
 			}
-			m_projectMat = glm::perspective(glm::radians(m_fov), m_aspect, m_near, m_far);
-			m_projectInvMat = glm::inverse(m_projectMat);
+			m_perspectMat = glm::perspective(glm::radians(m_fov), m_aspect, m_near, m_far);
+			m_perspectInvMat = glm::inverse(m_perspectMat);
+			m_orthoMat = glm::ortho(m_orthoLeft, m_orthoRight, m_orthoBottom, m_orthoTop);
 		}
 	}
 
-	const glm::mat4 &Frustum::getProjectMat()
+	const glm::mat4 &Frustum::getPerspectMat()
 	{
 		calcProjectMat();
-		return m_projectMat;
+		return m_perspectMat;
 	}
 
-	const glm::mat4 &Frustum::getProjectInvMat()
+	const glm::mat4 &Frustum::getPerspectInvMat()
 	{
 		calcProjectMat();
-		return m_projectInvMat;
+		return m_perspectInvMat;
+	}
+
+	const glm::mat4 &Frustum::getOrthoMat()
+	{
+		calcProjectMat();
+		return m_orthoMat;
 	}
 
 	void Frustum::setFov(float fov)
@@ -77,6 +87,19 @@ namespace Pionner
 		}
 	}
 
+	void Frustum::setOrtho(float l, float r, float b, float t)
+	{
+		if (!MathLib::equalF(m_orthoLeft, l) || !MathLib::equalF(m_orthoRight, r) ||
+			!MathLib::equalF(m_orthoBottom, b) || !MathLib::equalF(m_orthoTop, t))
+		{
+			m_orthoLeft = l;
+			m_orthoRight = r;
+			m_orthoBottom = b;
+			m_orthoTop = t;
+			m_change.store(true);
+		}
+	}
+
 	void Frustum::restoreState()
 	{
 		FrustumState state{ m_fov, m_aspect, m_near, m_far };
@@ -99,3 +122,4 @@ namespace Pionner
 		m_change.store(true);
 	}
 }
+

@@ -3,11 +3,6 @@
 #include "Editor.h"
 #include "EditorUI.h"
 
-#include "view/RenderView.h"
-#include "view/LeftPanelView.h"
-#include "view/RightPanelView.h"
-#include "view/BottomPanelView.h"
-
 #include "Engine.h"
 #include "function/global/GlobalContext.h"
 #include "function/render/RenderSystem.h"
@@ -39,26 +34,11 @@ namespace Pionner
 		uiInitInfo.windowSystem = g_runtimeCtx.m_windowSystem;
 		uiInitInfo.renderSystem = g_runtimeCtx.m_renderSystem;
 		m_ui->initialize(uiInitInfo);
-
-		auto pUi = m_ui->getPtr();
-
-		std::shared_ptr<WindowView> render = std::shared_ptr<WindowView>(new RenderView);
-		render->attachParent(pUi);
-		std::shared_ptr<WindowView> leftPanel = std::shared_ptr<WindowView>(new LeftPanelView);
-		leftPanel->attachParent(pUi);
-		std::shared_ptr<WindowView> rightPanel = std::shared_ptr<WindowView>(new RightPanelView);
-		rightPanel->attachParent(pUi);
-		std::shared_ptr<WindowView> bottomPanel = std::shared_ptr<WindowView>(new BottomPanelView);
-		bottomPanel->attachParent(pUi);
-
-		m_ui->addView(render);
-		m_ui->addView(leftPanel);
-		m_ui->addView(rightPanel);
-		m_ui->addView(bottomPanel);
-
+		std::shared_ptr<WindowUI> uiSelf = m_ui->getPtr();
+		m_ui->createUI(uiSelf);
 		m_ui->layout();
 
-		g_runtimeCtx.m_renderSystem->initializeUIRenderBackend(pUi);
+		g_runtimeCtx.m_renderSystem->initializeUIRenderBackend(uiSelf);
 
 		LOG_DEBUG("finish initialization");
 	}

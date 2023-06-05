@@ -16,6 +16,7 @@ namespace Pionner
 		virtual void initialize(WindowUIInitInfo &info) override;
 		virtual void draw(RenderParam &param) override;
 
+		void createUI(const std::shared_ptr<WindowUI> &self);
 		void shutdown();
 
 	private:

@@ -31,7 +31,7 @@ namespace Pionner
 		Event evt;
 		if (m_scrolling)
 		{
-			// LOG_DEBUG("scrolling, delta[%lf, %lf]", m_curScrollDeltaX, m_curScrollDeltaY);
+			//LOG_DEBUG("scrolling, delta[%lf, %lf]", m_curScrollDeltaX, m_curScrollDeltaY);
 			m_scrolling = false;
 			evt.m_type = EVENT_TYPE_SCROLLING;
 			evt.m_scrollDeltaX = m_curScrollDeltaX;
@@ -39,7 +39,7 @@ namespace Pionner
 		}
 		else if (m_curEvt.m_action == ACTION_BTN_DOWN && m_pressAndMoving)
 		{
-			// LOG_DEBUG("pressed and moving, cur position[%lf, %lf]", m_cursorPosX, m_cursorPosY);
+			//LOG_DEBUG("pressed and moving, cur position[%lf, %lf]", m_cursorPosX, m_cursorPosY);
 			evt.m_type = EVENT_TYPE_PRESSED_MOVING;
 			evt.m_posX = m_cursorPosX;
 			evt.m_posY = m_cursorPosY;
@@ -54,7 +54,7 @@ namespace Pionner
 			}
 			else
 			{
-				// LOG_DEBUG("click event, cur position[%lf, %lf]", m_cursorPosX, m_cursorPosY);
+				//LOG_DEBUG("click event, cur position[%lf, %lf]", m_cursorPosX, m_cursorPosY);
 				evt.m_type = EVENT_TYPE_CLICK;
 				evt.m_posX = m_cursorPosX;
 				evt.m_posY = m_cursorPosY;

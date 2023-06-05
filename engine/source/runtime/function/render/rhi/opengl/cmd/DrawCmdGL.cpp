@@ -83,7 +83,7 @@ namespace Pionner
 		shader->setVec4("u_lineColor", mesh->m_color);
 		shader->setMat4("u_modelMat", mesh->m_mat);
 		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
-		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
 
 		vertexBuf->upload();
 		indiceBuf->upload();
@@ -153,7 +153,7 @@ namespace Pionner
 
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
-		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
 		shader->setMat4("u_normalMat", normalMat);
 
 		lightComp.m_light->dealShader(shader);
@@ -249,7 +249,7 @@ namespace Pionner
 
 		shader->setMat4("u_modelMat", part->getTransform());
 		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
-		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getProjectMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
 
 		shader->setInt("u_material.shadingModel", part->m_material.m_mode);
 		shader->setInt("u_material.texType", part->m_material.m_type);

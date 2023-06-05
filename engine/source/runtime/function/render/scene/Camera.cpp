@@ -53,7 +53,7 @@ namespace Pionner
 
 	void Camera::dealScrollPosition(float deltaX, float deltaY)
 	{
-
+		//LOG_DEBUG("delta[%f, %f]", deltaX, deltaY);
 	}
 
 	void Camera::setPosition(float theta, float phi, float r)
