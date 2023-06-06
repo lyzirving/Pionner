@@ -8,7 +8,7 @@
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/DrawCmd.h"
 
-#include "function/render/entity/InfiniteGrid.h"
+#include "function/render/geo/InfiniteGrid.h"
 
 #include "function/framework/world/World.h"
 
@@ -20,7 +20,7 @@ namespace Pionner
 {
 	ModelLayer::ModelLayer(const std::shared_ptr<Rhi> &rhi)
 		: RenderLayer(rhi)
-		, m_grid(new InfiniteGrid(rhi))
+		, m_grid(new InfiniteGrid())
 	{
 	}
 

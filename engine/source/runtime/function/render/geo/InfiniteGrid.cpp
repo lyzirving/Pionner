@@ -1,4 +1,4 @@
-#include "function/render/entity/InfiniteGrid.h"
+#include "function/render/geo/InfiniteGrid.h"
 
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/DrawCmd.h"
@@ -21,20 +21,15 @@ namespace Pionner
 {
 	const float InfiniteGrid::g_dist = 1000.f;
 
-	InfiniteGrid::InfiniteGrid(const std::shared_ptr<Rhi> &rhi)
-		: m_rhi(rhi)
-		, m_meshComp(new MeshComp)
-		, m_vertexArray(), m_indiceArray()
+	InfiniteGrid::InfiniteGrid() : GeoObj("infinite grid"), m_vertexArray(), m_indiceArray()
 	{
+		m_meshComp = std::shared_ptr<MeshComp>(new MeshComp);
 	}
 
 	InfiniteGrid::~InfiniteGrid()
 	{
 		std::vector<Vertex>().swap(m_vertexArray);
 		std::vector<uint32_t>().swap(m_indiceArray);
-
-		m_meshComp.reset();
-		m_rhi.reset();
 	}
 
 	void InfiniteGrid::draw(RenderParam &param)
