@@ -33,6 +33,11 @@ namespace Pionner
 		uint32_t m_height;
 
 		ViewLayout() : m_left(0), m_top(0), m_width(0), m_height(0) {}
+
+		bool contains(int32_t x, int32_t y)
+		{
+			return (x >= m_left) && (y >= m_top) && (x <= (m_left + m_width)) && (y <= (m_top + m_height));
+		}
 	};
 }
 

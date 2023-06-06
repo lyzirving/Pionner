@@ -18,7 +18,9 @@ namespace Pionner
 		inline int getWidth() const { return m_width; }
 		inline int getHeight() const { return m_height; }
 		inline GLFWwindow *getWindow() const { return m_window; }
-		inline std::shared_ptr<EventMgr> getEvtMgr() { return m_evtMgr; }
+		// Note: when return type is reference, the returned variable should not be temporaray variable, 
+		// it must be member variable.
+		inline std::shared_ptr<EventMgr> &getEvtMgr() { return m_evtMgr; }
 
 		void initialize(const WindowSystemInitInfo &info);
 		void shutdown();

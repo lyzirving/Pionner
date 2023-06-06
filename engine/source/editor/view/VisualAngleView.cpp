@@ -7,6 +7,7 @@
 #include "function/render/scene/Frustum.h"
 
 #include "function/framework/comp/MeshComp.h"
+#include "function/event/EventMgr.h"
 
 #include "function/render/resource/ResourceDef.h"
 
@@ -34,6 +35,14 @@ namespace Pionner
 
 	void VisualAngleView::draw(RenderParam &param)
 	{
+		auto evtMgr = param.rhi->getWindowSystem()->getEvtMgr();
+
+		// Decide the view's visibility
+		if (!m_layout.contains(evtMgr->getCursorPosX(), evtMgr->getCursorPosY()))
+		{
+			return;
+		}
+
 		init();
 
 		auto rhi = param.rhi;
