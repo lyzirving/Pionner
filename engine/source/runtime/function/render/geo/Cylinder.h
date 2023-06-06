@@ -1,11 +1,16 @@
 #ifndef __GEO_CYLINDER_H__
 #define __GEO_CYLINDER_H__
 
-#include "function/render/geo/GeoObj.h"
+#include <vector>
+#include <glm/glm.hpp>
+
+#include "function/render/geo/Geometry.h"
 
 namespace Pionner
 {
-	class Cylinder : public GeoObj
+	struct Vertex;
+
+	class Cylinder : public Geometry
 	{
 	public:
 		Cylinder();
@@ -14,8 +19,18 @@ namespace Pionner
 		virtual void draw(RenderParam &param) override;
 		virtual void initialize(RenderParam &param) override;
 
-	private:
+		void setColor(const glm::vec4 &color);
 
+	private:
+		void buildData(std::vector<Vertex> &vertexArray,
+					   std::vector<uint32_t> &indiceArray);
+
+	private:
+		glm::vec3 m_center;
+		float m_radius, m_height;
+		uint32_t m_itrCnt;
+		std::vector<Vertex>   m_vertexArray;
+		std::vector<uint32_t> m_indiceArray;
 	};
 }
 

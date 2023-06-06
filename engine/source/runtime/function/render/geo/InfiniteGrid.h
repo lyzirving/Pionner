@@ -5,13 +5,13 @@
 
 #include <vector>
 
-#include "function/render/geo/GeoObj.h"
+#include "function/render/geo/Geometry.h"
 
 namespace Pionner
 {
 	struct Vertex;
 
-	class InfiniteGrid : public GeoObj
+	class InfiniteGrid : public Geometry
 	{
 	public:
 		InfiniteGrid();

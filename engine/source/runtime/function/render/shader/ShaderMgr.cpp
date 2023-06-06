@@ -57,6 +57,13 @@ namespace Pionner
 						ret = m_shaders[type];
 						break;
 					}
+					case Pionner::SHADER_TYPE_COLOR_GEOMETRY:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "color_geometry", "color_geometry", "color_geometry");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
 					case Pionner::SHADER_TYPE_CNT:
 					default:
 					{

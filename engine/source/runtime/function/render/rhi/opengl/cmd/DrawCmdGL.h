@@ -17,6 +17,7 @@ namespace Pionner
 		virtual void drawEntity(std::shared_ptr<RenderEntity> &entity, RenderParam &param) override;
 		virtual void drawCircle(std::shared_ptr<MeshComp> &mesh, RenderParam &param) override;
 		virtual void drawInfiniteGrid(std::shared_ptr<MeshComp> &mesh, RenderParam &param) override;
+		virtual void drawColorGeometry(Geometry &geometry, RenderParam &param) override;
 
 	private:
 		void drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param);

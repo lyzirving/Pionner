@@ -21,9 +21,9 @@ namespace Pionner
 {
 	const float InfiniteGrid::g_dist = 1000.f;
 
-	InfiniteGrid::InfiniteGrid() : GeoObj("infinite grid"), m_vertexArray(), m_indiceArray()
+	InfiniteGrid::InfiniteGrid() : Geometry("infinite grid"), m_vertexArray(), m_indiceArray()
 	{
-		m_meshComp = std::shared_ptr<MeshComp>(new MeshComp);
+		m_mesh = std::shared_ptr<MeshComp>(new MeshComp);
 	}
 
 	InfiniteGrid::~InfiniteGrid()
@@ -34,22 +34,22 @@ namespace Pionner
 
 	void InfiniteGrid::draw(RenderParam &param)
 	{
-		if (m_meshComp && m_meshComp->m_initialized)
+		if (m_mesh && m_mesh->m_initialized)
 		{
 			std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
-			drawCmd->drawInfiniteGrid(m_meshComp, param);
+			drawCmd->drawInfiniteGrid(m_mesh, param);
 		}
 	}
 
 	void InfiniteGrid::initialize(RenderParam &param)
 	{
-		if (!m_meshComp->m_initialized)
+		if (!m_mesh->m_initialized)
 		{
 			m_vertexArray.clear();
 			m_indiceArray.clear();
 			buildGridData(m_vertexArray, m_indiceArray);
-			m_meshComp->initialize(m_vertexArray, m_indiceArray);
-			m_meshComp->m_color = glm::vec4(0.29f, 0.29f, 0.29f, 1.f);
+			m_mesh->initialize(m_vertexArray, m_indiceArray);
+			m_mesh->m_color = glm::vec4(0.29f, 0.29f, 0.29f, 1.f);
 		}
 	}
 
