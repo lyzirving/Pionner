@@ -113,12 +113,12 @@ namespace Pionner
 			LOG_ERR("state stack is empty, err operation");
 			return;
 		}
-		FrustumState state = m_stateStack.front();
+		FrustumState state = m_stateStack.back();
 		m_fov = state.m_fov;
 		m_aspect = state.m_aspect;
 		m_near = state.m_near;
 		m_far = state.m_far;
-		m_stateStack.pop_front();
+		m_stateStack.pop_back();
 		m_change.store(true);
 	}
 }

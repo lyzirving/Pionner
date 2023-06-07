@@ -27,6 +27,7 @@ namespace Pionner
 		, m_itrCnt(50)
 		, m_vertexArray(), m_indiceArray()
 	{
+		m_type = GEO_TYPE_CYLINDER;
 		m_mesh = std::shared_ptr<MeshComp>(new MeshComp);
 		m_mesh->m_color = glm::vec4(1.f, 0.f, 0.f, 1.f);
 
@@ -38,6 +39,7 @@ namespace Pionner
 		, m_itrCnt(50)
 		, m_vertexArray(), m_indiceArray()
 	{
+		m_type = GEO_TYPE_CYLINDER;
 		m_mesh = std::shared_ptr<MeshComp>(new MeshComp);
 		m_mesh->m_color = glm::vec4(1.f, 0.f, 0.f, 1.f);
 
@@ -81,6 +83,26 @@ namespace Pionner
 	{
 		if (m_mesh)
 			m_mesh->m_color = color;
+	}
+
+	void Cylinder::setRadius(float radius)
+	{
+		if (m_mesh && m_mesh->m_initialized)
+		{
+			LOG_ERR("mesh has been initialized");
+			return;
+		}
+		m_radius = radius;
+	}
+
+	void Cylinder::setHeight(float height)
+	{
+		if (m_mesh && m_mesh->m_initialized)
+		{
+			LOG_ERR("mesh has been initialized");
+			return;
+		}
+		m_height = height;
 	}
 
 	void Cylinder::translate(float x, float y, float z)
@@ -183,5 +205,21 @@ namespace Pionner
 			indiceArray.push_back(bottomCenterInd);
 			indiceArray.push_back(i);
 		}
+	}
+
+	template<>
+	bool Geometry::is<Cylinder>()
+	{
+		return m_type == GEO_TYPE_CYLINDER;
+	}
+
+	template<>
+	Cylinder *Geometry::as<Cylinder>()
+	{
+		if (is<Cylinder>())
+		{
+			return static_cast<Cylinder *>(this);
+		}
+		return nullptr;
 	}
 }

@@ -19,6 +19,12 @@ namespace Pionner
 	protected:
 		std::vector<std::shared_ptr<Geometry>> m_geometrys;
 	};
+
+	template<>
+	bool Geometry::is<GeometryGroup>();
+
+	template<>
+	GeometryGroup *Geometry::as<GeometryGroup>();
 }
 
 #endif

@@ -24,6 +24,13 @@ namespace Pionner
 	private:
 		bool m_initialized;
 	};
+
+	template<>
+	bool Geometry::is<CoordinateAxis>();
+
+	template<>
+	CoordinateAxis *Geometry::as<CoordinateAxis>();
+
 }
 
 #endif

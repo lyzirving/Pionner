@@ -24,6 +24,7 @@ namespace Pionner
 	InfiniteGrid::InfiniteGrid() : Geometry("infinite grid"), m_vertexArray(), m_indiceArray()
 	{
 		m_mesh = std::shared_ptr<MeshComp>(new MeshComp);
+		m_type = GEO_TYPE_INFINITE_GRID;
 	}
 
 	InfiniteGrid::~InfiniteGrid()
@@ -74,5 +75,21 @@ namespace Pionner
 		indiceArray.push_back(2);
 		indiceArray.push_back(1);
 		indiceArray.push_back(3);
+	}
+
+	template<>
+	bool Geometry::is<InfiniteGrid>()
+	{
+		return m_type == GEO_TYPE_INFINITE_GRID;
+	}
+
+	template<>
+	InfiniteGrid *Geometry::as<InfiniteGrid>()
+	{
+		if (is<InfiniteGrid>())
+		{
+			return static_cast<InfiniteGrid *>(this);
+		}
+		return nullptr;
 	}
 }

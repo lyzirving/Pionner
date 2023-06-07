@@ -24,6 +24,8 @@ namespace Pionner
 		inline float getHeight() const { return m_height; }
 
 		void setColor(const glm::vec4 &color);
+		void setRadius(float radius);
+		void setHeight(float height);
 		void translate(float x, float y, float z);
 		void rotate(float angle, float x, float y, float z);
 
@@ -38,6 +40,13 @@ namespace Pionner
 		std::vector<Vertex>   m_vertexArray;
 		std::vector<uint32_t> m_indiceArray;
 	};
+
+	template<>
+	bool Geometry::is<Cylinder>();
+
+	template<>
+	Cylinder *Geometry::as<Cylinder>();
+
 }
 
 #endif

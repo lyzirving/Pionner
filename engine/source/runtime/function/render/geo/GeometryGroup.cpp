@@ -4,6 +4,7 @@ namespace Pionner
 {
 	Pionner::GeometryGroup::GeometryGroup(const char *name) : Geometry(name), m_geometrys()
 	{
+		m_type = GEO_TYPE_GROUP;
 	}
 
 	Pionner::GeometryGroup::~GeometryGroup()
@@ -27,5 +28,21 @@ namespace Pionner
 
 	void GeometryGroup::initialize(RenderParam &param)
 	{
+	}
+
+	template<>
+	bool Geometry::is<GeometryGroup>()
+	{
+		return m_type == GEO_TYPE_GROUP;
+	}
+
+	template<>
+	GeometryGroup *Geometry::as<GeometryGroup>()
+	{
+		if (is<GeometryGroup>())
+		{
+			return static_cast<GeometryGroup *>(this);
+		}
+		return nullptr;
 	}
 }

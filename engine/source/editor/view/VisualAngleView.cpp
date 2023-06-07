@@ -4,8 +4,11 @@
 
 #include "function/render/RenderDef.h"
 #include "function/render/rhi/Rhi.h"
+
 #include "function/render/scene/SceneMgr.h"
 #include "function/render/scene/Frustum.h"
+#include "function/render/scene/Camera.h"
+
 #include "function/render/geo/CoordinateAixs.h"
 
 #include "function/framework/comp/MeshComp.h"
@@ -43,26 +46,35 @@ namespace Pionner
 		m_coordinateAxis->initialize(param);
 
 		auto evtMgr = param.rhi->getWindowSystem()->getEvtMgr();
+		bool showBackground = m_layout.contains(evtMgr->getCursorPosX(), evtMgr->getCursorPosY());
 
-		// Decide the view's visibility
-		if (!m_layout.contains(evtMgr->getCursorPosX(), evtMgr->getCursorPosY()))
-		{
-			return;
-		}
-
-		init();
+		buildGridData();
 
 		auto rhi = param.rhi;
 		auto sceneMgr = param.sceneMgr;
 		auto frustum = sceneMgr->m_frustum;
+		auto camera = sceneMgr->m_camera;
 		auto cmd = rhi->getDrawCmd();
 
 		rhi->restoreViewportState();
+		frustum->restoreState();
+		camera->restoreState();
 
 		rhi->viewportSub(m_renderport.m_left, m_renderport.m_top, m_renderport.m_width, m_renderport.m_height);
 
-		cmd->drawCircle(m_meshComp, param);
+		glm::vec3 stdPos = camera->getCamPos();
+		stdPos = glm::normalize(stdPos);
+		camera->setPosition(stdPos);
 
+		frustum->setAspect(float(m_renderport.m_width) / float(m_renderport.m_height));
+
+		// TODO: draw 3d sphere as background
+		//if (showBackground) cmd->drawCircle(m_meshComp, param);
+
+		m_coordinateAxis->draw(param);
+
+		camera->popState();
+		frustum->popState();
 		rhi->popViewportState();
 	}
 
@@ -123,7 +135,7 @@ namespace Pionner
 		}
 	}
 
-	void VisualAngleView::init()
+	void VisualAngleView::buildGridData()
 	{
 		if (!m_meshComp->m_initialized)
 		{

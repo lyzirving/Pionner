@@ -21,7 +21,7 @@ namespace Pionner
 		virtual void layout(int32_t windowWidth, int32_t windowHeight) override;
 
 	private:
-		void init();
+		void buildGridData();
 
 	private:
 		std::shared_ptr<MeshComp>       m_meshComp;

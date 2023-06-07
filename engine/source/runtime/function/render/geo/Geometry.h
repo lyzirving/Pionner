@@ -4,6 +4,8 @@
 #include <string>
 #include <memory>
 
+#include "GeoDef.h"
+
 namespace Pionner
 {
 	struct RenderParam;
@@ -24,8 +26,15 @@ namespace Pionner
 		inline const std::shared_ptr<MeshComp> &getMeshComp() { return m_mesh; }
 		inline const std::shared_ptr<TransformComp> &getTransformComp() { return m_transform; }
 
+		template<class T>
+		bool is();
+
+		template<class T>
+		T *as();
+
 	protected:
-		std::string m_name;
+		GeometryType m_type;
+		std::string  m_name;
 		std::shared_ptr<MeshComp>      m_mesh;
 		std::shared_ptr<TransformComp> m_transform;
 	};

@@ -30,6 +30,13 @@ namespace Pionner
 		std::vector<Vertex>   m_vertexArray;
 		std::vector<uint32_t> m_indiceArray;
 	};
+
+	template<>
+	bool Geometry::is<InfiniteGrid>();
+
+	template<>
+	InfiniteGrid *Geometry::as<InfiniteGrid>();
+
 }
 
 #endif
