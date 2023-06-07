@@ -15,4 +15,9 @@ namespace Pionner
 		m_mesh.reset();
 		m_transform.reset();
 	}
+
+	bool Geometry::isInitialized()
+	{
+		return false;
+	}
 }

@@ -15,7 +15,7 @@ namespace Pionner
 	{
 	public:
 		InfiniteGrid();
-		~InfiniteGrid();
+		virtual ~InfiniteGrid();
 
 		virtual void draw(RenderParam &param) override;
 		virtual void initialize(RenderParam &param) override;

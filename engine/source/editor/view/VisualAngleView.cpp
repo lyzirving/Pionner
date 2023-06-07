@@ -1,10 +1,12 @@
-#include "view/VisualAngleView.h"
+#include "VisualAngleView.h"
+
 #include "function/ui/WindowUI.h"
 
 #include "function/render/RenderDef.h"
 #include "function/render/rhi/Rhi.h"
 #include "function/render/scene/SceneMgr.h"
 #include "function/render/scene/Frustum.h"
+#include "function/render/geo/CoordinateAixs.h"
 
 #include "function/framework/comp/MeshComp.h"
 #include "function/event/EventMgr.h"
@@ -21,7 +23,9 @@
 namespace Pionner
 {
 	VisualAngleView::VisualAngleView() : WindowView(ORDER_VIEW_1)
-		, m_meshComp(new MeshComp), m_vertexArray(), m_indice()
+		, m_meshComp(new MeshComp)
+		, m_coordinateAxis(new CoordinateAxis("corner coordinate axis"))
+		, m_vertexArray(), m_indice()
 		, m_renderport()
 	{
 		m_uid = UID_VISUAL_ANGLE;
@@ -31,10 +35,13 @@ namespace Pionner
 	VisualAngleView::~VisualAngleView()
 	{
 		m_meshComp.reset();
+		m_coordinateAxis.reset();
 	}
 
 	void VisualAngleView::draw(RenderParam &param)
 	{
+		m_coordinateAxis->initialize(param);
+
 		auto evtMgr = param.rhi->getWindowSystem()->getEvtMgr();
 
 		// Decide the view's visibility

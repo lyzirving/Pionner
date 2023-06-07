@@ -14,12 +14,18 @@ namespace Pionner
 	{
 	public:
 		Cylinder();
-		~Cylinder();
+		Cylinder(const char *name);
+		virtual ~Cylinder();
 
 		virtual void draw(RenderParam &param) override;
 		virtual void initialize(RenderParam &param) override;
+		virtual bool isInitialized() override;
+
+		inline float getHeight() const { return m_height; }
 
 		void setColor(const glm::vec4 &color);
+		void translate(float x, float y, float z);
+		void rotate(float angle, float x, float y, float z);
 
 	private:
 		void buildData(std::vector<Vertex> &vertexArray,

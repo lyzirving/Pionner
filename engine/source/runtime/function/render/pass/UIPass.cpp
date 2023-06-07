@@ -1,4 +1,5 @@
-#include "function/render/pass/UIPass.h"
+#include "UIPass.h"
+
 #include "function/render/rhi/Rhi.h"
 #include "function/render/scene/SceneMgr.h"
 

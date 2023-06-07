@@ -8,6 +8,7 @@
 namespace Pionner
 {
 	class  MeshComp;
+	class  CoordinateAxis;
 	struct Vertex;
 
 	class VisualAngleView : public WindowView
@@ -23,10 +24,11 @@ namespace Pionner
 		void init();
 
 	private:
-		std::shared_ptr<MeshComp> m_meshComp;
-		std::vector<Vertex>       m_vertexArray;
-		std::vector<uint32_t>     m_indice;
-		ViewLayout                m_renderport;
+		std::shared_ptr<MeshComp>       m_meshComp;
+		std::shared_ptr<CoordinateAxis> m_coordinateAxis;
+		std::vector<Vertex>             m_vertexArray;
+		std::vector<uint32_t>           m_indice;
+		ViewLayout                      m_renderport;
 	};
 }
 

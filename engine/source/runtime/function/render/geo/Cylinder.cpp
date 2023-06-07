@@ -2,7 +2,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "function/render/geo/Cylinder.h"
+#include "Cylinder.h"
 
 #include "function/framework/comp/MeshComp.h"
 #include "function/framework/comp/TransformComp.h"
@@ -23,6 +23,17 @@
 namespace Pionner
 {
 	Cylinder::Cylinder() : Geometry("cylinder")
+		, m_center(0.f, 0.f, 0.f), m_radius(0.05f), m_height(0.5f)
+		, m_itrCnt(50)
+		, m_vertexArray(), m_indiceArray()
+	{
+		m_mesh = std::shared_ptr<MeshComp>(new MeshComp);
+		m_mesh->m_color = glm::vec4(1.f, 0.f, 0.f, 1.f);
+
+		m_transform = std::shared_ptr<TransformComp>(new TransformComp);
+	}
+
+	Cylinder::Cylinder(const char *name) : Geometry(name)
 		, m_center(0.f, 0.f, 0.f), m_radius(0.05f), m_height(0.5f)
 		, m_itrCnt(50)
 		, m_vertexArray(), m_indiceArray()
@@ -61,10 +72,27 @@ namespace Pionner
 		}
 	}
 
+	bool Cylinder::isInitialized()
+	{
+		return m_mesh && m_transform && m_mesh->m_initialized;
+	}
+
 	void Cylinder::setColor(const glm::vec4 &color)
 	{
 		if (m_mesh)
 			m_mesh->m_color = color;
+	}
+
+	void Cylinder::translate(float x, float y, float z)
+	{
+		if (m_transform)
+			m_transform->translate(x, y, z);
+	}
+
+	void Cylinder::rotate(float angle, float x, float y, float z)
+	{
+		if (m_transform)
+			m_transform->rotate(angle, x, y, z);
 	}
 
 	void Cylinder::buildData(std::vector<Vertex> &vertexArray, std::vector<uint32_t> &indiceArray)

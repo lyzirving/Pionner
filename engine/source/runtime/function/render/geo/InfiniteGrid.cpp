@@ -1,4 +1,4 @@
-#include "function/render/geo/InfiniteGrid.h"
+#include "InfiniteGrid.h"
 
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/DrawCmd.h"

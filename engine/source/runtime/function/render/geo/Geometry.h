@@ -18,6 +18,7 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) = 0;
 		virtual void initialize(RenderParam &param) = 0;
+		virtual bool isInitialized();
 
 		inline const std::string &name() { return m_name; }
 		inline const std::shared_ptr<MeshComp> &getMeshComp() { return m_mesh; }

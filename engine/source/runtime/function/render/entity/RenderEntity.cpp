@@ -1,6 +1,7 @@
 #include <glm/gtx/transform.hpp>
 
-#include "function/render/entity/RenderEntity.h"
+#include "RenderEntity.h"
+
 #include "function/global/GlobalContext.h"
 #include "function/render/RenderSystem.h"
 
