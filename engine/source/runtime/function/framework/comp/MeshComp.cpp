@@ -11,7 +11,6 @@ namespace Pionner
 {
 	Pionner::MeshComp::MeshComp()
 		: Comp()
-		, m_args()
 		, m_mat(1.f)
 		, m_color(1.f)
 		, m_vBufSlot(-1), m_indBufSlot(-1)

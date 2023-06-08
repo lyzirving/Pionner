@@ -26,6 +26,9 @@ namespace Pionner
 		inline const std::shared_ptr<MeshComp> &getMeshComp() { return m_mesh; }
 		inline const std::shared_ptr<TransformComp> &getTransformComp() { return m_transform; }
 
+		void translate(float x, float y, float z);
+		void rotate(float angle, float x, float y, float z);
+
 		template<class T>
 		bool is();
 

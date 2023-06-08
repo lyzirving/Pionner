@@ -57,63 +57,6 @@ namespace Pionner
 		}
 	}
 
-	void DrawCmdGL::drawCircle(std::shared_ptr<MeshComp> &mesh, RenderParam &param)
-	{
-		if (!mesh || !mesh->m_initialized || mesh->m_vBufSlot < 0 || mesh->m_indBufSlot < 0)
-		{
-			return;
-		}
-		auto resource = param.resource;
-		auto vertexBuf = resource->find(DATA_VERTEX, mesh->m_vBufSlot);
-		auto indiceBuf = resource->find(DATA_INDICE, mesh->m_indBufSlot);
-
-		if (!vertexBuf || !indiceBuf)
-		{
-			LOG_ERR("buffer is invalid");
-			return;
-		}
-
-		auto shader = param.shaderMgr->get(SHADER_TYPE_CIRCLE, param.rhi);
-
-		if (!shader)
-		{
-			LOG_ERR("shader is invalid");
-			return;
-		}
-
-		shader->use(true);
-
-		std::string key{ "circle_radius" };
-		auto itr = mesh->m_args.find(key);
-		if (itr != mesh->m_args.end())
-		{
-			shader->setFloat("u_radius", itr->second.argFlt);
-		}
-
-		key = "viewport_size";
-		itr = mesh->m_args.find(key);
-		if (itr != mesh->m_args.end())
-		{
-			shader->setVec2("u_viewportSize", itr->second.argVec2);
-		}
-
-		shader->setVec4("u_color", mesh->m_color);
-
-		vertexBuf->upload();
-		indiceBuf->upload();
-
-		vertexBuf->bind();
-		indiceBuf->bind();
-
-		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::checkGLErr("err happens when drawing circle");
-
-		vertexBuf->unbind();
-		indiceBuf->unbind();
-
-		shader->use(false);
-	}
-
 	void DrawCmdGL::drawInfiniteGrid(std::shared_ptr<MeshComp> &mesh, RenderParam &param)
 	{
 		if (!mesh || !mesh->m_initialized || mesh->m_vBufSlot < 0 || mesh->m_indBufSlot < 0)

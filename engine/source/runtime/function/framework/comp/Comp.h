@@ -5,13 +5,6 @@
 
 namespace Pionner
 {
-	struct CompArg
-	{
-		int       argInt;
-		float     argFlt;
-		glm::vec2 argVec2;
-	};
-
 	class Comp
 	{
 	public:

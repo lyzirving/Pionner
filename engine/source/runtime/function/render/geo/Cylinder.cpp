@@ -105,18 +105,6 @@ namespace Pionner
 		m_height = height;
 	}
 
-	void Cylinder::translate(float x, float y, float z)
-	{
-		if (m_transform)
-			m_transform->translate(x, y, z);
-	}
-
-	void Cylinder::rotate(float angle, float x, float y, float z)
-	{
-		if (m_transform)
-			m_transform->rotate(angle, x, y, z);
-	}
-
 	void Cylinder::buildData(std::vector<Vertex> &vertexArray, std::vector<uint32_t> &indiceArray)
 	{
 		// Step 1. build pts on top and bottom circular surfaces

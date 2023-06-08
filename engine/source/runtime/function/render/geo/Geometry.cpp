@@ -22,6 +22,18 @@ namespace Pionner
 		return false;
 	}
 
+	void Geometry::translate(float x, float y, float z)
+	{
+		if (m_transform)
+			m_transform->translate(x, y, z);
+	}
+
+	void Geometry::rotate(float angle, float x, float y, float z)
+	{
+		if (m_transform)
+			m_transform->rotate(angle, x, y, z);
+	}
+
 	template<class T>
 	bool Geometry::is()
 	{

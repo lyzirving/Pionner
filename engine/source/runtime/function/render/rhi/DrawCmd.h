@@ -17,7 +17,6 @@ namespace Pionner
 		virtual ~DrawCmd() = default;
 
 		virtual void drawEntity(std::shared_ptr<RenderEntity> &entity, RenderParam &param) = 0;
-		virtual void drawCircle(std::shared_ptr<MeshComp> &mesh, RenderParam &param) = 0;
 		virtual void drawInfiniteGrid(std::shared_ptr<MeshComp> &mesh, RenderParam &param) = 0;
 		virtual void drawColorGeometry(Geometry &geometry, RenderParam &param) = 0;
 	};

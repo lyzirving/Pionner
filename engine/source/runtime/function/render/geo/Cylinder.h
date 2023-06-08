@@ -26,8 +26,6 @@ namespace Pionner
 		void setColor(const glm::vec4 &color);
 		void setRadius(float radius);
 		void setHeight(float height);
-		void translate(float x, float y, float z);
-		void rotate(float angle, float x, float y, float z);
 
 	private:
 		void buildData(std::vector<Vertex> &vertexArray,
