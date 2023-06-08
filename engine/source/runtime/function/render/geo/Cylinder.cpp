@@ -89,7 +89,7 @@ namespace Pionner
 	{
 		if (m_mesh && m_mesh->m_initialized)
 		{
-			LOG_ERR("mesh has been initialized");
+			LOG_ERR("mesh has been initialized, fail to set radius");
 			return;
 		}
 		m_radius = radius;

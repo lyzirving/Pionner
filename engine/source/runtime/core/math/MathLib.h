@@ -5,6 +5,8 @@
 
 namespace Pionner
 {
+	#define MATH_PI 3.14159265358979323846
+
 	class MathLib
 	{
 	public:
