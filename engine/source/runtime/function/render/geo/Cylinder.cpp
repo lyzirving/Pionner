@@ -200,10 +200,10 @@ namespace Pionner
 		limit = 2 * m_itrCnt - 3;
 		for (uint32_t i = m_itrCnt - 1; i <= limit; i++)
 		{
-			// bottom surface's point-index
-			indiceArray.push_back((i == limit) ? (m_itrCnt - 1) : (i + 1));
-			indiceArray.push_back(bottomCenterInd);
+			// bottom surface's point-index, note its order is different from the top surface
 			indiceArray.push_back(i);
+			indiceArray.push_back(bottomCenterInd);
+			indiceArray.push_back((i == limit) ? (m_itrCnt - 1) : (i + 1));
 		}
 	}
 

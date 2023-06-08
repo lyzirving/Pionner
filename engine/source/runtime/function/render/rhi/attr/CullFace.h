@@ -23,6 +23,15 @@ namespace Pionner
 		{
 		};
 
+		static CullFace common()
+		{
+			CullFace cull;
+			cull.m_enbale = true;
+			cull.m_faceDir = COUNTER_CLOCK_WISE;
+			cull.m_mode = CULL_BACK;
+			return cull;
+		}
+
 		~CullFace() = default;
 
 	public:

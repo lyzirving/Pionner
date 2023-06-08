@@ -10,6 +10,7 @@
 #include "function/render/scene/Camera.h"
 
 #include "function/render/geo/CoordinateAixs.h"
+#include "function/render/geo/Sphere.h"
 
 #include "function/framework/comp/MeshComp.h"
 #include "function/event/EventMgr.h"
@@ -28,6 +29,7 @@ namespace Pionner
 	VisualAngleView::VisualAngleView() : WindowView(ORDER_VIEW_1)
 		, m_meshComp(new MeshComp)
 		, m_coordinateAxis(new CoordinateAxis("corner coordinate axis"))
+		, m_sphere(new Sphere(50, 50, "corner background sphere"))
 		, m_vertexArray(), m_indice()
 		, m_renderport()
 	{
@@ -39,11 +41,13 @@ namespace Pionner
 	{
 		m_meshComp.reset();
 		m_coordinateAxis.reset();
+		m_sphere.reset();
 	}
 
 	void VisualAngleView::draw(RenderParam &param)
 	{
 		m_coordinateAxis->initialize(param);
+		m_sphere->initialize(param);
 
 		auto evtMgr = param.rhi->getWindowSystem()->getEvtMgr();
 		bool showBackground = m_layout.contains(evtMgr->getCursorPosX(), evtMgr->getCursorPosY());
@@ -56,10 +60,14 @@ namespace Pionner
 		auto camera = sceneMgr->m_camera;
 		auto cmd = rhi->getDrawCmd();
 
+		CullFace cull;
+		cull.m_enbale = false;
+
 		rhi->restoreViewportState();
 		frustum->restoreState();
 		camera->restoreState();
 
+		rhi->setCullMode(cull);
 		rhi->viewportSub(m_renderport.m_left, m_renderport.m_top, m_renderport.m_width, m_renderport.m_height);
 
 		glm::vec3 stdPos = camera->getCamPos();
@@ -71,11 +79,15 @@ namespace Pionner
 		// TODO: draw 3d sphere as background
 		//if (showBackground) cmd->drawCircle(m_meshComp, param);
 
+		m_sphere->draw(param);
 		m_coordinateAxis->draw(param);
 
 		camera->popState();
 		frustum->popState();
 		rhi->popViewportState();
+
+		cull = CullFace::common();
+		rhi->setCullMode(cull);
 	}
 
 	void VisualAngleView::layout(int32_t windowWidth, int32_t windowHeight)

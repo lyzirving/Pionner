@@ -29,6 +29,7 @@ namespace Pionner
 	{
 		m_type = GEO_TYPE_SPHERE;
 		m_mesh = std::shared_ptr<MeshComp>(new MeshComp);
+		m_mesh->m_color = glm::vec4(0.392f, 0.392f, 0.392f, 0.6f);
 		m_transform = std::shared_ptr<TransformComp>(new TransformComp);
 	}
 
