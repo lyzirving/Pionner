@@ -21,6 +21,7 @@ namespace Pionner
 		virtual void draw(RenderParam &param) = 0;
 		virtual void layout(int32_t windowWidth, int32_t windowHeight) = 0;
 		virtual bool processEvent(RenderParam &param, const Event &evt);
+		virtual void resetMotion();
 
 		inline void setDrawOrder(uint8_t order) { m_drawOrder = order; }
 		inline void setUid(uint8_t uid) { m_uid = uid; }

@@ -30,4 +30,8 @@ namespace Pionner
 	{
 		return false;
 	}
+
+	void WindowView::resetMotion()
+	{
+	}
 }

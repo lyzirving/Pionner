@@ -87,7 +87,6 @@ namespace Pionner
 		if (m_uiPass && (evtMgr = windowSystem->getEvtMgr()))
 		{
 			Event evt = evtMgr->processEvent();
-			// TODO: add a hit target
 			m_uiPass->dealEvent(param, evt);
 		}
 	}

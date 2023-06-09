@@ -5,6 +5,8 @@
 
 namespace Pionner
 {
+	static const float INVALID_CURSOR_POS = -1.f;
+
 	enum CursorButton
 	{
 		BTN_LEFT,

@@ -4,13 +4,15 @@
 
 namespace Pionner
 {
-	WindowUI::WindowUI() : m_viewMap(), m_viewArray()
+	WindowUI::WindowUI() : m_viewMap(), m_viewArray(), m_target(nullptr)
 		, m_windowWidth(0), m_windowHeight(0), m_needSortView(true)
 	{
 	}
 
 	WindowUI::~WindowUI()
 	{
+		m_target.reset();
+
 		auto itr = m_viewArray.begin();
 		while (itr != m_viewArray.end())
 		{
@@ -45,13 +47,22 @@ namespace Pionner
 	{
 		sortView();
 		bool consume{ false };
+
+		if (m_target && m_target->dealEvent(param, evt))
+		{
+			return true;
+		}
+
 		for (size_t i = 0; i < m_viewArray.size(); i++)
 		{
 			if (m_viewArray[i].second)
-				m_viewArray[i].second->dealEvent(param, evt);
+				consume = m_viewArray[i].second->dealEvent(param, evt);
 
 			if (consume)
+			{
+				m_target = m_viewArray[i].second;
 				return true;
+			}
 		}
 		return false;
 	}
@@ -64,6 +75,15 @@ namespace Pionner
 		{
 			if (m_viewArray[i].second)
 				m_viewArray[i].second->layout(m_windowWidth, m_windowHeight);
+		}
+	}
+
+	void WindowUI::resetTargetView()
+	{
+		if (m_target)
+		{
+			m_target->resetMotion();
+			m_target.reset();
 		}
 	}
 

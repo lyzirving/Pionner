@@ -29,6 +29,7 @@ namespace Pionner
 		, m_coordinateAxis(new CoordinateAxis("coordinate axis"))
 		, m_sphere(new Sphere(50, 50, "background sphere"))
 		, m_renderport()
+		, m_lastCursorPos(INVALID_CURSOR_POS, INVALID_CURSOR_POS)
 	{
 		m_uid = UID_VISUAL_ANGLE;
 	}
@@ -120,18 +121,29 @@ namespace Pionner
 		{
 			case EVENT_TYPE_PRESSED_MOVING:
 			{
-				LOG_DEBUG("pressed moving");
+				LOG_DEBUG("pressed moving[%lf, %lf]", evt.m_posX, evt.m_posY);
+				m_lastCursorPos.x = evt.m_posX;
+				m_lastCursorPos.y = evt.m_posY;
 				return true;
 			}
 			case EVENT_TYPE_PRESSED_MOVING_FINISH:
 			{
 				LOG_DEBUG("pressed moving finished");
+				m_lastCursorPos.x = INVALID_CURSOR_POS;
+				m_lastCursorPos.y = INVALID_CURSOR_POS;
 				return true;
 			}
 			default:
 				break;
 		}
 		return false;
+	}
+
+	void VisualAngleView::resetMotion()
+	{
+		LOG_DEBUG("reset");
+		m_lastCursorPos.x = INVALID_CURSOR_POS;
+		m_lastCursorPos.y = INVALID_CURSOR_POS;
 	}
 
 }

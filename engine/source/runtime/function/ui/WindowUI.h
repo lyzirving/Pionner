@@ -35,6 +35,7 @@ namespace Pionner
 		void addView(const std::shared_ptr<WindowView> &view);
 		bool contain(const std::shared_ptr<WindowView> &view);
 		void layout();
+		void resetTargetView();
 
 		std::shared_ptr<WindowUI>   getPtr();
 		std::shared_ptr<WindowView> getView(uint8_t uid);
@@ -51,6 +52,7 @@ namespace Pionner
 	protected:
 		std::map<uint8_t, std::shared_ptr<WindowView>> m_viewMap;
 		std::vector<ViewItem>                          m_viewArray;
+		std::shared_ptr<WindowView>                    m_target;
 		int32_t m_windowWidth, m_windowHeight;
 		bool    m_needSortView;
 	};

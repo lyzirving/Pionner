@@ -51,14 +51,23 @@ namespace Pionner
 
 	bool UIPass::dealEvent(RenderParam &param, const Event &evt)
 	{
-		if ((m_renderLayout.contains(evt.m_posX, evt.m_posY)) && m_ui)
+		if (!m_ui)
+			return false;
+
+		if (evt.m_type == EVENT_TYPE_NONE)
 		{
-			return m_ui->dealEvent(param, evt);
-		}
-		else
-		{
+			m_ui->resetTargetView();
 			return false;
 		}
+
+		if ((m_renderLayout.contains(evt.m_posX, evt.m_posY)))
+		{
+			if (m_ui->dealEvent(param, evt))
+				return true;
+		}
+		m_ui->resetTargetView();
+
+		return false;
 	}
 
 	void UIPass::shutdownUIRenderBackend()
