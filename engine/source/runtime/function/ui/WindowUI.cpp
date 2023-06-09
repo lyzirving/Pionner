@@ -41,6 +41,21 @@ namespace Pionner
 		return m_viewMap.find(view->getUid()) != m_viewMap.end();
 	}
 
+	bool WindowUI::dealEvent(RenderParam &param, const Event &evt)
+	{
+		sortView();
+		bool consume{ false };
+		for (size_t i = 0; i < m_viewArray.size(); i++)
+		{
+			if (m_viewArray[i].second)
+				m_viewArray[i].second->dealEvent(param, evt);
+
+			if (consume)
+				return true;
+		}
+		return false;
+	}
+
 	void WindowUI::layout()
 	{
 		sortView();

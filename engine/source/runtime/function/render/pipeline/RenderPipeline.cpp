@@ -56,7 +56,7 @@ namespace Pionner
 
 		if (scene)
 		{
-			ViewLayout port = m_uiPass->getRenderportLayout();
+			ViewLayout port = m_uiPass->getRenderViewport();
 			m_rhi->viewportSub(port.m_left, port.m_top, port.m_width, port.m_height);
 			scene->forwardRender(param);
 		}
@@ -84,21 +84,11 @@ namespace Pionner
 			windowSystem->setSizeChange(false);
 		}
 
-		if ((evtMgr = windowSystem->getEvtMgr()))
+		if (m_uiPass && (evtMgr = windowSystem->getEvtMgr()))
 		{
 			Event evt = evtMgr->processEvent();
-			dealEvent(param, evt);
+			// TODO: add a hit target
+			m_uiPass->dealEvent(param, evt);
 		}
-	}
-
-	bool RenderPipeline::dealEvent(RenderParam &param, const Event &evt)
-	{
-		bool consume{ false };
-		switch (evt.m_type)
-		{
-			default:
-				break;
-		}
-		return consume;
 	}
 }

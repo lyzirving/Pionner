@@ -9,6 +9,7 @@ namespace Pionner
 {
 	struct RenderParam;
 	class  WindowUI;
+	class  Event;
 
 	class WindowView
 	{
@@ -19,6 +20,7 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) = 0;
 		virtual void layout(int32_t windowWidth, int32_t windowHeight) = 0;
+		virtual bool processEvent(RenderParam &param, const Event &evt);
 
 		inline void setDrawOrder(uint8_t order) { m_drawOrder = order; }
 		inline void setUid(uint8_t uid) { m_uid = uid; }
@@ -27,6 +29,8 @@ namespace Pionner
 		inline uint8_t getDrawOrder() const { return m_drawOrder; }
 		inline uint8_t getUid() const { return m_uid; }
 		inline ViewLayout getLayout() const { return m_layout; }
+
+		bool dealEvent(RenderParam &param, const Event &evt);
 
 	protected:
 		ViewLayout                m_layout;

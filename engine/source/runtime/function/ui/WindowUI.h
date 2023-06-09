@@ -9,10 +9,12 @@
 
 namespace Pionner
 {
-	class WindowSystem;
-	class RenderSystem;
-	class WindowView;
-	class RenderParam;
+	struct RenderParam;
+	class  WindowSystem;
+	class  RenderSystem;
+	class  WindowView;
+	class  RenderParam;
+	class  Event;
 
 	struct WindowUIInitInfo
 	{
@@ -28,6 +30,7 @@ namespace Pionner
 
 		virtual void initialize(WindowUIInitInfo &info) = 0;
 		virtual void draw(RenderParam &param) = 0;
+		virtual bool dealEvent(RenderParam &param, const Event &evt);
 
 		void addView(const std::shared_ptr<WindowView> &view);
 		bool contain(const std::shared_ptr<WindowView> &view);

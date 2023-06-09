@@ -76,6 +76,7 @@ namespace Pionner
 		glm::vec3 stdPos = camera->getCamPos();
 		stdPos = glm::normalize(stdPos);
 		camera->setPosition(stdPos);
+		frustum->setFov(frustum->fov() + 10.f);
 
 		m_coordinateAxis->draw(param);
 
@@ -112,4 +113,25 @@ namespace Pionner
 		m_renderport.m_left = m_layout.m_left;
 		m_renderport.m_top = windowHeight - m_layout.m_top - m_renderport.m_height;
 	}
+
+	bool VisualAngleView::processEvent(RenderParam &param, const Event &evt)
+	{
+		switch (evt.m_type)
+		{
+			case EVENT_TYPE_PRESSED_MOVING:
+			{
+				LOG_DEBUG("pressed moving");
+				return true;
+			}
+			case EVENT_TYPE_PRESSED_MOVING_FINISH:
+			{
+				LOG_DEBUG("pressed moving finished");
+				return true;
+			}
+			default:
+				break;
+		}
+		return false;
+	}
+
 }

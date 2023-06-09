@@ -18,6 +18,7 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) override;
 		virtual void layout(int32_t windowWidth, int32_t windowHeight) override;
+		virtual bool processEvent(RenderParam &param, const Event &evt) override;
 
 	private:
 		std::shared_ptr<CoordinateAxis> m_coordinateAxis;

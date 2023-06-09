@@ -51,14 +51,15 @@ namespace Pionner
 			{
 				// finish press and move, no event will generate
 				m_pressAndMoving = false;
+				evt.m_type = EVENT_TYPE_PRESSED_MOVING_FINISH;
 			}
 			else
 			{
 				//LOG_DEBUG("click event, cur position[%lf, %lf]", m_cursorPosX, m_cursorPosY);
 				evt.m_type = EVENT_TYPE_CLICK;
-				evt.m_posX = m_cursorPosX;
-				evt.m_posY = m_cursorPosY;
 			}
+			evt.m_posX = m_cursorPosX;
+			evt.m_posY = m_cursorPosY;
 		}
 		return evt;
 	}

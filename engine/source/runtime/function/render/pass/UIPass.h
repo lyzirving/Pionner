@@ -6,6 +6,8 @@
 
 namespace Pionner
 {
+	class Event;
+
 	class UIPass : public RenderPassBase
 	{
 	public:
@@ -16,15 +18,22 @@ namespace Pionner
 		virtual void shutdown() override;
 		virtual void draw(RenderParam &param) override;
 
-		ViewLayout getRenderportLayout();
+		inline ViewLayout getRenderLayout() { return m_renderLayout; }
+		inline ViewLayout getRenderViewport() { return m_renderViewport; }
+
 		void initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui);
+		bool dealEvent(RenderParam &param, const Event &evt);
 		void shutdownUIRenderBackend();
 
 		void resize(int width, int height);
 
 	private:
+		void calcLayout();
+
+	private:
 		std::shared_ptr<WindowUI> m_ui;
 		int32_t m_windowWidth, m_windowHeight;
+		ViewLayout m_renderLayout, m_renderViewport;
 	};
 }
 
