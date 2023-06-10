@@ -154,37 +154,19 @@ namespace Pionner
 
 	void Camera::checkCamPos()
 	{
+		if (m_theta > 179.f)
+		{
+			float exceed = m_theta - 179;
+			m_theta = 178;
+			m_phi += exceed;
+		}
+		else if (m_theta < 1.f)
+		{
+			float exceed = 1.f - m_theta;
+			m_theta = 1.f;
+			m_phi += exceed;
+		}
 		checkCamPosPhi();
-
-		float absTheta = std::abs(m_theta);
-		bool odd = (((int)absTheta / 180) % 2) != 0;
-
-		if (m_theta > 180.f)
-		{
-			if (odd)
-			{
-				m_theta = 180.f - ((int)absTheta % 180);
-				m_phi += 180.f;
-				checkCamPosPhi();
-			}
-			else
-			{
-				m_theta = (float)((int)absTheta % 180);
-			}
-		}
-		else if (m_theta < 0.f)
-		{
-			if (odd)
-			{
-				m_theta = 180.f - ((int)(absTheta) % 180);
-			}
-			else
-			{
-				m_theta = (float)((int)(absTheta) % 180);
-				m_phi += 180.f;
-				checkCamPosPhi();
-			}
-		}
 
 		calcCameraPosition();
 		keepViewDirToOrigin();
