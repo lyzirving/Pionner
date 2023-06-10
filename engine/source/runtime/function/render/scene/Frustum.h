@@ -10,7 +10,7 @@ namespace Pionner
 	class Frustum
 	{
 	public:
-		Frustum(float fov = 60.f, float aspect = 1.f, float near = 0.1f, float far = 10.f);
+		Frustum(float fov = 60.f, float aspect = 1.f, float near = 0.1f, float far = 30.f);
 		~Frustum();
 
 		const glm::mat4 &getPerspectMat();

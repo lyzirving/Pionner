@@ -34,10 +34,16 @@ namespace Pionner
 		std::shared_ptr<World> world = param.world;
 		std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
 
+		Blend blend = Blend::disable();
+		param.rhi->setBlendMode(blend);
+
 		world->iterate([&](decs::EntityID id, RenderComp &comp)
 		{
 			drawCmd->drawEntity(comp.m_entity, param);
 		});
+
+		blend = Blend::common();
+		param.rhi->setBlendMode(blend);
 
 		m_grid->initialize(param);
 		m_grid->draw(param);

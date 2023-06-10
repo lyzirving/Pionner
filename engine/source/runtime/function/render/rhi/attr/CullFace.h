@@ -23,6 +23,13 @@ namespace Pionner
 		{
 		};
 
+		static CullFace disable()
+		{
+			CullFace cull;
+			cull.m_enbale = false;
+			return cull;
+		}
+
 		static CullFace common()
 		{
 			CullFace cull;

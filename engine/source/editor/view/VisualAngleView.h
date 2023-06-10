@@ -23,6 +23,8 @@ namespace Pionner
 		virtual void resetMotion() override;
 
 	private:
+		static const float CAM_SCROLL_SCALE;
+
 		std::shared_ptr<CoordinateAxis> m_coordinateAxis;
 		std::shared_ptr<Sphere>         m_sphere;
 		ViewLayout                      m_renderport;

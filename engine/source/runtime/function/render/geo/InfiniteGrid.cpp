@@ -37,8 +37,12 @@ namespace Pionner
 	{
 		if (m_mesh && m_mesh->m_initialized)
 		{
+			CullFace cull = CullFace::disable();
+			param.rhi->setCullMode(cull);
 			std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
 			drawCmd->drawInfiniteGrid(m_mesh, param);
+			cull = CullFace::common();
+			param.rhi->setCullMode(cull);
 		}
 	}
 

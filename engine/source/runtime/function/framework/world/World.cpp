@@ -47,7 +47,7 @@ namespace Pionner
 
 		lightComp.m_entity = Loader::load("assets/objects/basic/bulb/bulb.obj");
 		lightComp.m_entity->m_transComp.translate(lightPos.x, lightPos.y, lightPos.z);
-		lightComp.m_entity->m_transComp.rotate(-90.f, 1.f, 0.f, 0.f);
+		lightComp.m_entity->m_transComp.rotate(180.f, 1.f, 0.f, 0.f);
 	}
 
 	void World::shutdown()

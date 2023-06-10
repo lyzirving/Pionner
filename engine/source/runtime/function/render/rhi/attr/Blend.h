@@ -34,6 +34,13 @@ namespace Pionner
 
 		~Blend() = default;
 
+		static Blend disable()
+		{
+			Blend blend;
+			blend.m_enable = false;
+			return blend;
+		}
+
 		static Blend common()
 		{
 			Blend blend;

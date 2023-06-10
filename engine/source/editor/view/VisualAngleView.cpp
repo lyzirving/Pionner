@@ -17,6 +17,7 @@
 #include "function/render/resource/ResourceDef.h"
 
 #include "core/log/LogSystem.h"
+#include "core/math/MathLib.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -25,6 +26,8 @@
 
 namespace Pionner
 {
+	const float VisualAngleView::CAM_SCROLL_SCALE = 5.f;
+
 	VisualAngleView::VisualAngleView() : WindowView(ORDER_VIEW_1)
 		, m_coordinateAxis(new CoordinateAxis("coordinate axis"))
 		, m_sphere(new Sphere(50, 50, "background sphere"))
@@ -121,16 +124,27 @@ namespace Pionner
 		{
 			case EVENT_TYPE_PRESSED_MOVING:
 			{
-				LOG_DEBUG("pressed moving[%lf, %lf]", evt.m_posX, evt.m_posY);
+				if (!MathLib::equalF(m_lastCursorPos.x, INVALID_CURSOR_POS) && !MathLib::equalF(m_lastCursorPos.y, INVALID_CURSOR_POS))
+				{
+					glm::vec2 delta{ evt.m_posX, evt.m_posY };
+					delta -= m_lastCursorPos;
+					auto  camera = param.sceneMgr->m_camera;
+					camera->dealScrollPosition(delta.x, delta.y);
+				}
 				m_lastCursorPos.x = evt.m_posX;
 				m_lastCursorPos.y = evt.m_posY;
 				return true;
 			}
 			case EVENT_TYPE_PRESSED_MOVING_FINISH:
 			{
-				LOG_DEBUG("pressed moving finished");
 				m_lastCursorPos.x = INVALID_CURSOR_POS;
 				m_lastCursorPos.y = INVALID_CURSOR_POS;
+				return true;
+			}
+			case EVENT_TYPE_SCROLLING:
+			{
+				auto  camera = param.sceneMgr->m_camera;
+				camera->dealScrollPosition(evt.m_scrollDeltaX * CAM_SCROLL_SCALE, evt.m_scrollDeltaY * CAM_SCROLL_SCALE);
 				return true;
 			}
 			default:
@@ -141,7 +155,6 @@ namespace Pionner
 
 	void VisualAngleView::resetMotion()
 	{
-		LOG_DEBUG("reset");
 		m_lastCursorPos.x = INVALID_CURSOR_POS;
 		m_lastCursorPos.y = INVALID_CURSOR_POS;
 	}

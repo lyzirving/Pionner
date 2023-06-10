@@ -2,6 +2,13 @@
 
 #include "function/ui/WindowUI.h"
 
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "WindowUI"
+
 namespace Pionner
 {
 	WindowUI::WindowUI() : m_viewMap(), m_viewArray(), m_target(nullptr)

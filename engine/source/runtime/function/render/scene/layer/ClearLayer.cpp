@@ -27,15 +27,11 @@ namespace Pionner
 		clear.m_clearColor = true;
 		clear.m_clearDepth = true;
 
-		CullFace cullFace;
-		cullFace.m_enbale = true;
-		cullFace.m_faceDir = COUNTER_CLOCK_WISE;
-		cullFace.m_mode = CULL_BACK;
-
 		DepthTest depth;
 		depth.m_enbale = true;
 
 		Blend blend = Blend::common();
+		CullFace cullFace = CullFace::common();
 
 		rhi->setClearMode(clear);
 		rhi->setCullMode(cullFace);

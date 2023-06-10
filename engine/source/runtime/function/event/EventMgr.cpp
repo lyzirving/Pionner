@@ -36,6 +36,8 @@ namespace Pionner
 			evt.m_type = EVENT_TYPE_SCROLLING;
 			evt.m_scrollDeltaX = m_curScrollDeltaX;
 			evt.m_scrollDeltaY = m_curScrollDeltaY;
+			evt.m_posX = m_cursorPosX;
+			evt.m_posY = m_cursorPosY;
 		}
 		else if (m_curEvt.m_action == ACTION_BTN_DOWN && m_pressAndMoving)
 		{

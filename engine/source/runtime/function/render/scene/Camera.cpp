@@ -53,7 +53,13 @@ namespace Pionner
 
 	void Camera::dealScrollPosition(float deltaX, float deltaY)
 	{
-		//LOG_DEBUG("delta[%f, %f]", deltaX, deltaY);
+		if (MathLib::nearZeroF(deltaX) && MathLib::nearZeroF(deltaY))
+			return;
+		glm::vec2 scroll{ -deltaX, -deltaY };
+		m_theta += scroll.y;
+		m_phi += scroll.x;
+		checkCamPos();
+		m_dataChange.store(true);
 	}
 
 	void Camera::setPosition(float theta, float phi, float r)
