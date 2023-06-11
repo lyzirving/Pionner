@@ -17,11 +17,13 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) override;
 		virtual void initialize(RenderParam &param) override;
-		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) override;
 
 		inline float getRadius() const { return m_radius; }
 
 		void setRadius(float radius);
+
+	protected:
+		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) override;
 
 	private:
 		void buildData(std::vector<Vertex> &vertexArray, std::vector<uint32_t> &indiceArray);

@@ -3,7 +3,13 @@
 #include "RenderEntity.h"
 
 #include "function/global/GlobalContext.h"
+
+#include "function/framework/load/Loader.h"
+
 #include "function/render/RenderSystem.h"
+
+#include "function/render/rhi/Rhi.h"
+
 
 namespace Pionner
 {
@@ -63,7 +69,7 @@ namespace Pionner
 
 	RenderEntity::RenderEntity()
 		: m_name()
-		, m_type(ENTITY_NONE)
+		, m_type(ENTITY_TYPE_NONE)
 		, m_order(ORDER_LOWEST)
 		, m_entityId(g_entityId++)
 		, m_transComp()
@@ -89,5 +95,19 @@ namespace Pionner
 			itr1 = m_parts.erase(itr1);
 		}
 		m_parent.reset();
+	}
+
+	void RenderEntity::draw(RenderParam &param)
+	{
+		auto rhi = param.rhi;
+		auto cmd = rhi->getDrawCmd();
+
+		Blend blend = Blend::disable();
+		rhi->setBlendMode(blend);
+
+		cmd->drawEntity(*this, param);
+
+		blend = Blend::common();
+		param.rhi->setBlendMode(blend);
 	}
 }

@@ -30,12 +30,12 @@ namespace Pionner
 
 	Loader::~Loader() = default;
 
-	std::shared_ptr<RenderEntity> Loader::load(const std::string &path)
+	bool Loader::load(const std::string &path, std::shared_ptr<RenderEntity> &root)
 	{
-		std::shared_ptr<RenderEntity> entity{ nullptr };
+		bool success{ false };
 
 		if (path.empty())
-			return entity;
+			return success;
 
 		int dot = std::string::npos;
 		std::string fmt;
@@ -44,25 +44,25 @@ namespace Pionner
 		if (dot == std::string::npos)
 		{
 			LOG_ERR("invalid path[%s]", path.c_str());
-			return entity;
+			return success;
 		}
+
 		fmt = path.substr(dot + 1);
 
 		if (std::strcmp(fmt.c_str(), "obj") == 0)
 		{
-			entity = parseObj(path);
+			success = parseObj(path, root);
 		}
 		else
 		{
 			LOG_FATAL("unknown format[%s]", fmt.c_str());
 		}
-		return entity;
+
+		return success;
 	}
 
-	std::shared_ptr<RenderEntity> Loader::parseObj(const std::string &path)
+	bool Loader::parseObj(const std::string &path, std::shared_ptr<RenderEntity> &root)
 	{
-		std::shared_ptr<RenderEntity> root{ nullptr };
-
 		int lastBackslash = path.find_last_of('/');
 		int lastDot = path.find_last_of('.');
 
@@ -74,22 +74,17 @@ namespace Pionner
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			LOG_ERR("fail to load obj from [%s], reason[%s]", path.c_str(), importer.GetErrorString());
-			return root;
+			return false;
 		}
-
-		root = std::shared_ptr<RenderEntity>(new RenderEntity);
 		root->m_name = name;
-		root->m_type = ENTITY_MODEL;
 
 		processNode(scene->mRootNode, scene, rootDir, root);
 
 		LOG_DEBUG("finish loading obj[%s]", path.c_str());
-
-		return root;
+		return true;
 	}
 
-	void Loader::processNode(aiNode *node, const aiScene *scene, const std::string &rootDir,
-							 std::shared_ptr<RenderEntity> &entity)
+	void Loader::processNode(aiNode *node, const aiScene *scene, const std::string &rootDir, std::shared_ptr<RenderEntity> &entity)
 	{
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
@@ -103,8 +98,7 @@ namespace Pionner
 		// process the children for current node
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			std::shared_ptr<RenderEntity> child = std::shared_ptr<RenderEntity>(new RenderEntity);
-			child->m_type = entity->m_type;
+			auto child = entity->makeEmptyEntity();
 			child->m_parent = entity;
 			child->m_name = node->mChildren[i]->mName.C_Str();
 			entity->m_children.push_back(child);

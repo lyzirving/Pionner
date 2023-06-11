@@ -21,7 +21,6 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) = 0;
 		virtual void initialize(RenderParam &param) = 0;
-		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) = 0;
 		virtual bool isInitialized();
 
 		inline const std::string &name() { return m_name; }
@@ -36,6 +35,9 @@ namespace Pionner
 
 		template<class T>
 		T *as();
+
+	protected:
+		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) = 0;
 
 	protected:
 		GeometryType m_type;

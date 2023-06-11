@@ -1,6 +1,6 @@
 #include <glm/gtx/transform.hpp>
 
-#include "function/framework/comp/TransformComp.h"
+#include "TransformComp.h"
 
 namespace Pionner
 {

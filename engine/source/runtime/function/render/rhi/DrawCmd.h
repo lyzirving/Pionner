@@ -16,7 +16,7 @@ namespace Pionner
 		DrawCmd() {};
 		virtual ~DrawCmd() = default;
 
-		virtual void drawEntity(std::shared_ptr<RenderEntity> &entity, RenderParam &param) = 0;
+		virtual void drawEntity(RenderEntity &entity, RenderParam &param) = 0;
 		virtual void drawGeometry(Geometry &geometry, RenderParam &param) = 0;
 	};
 }

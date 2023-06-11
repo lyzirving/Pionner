@@ -1,4 +1,4 @@
-#include "function/framework/comp/MeshComp.h"
+#include "MeshComp.h"
 
 #include "function/global/GlobalContext.h"
 

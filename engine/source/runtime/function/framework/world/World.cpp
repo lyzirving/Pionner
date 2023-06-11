@@ -7,6 +7,9 @@
 
 #include "function/framework/world/light/PointLight.h"
 
+#include "function/render/entity/ModelEntity.h"
+#include "function/render/entity/LightEntity.h"
+
 #include "core/log/LogSystem.h"
 
 using namespace decs;
@@ -36,7 +39,8 @@ namespace Pionner
 		// insert default entity
 		std::shared_ptr<Entity> roleEntity = createEntity<RenderComp>();
 		auto &roleComp = roleEntity->getComp<RenderComp>();
-		roleComp.m_entity = Loader::load("assets/objects/basic/Marry/Marry.obj");
+		roleComp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
+		Loader::load("assets/objects/basic/Marry/Marry.obj", roleComp.m_entity);
 
 		glm::vec3 lightPos{ 0.f, 3.5f, 4.f };
 		std::shared_ptr<Entity> lightEntity = createEntity<LightComp>(ENTITY_POINT_LIGHT);
@@ -44,8 +48,8 @@ namespace Pionner
 
 		lightComp.m_light = Light::createLight(POINT_LIGHT);
 		lightComp.m_light->setPosition(lightPos);
-
-		lightComp.m_entity = Loader::load("assets/objects/basic/bulb/bulb.obj");
+		lightComp.m_entity = std::shared_ptr<RenderEntity>(new LightEntity);
+		Loader::load("assets/objects/basic/bulb/bulb.obj", lightComp.m_entity);
 		lightComp.m_entity->m_transComp.translate(lightPos.x, lightPos.y, lightPos.z);
 		lightComp.m_entity->m_transComp.rotate(180.f, 1.f, 0.f, 0.f);
 	}

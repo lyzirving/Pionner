@@ -15,12 +15,12 @@ namespace Pionner
 	class Loader
 	{
 	public:
-		static std::shared_ptr<RenderEntity> load(const std::string &path);
+		static bool load(const std::string &path, std::shared_ptr<RenderEntity> &root);
 
 	private:
-		static std::shared_ptr<RenderEntity> parseObj(const std::string &path);
-		static void processNode(aiNode *node, const aiScene *scene, const std::string &rootDir,
-								std::shared_ptr<RenderEntity> &entity);
+		static bool parseObj(const std::string &path, std::shared_ptr<RenderEntity> &root);
+		static void processNode(aiNode *node, const aiScene *scene, const std::string &rootDir, std::shared_ptr<RenderEntity> &entity);
+
 		static void processMesh(int meshIndex, aiMesh *mesh, const aiScene *scene,
 								const std::string &rootDir, std::shared_ptr<RenderEntity> &entity);
 

@@ -15,6 +15,8 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) override;
 		virtual void initialize(RenderParam &param) override;
+
+	protected:
 		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) override;
 
 	protected:

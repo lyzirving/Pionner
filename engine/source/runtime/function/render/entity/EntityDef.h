@@ -7,8 +7,9 @@ namespace Pionner
 {
 	enum EntityType : uint8_t
 	{
-		ENTITY_NONE,
-		ENTITY_MODEL,
+		ENTITY_TYPE_NONE,
+		ENTITY_TYPE_MODEL,
+		ENTITY_TYPE_LIGHT,
 		ENTITY_TYPE_COUNT
 	};
 

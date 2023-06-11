@@ -15,7 +15,10 @@
 
 namespace Pionner
 {
-	class RenderEntity;
+	class  GfxBuffer;
+	class  Shader;
+	class  RenderEntity;
+	struct RenderParam;
 
 	class EntityPart
 	{
@@ -30,7 +33,6 @@ namespace Pionner
 		glm::mat4 getTransform();
 
 	public:
-
 		uint32_t                      m_partIndex;
 		int32_t                       m_vertexSlot;
 		int32_t                       m_indicesSlot;
@@ -46,8 +48,13 @@ namespace Pionner
 		RenderEntity();
 		~RenderEntity();
 
-	public:
+		virtual void draw(RenderParam &param);
+		virtual bool dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
+								/*out*/std::shared_ptr<Shader> &shader,
+								/*out*/std::shared_ptr<GfxBuffer> &texture) = 0;
+		virtual std::shared_ptr<RenderEntity> makeEmptyEntity() = 0;
 
+	public:
 		std::string   m_name;
 		EntityType    m_type;
 		DrawOrder     m_order;

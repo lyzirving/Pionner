@@ -1,4 +1,4 @@
-#include "function/framework/comp/LightComp.h"
+#include "LightComp.h"
 
 namespace Pionner
 {

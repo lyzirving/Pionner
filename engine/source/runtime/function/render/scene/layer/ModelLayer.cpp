@@ -13,6 +13,7 @@
 #include "function/framework/world/World.h"
 
 #include "function/framework/comp/RenderComp.h"
+#include "function/framework/comp/LightComp.h"
 
 #include "function/render/RenderDef.h"
 
@@ -32,18 +33,16 @@ namespace Pionner
 	void ModelLayer::draw(RenderParam &param)
 	{
 		std::shared_ptr<World> world = param.world;
-		std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
-
-		Blend blend = Blend::disable();
-		param.rhi->setBlendMode(blend);
 
 		world->iterate([&](decs::EntityID id, RenderComp &comp)
 		{
-			drawCmd->drawEntity(comp.m_entity, param);
+			if (comp.m_entity) comp.m_entity->draw(param);
 		});
 
-		blend = Blend::common();
-		param.rhi->setBlendMode(blend);
+		world->iterate([&](decs::EntityID id, LightComp &comp)
+		{
+			if (comp.m_entity) comp.m_entity->draw(param);
+		});
 
 		m_grid->draw(param);
 	}

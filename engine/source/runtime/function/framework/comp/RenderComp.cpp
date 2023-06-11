@@ -1,4 +1,3 @@
-#include "function/framework/comp/RenderComp.h"
 #include "RenderComp.h"
 
 namespace Pionner
