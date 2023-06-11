@@ -4,11 +4,11 @@
 #include <memory>
 #include <mutex>
 #include "function/render/shader/ShaderDef.h"
+#include "function/render/shader/Shader.h"
 
 namespace Pionner
 {
 	class Rhi;
-	class Shader;
 
 	class ShaderMgr
 	{

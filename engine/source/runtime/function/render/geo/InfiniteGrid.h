@@ -19,6 +19,7 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) override;
 		virtual void initialize(RenderParam &param) override;
+		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) override;
 
 	private:
 		static void buildGridData(std::vector<Vertex> &vertexArray,

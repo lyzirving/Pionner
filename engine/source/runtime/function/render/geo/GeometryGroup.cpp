@@ -30,6 +30,11 @@ namespace Pionner
 	{
 	}
 
+	bool GeometryGroup::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader)
+	{
+		return false;
+	}
+
 	template<>
 	bool Geometry::is<GeometryGroup>()
 	{

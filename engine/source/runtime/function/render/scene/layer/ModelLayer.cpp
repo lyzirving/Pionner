@@ -45,7 +45,6 @@ namespace Pionner
 		blend = Blend::common();
 		param.rhi->setBlendMode(blend);
 
-		m_grid->initialize(param);
 		m_grid->draw(param);
 	}
 }

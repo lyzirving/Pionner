@@ -11,6 +11,7 @@ namespace Pionner
 	struct RenderParam;
 	class  MeshComp;
 	class  TransformComp;
+	class  Shader;
 
 	class Geometry
 	{
@@ -20,6 +21,7 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) = 0;
 		virtual void initialize(RenderParam &param) = 0;
+		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) = 0;
 		virtual bool isInitialized();
 
 		inline const std::string &name() { return m_name; }

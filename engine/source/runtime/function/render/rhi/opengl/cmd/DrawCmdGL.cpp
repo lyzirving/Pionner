@@ -57,65 +57,12 @@ namespace Pionner
 		}
 	}
 
-	void DrawCmdGL::drawInfiniteGrid(std::shared_ptr<MeshComp> &mesh, RenderParam &param)
-	{
-		if (!mesh || !mesh->m_initialized || mesh->m_vBufSlot < 0 || mesh->m_indBufSlot < 0)
-		{
-			return;
-		}
-		auto resource = param.resource;
-		auto vertexBuf = resource->find(DATA_VERTEX, mesh->m_vBufSlot);
-		auto indiceBuf = resource->find(DATA_INDICE, mesh->m_indBufSlot);
-
-		if (!vertexBuf || !indiceBuf)
-		{
-			LOG_ERR("buffer is invalid");
-			return;
-		}
-
-		auto shader = param.shaderMgr->get(SHADER_TYPE_INFINITE_GRID, param.rhi);
-
-		if (!shader)
-		{
-			LOG_ERR("shader is invalid");
-			return;
-		}
-
-		shader->use(true);
-
-		shader->setVec4("u_lineColor", mesh->m_color);
-		shader->setMat4("u_modelMat", mesh->m_mat);
-		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
-		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
-
-		vertexBuf->upload();
-		indiceBuf->upload();
-
-		vertexBuf->bind();
-		indiceBuf->bind();
-
-		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::checkGLErr("err happens when drawing grid");
-
-		vertexBuf->unbind();
-		indiceBuf->unbind();
-
-		shader->use(false);
-	}
-
-	void DrawCmdGL::drawColorGeometry(Geometry &geometry, RenderParam &param)
+	void DrawCmdGL::drawGeometry(Geometry &geometry, RenderParam &param)
 	{
 		auto meshComp = geometry.getMeshComp();
 		if (!meshComp || !meshComp->m_initialized || meshComp->m_vBufSlot < 0 || meshComp->m_indBufSlot < 0)
 		{
 			LOG_ERR("mesh comp is invalid");
-			return;
-		}
-
-		auto transComp = geometry.getTransformComp();
-		if (!transComp)
-		{
-			LOG_ERR("trans comp is invalid");
 			return;
 		}
 
@@ -129,21 +76,6 @@ namespace Pionner
 			return;
 		}
 
-		auto shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY, param.rhi);
-
-		if (!shader)
-		{
-			LOG_ERR("shader is invalid");
-			return;
-		}
-
-		shader->use(true);
-
-		shader->setVec4("u_color", meshComp->m_color);
-		shader->setMat4("u_modelMat", transComp->getMat());
-		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
-		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
-
 		vertexBuf->upload();
 		indiceBuf->upload();
 
@@ -155,8 +87,6 @@ namespace Pionner
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();
-
-		shader->use(false);
 	}
 
 	void DrawCmdGL::drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param)

@@ -6,9 +6,9 @@
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
 
+#include "function/render/shader/ShaderMgr.h"
+
 #include "function/render/scene/SceneMgr.h"
-#include "function/render/scene/Camera.h"
-#include "function/render/scene/Frustum.h"
 
 #include "function/render/RenderDef.h"
 #include "function/render/RenderSystem.h"
@@ -16,6 +16,13 @@
 #include "function/global/GlobalContext.h"
 
 #include "function/framework/comp/MeshComp.h"
+
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "InfiniteGrid"
 
 namespace Pionner
 {
@@ -35,15 +42,22 @@ namespace Pionner
 
 	void InfiniteGrid::draw(RenderParam &param)
 	{
-		if (m_mesh && m_mesh->m_initialized)
-		{
-			CullFace cull = CullFace::disable();
-			param.rhi->setCullMode(cull);
-			std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
-			drawCmd->drawInfiniteGrid(m_mesh, param);
-			cull = CullFace::common();
-			param.rhi->setCullMode(cull);
-		}
+		initialize(param);
+
+		std::shared_ptr<Shader> shader{ nullptr };
+		if (!dealShader(param, shader))
+			return;
+
+		CullFace cull = CullFace::disable();
+		param.rhi->setCullMode(cull);
+
+		std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
+		drawCmd->drawGeometry(*this, param);
+
+		cull = CullFace::common();
+		param.rhi->setCullMode(cull);
+
+		shader->use(false);
 	}
 
 	void InfiniteGrid::initialize(RenderParam &param)
@@ -56,6 +70,32 @@ namespace Pionner
 			m_mesh->initialize(m_vertexArray, m_indiceArray);
 			m_mesh->m_color = glm::vec4(0.29f, 0.29f, 0.29f, 1.f);
 		}
+	}
+
+	bool InfiniteGrid::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader)
+	{
+		if (!m_mesh)
+		{
+			LOG_ERR("components are invalid");
+			return false;
+		}
+
+		shader = param.shaderMgr->get(SHADER_TYPE_INFINITE_GRID, param.rhi);
+
+		if (!shader)
+		{
+			LOG_ERR("shader is invalid");
+			return false;
+		}
+
+		shader->use(true);
+
+		shader->setVec4("u_lineColor", m_mesh->m_color);
+		shader->setMat4("u_modelMat", m_mesh->m_mat);
+		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
+
+		return true;
 	}
 
 	void InfiniteGrid::buildGridData(std::vector<Vertex> &vertexArray, std::vector<uint32_t> &indiceArray)

@@ -13,6 +13,10 @@
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/DrawCmd.h"
 
+#include "function/render/shader/ShaderMgr.h"
+
+#include "function/render/scene/SceneMgr.h"
+
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -59,8 +63,14 @@ namespace Pionner
 
 		initialize(param);
 
+		std::shared_ptr<Shader> shader{ nullptr };
+		if (!dealShader(param, shader))
+			return;
+
 		auto cmd = param.rhi->getDrawCmd();
-		cmd->drawColorGeometry(*this, param);
+		cmd->drawGeometry(*this, param);
+
+		shader->use(false);
 	}
 
 	void Cylinder::initialize(RenderParam &param)
@@ -72,6 +82,32 @@ namespace Pionner
 			buildData(m_vertexArray, m_indiceArray);
 			m_mesh->initialize(m_vertexArray, m_indiceArray);
 		}
+	}
+
+	bool Cylinder::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader)
+	{
+		if (!m_mesh || !m_transform)
+		{
+			LOG_ERR("components are invalid");
+			return false;
+		}
+
+		shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY, param.rhi);
+
+		if (!shader)
+		{
+			LOG_ERR("fail to get color geometry shader");
+			return false;
+		}
+
+		shader->use(true);
+
+		shader->setVec4("u_color", m_mesh->m_color);
+		shader->setMat4("u_modelMat", m_transform->getMat());
+		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
+
+		return true;
 	}
 
 	bool Cylinder::isInitialized()
