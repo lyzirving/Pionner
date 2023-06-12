@@ -2,6 +2,7 @@
 
 #include "function/framework/comp/RenderComp.h"
 #include "function/framework/comp/LightComp.h"
+#include "function/framework/comp/OcclusionComp.h"
 
 #include "function/framework/load/Loader.h"
 
@@ -37,7 +38,7 @@ namespace Pionner
 	void World::build()
 	{
 		// insert default entity
-		std::shared_ptr<Entity> roleEntity = createEntity<RenderComp>();
+		std::shared_ptr<Entity> roleEntity = createEntity<RenderComp, OcclusionComp>();
 		auto &roleComp = roleEntity->getComp<RenderComp>();
 		roleComp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
 		Loader::load("assets/objects/basic/Marry/Marry.obj", roleComp.m_entity);

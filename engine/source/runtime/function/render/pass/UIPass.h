@@ -2,7 +2,7 @@
 #define __UI_PASS_H__
 
 #include "function/ui/WindowView.h"
-#include "function/render/pass/RenderPassBase.h"
+#include "RenderPassBase.h"
 
 namespace Pionner
 {

@@ -88,6 +88,22 @@ namespace Pionner
 		indiceBuf->unbind();
 	}
 
+	void DrawCmdGL::drawDepth(RenderEntity &entity, RenderParam &param)
+	{
+		for (auto &part : entity.m_parts)
+		{
+			drawPartDepth(part, param);
+		}
+
+		if (!entity.m_children.empty())
+		{
+			for (auto &child : entity.m_children)
+			{
+				drawDepth(*child, param);
+			}
+		}
+	}
+
 	void DrawCmdGL::drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param)
 	{
 		auto owner = part->m_owner;
@@ -134,5 +150,35 @@ namespace Pionner
 		if (texture) texture->unbind();
 
 		shader->use(false);
+	}
+
+	void DrawCmdGL::drawPartDepth(std::shared_ptr<EntityPart> &part, RenderParam &param)
+	{
+		if (!part->vetexSlotValid() || !part->indiceSlotValid())
+		{
+			return;
+		}
+
+		auto resource = param.resource;
+		auto vertexBuf = resource->find(DATA_VERTEX, part->m_vertexSlot);
+		auto indiceBuf = resource->find(DATA_INDICE, part->m_indicesSlot);
+
+		if (!vertexBuf || !indiceBuf)
+		{
+			LOG_ERR("buffer is invalid");
+			return;
+		}
+
+		vertexBuf->upload();
+		indiceBuf->upload();
+
+		vertexBuf->bind();
+		indiceBuf->bind();
+
+		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::checkGLErr("err happens when drawing part's depth");
+
+		vertexBuf->unbind();
+		indiceBuf->unbind();
 	}
 }

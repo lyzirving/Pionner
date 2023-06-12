@@ -18,6 +18,7 @@ namespace Pionner
 
 		virtual void drawEntity(RenderEntity &entity, RenderParam &param) = 0;
 		virtual void drawGeometry(Geometry &geometry, RenderParam &param) = 0;
+		virtual void drawDepth(RenderEntity &entity, RenderParam &param) = 0;
 	};
 }
 

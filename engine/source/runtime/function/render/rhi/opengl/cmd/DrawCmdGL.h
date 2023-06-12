@@ -16,9 +16,11 @@ namespace Pionner
 
 		virtual void drawEntity(RenderEntity &entity, RenderParam &param) override;
 		virtual void drawGeometry(Geometry &geometry, RenderParam &param) override;
+		virtual void drawDepth(RenderEntity &entity, RenderParam &param) override;
 
 	private:
 		void drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param);
+		void drawPartDepth(std::shared_ptr<EntityPart> &part, RenderParam &param);
 	};
 }
 

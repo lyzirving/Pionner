@@ -1,11 +1,12 @@
 #ifndef __RENDER_PIPELINE_H__
 #define __RENDER_PIPELINE_H__
 
-#include "function/render/pipeline/RenderPipelineBase.h"
+#include "RenderPipelineBase.h"
 
 namespace Pionner
 {
 	class Event;
+	class DepthPass;
 
 	class RenderPipeline : public RenderPipelineBase
 	{
@@ -19,6 +20,9 @@ namespace Pionner
 
 		virtual void forwardRender(RenderParam &param) override;
 		virtual void preparePassData(RenderParam &param) override;
+
+	private:
+		std::shared_ptr<DepthPass> m_depthPass;
 	};
 }
 

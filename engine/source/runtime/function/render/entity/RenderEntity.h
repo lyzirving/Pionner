@@ -46,7 +46,7 @@ namespace Pionner
 	{
 	public:
 		RenderEntity();
-		~RenderEntity();
+		virtual ~RenderEntity();
 
 		virtual void draw(RenderParam &param);
 		virtual bool dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,

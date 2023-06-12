@@ -17,7 +17,7 @@ namespace Pionner
 	{
 	public:
 		Geometry(const char *name);
-		~Geometry();
+		virtual ~Geometry();
 
 		virtual void draw(RenderParam &param) = 0;
 		virtual void initialize(RenderParam &param) = 0;
