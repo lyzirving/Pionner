@@ -69,6 +69,7 @@ namespace Pionner
 		m_rhi->viewportSub(port.m_left, port.m_top, port.m_width, port.m_height);
 
 		m_depthPass->draw(param);
+
 		param.sceneMgr->m_scene->forwardRender(param);
 
 		// move viewport to full screen

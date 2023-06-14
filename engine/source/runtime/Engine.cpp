@@ -63,7 +63,7 @@ namespace Pionner
 
 	void Engine::tickLogic(float deltaTime)
 	{
-
+		g_runtimeCtx.m_renderSystem->swapData(deltaTime);
 	}
 
 	void Engine::tickRender(float deltaTime)

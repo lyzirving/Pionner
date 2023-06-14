@@ -15,7 +15,7 @@ namespace Pionner
 {
 	LightEntity::LightEntity()
 	{
-		m_type = ENTITY_TYPE_LIGHT;
+		m_type = RENDER_ENTITY_TYPE_LIGHT;
 	}
 
 	LightEntity::~LightEntity() = default;

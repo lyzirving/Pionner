@@ -55,11 +55,11 @@ namespace Pionner
 		virtual std::shared_ptr<RenderEntity> makeEmptyEntity() = 0;
 
 	public:
-		std::string   m_name;
-		EntityType    m_type;
-		DrawOrder     m_order;
-		uint32_t      m_entityId;
-		TransformComp m_transComp;
+		std::string      m_name;
+		RenderEntityType m_type;
+		DrawOrder        m_order;
+		uint32_t         m_entityId;
+		TransformComp    m_transComp;
 		std::shared_ptr<RenderEntity>              m_parent;
 		std::vector<std::shared_ptr<EntityPart>>   m_parts;
 		std::vector<std::shared_ptr<RenderEntity>> m_children;

@@ -2,6 +2,7 @@
 #include "function/render/WindowSystem.h"
 
 #include "function/framework/world/World.h"
+#include "function/framework/comp/LightComp.h"
 
 #include "function/render/rhi/opengl/RhiGL.h"
 #include "function/render/pipeline/RenderPipeline.h"
@@ -9,10 +10,6 @@
 #include "function/render/resource/RenderResourceMgr.h"
 
 #include "function/render/scene/SceneMgr.h"
-
-#include "function/render/scene/RenderScene.h"
-#include "function/render/scene/Camera.h"
-#include "function/render/scene/Frustum.h"
 
 #include "function/ui/WindowUI.h"
 
@@ -84,6 +81,13 @@ namespace Pionner
 		{
 			m_resourceMgr->deleteResource(type, slot);
 		}
+	}
+
+	void RenderSystem::swapData(float deltaTime)
+	{
+		auto &lights = m_world->getEntities(ENTITY_LIGHT);
+		auto &lightComp = lights[0]->getComp<LightComp>();
+		m_sceneMgr->swap(lightComp);
 	}
 
 	void RenderSystem::shutdown()

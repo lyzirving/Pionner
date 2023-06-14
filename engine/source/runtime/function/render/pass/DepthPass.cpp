@@ -42,32 +42,5 @@ namespace Pionner
 		auto world = param.world;
 		auto cmd = param.rhi->getDrawCmd();
 		auto camera = param.sceneMgr->m_camera;
-
-		std::shared_ptr<Entity> light{ nullptr };
-
-		if (!(light = world->getEntity(World::ENTITY_POINT_LIGHT)) || !light->hasComp<LightComp>())
-		{
-			LOG_ERR("no light entity or comp");
-			return;
-		}
-
-		LightComp &lightComp = light->getComp<LightComp>();
-		if (!lightComp.m_light)
-		{
-			LOG_ERR("point light is invalid");
-			return;
-		}
-
-		camera->restoreState();
-		camera->setPosition(lightComp.m_light->position());
-
-		//TODO: 1.Frustum.ortho; 2.abstract FrameBuffer and depth texture.
-
-		world->iterate([&](decs::EntityID id, RenderComp &comp0, OcclusionComp &comp1)
-		{
-
-		});
-
-		camera->popState();
 	}
 }

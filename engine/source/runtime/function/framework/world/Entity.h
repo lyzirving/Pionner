@@ -11,6 +11,13 @@
 
 namespace Pionner
 {
+	enum EntityType : uint8_t
+	{
+		ENTITY_OBJ,
+		ENTITY_LIGHT,
+		ENTITY_TYPE_CNT
+	};
+
 	class Entity
 	{
 		friend class World;
@@ -37,6 +44,7 @@ namespace Pionner
 	public:
 		const std::string m_name;
 		decs::EntityID    m_id;
+		EntityType        m_type;
 
 	private:
 		std::shared_ptr<decs::ECSWorld> m_worldImpl;

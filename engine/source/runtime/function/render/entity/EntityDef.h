@@ -5,12 +5,11 @@
 
 namespace Pionner
 {
-	enum EntityType : uint8_t
+	enum RenderEntityType : uint8_t
 	{
-		ENTITY_TYPE_NONE,
-		ENTITY_TYPE_MODEL,
-		ENTITY_TYPE_LIGHT,
-		ENTITY_TYPE_COUNT
+		RENDER_ENTITY_TYPE_MODEL,
+		RENDER_ENTITY_TYPE_LIGHT,
+		RENDER_ENTITY_TYPE_COUNT
 	};
 
 	enum DrawOrder : uint8_t

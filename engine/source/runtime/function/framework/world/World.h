@@ -3,14 +3,13 @@
 
 #include <unordered_map>
 
-#include "function/framework/world/Entity.h"
+#include "Entity.h"
 
 namespace Pionner
 {
 	class World
 	{
 	public:
-		static const std::string ENTITY_POINT_LIGHT;
 
 	public:
 		World();
@@ -19,13 +18,13 @@ namespace Pionner
 		void build();
 		void shutdown();
 
-		std::shared_ptr<Entity> getEntity(const std::string &name);
+		inline std::vector<std::shared_ptr<Entity>> &getEntities(EntityType type) { return m_entities[type]; }
 
 		template <class ... CompTypes>
-		std::shared_ptr<Entity> createEntity();
+		std::shared_ptr<Entity> createEntity(EntityType type);
 
 		template <class ... CompTypes>
-		std::shared_ptr<Entity> createEntity(const std::string &name);
+		std::shared_ptr<Entity> createEntity(EntityType type, const std::string &name);
 
 		template<typename Func>
 		void iterate(Func &&function);
@@ -34,24 +33,26 @@ namespace Pionner
 		static uint32_t g_entityId;
 
 		std::shared_ptr<decs::ECSWorld>                          m_worldImpl;
-		std::unordered_map<std::string, std::shared_ptr<Entity>> m_entityMap;
+		std::vector<std::shared_ptr<Entity>>                     m_entities[ENTITY_TYPE_CNT];
 	};
 
 	template <class ... CompTypes>
-	std::shared_ptr<Entity> World::createEntity()
+	std::shared_ptr<Entity> World::createEntity(EntityType type)
 	{
 		std::shared_ptr<Entity> entity = std::shared_ptr<Entity>(new Entity(m_worldImpl, g_entityId++));
+		entity->m_type = type;
 		entity->m_id = m_worldImpl->new_entity<CompTypes...>();
-		m_entityMap.emplace(entity->m_name, entity);
+		m_entities[type].push_back(entity);
 		return entity;
 	}
 
 	template <class ... CompTypes>
-	std::shared_ptr<Entity> World::createEntity(const std::string &name)
+	std::shared_ptr<Entity> World::createEntity(EntityType type, const std::string &name)
 	{
 		std::shared_ptr<Entity> entity = std::shared_ptr<Entity>(new Entity(m_worldImpl, g_entityId++, name));
+		entity->m_type = type;
 		entity->m_id = m_worldImpl->new_entity<CompTypes...>();
-		m_entityMap.emplace(entity->m_name, entity);
+		m_entities[type].push_back(entity);
 		return entity;
 	}
 

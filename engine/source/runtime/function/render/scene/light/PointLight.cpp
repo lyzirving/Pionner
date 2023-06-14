@@ -1,4 +1,4 @@
-#include "function/framework/world/light/PointLight.h"
+#include "PointLight.h"
 #include "function/render/shader/Shader.h"
 
 namespace Pionner
@@ -6,13 +6,13 @@ namespace Pionner
 	PointLight::PointLight() : Light()
 		, m_attenParamConst(1.f), m_attenParamLinear(0.045f), m_attenParamQuad(0.0075f)
 	{
-		m_type = POINT_LIGHT;
+		m_type = LIGHT_TYPE_POINT;
 	}
 
 	PointLight::PointLight(const glm::vec3 &position) : Light()
 		, m_attenParamConst(1.f), m_attenParamLinear(0.045f), m_attenParamQuad(0.0075f)
 	{
-		m_type = POINT_LIGHT;
+		m_type = LIGHT_TYPE_POINT;
 		m_position = position;
 	}
 
@@ -53,6 +53,6 @@ namespace Pionner
 	template<>
 	bool Light::is<PointLight>() const
 	{
-		return m_type == POINT_LIGHT;
+		return m_type == LIGHT_TYPE_POINT;
 	}
 }

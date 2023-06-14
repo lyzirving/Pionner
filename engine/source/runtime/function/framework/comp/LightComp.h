@@ -1,10 +1,11 @@
 #ifndef __PIONNER_LIGHT_COMP_H__
 #define __PIONNER_LIGHT_COMP_H__
 
-#include "function/framework/comp/Comp.h"
-#include "function/framework/world/light/Light.h"
+#include <glm/glm.hpp>
 
-#include "function/render/entity/RenderEntity.h"
+#include "Comp.h"
+
+#include "function/render/scene/light/LightDef.h"
 
 namespace Pionner
 {
@@ -15,8 +16,24 @@ namespace Pionner
 		virtual ~LightComp();
 
 	public:
-		std::shared_ptr<Light>        m_light;
-		std::shared_ptr<RenderEntity> m_entity;
+		glm::vec3 m_pos, m_dir;
+		/**
+		 * @brief: m_ka, m_kd and m_ks are the color of ambient, diffuse and specular.
+		 *         They are RGB format, and range in [0, 1].
+		 */
+		glm::vec3 m_ka, m_kd, m_ks;
+		/**
+		 * @brief: m_ia, m_id and m_is are the intensity of ambient, diffuse and specular.
+		 *         Their value should be in the range of [0, 1].
+		 */
+		float m_ia, m_id, m_is;
+		/**
+		 * @brief: m_shininess is used to control the radius of specular.
+		 *         It is used as an exponent to calculate the power of dot(bisector, normal).
+		 */
+		float m_shininess;
+
+		LightType m_type;
 	};
 }
 

@@ -1,12 +1,10 @@
-#include "function/framework/world/World.h"
+#include "World.h"
 
 #include "function/framework/comp/RenderComp.h"
 #include "function/framework/comp/LightComp.h"
 #include "function/framework/comp/OcclusionComp.h"
 
 #include "function/framework/load/Loader.h"
-
-#include "function/framework/world/light/PointLight.h"
 
 #include "function/render/entity/ModelEntity.h"
 #include "function/render/entity/LightEntity.h"
@@ -23,9 +21,8 @@ using namespace decs;
 namespace Pionner
 {
 	uint32_t World::g_entityId = 0;
-	const std::string World::ENTITY_POINT_LIGHT = "PointLight";
 
-	World::World() : m_worldImpl(new decs::ECSWorld), m_entityMap()
+	World::World() : m_worldImpl(new decs::ECSWorld), m_entities()
 	{
 	}
 
@@ -38,46 +35,29 @@ namespace Pionner
 	void World::build()
 	{
 		// insert default entity
-		std::shared_ptr<Entity> roleEntity = createEntity<RenderComp, OcclusionComp>();
+		auto roleEntity = createEntity<RenderComp, OcclusionComp>(ENTITY_OBJ, "role");
 		auto &roleComp = roleEntity->getComp<RenderComp>();
 		roleComp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
 		Loader::load("assets/objects/basic/Marry/Marry.obj", roleComp.m_entity);
 
-		// TODO: LightComp only contains raw data. SceneMgr get these data in RenderPipeline.
-		glm::vec3 lightPos{ 0.f, 3.5f, 4.f };
-		std::shared_ptr<Entity> lightEntity = createEntity<LightComp>(ENTITY_POINT_LIGHT);
+		auto lightEntity = createEntity<LightComp>(ENTITY_LIGHT, "light");
 		auto &lightComp = lightEntity->getComp<LightComp>();
-
-		lightComp.m_light = Light::createLight(POINT_LIGHT);
-		lightComp.m_light->setPosition(lightPos);
-		lightComp.m_entity = std::shared_ptr<RenderEntity>(new LightEntity);
-		Loader::load("assets/objects/basic/bulb/bulb.obj", lightComp.m_entity);
-		lightComp.m_entity->m_transComp.translate(lightPos.x, lightPos.y, lightPos.z);
-		lightComp.m_entity->m_transComp.rotate(180.f, 1.f, 0.f, 0.f);
+		lightComp.m_type = LIGHT_TYPE_DIRECTIONAL;
+		// Note the directional light points at world center
+		lightComp.m_dir = (-1.f) * glm::vec3(-3.f, 5.f, 4.f);
 	}
 
 	void World::shutdown()
 	{
-		auto itr = m_entityMap.begin();
-		while (itr != m_entityMap.end())
+		for (uint8_t i = 0; i < ENTITY_TYPE_CNT; i++)
 		{
-			m_worldImpl->destroy(itr->second->m_id);
-			itr->second.reset();
-			itr = m_entityMap.erase(itr);
-		}
-	}
-
-	std::shared_ptr<Entity> World::getEntity(const std::string &name)
-	{
-		auto itr = m_entityMap.find(name);
-		if (itr != m_entityMap.end())
-		{
-			auto ret = itr->second;
-			return ret;
-		}
-		else
-		{
-			return std::shared_ptr<Entity>();
+			auto itr = m_entities[i].begin();
+			while (itr != m_entities[i].end())
+			{
+				m_worldImpl->destroy((*itr)->m_id);
+				(*itr).reset();
+				itr = m_entities[i].erase(itr);
+			}
 		}
 	}
 }

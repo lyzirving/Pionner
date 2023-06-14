@@ -1,7 +1,9 @@
-#include "function/render/scene/SceneMgr.h"
+#include "SceneMgr.h"
 
 #include "function/render/rhi/Rhi.h"
 #include "function/render/WindowSystem.h"
+
+#include "function/framework/comp/LightComp.h"
 
 namespace Pionner
 {
@@ -9,6 +11,8 @@ namespace Pionner
 		: m_scene(nullptr)
 		, m_camera(nullptr)
 		, m_frustum(nullptr)
+		, m_lights()
+		, m_lightInd(LIGHT_TYPE_DIRECTIONAL)
 	{
 	}
 
@@ -27,6 +31,19 @@ namespace Pionner
 		m_frustum->setAspect(aspect);
 	}
 
+	void SceneMgr::swap(const LightComp &comp)
+	{
+		m_lightInd = comp.m_type;
+		if (!m_lights[m_lightInd])
+			m_lights[m_lightInd] = Light::createLight(m_lightInd);
+
+		m_lights[m_lightInd]->setPosition(comp.m_pos);
+		m_lights[m_lightInd]->setDirection(comp.m_dir);
+		m_lights[m_lightInd]->setColor(comp.m_ka, comp.m_kd, comp.m_ks);
+		m_lights[m_lightInd]->setIntensity(comp.m_ia, comp.m_id, comp.m_is);
+		m_lights[m_lightInd]->setShininess(comp.m_shininess);
+	}
+
 	void SceneMgr::shutdown()
 	{
 		if (m_frustum)
@@ -43,6 +60,11 @@ namespace Pionner
 		{
 			m_scene->shutdown();
 			m_scene.reset();
+		}
+
+		for (size_t i = 0; i < LIGNT_TYPE_COUNT; i++)
+		{
+			m_lights[i].reset();
 		}
 	}
 

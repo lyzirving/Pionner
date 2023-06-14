@@ -69,7 +69,7 @@ namespace Pionner
 
 	RenderEntity::RenderEntity()
 		: m_name()
-		, m_type(ENTITY_TYPE_NONE)
+		, m_type(RENDER_ENTITY_TYPE_MODEL)
 		, m_order(ORDER_LOWEST)
 		, m_entityId(g_entityId++)
 		, m_transComp()

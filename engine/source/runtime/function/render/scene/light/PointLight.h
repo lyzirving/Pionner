@@ -1,7 +1,7 @@
 #ifndef __RENDER_POINT_LIGHT_H__
 #define __RENDER_POINT_LIGHT_H__
 
-#include "function/framework/world/light/Light.h"
+#include "Light.h"
 
 namespace Pionner
 {

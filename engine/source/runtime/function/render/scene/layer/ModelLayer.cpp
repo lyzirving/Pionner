@@ -41,7 +41,7 @@ namespace Pionner
 
 		world->iterate([&](decs::EntityID id, LightComp &comp)
 		{
-			if (comp.m_entity) comp.m_entity->draw(param);
+
 		});
 
 		m_grid->draw(param);

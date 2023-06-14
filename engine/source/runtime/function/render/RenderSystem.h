@@ -25,6 +25,7 @@ namespace Pionner
 
 		void deleteResource(DataType type, uint32_t slot);
 
+		void swapData(float deltaTime);
 		void shutdown();
 
 		virtual void tick(float deltaTime) override;

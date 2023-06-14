@@ -4,17 +4,11 @@
 #include <glm/glm.hpp>
 #include <memory>
 
+#include "LightDef.h"
+
 namespace Pionner
 {
 	class Shader;
-
-	enum LightType : uint8_t
-	{
-		LIGHT_TYPE_NONE,
-		DIRECTIONAL_LIGHT,
-		POINT_LIGHT,
-		LIGNT_TYPE_COUNT
-	};
 
 	class Light
 	{
@@ -25,8 +19,11 @@ namespace Pionner
 		static std::shared_ptr<Light> createLight(LightType type);
 
 		inline void setPosition(const glm::vec3 &pos) { m_position = pos; }
+		inline void setDirection(const glm::vec3 &dir) { m_direction = dir; }
+		inline void setShininess(float shininess) { m_shininess = shininess; }
 
 		inline const glm::vec3 &position() { return m_position; }
+		inline const glm::vec3 &direction() { return m_direction; }
 
 		inline const glm::vec3 &ambient() { return m_ka; }
 		inline const glm::vec3 &diffuse() { return m_kd; }
@@ -41,6 +38,9 @@ namespace Pionner
 		inline LightType type() { return m_type; }
 
 		virtual void dealShader(const std::shared_ptr<Shader> &shader) = 0;
+
+		void setColor(const glm::vec3 &ka, const glm::vec3 &kd, const glm::vec3 &ks);
+		void setIntensity(float ia, float id, float is);
 
 		template<class T>
 		bool is() const;

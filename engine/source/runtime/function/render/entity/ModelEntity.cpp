@@ -27,7 +27,7 @@ namespace Pionner
 {
 	ModelEntity::ModelEntity() : RenderEntity()
 	{
-		m_type = ENTITY_TYPE_MODEL;
+		m_type = RENDER_ENTITY_TYPE_MODEL;
 	}
 
 	ModelEntity::~ModelEntity() = default;
@@ -41,8 +41,6 @@ namespace Pionner
 								 /*out*/std::shared_ptr<Shader> &shader,
 								 /*out*/std::shared_ptr<GfxBuffer> &texture)
 	{
-		std::shared_ptr<Entity> lightEntity{ nullptr };
-
 		auto resource = param.resource;
 		auto world = param.world;
 		auto camera = param.sceneMgr->m_camera;
@@ -50,18 +48,6 @@ namespace Pionner
 
 		glm::mat4 modelMat = part->getTransform();
 		glm::mat4 normalMat = MathLib::normalMat(modelMat);
-
-		if (!(lightEntity = world->getEntity(World::ENTITY_POINT_LIGHT)) || !lightEntity->hasComp<LightComp>())
-		{
-			goto coloring_without_light;
-		}
-
-		LightComp &lightComp = lightEntity->getComp<LightComp>();
-
-		if (!lightComp.m_light)
-		{
-			goto coloring_without_light;
-		}
 
 	coloring_with_light:
 
@@ -72,8 +58,6 @@ namespace Pionner
 		}
 
 		shader->use(true);
-
-		lightComp.m_light->dealShader(shader);
 
 		shader->setVec3("u_viewPos", camera->getCamPos());
 
