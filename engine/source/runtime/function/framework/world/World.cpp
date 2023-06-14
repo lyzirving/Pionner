@@ -43,6 +43,7 @@ namespace Pionner
 		roleComp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
 		Loader::load("assets/objects/basic/Marry/Marry.obj", roleComp.m_entity);
 
+		// TODO: LightComp only contains raw data. SceneMgr get these data in RenderPipeline.
 		glm::vec3 lightPos{ 0.f, 3.5f, 4.f };
 		std::shared_ptr<Entity> lightEntity = createEntity<LightComp>(ENTITY_POINT_LIGHT);
 		auto &lightComp = lightEntity->getComp<LightComp>();

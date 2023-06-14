@@ -11,7 +11,7 @@ namespace Pionner
 	class WindowSystem;
 	class WindowUI;
 	class RenderPassBase;
-	class RenderPipelineBase;
+	class RenderPipeline;
 	class SceneMgr;
 	class RenderResourceMgr;
 	class ShaderMgr;

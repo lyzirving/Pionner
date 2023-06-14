@@ -22,13 +22,15 @@
 
 namespace Pionner
 {
-	RenderPipeline::RenderPipeline() : RenderPipelineBase(), m_depthPass(nullptr)
+	RenderPipeline::RenderPipeline() : m_rhi(nullptr), m_uiPass(nullptr), m_depthPass(nullptr)
 	{
 	}
 
 	RenderPipeline::~RenderPipeline()
 	{
 		m_depthPass.reset();
+		m_uiPass.reset();
+		m_rhi.reset();
 	}
 
 	void RenderPipeline::initialize(RenderPipelineInitInfo &info)
@@ -44,9 +46,14 @@ namespace Pionner
 		m_depthPass->initialize(passInitInfo);
 	}
 
+	void RenderPipeline::initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui)
+	{
+		if (m_uiPass) m_uiPass->initializeUIRenderBackend(ui);
+	}
+
 	void RenderPipeline::shutdownUIRenderBackend()
 	{
-		m_uiPass->shutdownUIRenderBackend();
+		if (m_uiPass) m_uiPass->shutdownUIRenderBackend();
 	}
 
 	void RenderPipeline::shutdown()

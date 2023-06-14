@@ -44,7 +44,7 @@ namespace Pionner
 		m_rhi = std::shared_ptr<Rhi>(new RhiGL);
 		m_rhi->initialize(&rhiInfo);
 
-		m_pipeLine = std::shared_ptr<RenderPipelineBase>(new RenderPipeline);
+		m_pipeLine = std::make_shared<RenderPipeline>();
 		m_pipeLine->m_rhi = m_rhi;
 		RenderPipelineInitInfo pipelineInfo;
 		pipelineInfo.window = info.window;

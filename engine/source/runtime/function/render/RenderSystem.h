@@ -31,7 +31,7 @@ namespace Pionner
 
 	private:
 		std::shared_ptr<Rhi>                m_rhi;
-		std::shared_ptr<RenderPipelineBase> m_pipeLine;
+		std::shared_ptr<RenderPipeline>     m_pipeLine;
 		std::shared_ptr<SceneMgr>           m_sceneMgr;
 		std::shared_ptr<ShaderMgr>          m_shaderMgr;
 		std::shared_ptr<RenderResourceMgr>  m_resourceMgr;
