@@ -24,7 +24,7 @@ namespace Pionner
 								 /*out*/std::shared_ptr<Shader> &shader,
 								 /*out*/std::shared_ptr<GfxBuffer> &texture)
 	{
-		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHT_CASTER, param.rhi)))
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_MESH, param.rhi)))
 		{
 			return false;
 		}

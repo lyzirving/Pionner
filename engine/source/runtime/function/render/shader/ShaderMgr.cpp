@@ -29,42 +29,42 @@ namespace Pionner
 			{
 				switch (type)
 				{
-					case Pionner::SHADER_TYPE_LIGHTED_MESH:
+					case SHADER_TYPE_MESH:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "mesh", "mesh", "mesh");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
+					case SHADER_TYPE_LIGHTED_MESH:
 					{
 						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "lighted_mesh", "lighted_mesh", "lighted_mesh");
 						m_shaders[type]->init();
 						ret = m_shaders[type];
 						break;
 					}
-					case Pionner::SHADER_TYPE_LIGHT_CASTER:
-					{
-						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "light_caster", "light_caster", "light_caster");
-						m_shaders[type]->init();
-						ret = m_shaders[type];
-						break;
-					}
-					case Pionner::SHADER_TYPE_INFINITE_GRID:
+					case SHADER_TYPE_INFINITE_GRID:
 					{
 						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "infinite_grid", "infinite_grid", "infinite_grid");
 						m_shaders[type]->init();
 						ret = m_shaders[type];
 						break;
 					}
-					case Pionner::SHADER_TYPE_CIRCLE:
+					case SHADER_TYPE_CIRCLE:
 					{
 						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "2d_circle", "2d_circle", "2d_circle");
 						m_shaders[type]->init();
 						ret = m_shaders[type];
 						break;
 					}
-					case Pionner::SHADER_TYPE_COLOR_GEOMETRY:
+					case SHADER_TYPE_COLOR_GEOMETRY:
 					{
 						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "color_geometry", "color_geometry", "color_geometry");
 						m_shaders[type]->init();
 						ret = m_shaders[type];
 						break;
 					}
-					case Pionner::SHADER_TYPE_CNT:
+					case SHADER_TYPE_CNT:
 					default:
 					{
 						LOG_ERR("shader type[%u] is not implemented", type);

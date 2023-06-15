@@ -12,7 +12,7 @@ namespace Pionner
 		, m_camera(nullptr)
 		, m_frustum(nullptr)
 		, m_lights()
-		, m_lightInd(LIGHT_TYPE_DIRECTIONAL)
+		, m_curLight(LIGHT_TYPE_DIRECTIONAL)
 	{
 	}
 
@@ -33,15 +33,15 @@ namespace Pionner
 
 	void SceneMgr::swap(const LightComp &comp)
 	{
-		m_lightInd = comp.m_type;
-		if (!m_lights[m_lightInd])
-			m_lights[m_lightInd] = Light::createLight(m_lightInd);
+		m_curLight = comp.m_type;
+		if (!m_lights[m_curLight])
+			m_lights[m_curLight] = Light::createLight(m_curLight);
 
-		m_lights[m_lightInd]->setPosition(comp.m_pos);
-		m_lights[m_lightInd]->setDirection(comp.m_dir);
-		m_lights[m_lightInd]->setColor(comp.m_ka, comp.m_kd, comp.m_ks);
-		m_lights[m_lightInd]->setIntensity(comp.m_ia, comp.m_id, comp.m_is);
-		m_lights[m_lightInd]->setShininess(comp.m_shininess);
+		m_lights[m_curLight]->setPosition(comp.m_pos);
+		m_lights[m_curLight]->setDirection(comp.m_dir);
+		m_lights[m_curLight]->setColor(comp.m_ka, comp.m_kd, comp.m_ks);
+		m_lights[m_curLight]->setIntensity(comp.m_ia, comp.m_id, comp.m_is);
+		m_lights[m_curLight]->setShininess(comp.m_shininess);
 	}
 
 	void SceneMgr::shutdown()

@@ -3,8 +3,19 @@
 
 precision highp float;
 
+const int LIGHT_TYPE_DIRECTIONAL = 0;
+const int LIGHT_TYPE_POINT       = 1;
+
+const int TEX_TYPE_DIFFUSE  = 1;
+const int TEX_TYPE_SPECULAR = 2;
+
+const int NO_TEXTURE = 0;
+
+const int COLOR_MODE_DIFFUSE = 2;
+const int COLOR_MODE_ALL     = 3;
+
 struct Light {
-    int   type; // 1 for directional light, 2 for point light
+    int   type; // 0 for directional light, 1 for point light
     vec3  pos;  // light's position in world coordinate system
     vec3  direction;
     vec3  ka, kd, ks; // color of ambient, diffuse, specular
@@ -14,7 +25,7 @@ struct Light {
 };
 
 struct Material {
-    int  shadingModel; // 1 for constant color, 2 for ambient + diffuse, 3 for ambient + diffuse + specular
+    int  colorMode;    // mode3 = ambient + diffuse + specular
     int  texType;      // 1 for diffuse, 2 for specular
     int  hasTexture;   // 0 for no texture, otherwise this mesh has one texture
     vec3 ka, kd, ks;
@@ -42,6 +53,8 @@ float computeAttenuation(Light light, float dist);
 
 vec4  materialColor(Material material, vec2 texCoord);
 vec4  lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir);
+vec4  directionalLight(Light light, vec4 objColor, vec3 normal, vec3 viewDir, int colorMode);
+vec4  pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode);
 
 void main() {
     vec3 fragPos = vec3(u_modelMat * vec4(v_pos, 1.f));
@@ -68,9 +81,9 @@ float computeAttenuation(Light light, float dist)
 vec4 materialColor(Material material, vec2 texCoord)
 {
     vec4 color;
-    bool hasTexture = material.hasTexture != 0;
+    bool hasTexture = material.hasTexture != NO_TEXTURE;
 
-    if(material.texType == 1)
+    if(material.texType == TEX_TYPE_DIFFUSE)
     {
         color = hasTexture ? texture(material.diffuseTexture, texCoord) : vec4(material.kd, 1.f);
     }
@@ -84,54 +97,73 @@ vec4 materialColor(Material material, vec2 texCoord)
 
 vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir)
 {
-    vec4 surface;
-
-    vec4 la = vec4(light.ka * light.ia, 1.f); // light's ambient 
-    vec4 ld = vec4(light.kd * light.id, 1.f); // light's diffuse
-    vec4 ls = vec4(light.ks * light.is, 1.f); // light's specular
+    vec4 surface = vec4(0.f);
 
     vec4 objColor = materialColor(material, texCoord);
 
-    vec3 lightDir;
-
-    if(light.type == 1) // directional light
+    if(light.type == LIGHT_TYPE_DIRECTIONAL)
     {
-        lightDir = normalize(light.direction);
+        surface = directionalLight(light, objColor, normal, viewDir, material.colorMode);
     } 
-    else if(light.type == 2) // point light
+    else if(light.type == LIGHT_TYPE_POINT)
     {
-        lightDir = normalize(light.pos - pos);
-        float dist = length(light.pos - pos);
-        float fade = computeAttenuation(light, dist);
-
-        if(material.shadingModel == 1) // constant color model
-        {
-            surface = ld * objColor * fade;
-        }
-        else if(material.shadingModel == 2) // diffuse model
-        {
-            vec4 ambient = la * objColor * fade;
-
-            float diff = max(dot(normal, lightDir), 0.f);
-            vec4 diffuse = ld * diff * objColor * fade;
-
-            surface = ambient + diffuse;
-        }
-        else if(material.shadingModel == 3) // mixed model
-        {
-            vec4 ambient = la * objColor * fade;
-
-            float diff = max(dot(normal, lightDir), 0.f);
-            vec4 diffuse = ld * diff * objColor * fade;
-
-            // blinn-phong mode
-            vec3 halfwayDir = normalize(lightDir + viewDir);
-            float specFactor = pow(max(dot(halfwayDir, normal), 0.f), light.shininess);
-            vec4 specular = ls * specFactor * objColor * fade;
-
-            surface = ambient + diffuse + specular;
-        }
+        surface = pointLight(light, objColor, pos, normal, viewDir, material.colorMode);
     }
 
     return surface;
+}
+
+vec4 directionalLight(Light light, vec4 objColor, vec3 normal, vec3 viewDir, int colorMode)
+{
+    vec4 la = vec4(light.ka * light.ia, 1.f); // light's ambient 
+    vec4 ld = vec4(light.kd * light.id, 1.f); // light's diffuse
+
+    vec3  lightDir = -normalize(light.direction);
+    float diff = max(dot(normal, lightDir), 0.f);
+
+    vec4 ambient = la * objColor;
+    vec4 diffuse = ld * diff * objColor;
+
+    vec4 color = ambient + diffuse;
+
+    if(colorMode == COLOR_MODE_ALL) {
+        vec4 ls = vec4(light.ks * light.is, 1.f); // light's specular
+        // blinn-phong mode
+        vec3  halfwayDir = normalize(lightDir + viewDir);
+        float specFactor = pow(max(dot(halfwayDir, normal), 0.f), light.shininess);
+        vec4  specular = ls * specFactor * objColor;
+
+        color += specular;
+    }
+
+    return color;
+}
+
+vec4 pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode)
+{
+    vec4 la = vec4(light.ka * light.ia, 1.f); // light's ambient 
+    vec4 ld = vec4(light.kd * light.id, 1.f); // light's diffuse
+
+    vec3 lightDir = normalize(light.pos - pos);
+    float dist = length(light.pos - pos);
+    float fade = computeAttenuation(light, dist);
+
+    float diff = max(dot(normal, lightDir), 0.f);
+    
+    vec4 ambient = la * objColor * fade;
+    vec4 diffuse = ld * diff * objColor * fade;
+
+    vec4 color = ambient + diffuse;
+
+    if(colorMode == COLOR_MODE_ALL) {
+        vec4 ls = vec4(light.ks * light.is, 1.f); // light's specular
+        // blinn-phong mode
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        float specFactor = pow(max(dot(halfwayDir, normal), 0.f), light.shininess);
+        vec4 specular = ls * specFactor * objColor * fade;
+
+        color += specular;
+    }
+
+    return color;
 }

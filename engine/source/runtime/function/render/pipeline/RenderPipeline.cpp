@@ -97,10 +97,12 @@ namespace Pionner
 			windowSystem->setSizeChange(false);
 		}
 
+		// deal motion event
 		if (m_uiPass && (evtMgr = windowSystem->getEvtMgr()))
 		{
 			Event evt = evtMgr->processEvent();
 			m_uiPass->dealEvent(param, evt);
 		}
+
 	}
 }

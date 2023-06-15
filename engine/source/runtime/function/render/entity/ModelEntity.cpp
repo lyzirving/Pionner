@@ -1,9 +1,5 @@
 #include "ModelEntity.h"
 
-#include "function/framework/world/World.h"
-
-#include "function/framework/comp/LightComp.h"
-
 #include "function/render/RenderDef.h"
 
 #include "function/render/rhi/Rhi.h"
@@ -42,16 +38,18 @@ namespace Pionner
 								 /*out*/std::shared_ptr<GfxBuffer> &texture)
 	{
 		auto resource = param.resource;
-		auto world = param.world;
-		auto camera = param.sceneMgr->m_camera;
-		auto frustum = param.sceneMgr->m_frustum;
+		auto sceneMgr = param.sceneMgr;
+
+		auto camera = sceneMgr->m_camera;
+		auto frustum = sceneMgr->m_frustum;
+		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
 
 		glm::mat4 modelMat = part->getTransform();
-		glm::mat4 normalMat = MathLib::normalMat(modelMat);
+		bool lightExist = (light != nullptr);
 
-	coloring_with_light:
+		ShaderType shaderType = lightExist ? SHADER_TYPE_LIGHTED_MESH : SHADER_TYPE_MESH;
 
-		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHTED_MESH, param.rhi)))
+		if (!(shader = param.shaderMgr->get(shaderType, param.rhi)))
 		{
 			LOG_ERR("fail to get lighted-mesh shader");
 			return false;
@@ -59,14 +57,18 @@ namespace Pionner
 
 		shader->use(true);
 
-		shader->setVec3("u_viewPos", camera->getCamPos());
+		if (lightExist)
+		{
+			light->dealShader(shader);
+			shader->setVec3("u_viewPos", camera->getCamPos());
+			shader->setMat4("u_normalMat", MathLib::normalMat(modelMat));
+		}
 
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", camera->getViewMat());
 		shader->setMat4("u_prjMat", frustum->getPerspectMat());
-		shader->setMat4("u_normalMat", normalMat);
 
-		shader->setInt("u_material.shadingModel", part->m_material.m_mode);
+		shader->setInt("u_material.colorMode", part->m_material.m_mode);
 		shader->setInt("u_material.texType", part->m_material.m_type);
 
 		if (part->m_material.slotValid() && (texture = resource->find(DATA_TEXTURE, part->m_material.m_slot)))
@@ -88,9 +90,5 @@ namespace Pionner
 		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
 
 		return true;
-
-	coloring_without_light:
-
-		return false;
 	}
 }

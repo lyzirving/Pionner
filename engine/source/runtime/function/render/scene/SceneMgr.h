@@ -37,7 +37,7 @@ namespace Pionner
 		std::shared_ptr<Camera>      m_camera;
 		std::shared_ptr<Frustum>     m_frustum;
 		std::shared_ptr<Light>       m_lights[LIGNT_TYPE_COUNT];
-		LightType                    m_lightInd;
+		LightType                    m_curLight;
 	};
 }
 
