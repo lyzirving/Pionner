@@ -3,7 +3,7 @@
 
 precision highp float;
 
-const vec2  GRID_SQUARE = vec2(0.5f, 0.5f);
+const vec2  GRID_SQUARE = vec2(1.f, 1.f);
 const float LINE_WIDTH = 0.03f;
 
 uniform mat4 u_modelMat;
