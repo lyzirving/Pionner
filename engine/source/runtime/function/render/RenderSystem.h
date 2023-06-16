@@ -23,7 +23,7 @@ namespace Pionner
 		void initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui);
 		void shutdownUIRenderBackend();
 
-		void deleteResource(DataType type, uint32_t slot);
+		void notifyRelease(DataType type, uint32_t slot);
 
 		void swapData(float deltaTime);
 		void shutdown();

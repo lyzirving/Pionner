@@ -1,4 +1,5 @@
-#include "function/render/rhi/opengl/buffer/GLVertexBuffer.h"
+#include "GLVertexBuffer.h"
+
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/RhiHeader.h"
 

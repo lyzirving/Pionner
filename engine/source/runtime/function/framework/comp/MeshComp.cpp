@@ -23,8 +23,8 @@ namespace Pionner
 		if (m_initialized)
 		{
 			auto resourceMgr = g_runtimeCtx.m_renderSystem->getResourceMgr();
-			if (m_vBufSlot >= 0) resourceMgr->deleteResource(BUF_MEM_ARRAY, m_vBufSlot);
-			if (m_indBufSlot >= 0) resourceMgr->deleteResource(BUF_EBO, m_indBufSlot);
+			if (m_vBufSlot >= 0) resourceMgr->notifyRelease(BUF_MEM_ARRAY, m_vBufSlot);
+			if (m_indBufSlot >= 0) resourceMgr->notifyRelease(BUF_EBO, m_indBufSlot);
 			m_vBufSlot = -1;
 			m_indBufSlot = -1;
 			m_initialized = false;

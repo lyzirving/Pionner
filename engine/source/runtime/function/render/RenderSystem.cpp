@@ -75,11 +75,11 @@ namespace Pionner
 		}
 	}
 
-	void RenderSystem::deleteResource(DataType type, uint32_t slot)
+	void RenderSystem::notifyRelease(DataType type, uint32_t slot)
 	{
 		if (m_resourceMgr)
 		{
-			m_resourceMgr->deleteResource(type, slot);
+			m_resourceMgr->notifyRelease(type, slot);
 		}
 	}
 

@@ -62,7 +62,7 @@ namespace Pionner
 		m_textureArray.checkAbandoned();
 	}
 
-	void RenderResourceMgr::deleteResource(DataType type, uint32_t slot)
+	void RenderResourceMgr::notifyRelease(DataType type, uint32_t slot)
 	{
 		switch (type)
 		{
@@ -81,7 +81,7 @@ namespace Pionner
 		}
 	}
 
-	void RenderResourceMgr::deleteResource(BufferType type, uint32_t slot)
+	void RenderResourceMgr::notifyRelease(BufferType type, uint32_t slot)
 	{
 		switch (type)
 		{

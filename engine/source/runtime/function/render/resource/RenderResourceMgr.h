@@ -24,10 +24,12 @@ namespace Pionner
 
 		Buffer allocate(BufferType type);
 		void checkAbandoned();
-		void deleteResource(DataType type, uint32_t slot);
-		void deleteResource(BufferType type, uint32_t slot);
 		Buffer find(DataType type, uint32_t slot);
 		void makeSelfWeak(const std::shared_ptr<RenderResourceMgr> &self);
+
+		void notifyRelease(DataType type, uint32_t slot);
+		void notifyRelease(BufferType type, uint32_t slot);
+
 		void shutdown();
 
 	private:

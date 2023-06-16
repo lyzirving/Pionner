@@ -29,6 +29,17 @@ namespace Pionner
 		glm::vec3 normal;
 		glm::vec2 texCoord;
 	};
+
+	enum ATTACHMENT : uint8_t
+	{
+		COLOR_ATTACH_0,
+		COLOR_ATTACH_1,
+		COLOR_ATTACH_2,
+		COLOR_ATTACH_3,
+		COLOR_ATTACH_4,
+		DEPTH_ATTACH,
+		ATTACHMENT_COUNT
+	};
 }
 
 #endif
