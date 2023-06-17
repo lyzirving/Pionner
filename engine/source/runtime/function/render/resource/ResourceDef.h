@@ -2,32 +2,23 @@
 #define __RESOURCE_DEF_H__
 
 #include <cstdint>
+#include <memory>
+
 #include <glm/glm.hpp>
 
 namespace Pionner
 {
+	class GfxBuffer;
+	class GfxFrameBuffer;
+
 	enum BufferType : uint8_t
 	{
-		BUF_MEM_ARRAY,
-		BUF_VBO,
-		BUF_EBO,
+		BUF_VERTEX,
+		BUF_INDICE,
 		BUF_TEXTURE,
+		BUF_DEPTH_FRAMEBUFFER,
+		BUF_COLOR_FRAMEBUFFER,
 		BUF_CNT
-	};
-
-	enum DataType : uint8_t
-	{
-		DATA_VERTEX,
-		DATA_INDICE,
-		DATA_TEXTURE,
-		DATA_TYPE_COUNT
-	};
-
-	struct Vertex
-	{
-		glm::vec3 pos;
-		glm::vec3 normal;
-		glm::vec2 texCoord;
 	};
 
 	enum ATTACHMENT : uint8_t
@@ -39,6 +30,13 @@ namespace Pionner
 		COLOR_ATTACH_4,
 		DEPTH_ATTACH,
 		ATTACHMENT_COUNT
+	};
+
+	struct Vertex
+	{
+		glm::vec3 pos;
+		glm::vec3 normal;
+		glm::vec2 texCoord;
 	};
 }
 

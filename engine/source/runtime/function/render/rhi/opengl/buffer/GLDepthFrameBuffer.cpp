@@ -15,16 +15,16 @@ namespace Pionner
 	GLDepthFrameBuffer::GLDepthFrameBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
 		: GfxFrameBuffer(mgr)
 	{
+		m_bufferType = BUF_DEPTH_FRAMEBUFFER;
 	}
 
 	GLDepthFrameBuffer::GLDepthFrameBuffer(uint32_t width, uint32_t height, const std::shared_ptr<RenderResourceMgr> &mgr)
 		: GfxFrameBuffer(width, height, mgr)
 	{
+		m_bufferType = BUF_DEPTH_FRAMEBUFFER;
 	}
 
-	GLDepthFrameBuffer::~GLDepthFrameBuffer()
-	{
-	}
+	GLDepthFrameBuffer::~GLDepthFrameBuffer() = default;
 
 	void GLDepthFrameBuffer::upload()
 	{
@@ -46,20 +46,82 @@ namespace Pionner
 		if (!isCreated())
 		{
 			glGenFramebuffers(1, &m_id);
+			glGenTextures(1, &m_attachIds[DEPTH_ATTACH]);
+
+			glBindTexture(GL_TEXTURE_2D, m_attachIds[DEPTH_ATTACH]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_width, m_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+			float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+			glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_attachIds[DEPTH_ATTACH], 0);
+			glDrawBuffer(GL_NONE);
+			glReadBuffer(GL_NONE);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 
-		m_uploaded = true;
+		m_uploaded = GLHelper::checkGLErr("fail to build depth framebuffer");
 	}
 
 	void GLDepthFrameBuffer::bind()
 	{
+		if (isAbandonded())
+		{
+			LOG_ERR("depth fbo is already abandoned");
+			return;
+		}
+
+		if (!isUpload())
+		{
+			upload();
+		}
+
+		if (isUpload())
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+		}
 	}
 
 	void GLDepthFrameBuffer::unbind()
 	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	void GLDepthFrameBuffer::deleteResource()
 	{
+		if (m_attachIds[DEPTH_ATTACH] != 0)
+		{
+			glDeleteTextures(1, &m_attachIds[DEPTH_ATTACH]);
+			m_attachIds[DEPTH_ATTACH] = 0;
+		}
+
+		if (m_id != 0)
+		{
+			glDeleteFramebuffers(1, &m_id);
+			m_id = 0;
+		}
+	}
+
+	template<>
+	bool GfxBuffer::is<GLDepthFrameBuffer>() const
+	{
+		return getBufferType() == BUF_DEPTH_FRAMEBUFFER;
+	}
+
+	template<>
+	GLDepthFrameBuffer *GfxBuffer::getPtr<GLDepthFrameBuffer>()
+	{
+		if (is<GLDepthFrameBuffer>())
+		{
+			GLDepthFrameBuffer *ret = dynamic_cast<GLDepthFrameBuffer *>(this);
+			return ret;
+		}
+		return nullptr;
 	}
 }

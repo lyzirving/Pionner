@@ -2,7 +2,7 @@
 #include <cstring>
 #include <cstdarg>
 
-#include "function/render/rhi/opengl/GLHelper.h"
+#include "GLHelper.h"
 #include "function/render/rhi/RhiHeader.h"
 
 #include "core/log/LogSystem.h"

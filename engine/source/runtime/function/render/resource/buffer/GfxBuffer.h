@@ -8,6 +8,8 @@
 namespace Pionner
 {
 	class Rhi;
+	template <class T>
+	class BufferArray;
 	class RenderResourceMgr;
 
 	class GfxBuffer
@@ -29,7 +31,6 @@ namespace Pionner
 		inline uint32_t getId() const { return m_id; }
 		inline uint32_t getSlot() const { return m_slot; }
 		inline BufferType getBufferType() const { return m_bufferType; }
-		inline DataType getDataType() const { return m_dataType; }
 		inline bool isUpload() const { return m_uploaded; }
 
 		void notifyRelease();
@@ -49,6 +50,9 @@ namespace Pionner
 	protected:
 		friend class RenderResourceMgr;
 
+		template <class T>
+		friend class BufferArray;
+
 		inline bool isAbandonded() { return m_abandoned; }
 		inline bool isCreated() { return m_id > 0; }
 
@@ -56,7 +60,6 @@ namespace Pionner
 		uint32_t   m_id;
 		uint32_t   m_slot;
 		BufferType m_bufferType;
-		DataType   m_dataType;
 		bool       m_uploaded;
 		bool       m_abandoned;
 	};

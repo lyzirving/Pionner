@@ -12,13 +12,14 @@ namespace Pionner
 {
 	Pionner::GfxBuffer::GfxBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
 		: m_mgr(mgr), m_id(0), m_slot(0)
-		, m_bufferType(BUF_CNT), m_dataType(DATA_TYPE_COUNT)
+		, m_bufferType(BUF_CNT)
 		, m_uploaded(false), m_abandoned(false)
 	{
 	}
 
 	GfxBuffer::~GfxBuffer()
 	{
+		notifyRelease();
 		m_mgr.reset();
 	}
 

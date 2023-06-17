@@ -18,6 +18,12 @@ namespace Pionner
 		virtual void unbind() override;
 		virtual void deleteResource() override;
 	};
+
+	template<>
+	bool GfxBuffer::is<GLDepthFrameBuffer>() const;
+
+	template<>
+	GLDepthFrameBuffer *GfxBuffer::getPtr<GLDepthFrameBuffer>();
 }
 
 #endif

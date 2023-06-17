@@ -17,13 +17,10 @@ namespace Pionner
 	GLIndexBuffer::GLIndexBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
 		: GfxBuffer(mgr)
 	{
-		m_bufferType = BUF_EBO;
-		m_dataType = DATA_INDICE;
+		m_bufferType = BUF_INDICE;
 	}
 
-	GLIndexBuffer::~GLIndexBuffer()
-	{
-	}
+	GLIndexBuffer::~GLIndexBuffer() = default;
 
 	void GLIndexBuffer::upload()
 	{
@@ -47,7 +44,8 @@ namespace Pionner
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), &m_indices[0], GL_STATIC_DRAW);
-		m_uploaded = true;
+
+		m_uploaded = GLHelper::checkGLErr("fail to build indices buffer");
 	}
 
 	void GLIndexBuffer::bind()
@@ -87,7 +85,7 @@ namespace Pionner
 	template<>
 	bool GfxBuffer::is<GLIndexBuffer>() const
 	{
-		return getDataType() == DATA_INDICE;
+		return getBufferType() == BUF_INDICE;
 	}
 
 	template<>

@@ -3,8 +3,6 @@
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/RhiHeader.h"
 
-#include "function/render/rhi/opengl/GLHelper.h"
-
 #include "function/render/resource/RenderResourceMgr.h"
 
 #include "core/log/LogSystem.h"	
@@ -19,13 +17,10 @@ namespace Pionner
 	GLVertexBuffer::GLVertexBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
 		: GfxBuffer(mgr), m_vertex(), m_vao(0)
 	{
-		m_bufferType = BUF_MEM_ARRAY;
-		m_dataType = DATA_VERTEX;
+		m_bufferType = BUF_VERTEX;
 	}
 
-	GLVertexBuffer::~GLVertexBuffer()
-	{
-	}
+	GLVertexBuffer::~GLVertexBuffer() = default;
 
 	void GLVertexBuffer::upload()
 	{
@@ -70,7 +65,7 @@ namespace Pionner
 		// step 3: unbind vao
 		glBindVertexArray(0);
 
-		m_uploaded = true;
+		m_uploaded = GLHelper::checkGLErr("fail to build vertex buffer");
 	}
 
 	void GLVertexBuffer::bind()
@@ -112,7 +107,7 @@ namespace Pionner
 	template<>
 	bool GfxBuffer::is<GLVertexBuffer>() const
 	{
-		return getDataType() == DATA_VERTEX;
+		return getBufferType() == BUF_VERTEX;
 	}
 
 	template<>

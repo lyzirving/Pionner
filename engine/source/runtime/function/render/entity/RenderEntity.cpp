@@ -34,15 +34,15 @@ namespace Pionner
 
 		if (vetexSlotValid())
 		{
-			g_runtimeCtx.m_renderSystem->notifyRelease(DATA_VERTEX, m_vertexSlot);
+			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_VERTEX, m_vertexSlot);
 		}
 		if (indiceSlotValid())
 		{
-			g_runtimeCtx.m_renderSystem->notifyRelease(DATA_INDICE, m_indicesSlot);
+			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_INDICE, m_indicesSlot);
 		}
 		if (m_material.slotValid())
 		{
-			g_runtimeCtx.m_renderSystem->notifyRelease(DATA_TEXTURE, m_material.m_slot);
+			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_slot);
 		}
 		m_owner.reset();
 	}

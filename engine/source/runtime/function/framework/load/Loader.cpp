@@ -118,8 +118,8 @@ namespace Pionner
 		part->m_owner = entity;
 
 		std::shared_ptr<RenderResourceMgr> resource = g_runtimeCtx.m_renderSystem->getResourceMgr();
-		vBuffer = resource->allocate(BUF_MEM_ARRAY);
-		indBuffer = resource->allocate(BUF_EBO);
+		vBuffer = resource->allocate(BUF_VERTEX);
+		indBuffer = resource->allocate(BUF_INDICE);
 
 		part->m_partIndex = meshIndex;
 		part->m_vertexSlot = vBuffer->getSlot();

@@ -1,7 +1,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "function/render/rhi/opengl/shader/ShaderRhiGL.h"
-#include "function/render/rhi/opengl/GLHelper.h"
 #include "function/render/rhi/RhiHeader.h"
 
 #include "core/log/LogSystem.h"

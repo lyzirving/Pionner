@@ -75,7 +75,7 @@ namespace Pionner
 		}
 	}
 
-	void RenderSystem::notifyRelease(DataType type, uint32_t slot)
+	void RenderSystem::notifyRelease(BufferType type, uint32_t slot)
 	{
 		if (m_resourceMgr)
 		{

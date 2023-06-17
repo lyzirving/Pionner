@@ -23,8 +23,8 @@ namespace Pionner
 		if (m_initialized)
 		{
 			auto resourceMgr = g_runtimeCtx.m_renderSystem->getResourceMgr();
-			if (m_vBufSlot >= 0) resourceMgr->notifyRelease(BUF_MEM_ARRAY, m_vBufSlot);
-			if (m_indBufSlot >= 0) resourceMgr->notifyRelease(BUF_EBO, m_indBufSlot);
+			if (m_vBufSlot >= 0) resourceMgr->notifyRelease(BUF_VERTEX, m_vBufSlot);
+			if (m_indBufSlot >= 0) resourceMgr->notifyRelease(BUF_INDICE, m_indBufSlot);
 			m_vBufSlot = -1;
 			m_indBufSlot = -1;
 			m_initialized = false;
@@ -39,8 +39,8 @@ namespace Pionner
 
 			auto resourceMgr = g_runtimeCtx.m_renderSystem->getResourceMgr();
 
-			vBuffer = resourceMgr->allocate(BUF_MEM_ARRAY);
-			indBuffer = resourceMgr->allocate(BUF_EBO);
+			vBuffer = resourceMgr->allocate(BUF_VERTEX);
+			indBuffer = resourceMgr->allocate(BUF_INDICE);
 
 			vBuffer->insertData<Vertex>(vertexArray);
 			indBuffer->insertData<uint32_t>(indiceArray);

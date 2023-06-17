@@ -1,16 +1,11 @@
 #ifndef __RENDER_RESOURCE_MGR_H__
 #define __RENDER_RESOURCE_MGR_H__
 
-#include <vector>
-#include <list>
-#include <memory>
-
-#include "function/render/resource/ResourceDef.h"
+#include "tool/BufferArray.h"
 
 namespace Pionner
 {
 	class Rhi;
-	class GfxBuffer;
 
 	class RenderResourceMgr
 	{
@@ -18,53 +13,27 @@ namespace Pionner
 		RenderResourceMgr(const std::shared_ptr<Rhi> &rhi);
 		~RenderResourceMgr();
 
-		using Buffer = std::shared_ptr<GfxBuffer>;
-
 		inline std::shared_ptr<Rhi> getRhi() const { return m_rhi; };
 
-		Buffer allocate(BufferType type);
+		std::shared_ptr<GfxBuffer>      allocate(BufferType type);
+		std::shared_ptr<GfxFrameBuffer> allocFBO(BufferType type);
+
+		std::shared_ptr<GfxBuffer>      find(BufferType type, uint32_t slot);
+		std::shared_ptr<GfxFrameBuffer> findFBO(uint32_t slot);
+
 		void checkAbandoned();
-		Buffer find(DataType type, uint32_t slot);
 		void makeSelfWeak(const std::shared_ptr<RenderResourceMgr> &self);
 
-		void notifyRelease(DataType type, uint32_t slot);
 		void notifyRelease(BufferType type, uint32_t slot);
 
 		void shutdown();
 
 	private:
-		class BufferArray
-		{
-		public:
-			BufferArray(const std::shared_ptr<Rhi> &rhi);
-			~BufferArray();
-
-			Buffer   allocate(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr);
-			void     checkAbandoned();
-			void     clearActive();
-			bool     empty();
-			bool     exist(uint32_t slot);
-			Buffer   find(uint32_t slot);
-			void     release(uint32_t slot);
-			uint32_t size();
-
-		private:
-			static Buffer createBuffer(BufferType type, std::shared_ptr<RenderResourceMgr> &mgr);
-
-		private:
-			std::shared_ptr<Rhi> m_rhi;
-			std::vector<Buffer>  m_activeBuffers;
-			std::list<Buffer>    m_abandoned;
-
-			std::list<uint32_t>  m_availableSlots;
-		};
-
-	private:
-
-		std::shared_ptr<Rhi> m_rhi;
-		BufferArray          m_vertexArray;
-		BufferArray          m_indiceArray;
-		BufferArray          m_textureArray;
+		std::shared_ptr<Rhi>   m_rhi;
+		BufferArray<GfxBuffer> m_vertexArray;
+		BufferArray<GfxBuffer> m_indiceArray;
+		BufferArray<GfxBuffer> m_textureArray;
+		BufferArray<GfxFrameBuffer> m_frameBuffers;
 
 		std::weak_ptr<RenderResourceMgr> m_weakSelf;
 	};

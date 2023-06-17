@@ -2,7 +2,6 @@
 
 #include "function/render/rhi/opengl/cmd/DrawCmdGL.h"
 #include "function/render/rhi/RhiHeader.h"
-#include "function/render/rhi/opengl/GLHelper.h"
 
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
@@ -66,8 +65,8 @@ namespace Pionner
 		}
 
 		auto resource = param.resource;
-		auto vertexBuf = resource->find(DATA_VERTEX, meshComp->m_vBufSlot);
-		auto indiceBuf = resource->find(DATA_INDICE, meshComp->m_indBufSlot);
+		auto vertexBuf = resource->find(BUF_VERTEX, meshComp->m_vBufSlot);
+		auto indiceBuf = resource->find(BUF_INDICE, meshComp->m_indBufSlot);
 
 		if (!vertexBuf || !indiceBuf)
 		{
@@ -120,8 +119,8 @@ namespace Pionner
 
 		std::shared_ptr<RenderResourceMgr> resource = param.resource;
 
-		auto vertexBuf = resource->find(DATA_VERTEX, part->m_vertexSlot);
-		auto indiceBuf = resource->find(DATA_INDICE, part->m_indicesSlot);
+		auto vertexBuf = resource->find(BUF_VERTEX, part->m_vertexSlot);
+		auto indiceBuf = resource->find(BUF_INDICE, part->m_indicesSlot);
 
 		if (!vertexBuf || !indiceBuf)
 		{
@@ -160,8 +159,8 @@ namespace Pionner
 		}
 
 		auto resource = param.resource;
-		auto vertexBuf = resource->find(DATA_VERTEX, part->m_vertexSlot);
-		auto indiceBuf = resource->find(DATA_INDICE, part->m_indicesSlot);
+		auto vertexBuf = resource->find(BUF_VERTEX, part->m_vertexSlot);
+		auto indiceBuf = resource->find(BUF_INDICE, part->m_indicesSlot);
 
 		if (!vertexBuf || !indiceBuf)
 		{

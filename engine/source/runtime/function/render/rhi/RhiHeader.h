@@ -3,6 +3,7 @@
 
 #ifndef RHI_USE_OPENGL
 #define RHI_USE_OPENGL
+#include "function/render/rhi/opengl/GLHelper.h"
 #endif // !RHI_USE_OPENGL
 
 #ifdef RHI_USE_OPENGL

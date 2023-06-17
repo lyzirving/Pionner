@@ -42,7 +42,7 @@ namespace Pionner
 		shader->setInt("u_material.shadingModel", part->m_material.m_mode);
 		shader->setInt("u_material.texType", part->m_material.m_type);
 
-		if (part->m_material.slotValid() && (texture = resource->find(DATA_TEXTURE, part->m_material.m_slot)))
+		if (part->m_material.slotValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_slot)))
 		{
 			texture->upload();
 			texture->bindTarget(part->m_partIndex);

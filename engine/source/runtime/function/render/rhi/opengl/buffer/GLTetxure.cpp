@@ -23,13 +23,10 @@ namespace Pionner
 		: GfxBuffer(mgr), m_path(), m_data(nullptr),
 		m_width(0), m_height(0), m_channel(0)
 	{
-		m_dataType = DATA_TEXTURE;
 		m_bufferType = BUF_TEXTURE;
 	}
 
-	GLTexture::~GLTexture()
-	{
-	}
+	GLTexture::~GLTexture() = default;
 
 	void GLTexture::upload()
 	{
@@ -69,7 +66,7 @@ namespace Pionner
 		stbi_image_free(m_data);
 		m_data = nullptr;
 
-		m_uploaded = true;
+		m_uploaded = GLHelper::checkGLErr("fail to build texture");
 	}
 
 	void GLTexture::bindTarget(uint32_t target)
@@ -133,7 +130,7 @@ namespace Pionner
 	template<>
 	bool GfxBuffer::is<GLTexture>() const
 	{
-		return getDataType() == DATA_TEXTURE;
+		return getBufferType() == BUF_TEXTURE;
 	}
 
 	template<>
