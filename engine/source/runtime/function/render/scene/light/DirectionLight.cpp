@@ -1,3 +1,5 @@
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "DirectionLight.h"
 
 #include "function/render/shader/Shader.h"
@@ -37,6 +39,12 @@ namespace Pionner
 		shader->setFloat("u_light.is", m_is);
 
 		shader->setFloat("u_light.shininess", m_shininess);
+	}
+
+	void DirectionLight::calcMatrix()
+	{
+		m_viewMat = glm::lookAt(m_position, glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f));
+		m_prjMat = glm::ortho(-10.f, 10.f, -10.f, 10.f, m_near, m_far);
 	}
 
 	template<>

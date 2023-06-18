@@ -42,6 +42,9 @@ namespace Pionner
 		m_lights[m_curLight]->setColor(comp.m_ka, comp.m_kd, comp.m_ks);
 		m_lights[m_curLight]->setIntensity(comp.m_ia, comp.m_id, comp.m_is);
 		m_lights[m_curLight]->setShininess(comp.m_shininess);
+
+		m_lights[m_curLight]->setNear(m_frustum->near());
+		m_lights[m_curLight]->setFar(m_frustum->far());
 	}
 
 	void SceneMgr::shutdown()

@@ -65,6 +65,24 @@ namespace Pionner
 		return ret;
 	}
 
+	std::shared_ptr<GfxBuffer> RenderResourceMgr::createHolderBuffer(BufferType type)
+	{
+		std::shared_ptr<GfxBuffer> result{ nullptr };
+		std::shared_ptr<RenderResourceMgr> mgr = m_weakSelf.lock();
+		if (mgr)
+		{
+			switch (type)
+			{
+				case Pionner::BUF_TEXTURE:
+					result = std::shared_ptr<GfxBuffer>(new GLTexture(true, mgr));
+					break;
+				default:
+					break;
+			}
+		}
+		return result;
+	}
+
 	void RenderResourceMgr::checkAbandoned()
 	{
 		m_vertexArray.checkAbandoned();

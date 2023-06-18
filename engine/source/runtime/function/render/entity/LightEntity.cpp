@@ -62,8 +62,8 @@ namespace Pionner
 		return true;
 	}
 
-	std::shared_ptr<RenderEntity> LightEntity::makeEmptyEntity()
+	bool LightEntity::dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
-		return std::shared_ptr<RenderEntity>(new LightEntity);
+		return true;
 	}
 }

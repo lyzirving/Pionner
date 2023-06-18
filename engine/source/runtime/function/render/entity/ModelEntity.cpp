@@ -28,11 +28,6 @@ namespace Pionner
 
 	ModelEntity::~ModelEntity() = default;
 
-	std::shared_ptr<RenderEntity> ModelEntity::makeEmptyEntity()
-	{
-		return std::shared_ptr<RenderEntity>(new ModelEntity);
-	}
-
 	bool ModelEntity::dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
 								 /*out*/std::shared_ptr<Shader> &shader,
 								 /*out*/std::shared_ptr<GfxBuffer> &texture)
@@ -90,5 +85,40 @@ namespace Pionner
 		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
 
 		return true;
+	}
+	bool ModelEntity::dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	{
+		auto scene = param.sceneMgr;
+		LightType curLight = scene->m_curLight;
+		if (curLight == LIGHT_TYPE_DIRECTIONAL)
+		{
+			auto light = scene->m_lights[curLight];
+			if (!light)
+			{
+				LOG_ERR("current light is invalid");
+				goto fail;
+			}
+
+			shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP, param.rhi);
+
+			if (!shader || !shader->isInit())
+			{
+				LOG_ERR("shadow map shader is invalid");
+				goto fail;
+			}
+
+			shader->use(true);
+			shader->setMat4("u_modelMat", part->getTransform());
+			shader->setMat4("u_lightViewMat", light->getViewMat());
+			shader->setMat4("u_lightPrjMat", light->getPrjMat());
+
+			return true;
+		}
+		else if (param.sceneMgr->m_curLight == LIGHT_TYPE_POINT)
+		{
+
+		}
+	fail:
+		return false;
 	}
 }

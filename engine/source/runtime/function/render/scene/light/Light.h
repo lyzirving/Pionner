@@ -2,6 +2,7 @@
 #define __RENDER_LIGHT_H__
 
 #include <glm/glm.hpp>
+#include <atomic>
 #include <memory>
 
 #include "LightDef.h"
@@ -18,8 +19,21 @@ namespace Pionner
 
 		static std::shared_ptr<Light> createLight(LightType type);
 
-		inline void setPosition(const glm::vec3 &pos) { m_position = pos; }
-		inline void setDirection(const glm::vec3 &dir) { m_direction = dir; }
+		virtual void dealShader(const std::shared_ptr<Shader> &shader) = 0;
+
+		const glm::mat4 &getViewMat();
+		const glm::mat4 &getPrjMat();
+		void setPosition(const glm::vec3 &pos);
+		void setDirection(const glm::vec3 &dir);
+		void setNear(float near);
+		void setFar(float far);
+
+		void setColor(const glm::vec3 &ka, const glm::vec3 &kd, const glm::vec3 &ks);
+		void setIntensity(float ia, float id, float is);
+
+		template<class T>
+		bool is() const;
+
 		inline void setShininess(float shininess) { m_shininess = shininess; }
 
 		inline const glm::vec3 &position() { return m_position; }
@@ -37,13 +51,8 @@ namespace Pionner
 
 		inline LightType type() { return m_type; }
 
-		virtual void dealShader(const std::shared_ptr<Shader> &shader) = 0;
-
-		void setColor(const glm::vec3 &ka, const glm::vec3 &kd, const glm::vec3 &ks);
-		void setIntensity(float ia, float id, float is);
-
-		template<class T>
-		bool is() const;
+	protected:
+		virtual void calcMatrix() = 0;
 
 	protected:
 		glm::vec3 m_position;
@@ -66,6 +75,11 @@ namespace Pionner
 		 *         It is used as an exponent to calculate the power of dot(bisector, normal).
 		 */
 		float m_shininess;
+
+		float m_near, m_far;
+
+		glm::mat4 m_viewMat, m_prjMat;
+		std::atomic<bool> m_dataChange;
 
 		LightType m_type;
 	};

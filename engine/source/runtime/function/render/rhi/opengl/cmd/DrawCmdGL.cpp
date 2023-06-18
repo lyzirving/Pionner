@@ -117,8 +117,7 @@ namespace Pionner
 		std::shared_ptr<GfxBuffer> texture{ nullptr };
 		std::shared_ptr<Shader>    shader{ nullptr };
 
-		std::shared_ptr<RenderResourceMgr> resource = param.resource;
-
+		auto resource = param.resource;
 		auto vertexBuf = resource->find(BUF_VERTEX, part->m_vertexSlot);
 		auto indiceBuf = resource->find(BUF_INDICE, part->m_indicesSlot);
 
@@ -153,6 +152,11 @@ namespace Pionner
 
 	void DrawCmdGL::drawPartDepth(std::shared_ptr<EntityPart> &part, RenderParam &param)
 	{
+		auto owner = part->m_owner;
+
+		if (!owner)
+			return;
+
 		if (!part->vetexSlotValid() || !part->indiceSlotValid())
 		{
 			return;
@@ -168,6 +172,14 @@ namespace Pionner
 			return;
 		}
 
+		std::shared_ptr<Shader> shader{ nullptr };
+
+		if (!owner->dealDepthShader(param, part, shader))
+		{
+			LOG_ERR("fail to deal shader");
+			return;
+		}
+
 		vertexBuf->upload();
 		indiceBuf->upload();
 
@@ -179,5 +191,7 @@ namespace Pionner
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();
+
+		shader->use(false);
 	}
 }

@@ -14,12 +14,21 @@ namespace Pionner
 		: m_mgr(mgr), m_id(0), m_slot(0)
 		, m_bufferType(BUF_CNT)
 		, m_uploaded(false), m_abandoned(false)
+		, m_isHolder(false)
+	{
+	}
+
+	GfxBuffer::GfxBuffer(bool holder, const std::shared_ptr<RenderResourceMgr> &mgr)
+		: m_mgr(mgr), m_id(0), m_slot(0)
+		, m_bufferType(BUF_CNT)
+		, m_uploaded(false), m_abandoned(false)
+		, m_isHolder(holder)
 	{
 	}
 
 	GfxBuffer::~GfxBuffer()
 	{
-		notifyRelease();
+		if (!m_isHolder) notifyRelease();
 		m_mgr.reset();
 	}
 

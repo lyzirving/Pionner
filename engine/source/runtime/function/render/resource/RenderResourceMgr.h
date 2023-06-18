@@ -18,6 +18,8 @@ namespace Pionner
 		std::shared_ptr<GfxBuffer>      allocate(BufferType type);
 		std::shared_ptr<GfxFrameBuffer> allocFbo(BufferType type);
 
+		std::shared_ptr<GfxBuffer>      createHolderBuffer(BufferType type);
+
 		std::shared_ptr<GfxBuffer>      find(BufferType type, uint32_t slot);
 		std::shared_ptr<GfxFrameBuffer> findFbo(uint32_t slot);
 

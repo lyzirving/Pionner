@@ -98,7 +98,7 @@ namespace Pionner
 		// process the children for current node
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			auto child = entity->makeEmptyEntity();
+			auto child = RenderEntity::makeEntity(entity->m_type);
 			child->m_parent = entity;
 			child->m_name = node->mChildren[i]->mName.C_Str();
 			entity->m_children.push_back(child);

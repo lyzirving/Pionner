@@ -1,6 +1,8 @@
 #include <glm/gtx/transform.hpp>
 
 #include "RenderEntity.h"
+#include "ModelEntity.h"
+#include "LightEntity.h"
 
 #include "function/global/GlobalContext.h"
 
@@ -95,6 +97,23 @@ namespace Pionner
 			itr1 = m_parts.erase(itr1);
 		}
 		m_parent.reset();
+	}
+
+	std::shared_ptr<RenderEntity> RenderEntity::makeEntity(RenderEntityType type)
+	{
+		std::shared_ptr<RenderEntity> result{ nullptr };
+		switch (type)
+		{
+			case Pionner::RENDER_ENTITY_TYPE_MODEL:
+				result = std::shared_ptr<RenderEntity>(new ModelEntity);
+				break;
+			case Pionner::RENDER_ENTITY_TYPE_LIGHT:
+				result = std::shared_ptr<RenderEntity>(new LightEntity);
+				break;
+			default:
+				break;
+		}
+		return result;
 	}
 
 	void RenderEntity::draw(RenderParam &param)

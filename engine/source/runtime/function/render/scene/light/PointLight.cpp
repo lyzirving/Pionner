@@ -50,6 +50,10 @@ namespace Pionner
 		m_attenParamQuad = quadVal;
 	}
 
+	void PointLight::calcMatrix()
+	{
+	}
+
 	template<>
 	bool Light::is<PointLight>() const
 	{

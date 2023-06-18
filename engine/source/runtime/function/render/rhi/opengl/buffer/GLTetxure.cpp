@@ -26,6 +26,13 @@ namespace Pionner
 		m_bufferType = BUF_TEXTURE;
 	}
 
+	GLTexture::GLTexture(bool holder, const std::shared_ptr<RenderResourceMgr> &mgr)
+		: GfxBuffer(holder, mgr), m_path(), m_data(nullptr),
+		m_width(0), m_height(0), m_channel(0)
+	{
+		m_bufferType = BUF_TEXTURE;
+	}
+
 	GLTexture::~GLTexture() = default;
 
 	void GLTexture::upload()
@@ -71,6 +78,20 @@ namespace Pionner
 
 	void GLTexture::bindTarget(uint32_t target)
 	{
+		if (m_isHolder)
+		{
+			if (m_id != 0)
+			{
+				glActiveTexture(GL_TEXTURE0 + target);
+				glBindTexture(GL_TEXTURE_2D, m_id);
+			}
+			else
+			{
+				LOG_ERR("holder texture, but id is invalid");
+			}
+			return;
+		}
+
 		if (isAbandonded())
 		{
 			LOG_ERR("buf is already abandoned");

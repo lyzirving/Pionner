@@ -13,6 +13,9 @@ namespace Pionner
 		~DirectionLight();
 
 		virtual void dealShader(const std::shared_ptr<Shader> &shader) override;
+
+	protected:
+		virtual void calcMatrix() override;
 	};
 
 	template<>

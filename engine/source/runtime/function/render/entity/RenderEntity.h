@@ -48,11 +48,14 @@ namespace Pionner
 		RenderEntity();
 		virtual ~RenderEntity();
 
+		static std::shared_ptr<RenderEntity> makeEntity(RenderEntityType type);
+
 		virtual void draw(RenderParam &param);
+
 		virtual bool dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
-								/*out*/std::shared_ptr<Shader> &shader,
-								/*out*/std::shared_ptr<GfxBuffer> &texture) = 0;
-		virtual std::shared_ptr<RenderEntity> makeEmptyEntity() = 0;
+								/*out*/std::shared_ptr<Shader> &shader, /*out*/std::shared_ptr<GfxBuffer> &texture) = 0;
+		virtual bool dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
+									 /*out*/std::shared_ptr<Shader> &shader) = 0;
 
 	public:
 		std::string      m_name;

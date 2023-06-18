@@ -43,6 +43,20 @@ namespace Pionner
 						ret = m_shaders[type];
 						break;
 					}
+					case SHADER_TYPE_SHADOW_MAP:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "shadow_map", "shadow_map", "shadow_map");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
+					case SHADER_TYPE_DEPTH_SCREEN_2D:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "depth_screen2d", "depth_screen2d", "depth_screen2d");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
 					case SHADER_TYPE_INFINITE_GRID:
 					{
 						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "infinite_grid", "infinite_grid", "infinite_grid");

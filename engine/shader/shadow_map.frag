@@ -4,5 +4,5 @@
 precision highp float;
 
 void main() {
-	//gl_FragDepth = gl_FragColor.z;
+    // gl_FragDepth = gl_FragCoord.z;
 }

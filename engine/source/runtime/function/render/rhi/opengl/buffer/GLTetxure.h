@@ -12,6 +12,7 @@ namespace Pionner
 		friend class GfxBuffer;
 	public:
 		GLTexture(const std::shared_ptr<RenderResourceMgr> &mgr);
+		GLTexture(bool holder, const std::shared_ptr<RenderResourceMgr> &mgr);
 		virtual ~GLTexture();
 
 		inline void setPath(const char *path) { m_path = path; }

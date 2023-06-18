@@ -65,7 +65,7 @@ namespace Pionner
 
 		world->iterate([&](decs::EntityID id, RenderComp &comp0, OcclusionComp &comp1)
 		{
-
+			cmd->drawDepth(*comp0.m_entity.get(), param);
 		});
 
 		m_depthFbo->unbind();

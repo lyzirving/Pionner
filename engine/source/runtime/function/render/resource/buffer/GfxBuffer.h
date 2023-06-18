@@ -16,6 +16,7 @@ namespace Pionner
 	{
 	public:
 		GfxBuffer(const std::shared_ptr<RenderResourceMgr> &mgr);
+		GfxBuffer(bool holder, const std::shared_ptr<RenderResourceMgr> &mgr);
 		virtual ~GfxBuffer();
 
 		virtual void upload() = 0;
@@ -32,6 +33,7 @@ namespace Pionner
 		inline uint32_t getSlot() const { return m_slot; }
 		inline BufferType getBufferType() const { return m_bufferType; }
 		inline bool isUpload() const { return m_uploaded; }
+		inline void setHolderId(uint32_t id) { if (m_isHolder) m_id = id; }
 
 		void notifyRelease();
 
@@ -62,6 +64,7 @@ namespace Pionner
 		BufferType m_bufferType;
 		bool       m_uploaded;
 		bool       m_abandoned;
+		bool       m_isHolder;
 	};
 }
 

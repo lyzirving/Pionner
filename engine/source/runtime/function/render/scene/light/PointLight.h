@@ -17,6 +17,9 @@ namespace Pionner
 		void setAttenuation(float constVal, float linearVal, float quadVal);
 
 	protected:
+		virtual void calcMatrix() override;
+
+	protected:
 		float m_attenParamConst, m_attenParamLinear, m_attenParamQuad;
 	};
 
