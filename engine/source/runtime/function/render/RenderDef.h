@@ -26,6 +26,14 @@ namespace Pionner
 		std::shared_ptr<World>             world;
 	};
 
+	struct RenderViewport
+	{
+		int32_t  m_left;
+		int32_t  m_top;
+		uint32_t m_width;
+		uint32_t m_height;
+	};
+
 	struct WindowSystemInitInfo
 	{
 		int         width{ 1600 };

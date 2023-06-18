@@ -20,7 +20,7 @@ namespace Pionner
 	UIPass::UIPass() : RenderPassBase()
 		, m_ui(nullptr)
 		, m_windowWidth(0), m_windowHeight(0)
-		, m_renderLayout(), m_renderViewport()
+		, m_renderLayout()
 	{
 	}
 
@@ -94,9 +94,9 @@ namespace Pionner
 		if (m_ui && (view = m_ui->getView(UID_RENDER_PORT)))
 		{
 			m_renderLayout = view->getLayout();
-			m_renderViewport = m_renderLayout;
-			// viewport starts from left-bottom, layout starts from left-top
-			m_renderViewport.m_top = m_windowHeight - m_renderLayout.m_top - m_renderLayout.m_height;
+			setViewport(m_renderLayout.m_left,
+						m_windowHeight - m_renderLayout.m_top - m_renderLayout.m_height,
+						m_renderLayout.m_width, m_renderLayout.m_height);
 		}
 		else
 		{

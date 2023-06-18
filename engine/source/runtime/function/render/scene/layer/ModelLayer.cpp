@@ -39,10 +39,10 @@ namespace Pionner
 			if (comp.m_entity) comp.m_entity->draw(param);
 		});
 
-		world->iterate([&](decs::EntityID id, LightComp &comp)
+		/*world->iterate([&](decs::EntityID id, LightComp &comp)
 		{
 
-		});
+		});*/
 
 		m_grid->draw(param);
 	}

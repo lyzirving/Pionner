@@ -48,12 +48,16 @@ namespace Pionner
 
 	void RenderPipeline::initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui)
 	{
-		if (m_uiPass) m_uiPass->initializeUIRenderBackend(ui);
+		m_uiPass->initializeUIRenderBackend(ui);
+
+		const RenderViewport &port = m_uiPass->getViewport();
+		m_depthPass->setViewport(port.m_left, port.m_top,
+								 port.m_width, port.m_height);
 	}
 
 	void RenderPipeline::shutdownUIRenderBackend()
 	{
-		if (m_uiPass) m_uiPass->shutdownUIRenderBackend();
+		m_uiPass->shutdownUIRenderBackend();
 	}
 
 	void RenderPipeline::shutdown()
@@ -64,11 +68,11 @@ namespace Pionner
 
 	void RenderPipeline::forwardRender(RenderParam &param)
 	{
-		ViewLayout port = m_uiPass->getRenderViewport();
+		const RenderViewport &port = m_uiPass->getViewport();
 		// move viewport to renderport
 		m_rhi->viewportSub(port.m_left, port.m_top, port.m_width, port.m_height);
 
-		m_depthPass->draw(param);
+		//m_depthPass->draw(param);
 
 		param.sceneMgr->m_scene->forwardRender(param);
 
@@ -91,7 +95,11 @@ namespace Pionner
 			int width = windowSystem->getWidth();
 			int height = windowSystem->getHeight();
 
-			if (m_uiPass) m_uiPass->resize(width, height);
+			m_uiPass->resize(width, height);
+			const RenderViewport &port = m_uiPass->getViewport();
+			m_depthPass->setViewport(port.m_left, port.m_top,
+									 port.m_width, port.m_height);
+
 			sceneMgr->resize(width, height);
 			rhi->reviseViewport(width, height);
 			windowSystem->setSizeChange(false);
@@ -103,6 +111,5 @@ namespace Pionner
 			Event evt = evtMgr->processEvent();
 			m_uiPass->dealEvent(param, evt);
 		}
-
 	}
 }

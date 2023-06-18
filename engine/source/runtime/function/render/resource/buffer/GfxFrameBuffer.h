@@ -12,7 +12,11 @@ namespace Pionner
 		GfxFrameBuffer(uint32_t width, uint32_t height, const std::shared_ptr<RenderResourceMgr> &mgr);
 		virtual ~GfxFrameBuffer();
 
-		uint32_t getAttachment(ATTACHMENT id) { return m_attachIds[id]; }
+		inline uint32_t getAttachment(ATTACHMENT id) { return m_attachIds[id]; }
+		inline uint32_t getWidth() { return m_width; }
+		inline uint32_t getHeight() { return m_height; }
+
+		inline void setSize(uint32_t width, uint32_t height) { m_width = width; m_height = height; }
 
 	protected:
 		uint32_t m_width, m_height;

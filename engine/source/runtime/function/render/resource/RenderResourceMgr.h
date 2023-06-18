@@ -16,10 +16,10 @@ namespace Pionner
 		inline std::shared_ptr<Rhi> getRhi() const { return m_rhi; };
 
 		std::shared_ptr<GfxBuffer>      allocate(BufferType type);
-		std::shared_ptr<GfxFrameBuffer> allocFBO(BufferType type);
+		std::shared_ptr<GfxFrameBuffer> allocFbo(BufferType type);
 
 		std::shared_ptr<GfxBuffer>      find(BufferType type, uint32_t slot);
-		std::shared_ptr<GfxFrameBuffer> findFBO(uint32_t slot);
+		std::shared_ptr<GfxFrameBuffer> findFbo(uint32_t slot);
 
 		void checkAbandoned();
 		void makeSelfWeak(const std::shared_ptr<RenderResourceMgr> &self);

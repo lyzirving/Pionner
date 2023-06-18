@@ -54,7 +54,7 @@ namespace Pionner
 		return ret;
 	}
 
-	std::shared_ptr<GfxFrameBuffer> RenderResourceMgr::allocFBO(BufferType type)
+	std::shared_ptr<GfxFrameBuffer> RenderResourceMgr::allocFbo(BufferType type)
 	{
 		std::shared_ptr<GfxFrameBuffer> ret{ nullptr };
 		std::shared_ptr<RenderResourceMgr> mgr = m_weakSelf.lock();
@@ -128,7 +128,7 @@ namespace Pionner
 		return ret;
 	}
 
-	std::shared_ptr<GfxFrameBuffer> RenderResourceMgr::findFBO(uint32_t slot)
+	std::shared_ptr<GfxFrameBuffer> RenderResourceMgr::findFbo(uint32_t slot)
 	{
 		std::shared_ptr<GfxFrameBuffer> ret = m_frameBuffers.find(slot);
 		return ret;

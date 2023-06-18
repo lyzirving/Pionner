@@ -5,6 +5,8 @@
 
 namespace Pionner
 {
+	class GfxFrameBuffer;
+
 	class DepthPass : public RenderPassBase
 	{
 	public:
@@ -14,6 +16,9 @@ namespace Pionner
 		virtual void initialize(const RenderPassInitInfo &info) override;
 		virtual void shutdown() override;
 		virtual void draw(RenderParam &param) override;
+
+	private:
+		std::shared_ptr<GfxFrameBuffer> m_depthFbo;
 	};
 }
 

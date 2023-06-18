@@ -8,6 +8,9 @@
 
 #include "function/render/scene/SceneMgr.h"
 
+#include "function/render/resource/RenderResourceMgr.h"
+#include "function/render/resource/buffer/GfxFrameBuffer.h"
+
 #include "function/render/rhi/Rhi.h"
 
 #include "core/log/LogSystem.h"
@@ -42,5 +45,21 @@ namespace Pionner
 		auto world = param.world;
 		auto cmd = param.rhi->getDrawCmd();
 		auto camera = param.sceneMgr->m_camera;
+		auto resource = param.resource;
+
+		if (!m_depthFbo)
+		{
+			m_depthFbo = resource->allocFbo(BUF_DEPTH_FRAMEBUFFER);
+			m_depthFbo->setSize(1024, 1024);
+		}
+		m_depthFbo->upload();
+		m_depthFbo->bind();
+
+		world->iterate([&](decs::EntityID id, RenderComp &comp0, OcclusionComp &comp1)
+		{
+
+		});
+
+		m_depthFbo->unbind();
 	}
 }

@@ -19,7 +19,6 @@ namespace Pionner
 		virtual void draw(RenderParam &param) override;
 
 		inline ViewLayout getRenderLayout() { return m_renderLayout; }
-		inline ViewLayout getRenderViewport() { return m_renderViewport; }
 
 		void initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui);
 		bool dealEvent(RenderParam &param, const Event &evt);
@@ -33,7 +32,7 @@ namespace Pionner
 	private:
 		std::shared_ptr<WindowUI> m_ui;
 		int32_t m_windowWidth, m_windowHeight;
-		ViewLayout m_renderLayout, m_renderViewport;
+		ViewLayout m_renderLayout;
 	};
 }
 
