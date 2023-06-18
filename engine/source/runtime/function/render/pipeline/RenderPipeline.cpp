@@ -49,10 +49,6 @@ namespace Pionner
 	void RenderPipeline::initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui)
 	{
 		m_uiPass->initializeUIRenderBackend(ui);
-
-		const RenderViewport &port = m_uiPass->getViewport();
-		m_depthPass->setViewport(port.m_left, port.m_top,
-								 port.m_width, port.m_height);
 	}
 
 	void RenderPipeline::shutdownUIRenderBackend()
@@ -68,16 +64,9 @@ namespace Pionner
 
 	void RenderPipeline::forwardRender(RenderParam &param)
 	{
-		const RenderViewport &port = m_uiPass->getViewport();
-		// move viewport to renderport
-		m_rhi->viewportSub(port.m_left, port.m_top, port.m_width, port.m_height);
-
-		//m_depthPass->draw(param);
+		m_depthPass->draw(param);
 
 		param.sceneMgr->m_scene->forwardRender(param);
-
-		// move viewport to full screen
-		m_rhi->viewportFull();
 
 		m_uiPass->draw(param);
 	}
@@ -96,14 +85,19 @@ namespace Pionner
 			int height = windowSystem->getHeight();
 
 			m_uiPass->resize(width, height);
-			const RenderViewport &port = m_uiPass->getViewport();
-			m_depthPass->setViewport(port.m_left, port.m_top,
-									 port.m_width, port.m_height);
-
 			sceneMgr->resize(width, height);
-			rhi->reviseViewport(width, height);
 			windowSystem->setSizeChange(false);
 		}
+
+		const ViewLayout &layout = m_uiPass->getRenderLayout();
+		param.renderViewport.m_width = layout.m_width;
+		param.renderViewport.m_height = layout.m_height;
+		param.renderViewport.m_left = layout.m_left;
+		param.renderViewport.m_top = windowSystem->getHeight() - layout.m_top - layout.m_height;
+
+		param.windowViewport.m_left = param.windowViewport.m_height = 0;
+		param.windowViewport.m_width = windowSystem->getWidth();
+		param.windowViewport.m_height = windowSystem->getHeight();
 
 		// deal motion event
 		if (m_uiPass && (evtMgr = windowSystem->getEvtMgr()))

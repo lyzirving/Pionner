@@ -94,9 +94,6 @@ namespace Pionner
 		if (m_ui && (view = m_ui->getView(UID_RENDER_PORT)))
 		{
 			m_renderLayout = view->getLayout();
-			setViewport(m_renderLayout.m_left,
-						m_windowHeight - m_renderLayout.m_top - m_renderLayout.m_height,
-						m_renderLayout.m_width, m_renderLayout.m_height);
 		}
 		else
 		{

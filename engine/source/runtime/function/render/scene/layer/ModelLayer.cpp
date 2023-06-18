@@ -19,9 +19,7 @@
 
 namespace Pionner
 {
-	ModelLayer::ModelLayer(const std::shared_ptr<Rhi> &rhi)
-		: RenderLayer(rhi)
-		, m_grid(new InfiniteGrid())
+	ModelLayer::ModelLayer() : RenderLayer(), m_grid(new InfiniteGrid())
 	{
 	}
 
@@ -32,6 +30,11 @@ namespace Pionner
 
 	void ModelLayer::draw(RenderParam &param)
 	{
+		auto rhi = param.rhi;
+
+		const RenderViewport &port = param.renderViewport;
+		rhi->setViewport(port.m_left, port.m_top, port.m_width, port.m_height);
+
 		std::shared_ptr<World> world = param.world;
 
 		world->iterate([&](decs::EntityID id, RenderComp &comp)

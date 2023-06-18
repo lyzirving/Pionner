@@ -34,8 +34,6 @@ namespace Pionner
 		OpenGLRhiInitInfo *info = (OpenGLRhiInitInfo *)param;
 		m_window = info->window;
 
-		m_viewport = { 0.f, 0.f, float(m_window->getWidth()), float(m_window->getHeight()) };
-
 		createInstance();
 	}
 
@@ -103,54 +101,19 @@ namespace Pionner
 		LOG_DEBUG("gl version[%d.%d]", major, minor);
 	}
 
-	void RhiGL::viewportFull()
+	void RhiGL::clear(uint32_t flags)
 	{
-		glViewport((GLint)m_viewport.x, (GLint)m_viewport.y, (GLint)m_viewport.width, (GLint)m_viewport.height);
-		m_curViewportState = m_viewport;
+		glClear(flags);
 	}
 
-	void RhiGL::viewportSub(int x, int y, int width, int height)
+	void RhiGL::clearColor(const glm::vec4 &color)
 	{
-		if (x + width > m_viewport.width || y + height > m_viewport.height)
-		{
-			LOG_WARN("sub viewport[%d, %d, %d, %d] is out of bounds[%d, %d, %d, %d]",
-					 x, y, width, height,
-					 m_viewport.x, m_viewport.y, m_viewport.width, m_viewport.height);
-		}
+		glClearColor(color.r, color.g, color.b, color.a);
+	}
+
+	void RhiGL::setViewport(int x, int y, int width, int height)
+	{
 		glViewport(x, y, width, height);
-		m_curViewportState.x = x;
-		m_curViewportState.y = y;
-		m_curViewportState.width = width;
-		m_curViewportState.height = height;
-	}
-
-	void RhiGL::reviseViewport(int width, int height)
-	{
-		if (width != m_viewport.width || height != m_viewport.height)
-		{
-			m_viewport.width = width;
-			m_viewport.height = height;
-		}
-	}
-
-	void RhiGL::setClearMode(ClearMode &mode)
-	{
-		glClearColor(mode.m_color.r, mode.m_color.g, mode.m_color.b, mode.m_color.a);
-
-		uint32_t bit{ 0 };
-		if (mode.m_clearColor)
-		{
-			bit |= GL_COLOR_BUFFER_BIT;
-		}
-		if (mode.m_clearDepth)
-		{
-			bit |= GL_DEPTH_BUFFER_BIT;
-		}
-		if (mode.m_clearStencil)
-		{
-			bit |= GL_STENCIL_BUFFER_BIT;
-		}
-		glClear(bit);
 	}
 
 	void RhiGL::setCullMode(CullFace &mode)

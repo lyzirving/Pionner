@@ -5,7 +5,7 @@
 
 namespace Pionner
 {
-	RenderPassBase::RenderPassBase() : m_rhi(nullptr), m_viewport()
+	RenderPassBase::RenderPassBase() : m_rhi(nullptr)
 	{
 	}
 

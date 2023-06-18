@@ -18,7 +18,7 @@ namespace Pionner
 		virtual void shutdown() override;
 		virtual void draw(RenderParam &param) override;
 
-		inline ViewLayout getRenderLayout() { return m_renderLayout; }
+		inline const ViewLayout &getRenderLayout() { return m_renderLayout; }
 
 		void initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui);
 		bool dealEvent(RenderParam &param, const Event &evt);

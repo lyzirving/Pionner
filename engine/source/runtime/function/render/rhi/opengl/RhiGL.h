@@ -18,11 +18,10 @@ namespace Pionner
 		virtual std::shared_ptr<ShaderRhi> getShaderRhi() override;
 		virtual std::shared_ptr<DrawCmd> getDrawCmd() override;
 
-		virtual void viewportFull() override;
-		virtual void viewportSub(int x, int y, int width, int height) override;
-		virtual void reviseViewport(int width, int height) override;
+		virtual void clear(uint32_t flags) override;
+		virtual void clearColor(const glm::vec4 &color) override;
 
-		virtual void setClearMode(ClearMode &mode) override;
+		virtual void setViewport(int x, int y, int width, int height) override;
 		virtual void setCullMode(CullFace &mode) override;
 		virtual void setDepthMode(DepthTest &test) override;
 		virtual void setBlendMode(Blend &blend) override;

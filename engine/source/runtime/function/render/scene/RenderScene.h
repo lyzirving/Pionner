@@ -26,7 +26,7 @@ namespace Pionner
 		void forwardRender(RenderParam &param);
 
 	private:
-		static std::shared_ptr<RenderLayer> createLayer(SceneLayerType type, const std::shared_ptr<Rhi> &rhi);
+		static std::shared_ptr<RenderLayer> createLayer(SceneLayerType type);
 
 	private:
 		std::shared_ptr<Rhi>         m_rhi;

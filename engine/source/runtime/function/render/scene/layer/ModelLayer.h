@@ -12,7 +12,7 @@ namespace Pionner
 	class ModelLayer : public RenderLayer
 	{
 	public:
-		ModelLayer(const std::shared_ptr<Rhi> &rhi);
+		ModelLayer();
 		virtual ~ModelLayer();
 
 		virtual void draw(RenderParam &param) override;

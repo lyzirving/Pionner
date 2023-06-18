@@ -57,7 +57,6 @@ namespace Pionner
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		//ImGui::ShowDemoWindow();
 		for (size_t i = 0; i < m_viewArray.size(); i++)
 		{
 			if (m_viewArray[i].second)

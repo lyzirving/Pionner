@@ -8,6 +8,10 @@ namespace Pionner
 	class WindowSystem;
 	class ShaderRhi;
 
+	static const uint32_t COLOR_BUF_BIT = 0x00004000;
+	static const uint32_t DEPTH_BUF_BIT = 0x00000100;
+	static const uint32_t STENCIL_BUF_BIT = 0x00000400;
+
 	enum RhiType : uint8_t
 	{
 		RHI_OPENGL,
@@ -18,16 +22,6 @@ namespace Pionner
 	struct OpenGLRhiInitInfo
 	{
 		std::shared_ptr<WindowSystem> window;
-	};
-
-	struct Viewport
-	{
-		float x, y;
-		float width, height;
-
-		Viewport() : x(0), y(0), width(0), height(0) {}
-		Viewport(float posX, float posY, float portWidth, float portHeight)
-			: x(posX), y(posY), width(portWidth), height(portHeight) {}
 	};
 }
 

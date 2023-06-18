@@ -125,7 +125,12 @@ namespace Pionner
 
 	void RenderSystem::tick(float deltaTime)
 	{
-		RenderParam param{ m_sceneMgr, m_resourceMgr, m_shaderMgr, m_rhi, m_world };
+		RenderParam param{};
+		param.sceneMgr = m_sceneMgr;
+		param.rhi = m_rhi;
+		param.resource = m_resourceMgr;
+		param.shaderMgr = m_shaderMgr;
+		param.world = m_world;
 
 		m_resourceMgr->checkAbandoned();
 

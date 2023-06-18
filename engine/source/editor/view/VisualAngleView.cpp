@@ -57,11 +57,11 @@ namespace Pionner
 		auto camera = sceneMgr->m_camera;
 		auto cmd = rhi->getDrawCmd();
 
-		rhi->restoreViewportState();
 		frustum->restoreState();
 		camera->restoreState();
 
-		rhi->viewportSub(m_renderport.m_left, m_renderport.m_top, m_renderport.m_width, m_renderport.m_height);
+		rhi->setViewport(m_renderport.m_left, m_renderport.m_top,
+						 m_renderport.m_width, m_renderport.m_height);
 
 		frustum->setAspect(float(m_renderport.m_width) / float(m_renderport.m_height));
 
@@ -86,7 +86,6 @@ namespace Pionner
 
 		camera->popState();
 		frustum->popState();
-		rhi->popViewportState();
 	}
 
 	void VisualAngleView::layout(int32_t windowWidth, int32_t windowHeight)

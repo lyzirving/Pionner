@@ -8,24 +8,21 @@
 
 namespace Pionner
 {
-	ClearLayer::ClearLayer(const std::shared_ptr<Rhi> &rhi)
-		: RenderLayer(rhi)
-		, m_color(0.24f, 0.24f, 0.24f)
+	ClearLayer::ClearLayer() : RenderLayer(), m_color(0.24f, 0.24f, 0.24f, 1.f)
 	{
 	}
 
-	ClearLayer::~ClearLayer()
-	{
-	}
+	ClearLayer::~ClearLayer() = default;
 
 	void ClearLayer::draw(RenderParam &param)
 	{
-		std::shared_ptr<Rhi> rhi = param.rhi;
+		auto rhi = param.rhi;
 
-		ClearMode clear;
-		clear.m_color = glm::vec4(m_color, 1.f);
-		clear.m_clearColor = true;
-		clear.m_clearDepth = true;
+		const RenderViewport &port = param.renderViewport;
+		rhi->setViewport(port.m_left, port.m_top, port.m_width, port.m_height);
+
+		rhi->clearColor(m_color);
+		rhi->clear(COLOR_BUF_BIT | DEPTH_BUF_BIT);
 
 		DepthTest depth;
 		depth.m_enbale = true;
@@ -33,7 +30,6 @@ namespace Pionner
 		Blend blend = Blend::common();
 		CullFace cullFace = CullFace::common();
 
-		rhi->setClearMode(clear);
 		rhi->setCullMode(cullFace);
 		rhi->setDepthMode(depth);
 		rhi->setBlendMode(blend);

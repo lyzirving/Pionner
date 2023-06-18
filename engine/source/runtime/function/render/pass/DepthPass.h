@@ -19,6 +19,7 @@ namespace Pionner
 
 	private:
 		std::shared_ptr<GfxFrameBuffer> m_depthFbo;
+		uint32_t m_depthFboWidth, m_depthFboHeight;
 	};
 }
 

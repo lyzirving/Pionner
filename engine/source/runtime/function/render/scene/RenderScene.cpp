@@ -30,7 +30,7 @@ namespace Pionner
 
 		for (uint8_t type = 0; type < LAYER_COUNT; type++)
 		{
-			std::shared_ptr<RenderLayer> layer = createLayer(SceneLayerType(type), m_rhi);
+			std::shared_ptr<RenderLayer> layer = createLayer(SceneLayerType(type));
 			if (layer) m_layers[type] = layer;
 		}
 	}
@@ -53,16 +53,16 @@ namespace Pionner
 		}
 	}
 
-	std::shared_ptr<RenderLayer> RenderScene::createLayer(SceneLayerType type, const std::shared_ptr<Rhi> &rhi)
+	std::shared_ptr<RenderLayer> RenderScene::createLayer(SceneLayerType type)
 	{
 		std::shared_ptr<RenderLayer> layer{ nullptr };
 		switch (type)
 		{
 			case Pionner::LAYER_CLEAR:
-				layer = std::shared_ptr<RenderLayer>(new ClearLayer(rhi));
+				layer = std::shared_ptr<RenderLayer>(new ClearLayer);
 				break;
 			case Pionner::LAYER_MODEL:
-				layer = std::shared_ptr<RenderLayer>(new ModelLayer(rhi));
+				layer = std::shared_ptr<RenderLayer>(new ModelLayer);
 				break;
 			case Pionner::LAYER_COUNT:
 			default:

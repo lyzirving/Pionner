@@ -4,6 +4,7 @@
 
 #include "view/BottomPanelView.h"
 #include "function/ui/WindowUI.h"
+#include "function/render/rhi/Rhi.h"
 
 #include "core/log/LogSystem.h"
 
@@ -25,6 +26,9 @@ namespace Pionner
 
 	void BottomPanelView::draw(RenderParam &param)
 	{
+		param.rhi->setViewport(param.windowViewport.m_left, param.windowViewport.m_top,
+							   param.windowViewport.m_width, param.windowViewport.m_height);
+
 		ImGui::SetNextWindowPos(ImVec2(m_layout.m_left, m_layout.m_top),
 								ImGuiCond_Always);
 		ImGui::SetNextWindowSize(ImVec2(m_layout.m_width, m_layout.m_height),

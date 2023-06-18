@@ -2,18 +2,8 @@
 
 namespace Pionner
 {
-	RenderLayer::RenderLayer(const std::shared_ptr<Rhi> &rhi)
-		: m_rhi(rhi)
-	{
-	}
+	RenderLayer::RenderLayer() = default;
 
-	RenderLayer::~RenderLayer()
-	{
-		m_rhi.reset();
-	}
-
-	void RenderLayer::clear()
-	{
-	}
+	RenderLayer::~RenderLayer() = default;
 
 }
