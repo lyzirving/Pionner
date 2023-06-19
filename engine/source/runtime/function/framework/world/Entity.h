@@ -14,6 +14,7 @@ namespace Pionner
 	enum EntityType : uint8_t
 	{
 		ENTITY_OBJ,
+		ENTITY_GEOMETRY,
 		ENTITY_LIGHT,
 		ENTITY_TYPE_CNT
 	};

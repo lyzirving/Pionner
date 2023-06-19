@@ -2,6 +2,7 @@
 
 #include "function/framework/comp/RenderComp.h"
 #include "function/framework/comp/LightComp.h"
+#include "function/framework/comp/GeometryComp.h"
 #include "function/framework/comp/OcclusionComp.h"
 
 #include "function/framework/load/Loader.h"
@@ -34,11 +35,12 @@ namespace Pionner
 
 	void World::build()
 	{
-		// insert default entity
+		// Insert default entity
 		auto roleEntity = createEntity<RenderComp, OcclusionComp>(ENTITY_OBJ, "role");
 		auto &roleComp = roleEntity->getComp<RenderComp>();
 		roleComp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
 		Loader::load("assets/objects/basic/Marry/Marry.obj", roleComp.m_entity);
+		roleComp.m_entity->m_transComp.translate(0.f, 0.1f, 0.f);
 
 		auto lightEntity = createEntity<LightComp>(ENTITY_LIGHT, "light");
 		auto &lightComp = lightEntity->getComp<LightComp>();
@@ -46,6 +48,15 @@ namespace Pionner
 		// Note the directional light points at world center
 		lightComp.m_pos = glm::vec3(-3.f, 5.f, 4.f);
 		lightComp.m_dir = glm::vec3(0.f) - lightComp.m_pos;
+
+		// Add a plane
+		auto planeEntity = createEntity<GeometryComp>(ENTITY_GEOMETRY, "plane");
+		auto &geoComp = planeEntity->getComp<GeometryComp>();
+		geoComp.m_geometry = Geometry::createGeometry(GEO_TYPE_PLANE);
+		auto planeTrans = geoComp.m_geometry->getTransformComp();
+		planeTrans->translate(0.f, 0.1f, 0.f);
+		auto planeMesh = geoComp.m_geometry->getMeshComp();
+		planeMesh->m_color = glm::vec4(0.73f, 0.73f, 0.73f, 1.f);
 	}
 
 	void World::shutdown()

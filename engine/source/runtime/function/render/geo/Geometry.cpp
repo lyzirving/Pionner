@@ -3,8 +3,24 @@
 #include "function/framework/comp/MeshComp.h"
 #include "function/framework/comp/TransformComp.h"
 
+#include "Plane.h"
+
 namespace Pionner
 {
+	std::shared_ptr<Geometry> Geometry::createGeometry(GeometryType type)
+	{
+		std::shared_ptr<Geometry> result{ nullptr };
+		switch (type)
+		{
+			case Pionner::GEO_TYPE_PLANE:
+				result = std::shared_ptr<Geometry>(new Plane);
+				break;
+			default:
+				break;
+		}
+		return result;
+	}
+
 	Geometry::Geometry(const char *name)
 		: m_type(GEO_TYPE_NONE), m_name(name)
 		, m_mesh(nullptr), m_transform(nullptr)

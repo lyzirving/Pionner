@@ -14,6 +14,7 @@
 
 #include "function/framework/comp/RenderComp.h"
 #include "function/framework/comp/LightComp.h"
+#include "function/framework/comp/GeometryComp.h"
 
 #include "function/render/RenderDef.h"
 
@@ -40,6 +41,11 @@ namespace Pionner
 		world->iterate([&](decs::EntityID id, RenderComp &comp)
 		{
 			if (comp.m_entity) comp.m_entity->draw(param);
+		});
+
+		world->iterate([&](decs::EntityID id, GeometryComp &comp)
+		{
+			comp.m_geometry->draw(param);
 		});
 
 		/*world->iterate([&](decs::EntityID id, LightComp &comp)

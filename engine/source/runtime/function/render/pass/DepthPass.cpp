@@ -8,7 +8,8 @@
 
 #include "function/render/scene/SceneMgr.h"
 #include "function/render/rhi/Rhi.h"
-#include "function/render/geo/ScreenRender.h"
+
+#include "function/render/geo/screen/DepthScreenRender.h"
 
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxFrameBuffer.h"
@@ -37,7 +38,7 @@ namespace Pionner
 	void DepthPass::initialize(const RenderPassInitInfo &info)
 	{
 		m_rhi = info.rhi;
-		//m_depthScreenRender = std::make_shared<ScreenRender>(SHADER_TYPE_DEPTH_SCREEN_2D);
+		//m_depthScreenRender = std::shared_ptr<ScreenRender>(new DepthScreenRender);
 	}
 
 	void DepthPass::shutdown()
@@ -63,8 +64,6 @@ namespace Pionner
 
 		m_depthFbo->bind();
 		rhi->clear(DEPTH_BUF_BIT);
-		//uint32_t l = port.m_left + port.m_width / 2 - m_depthFboWidth / 2;
-		//uint32_t t = port.m_top + port.m_height / 2 - m_depthFboHeight / 2;
 		rhi->setViewport(0, 0, m_depthFboWidth, m_depthFboHeight);
 
 		DepthTest depthTest{};

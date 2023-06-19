@@ -1,0 +1,113 @@
+#include "Plane.h"
+
+#include "function/framework/comp/MeshComp.h"
+
+#include "function/render/RenderDef.h"
+#include "function/render/rhi/Rhi.h"
+
+#include "function/render/resource/ResourceDef.h"
+#include "function/render/resource/buffer/GfxBuffer.h"
+#include "function/render/resource/RenderResourceMgr.h"
+
+#include "function/render/scene/SceneMgr.h"
+
+#include "function/render/shader/ShaderMgr.h"
+
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Plane"
+
+namespace Pionner
+{
+	Plane::Plane() : Geometry("Plane")
+	{
+		m_type = GEO_TYPE_PLANE;
+		m_mesh = std::make_shared<MeshComp>();
+		m_transform = std::make_shared<TransformComp>();
+	}
+
+	Plane::Plane(const std::string &name) : Geometry(name.c_str())
+	{
+		m_type = GEO_TYPE_PLANE;
+		m_mesh = std::make_shared<MeshComp>();
+		m_transform = std::make_shared<TransformComp>();
+	}
+
+	Plane::~Plane() = default;
+
+	void Plane::draw(RenderParam &param)
+	{
+		if (!m_mesh || !m_transform)
+		{
+			LOG_ERR("invalid component");
+			return;
+		}
+
+		initialize(param);
+
+		std::shared_ptr<Shader> shader{ nullptr };
+		if (!dealShader(param, shader))
+			return;
+
+		auto cmd = param.rhi->getDrawCmd();
+		cmd->drawGeometry(*this, param);
+
+		shader->use(false);
+	}
+
+	void Plane::initialize(RenderParam &param)
+	{
+		if (!m_mesh->m_initialized)
+		{
+			float scale = 3.5f;
+
+			std::vector<Vertex> vArray{};
+			Vertex v{};
+			v.pos = glm::vec3(-scale, 0.f, -scale);
+			v.normal = glm::vec3(0.f, 1.f, 0.f);
+			v.texCoord = glm::vec2(0.f, 1.f);
+			vArray.push_back(v);
+
+			v.pos = glm::vec3(-scale, 0.f, scale);
+			v.normal = glm::vec3(0.f, 1.f, 0.f);
+			v.texCoord = glm::vec2(0.f, 0.f);
+			vArray.push_back(v);
+
+			v.pos = glm::vec3(scale, 0.f, -scale);
+			v.normal = glm::vec3(0.f, 1.f, 0.f);
+			v.texCoord = glm::vec2(1.f, 1.f);
+			vArray.push_back(v);
+
+			v.pos = glm::vec3(scale, 0.f, scale);
+			v.normal = glm::vec3(0.f, 1.f, 0.f);
+			v.texCoord = glm::vec2(1.f, 0.f);
+			vArray.push_back(v);
+
+			std::vector<uint32_t> indices{ 0, 1, 2, 2, 1, 3 };
+			m_mesh->initialize(vArray, indices);
+		}
+	}
+
+	bool Plane::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader)
+	{
+		shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY, param.rhi);
+
+		if (!shader)
+		{
+			LOG_ERR("fail to get color geometry shader");
+			return false;
+		}
+
+		shader->use(true);
+
+		shader->setVec4("u_color", m_mesh->m_color);
+		shader->setMat4("u_modelMat", m_transform->getMat());
+		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
+
+		return true;
+	}
+}

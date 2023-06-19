@@ -4,17 +4,21 @@
 #include <string>
 #include <memory>
 
+#include "function/framework/comp/TransformComp.h"
+#include "function/framework/comp/MeshComp.h"
+
 #include "GeoDef.h"
 
 namespace Pionner
 {
 	struct RenderParam;
-	class  MeshComp;
-	class  TransformComp;
 	class  Shader;
 
 	class Geometry
 	{
+	public:
+		static std::shared_ptr<Geometry> createGeometry(GeometryType type);
+
 	public:
 		Geometry(const char *name);
 		virtual ~Geometry();
