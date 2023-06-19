@@ -20,7 +20,7 @@
 
 namespace Pionner
 {
-	ScreenRender::ScreenRender() : Geometry("Screen Render"), m_texId(0)
+	ScreenRender::ScreenRender(ShaderType shaderType) : Geometry("Screen Render"), m_texId(0), m_shaderType(shaderType)
 	{
 	}
 
@@ -34,9 +34,22 @@ namespace Pionner
 		if (!dealShader(param, shader))
 			return;
 
+		auto rhi = param.rhi;
+		const RenderViewport &port = param.renderViewport;
+
+		rhi->setViewport(port.m_left, port.m_top, port.m_width, port.m_height);
+		rhi->clearColor(glm::vec4(1.f));
+		rhi->clear(COLOR_BUF_BIT | DEPTH_BUF_BIT);
+
+		DepthTest depthTest{};
+		depthTest.m_enbale = true;
+		rhi->setDepthMode(depthTest);
+
 		// temporary buffer that holds an initialized buffer
 		auto holderTex = param.resource->createHolderBuffer(BUF_TEXTURE);
 		holderTex->setHolderId(m_texId);
+
+		shader->use(true);
 
 		holderTex->bindTarget(0);
 		shader->setInt("u_depSampler", m_texId);
@@ -45,6 +58,9 @@ namespace Pionner
 		drawCmd->drawGeometry(*this, param);
 
 		holderTex->unbind();
+
+		depthTest.m_enbale = false;
+		rhi->setDepthMode(depthTest);
 
 		shader->use(false);
 	}
@@ -81,7 +97,7 @@ namespace Pionner
 
 	bool ScreenRender::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader)
 	{
-		shader = param.shaderMgr->get(SHADER_TYPE_DEPTH_SCREEN_2D, param.rhi);
+		shader = param.shaderMgr->get(m_shaderType, param.rhi);
 		if (!shader || !shader->isInit())
 		{
 			LOG_ERR("depth screen 2d shader is invalid");

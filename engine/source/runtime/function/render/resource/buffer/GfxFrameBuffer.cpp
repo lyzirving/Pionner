@@ -18,7 +18,7 @@ namespace Pionner
 
 	GfxFrameBuffer::~GfxFrameBuffer()
 	{
-		GfxFrameBuffer::notifyRelease();
+		notifyRelease();
 	}
 
 }

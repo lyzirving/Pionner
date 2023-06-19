@@ -63,10 +63,21 @@ namespace Pionner
 			glDrawBuffer(GL_NONE);
 			glReadBuffer(GL_NONE);
 
+			uint32_t status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+			if (status == GL_FRAMEBUFFER_COMPLETE)
+			{
+				LOG_DEBUG("succeed to create shadow map, size[%u, %u], fbo[%u], texture id[%u]",
+						  m_width, m_height, m_id, m_attachIds[DEPTH_ATTACH]);
+				m_uploaded = true;
+			}
+			else
+			{
+				LOG_ERR("fail to create shadow map, status[%x]", status);
+			}
+
+			glBindTexture(GL_TEXTURE_2D, 0);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-
-		m_uploaded = GLHelper::checkGLErr("fail to build depth framebuffer");
 	}
 
 	void GLDepthFrameBuffer::bind()
@@ -85,6 +96,7 @@ namespace Pionner
 		if (isUpload())
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+			GLHelper::checkGLErr("fail to bind depth framebuffer");
 		}
 	}
 

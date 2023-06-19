@@ -2,13 +2,14 @@
 #define __RENDER_GEO_SCREEN_RENDER_H__
 
 #include "Geometry.h"
+#include "function/render/shader/ShaderDef.h"
 
 namespace Pionner
 {
 	class ScreenRender : Geometry
 	{
 	public:
-		ScreenRender();
+		ScreenRender(ShaderType shaderType);
 		virtual ~ScreenRender();
 
 		virtual void draw(RenderParam &param) override;
@@ -20,7 +21,8 @@ namespace Pionner
 		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) override;
 
 	private:
-		uint32_t m_texId;
+		uint32_t   m_texId;
+		ShaderType m_shaderType;
 	};
 }
 
