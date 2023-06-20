@@ -23,15 +23,12 @@
 
 namespace Pionner
 {
-	DepthPass::DepthPass() : RenderPassBase()
-		, m_depthFboWidth(1024), m_depthFboHeight(1024)
-		, m_depthFbo(nullptr), m_depthScreenRender(nullptr)
+	DepthPass::DepthPass() : RenderPassBase(), m_depthScreenRender(nullptr)
 	{
 	}
 
 	DepthPass::~DepthPass()
 	{
-		m_depthFbo.reset();
 		m_depthScreenRender.reset();
 	}
 
@@ -54,17 +51,22 @@ namespace Pionner
 		auto resource = param.resource;
 		const RenderViewport &port = param.renderViewport;
 
-		if (!m_depthFbo)
+		auto scene = param.sceneMgr;
+		auto light = scene->m_lights[scene->m_curLight];
+		std::shared_ptr<GfxFrameBuffer> depthBuf{ nullptr };
+
+		if (!light || !(depthBuf = light->getDepthFbo()) || depthBuf->getWidth() == 0 || depthBuf->getHeight() == 0)
 		{
-			m_depthFbo = resource->allocFbo(BUF_DEPTH_FRAMEBUFFER);
-			m_depthFbo->setSize(m_depthFboWidth, m_depthFboHeight);
+			LOG_ERR("no light in the screen, or light's buffer is invalid");
+			return;
 		}
 
-		m_depthFbo->upload();
+		depthBuf->upload();
 
-		m_depthFbo->bind();
+		depthBuf->bind();
+
 		rhi->clear(DEPTH_BUF_BIT);
-		rhi->setViewport(0, 0, m_depthFboWidth, m_depthFboHeight);
+		rhi->setViewport(0, 0, depthBuf->getWidth(), depthBuf->getHeight());
 
 		DepthTest depthTest{};
 		depthTest.m_enbale = true;
@@ -78,11 +80,11 @@ namespace Pionner
 		depthTest.m_enbale = false;
 		rhi->setDepthMode(depthTest);
 
-		m_depthFbo->unbind();
+		depthBuf->unbind();
 
 		if (m_depthScreenRender)
 		{
-			m_depthScreenRender->setTextureId(m_depthFbo->getAttachment(DEPTH_ATTACH));
+			m_depthScreenRender->setTextureId(depthBuf->getAttachment(DEPTH_ATTACH));
 			m_depthScreenRender->draw(param);
 		}
 	}

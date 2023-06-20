@@ -12,6 +12,7 @@ namespace Pionner
 	class  WindowSystem;
 	class  Rhi;
 	class  LightComp;
+	struct RenderParam;
 
 	struct SceneMgrInitInfo
 	{
@@ -27,7 +28,7 @@ namespace Pionner
 
 		void initialize(SceneMgrInitInfo &info);
 
-		void swap(const LightComp &comp);
+		void swap(const LightComp &comp, const RenderParam &param);
 		void shutdown();
 
 		void resize(int width, int height);

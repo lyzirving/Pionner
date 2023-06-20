@@ -85,9 +85,16 @@ namespace Pionner
 
 	void RenderSystem::swapData(float deltaTime)
 	{
+		RenderParam param{};
+		param.sceneMgr = m_sceneMgr;
+		param.rhi = m_rhi;
+		param.resource = m_resourceMgr;
+		param.shaderMgr = m_shaderMgr;
+		param.world = m_world;
+
 		auto &lights = m_world->getEntities(ENTITY_LIGHT);
 		auto &lightComp = lights[0]->getComp<LightComp>();
-		m_sceneMgr->swap(lightComp);
+		m_sceneMgr->swap(lightComp, param);
 	}
 
 	void RenderSystem::shutdown()

@@ -3,6 +3,11 @@
 #include "PointLight.h"
 #include "DirectionLight.h"
 
+#include "function/render/RenderDef.h"
+
+#include "function/render/resource/RenderResourceMgr.h"
+#include "function/render/resource/buffer/GfxFrameBuffer.h"
+
 #include "core/math/MathLib.h"
 
 namespace Pionner
@@ -14,11 +19,13 @@ namespace Pionner
 		, m_shininess(64.f), m_near(0.1f), m_far(30.f)
 		, m_viewMat(1.f), m_prjMat(1.f), m_dataChange(true)
 		, m_type(LIGHT_TYPE_DIRECTIONAL)
+		, m_depthFbo(nullptr)
 	{
 	}
 
 	Light::~Light()
 	{
+		m_depthFbo.reset();
 	}
 
 	const glm::mat4 &Light::getViewMat()
@@ -102,5 +109,15 @@ namespace Pionner
 		m_ia = ia;
 		m_id = id;
 		m_is = is;
+	}
+
+	void Light::initDepthBuffer(uint32_t width, uint32_t height, const RenderParam &param)
+	{
+		if (!m_depthFbo)
+		{
+			auto resource = param.resource;
+			m_depthFbo = resource->allocFbo(BUF_DEPTH_FRAMEBUFFER);
+			m_depthFbo->setSize(width, height);
+		}
 	}
 }

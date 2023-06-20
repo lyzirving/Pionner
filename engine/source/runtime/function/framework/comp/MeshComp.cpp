@@ -22,9 +22,13 @@ namespace Pionner
 	{
 		if (m_initialized)
 		{
-			auto resourceMgr = g_runtimeCtx.m_renderSystem->getResourceMgr();
-			if (m_vBufSlot >= 0) resourceMgr->notifyRelease(BUF_VERTEX, m_vBufSlot);
-			if (m_indBufSlot >= 0) resourceMgr->notifyRelease(BUF_INDICE, m_indBufSlot);
+			std::shared_ptr<RenderResourceMgr> resourceMgr{ nullptr };
+			if (g_runtimeCtx.m_renderSystem && (resourceMgr = g_runtimeCtx.m_renderSystem->getResourceMgr()))
+			{	// if render system or resource mgr is null, all the resources should have already been released 
+				// by call checkAbandoned() or clearActive().
+				if (m_vBufSlot >= 0) resourceMgr->notifyRelease(BUF_VERTEX, m_vBufSlot);
+				if (m_indBufSlot >= 0) resourceMgr->notifyRelease(BUF_INDICE, m_indBufSlot);
+			}
 			m_vBufSlot = -1;
 			m_indBufSlot = -1;
 			m_initialized = false;

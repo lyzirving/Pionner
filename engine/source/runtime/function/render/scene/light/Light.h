@@ -9,7 +9,9 @@
 
 namespace Pionner
 {
-	class Shader;
+	class  Shader;
+	class  GfxFrameBuffer;
+	struct RenderParam;
 
 	class Light
 	{
@@ -31,8 +33,12 @@ namespace Pionner
 		void setColor(const glm::vec3 &ka, const glm::vec3 &kd, const glm::vec3 &ks);
 		void setIntensity(float ia, float id, float is);
 
+		void initDepthBuffer(uint32_t width, uint32_t height, const RenderParam &param);
+
 		template<class T>
 		bool is() const;
+
+		inline const std::shared_ptr<GfxFrameBuffer> &getDepthFbo() { return m_depthFbo; }
 
 		inline void setShininess(float shininess) { m_shininess = shininess; }
 
@@ -82,6 +88,8 @@ namespace Pionner
 		std::atomic<bool> m_dataChange;
 
 		LightType m_type;
+
+		std::shared_ptr<GfxFrameBuffer> m_depthFbo;
 	};
 
 	template<class T>

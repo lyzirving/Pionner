@@ -5,6 +5,8 @@
 
 #include "function/framework/comp/LightComp.h"
 
+#include "function/render/RenderDef.h"
+
 namespace Pionner
 {
 	Pionner::SceneMgr::SceneMgr()
@@ -31,7 +33,7 @@ namespace Pionner
 		m_frustum->setAspect(aspect);
 	}
 
-	void SceneMgr::swap(const LightComp &comp)
+	void SceneMgr::swap(const LightComp &comp, const RenderParam &param)
 	{
 		m_curLight = comp.m_type;
 		if (!m_lights[m_curLight])
@@ -45,6 +47,8 @@ namespace Pionner
 
 		m_lights[m_curLight]->setNear(m_frustum->near());
 		m_lights[m_curLight]->setFar(m_frustum->far());
+
+		m_lights[m_curLight]->initDepthBuffer(1024, 1024, param);
 	}
 
 	void SceneMgr::shutdown()
