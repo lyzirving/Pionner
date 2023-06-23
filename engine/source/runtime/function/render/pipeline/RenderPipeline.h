@@ -25,6 +25,7 @@ namespace Pionner
 
 		virtual void forwardRender(RenderParam &param);
 		virtual void preparePassData(RenderParam &param);
+		virtual void swapData(RenderParam &param);
 
 	protected:
 		std::shared_ptr<Rhi>    m_rhi;

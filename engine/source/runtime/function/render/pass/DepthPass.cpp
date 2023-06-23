@@ -3,13 +3,15 @@
 #include "function/framework/world/World.h"
 
 #include "function/framework/comp/RenderComp.h"
+#include "function/framework/comp/GeometryComp.h"
 #include "function/framework/comp/LightComp.h"
-#include "function/framework/comp/OcclusionComp.h"
+#include "function/framework/comp/ShadowComp.h"
 
 #include "function/render/scene/SceneMgr.h"
 #include "function/render/rhi/Rhi.h"
 
 #include "function/render/geo/screen/DepthScreenRender.h"
+#include "function/render/shader/ShaderMgr.h"
 
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxFrameBuffer.h"
@@ -48,7 +50,7 @@ namespace Pionner
 		auto rhi = param.rhi;
 		auto cmd = rhi->getDrawCmd();
 		auto world = param.world;
-		auto resource = param.resource;
+		std::shared_ptr<Shader> shader{ nullptr };
 		const RenderViewport &port = param.renderViewport;
 
 		auto scene = param.sceneMgr;
@@ -72,9 +74,27 @@ namespace Pionner
 		depthTest.m_enbale = true;
 		rhi->setDepthMode(depthTest);
 
-		world->iterate([&](decs::EntityID id, RenderComp &comp0, OcclusionComp &comp1)
+		world->iterate([&](decs::EntityID id, ShadowComp &comp)
 		{
-			cmd->drawDepth(*comp0.m_entity.get(), param);
+			auto entity = world->getEntity(id.index);
+		if (entity)
+		{
+			if (entity->hasComp<RenderComp>())
+			{
+				auto &renderComp = entity->getComp<RenderComp>();
+				cmd->drawDepth(*renderComp.m_entity.get(), param);
+			}
+			else if (entity->hasComp<GeometryComp>())
+			{
+				auto &geoComp = entity->getComp<GeometryComp>();
+				geoComp.m_geometry->initialize(param);
+				if (geoComp.m_geometry->dealDepthShader(param, shader))
+				{
+					cmd->drawGeometry(*geoComp.m_geometry.get(), param);
+					shader->use(false);
+				}
+			}
+		}
 		});
 
 		depthTest.m_enbale = false;

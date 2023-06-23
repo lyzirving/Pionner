@@ -73,21 +73,7 @@ namespace Pionner
 
 	void RenderPipeline::preparePassData(RenderParam &param)
 	{
-		auto rhi = param.rhi;
-		auto windowSystem = rhi->getWindowSystem();
-		auto sceneMgr = param.sceneMgr;
-		std::shared_ptr<EventMgr> evtMgr{ nullptr };
-
-		// deal window size-change
-		if (windowSystem->sizeChange())
-		{
-			int width = windowSystem->getWidth();
-			int height = windowSystem->getHeight();
-
-			m_uiPass->resize(width, height);
-			sceneMgr->resize(width, height);
-			windowSystem->setSizeChange(false);
-		}
+		auto windowSystem = param.rhi->getWindowSystem();
 
 		const ViewLayout &layout = m_uiPass->getRenderLayout();
 		param.renderViewport.m_width = layout.m_width;
@@ -98,8 +84,25 @@ namespace Pionner
 		param.windowViewport.m_left = param.windowViewport.m_height = 0;
 		param.windowViewport.m_width = windowSystem->getWidth();
 		param.windowViewport.m_height = windowSystem->getHeight();
+	}
+
+	void RenderPipeline::swapData(RenderParam &param)
+	{
+		auto windowSystem = param.rhi->getWindowSystem();
+
+		// deal window size-change
+		if (windowSystem->sizeChange())
+		{
+			int width = windowSystem->getWidth();
+			int height = windowSystem->getHeight();
+
+			m_uiPass->resize(width, height);
+			param.sceneMgr->resize(width, height);
+			windowSystem->setSizeChange(false);
+		}
 
 		// deal motion event
+		std::shared_ptr<EventMgr> evtMgr{ nullptr };
 		if (m_uiPass && (evtMgr = windowSystem->getEvtMgr()))
 		{
 			Event evt = evtMgr->processEvent();

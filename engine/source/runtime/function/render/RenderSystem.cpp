@@ -95,6 +95,8 @@ namespace Pionner
 		auto &lights = m_world->getEntities(ENTITY_LIGHT);
 		auto &lightComp = lights[0]->getComp<LightComp>();
 		m_sceneMgr->swap(lightComp, param);
+
+		m_pipeLine->swapData(param);
 	}
 
 	void RenderSystem::shutdown()

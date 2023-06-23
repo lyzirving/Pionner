@@ -19,6 +19,7 @@ namespace Pionner
 
 		virtual void draw(RenderParam &param) override;
 		virtual void initialize(RenderParam &param) override;
+		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) override;
 		virtual bool isInitialized() override;
 
 		inline float getHeight() const { return m_height; }
@@ -26,9 +27,6 @@ namespace Pionner
 		void setColor(const glm::vec4 &color);
 		void setRadius(float radius);
 		void setHeight(float height);
-
-	protected:
-		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) override;
 
 	private:
 		void buildData(std::vector<Vertex> &vertexArray,

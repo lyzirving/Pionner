@@ -19,6 +19,7 @@ namespace Pionner
 		void shutdown();
 
 		inline std::vector<std::shared_ptr<Entity>> &getEntities(EntityType type) { return m_entities[type]; }
+		std::shared_ptr<Entity> getEntity(uint32_t key);
 
 		template <class ... CompTypes>
 		std::shared_ptr<Entity> createEntity(EntityType type);
@@ -34,6 +35,7 @@ namespace Pionner
 
 		std::shared_ptr<decs::ECSWorld>                          m_worldImpl;
 		std::vector<std::shared_ptr<Entity>>                     m_entities[ENTITY_TYPE_CNT];
+		std::unordered_map<uint32_t, std::shared_ptr<Entity>>    m_entityMap;
 	};
 
 	template <class ... CompTypes>
@@ -42,6 +44,8 @@ namespace Pionner
 		std::shared_ptr<Entity> entity = std::shared_ptr<Entity>(new Entity(m_worldImpl, g_entityId++));
 		entity->m_type = type;
 		entity->m_id = m_worldImpl->new_entity<CompTypes...>();
+
+		m_entityMap.insert(std::make_pair(entity->m_id.index, entity));
 		m_entities[type].push_back(entity);
 		return entity;
 	}
@@ -52,6 +56,8 @@ namespace Pionner
 		std::shared_ptr<Entity> entity = std::shared_ptr<Entity>(new Entity(m_worldImpl, g_entityId++, name));
 		entity->m_type = type;
 		entity->m_id = m_worldImpl->new_entity<CompTypes...>();
+
+		m_entityMap.insert(std::make_pair(entity->m_id.index, entity));
 		m_entities[type].push_back(entity);
 		return entity;
 	}

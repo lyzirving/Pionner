@@ -5,11 +5,11 @@
 
 namespace Pionner
 {
-	class OcclusionComp : public Comp
+	class ShadowComp : public Comp
 	{
 	public:
-		OcclusionComp();
-		virtual ~OcclusionComp();
+		ShadowComp();
+		virtual ~ShadowComp();
 	};
 }
 

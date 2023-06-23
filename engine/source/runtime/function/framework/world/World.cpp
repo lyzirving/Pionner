@@ -3,7 +3,7 @@
 #include "function/framework/comp/RenderComp.h"
 #include "function/framework/comp/LightComp.h"
 #include "function/framework/comp/GeometryComp.h"
-#include "function/framework/comp/OcclusionComp.h"
+#include "function/framework/comp/ShadowComp.h"
 
 #include "function/framework/load/Loader.h"
 
@@ -23,7 +23,7 @@ namespace Pionner
 {
 	uint32_t World::g_entityId = 0;
 
-	World::World() : m_worldImpl(new decs::ECSWorld), m_entities()
+	World::World() : m_worldImpl(new decs::ECSWorld), m_entities(), m_entityMap()
 	{
 	}
 
@@ -36,7 +36,7 @@ namespace Pionner
 	void World::build()
 	{
 		// Insert default entity
-		auto roleEntity = createEntity<RenderComp, OcclusionComp>(ENTITY_OBJ, "role");
+		auto roleEntity = createEntity<RenderComp, ShadowComp>(ENTITY_OBJ, "role");
 		auto &roleComp = roleEntity->getComp<RenderComp>();
 		roleComp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
 		Loader::load("assets/objects/basic/Marry/Marry.obj", roleComp.m_entity);
@@ -50,7 +50,7 @@ namespace Pionner
 		lightComp.m_dir = glm::vec3(0.f) - lightComp.m_pos;
 
 		// Add a plane
-		auto planeEntity = createEntity<GeometryComp>(ENTITY_GEOMETRY, "plane");
+		auto planeEntity = createEntity<GeometryComp, ShadowComp>(ENTITY_GEOMETRY, "plane");
 		auto &geoComp = planeEntity->getComp<GeometryComp>();
 		geoComp.m_geometry = Geometry::createGeometry(GEO_TYPE_PLANE);
 		auto planeTrans = geoComp.m_geometry->getTransformComp();
@@ -71,5 +71,23 @@ namespace Pionner
 				itr = m_entities[i].erase(itr);
 			}
 		}
+
+		auto itr = m_entityMap.begin();
+		while (itr != m_entityMap.end())
+		{
+			itr->second.reset();
+			itr = m_entityMap.erase(itr);
+		}
+	}
+
+	std::shared_ptr<Entity> World::getEntity(uint32_t key)
+	{
+		std::shared_ptr<Entity> result{ nullptr };
+		auto itr = m_entityMap.find(key);
+		if (itr != m_entityMap.end())
+		{
+			result = itr->second;
+		}
+		return result;
 	}
 }
