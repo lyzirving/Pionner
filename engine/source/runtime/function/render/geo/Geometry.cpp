@@ -76,6 +76,7 @@ namespace Pionner
 			shader->setMat4("u_lightViewMat", light->getViewMat());
 			shader->setMat4("u_lightPrjMat", light->getPrjMat());
 			shader->setMat4("u_modelMat", m_transform->getMat());
+			shader->setInt("u_calcShadow", 0);
 		}
 		else
 		{

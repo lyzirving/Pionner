@@ -3,20 +3,63 @@
 
 precision highp float;
 
+struct Light {
+    int   type; // 0 for directional light, 1 for point light
+    vec3  pos;  // light's position in world coordinate system
+    vec3  direction;
+    vec3  ka, kd, ks; // color of ambient, diffuse, specular
+    float ia, id, is; // intensity of ambient, diffuse, specular
+    float shininess;
+    float attParamConst, attParamLinear, attParamQuad; // params of attenuation for point light
+};
+
 uniform vec4 u_color;
 uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
 
+uniform mat4 u_lightViewMat;
+uniform mat4 u_lightPrjMat;
+
+uniform sampler2D u_depthTexture;
+uniform int       u_calcShadow;
+
+uniform Light     u_light;
+
 in vec3 v_pos;
 
 out vec4 o_color;
 
+float shadowCalculation(vec3 pos);
 float computeDepth(vec3 pos);
 
 void main() {
-    o_color = u_color;
+    vec3 pos = vec3(u_modelMat * vec4(v_pos, 1.f));
+    if(u_calcShadow != 0)
+    {
+        vec4 la = vec4(u_light.ka * u_light.ia, 1.f); // light's ambient 
+        vec4 ambient = la * u_color;
+
+        float shadow = shadowCalculation(pos);
+        o_color = ambient + (1.f - shadow) * u_color;
+    }
+    else
+    {
+        o_color = u_color;
+    }
     gl_FragDepth = computeDepth(v_pos);
+}
+
+float shadowCalculation(vec3 pos)
+{
+    vec4 lightSpacePos = u_lightPrjMat * u_lightViewMat * vec4(pos, 1.f);
+    // lightPos ranges from [-1, 1]
+    vec3 lightSpaceCoord = lightSpacePos.xyz / lightSpacePos.w;
+    // clamp to [0, 1]
+    lightSpaceCoord = lightSpaceCoord * 0.5f + 0.5f;
+    float closestDepth = texture(u_depthTexture, lightSpaceCoord.xy).r;
+    float curDepth = lightSpaceCoord.z;
+    return (curDepth > closestDepth ? 1.f : 0.f);
 }
 
 float computeDepth(vec3 pos)

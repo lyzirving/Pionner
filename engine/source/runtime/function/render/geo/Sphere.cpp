@@ -54,6 +54,14 @@ namespace Pionner
 		if (!dealShader(param, shader))
 			return;
 
+		auto rhi = param.rhi;
+		DepthTest depth = DepthTest::common();
+		Blend blend = Blend::common();
+		CullFace cull = CullFace::common();
+		rhi->setCullMode(cull);
+		rhi->setDepthMode(depth);
+		rhi->setBlendMode(blend);
+
 		auto cmd = param.rhi->getDrawCmd();
 		cmd->drawGeometry(*this, param);
 

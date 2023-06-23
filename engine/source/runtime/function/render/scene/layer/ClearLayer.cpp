@@ -23,15 +23,5 @@ namespace Pionner
 
 		rhi->clearColor(m_color);
 		rhi->clear(COLOR_BUF_BIT | DEPTH_BUF_BIT);
-
-		DepthTest depth;
-		depth.m_enbale = true;
-
-		Blend blend = Blend::common();
-		CullFace cullFace = CullFace::common();
-
-		rhi->setCullMode(cullFace);
-		rhi->setDepthMode(depth);
-		rhi->setBlendMode(blend);
 	}
 }

@@ -48,14 +48,16 @@ namespace Pionner
 		if (!dealShader(param, shader))
 			return;
 
+		auto rhi = param.rhi;
+		DepthTest depth = DepthTest::common();
+		Blend blend = Blend::common();
 		CullFace cull = CullFace::disable();
-		param.rhi->setCullMode(cull);
+		rhi->setCullMode(cull);
+		rhi->setDepthMode(depth);
+		rhi->setBlendMode(blend);
 
 		std::shared_ptr<DrawCmd> drawCmd = param.rhi->getDrawCmd();
 		drawCmd->drawGeometry(*this, param);
-
-		cull = CullFace::common();
-		param.rhi->setCullMode(cull);
 
 		shader->use(false);
 	}

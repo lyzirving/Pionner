@@ -7,6 +7,7 @@
 
 #include "function/render/resource/ResourceDef.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
+#include "function/render/resource/buffer/GfxFrameBuffer.h"
 #include "function/render/resource/RenderResourceMgr.h"
 
 #include "function/render/scene/SceneMgr.h"
@@ -52,6 +53,14 @@ namespace Pionner
 		if (!dealShader(param, shader))
 			return;
 
+		auto rhi = param.rhi;
+		DepthTest depth = DepthTest::common();
+		Blend blend = Blend::common();
+		CullFace cull = CullFace::common();
+		rhi->setCullMode(cull);
+		rhi->setDepthMode(depth);
+		rhi->setBlendMode(blend);
+
 		auto cmd = param.rhi->getDrawCmd();
 		cmd->drawGeometry(*this, param);
 
@@ -93,6 +102,9 @@ namespace Pionner
 
 	bool Plane::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader)
 	{
+		auto scene = param.sceneMgr;
+		auto light = scene->m_lights[scene->m_curLight];
+		bool lightExist = light != nullptr;
 		shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY, param.rhi);
 
 		if (!shader)
@@ -102,6 +114,20 @@ namespace Pionner
 		}
 
 		shader->use(true);
+
+		if (lightExist)
+		{
+			light->dealShader(shader);
+
+			shader->setMat4("u_lightViewMat", light->getViewMat());
+			shader->setMat4("u_lightPrjMat", light->getPrjMat());
+			shader->setInt("u_calcShadow", 1);
+
+			auto shadowBuf = param.resource->createHolderBuffer(BUF_TEXTURE);
+			shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
+			shadowBuf->bindTarget(5);
+			shader->setInt("u_depthTexture", 5);
+		}
 
 		shader->setVec4("u_color", m_mesh->m_color);
 		shader->setMat4("u_modelMat", m_transform->getMat());

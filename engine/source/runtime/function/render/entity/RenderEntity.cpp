@@ -122,11 +122,13 @@ namespace Pionner
 		auto cmd = rhi->getDrawCmd();
 
 		Blend blend = Blend::disable();
+		DepthTest depth = DepthTest::common();
+		CullFace cullFace = CullFace::common();
+
+		rhi->setCullMode(cullFace);
+		rhi->setDepthMode(depth);
 		rhi->setBlendMode(blend);
 
 		cmd->drawEntity(*this, param);
-
-		blend = Blend::common();
-		param.rhi->setBlendMode(blend);
 	}
 }

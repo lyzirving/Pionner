@@ -41,10 +41,16 @@ uniform vec3 u_viewPos;
 uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
+
 uniform mat4 u_normalMat;
+
+uniform mat4 u_lightViewMat;
+uniform mat4 u_lightPrjMat;
 
 uniform Light    u_light;
 uniform Material u_material;
+
+uniform sampler2D u_depthTexture;
 
 out vec4 o_color;
 
@@ -53,8 +59,9 @@ float computeAttenuation(Light light, float dist);
 
 vec4  materialColor(Material material, vec2 texCoord);
 vec4  lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir);
-vec4  directionalLight(Light light, vec4 objColor, vec3 normal, vec3 viewDir, int colorMode);
+vec4  directionalLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode);
 vec4  pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode);
+float shadowCalculation(vec3 pos);
 
 void main() {
     vec3 fragPos = vec3(u_modelMat * vec4(v_pos, 1.f));
@@ -103,7 +110,7 @@ vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 
 
     if(light.type == LIGHT_TYPE_DIRECTIONAL)
     {
-        surface = directionalLight(light, objColor, normal, viewDir, material.colorMode);
+        surface = directionalLight(light, objColor, pos, normal, viewDir, material.colorMode);
     } 
     else if(light.type == LIGHT_TYPE_POINT)
     {
@@ -113,7 +120,7 @@ vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 
     return surface;
 }
 
-vec4 directionalLight(Light light, vec4 objColor, vec3 normal, vec3 viewDir, int colorMode)
+vec4 directionalLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode)
 {
     vec4 la = vec4(light.ka * light.ia, 1.f); // light's ambient 
     vec4 ld = vec4(light.kd * light.id, 1.f); // light's diffuse
@@ -124,7 +131,7 @@ vec4 directionalLight(Light light, vec4 objColor, vec3 normal, vec3 viewDir, int
     vec4 ambient = la * objColor;
     vec4 diffuse = ld * diff * objColor;
 
-    vec4 color = ambient + diffuse;
+    vec4 color = diffuse;
 
     if(colorMode == COLOR_MODE_ALL) {
         vec4 ls = vec4(light.ks * light.is, 1.f); // light's specular
@@ -135,6 +142,12 @@ vec4 directionalLight(Light light, vec4 objColor, vec3 normal, vec3 viewDir, int
 
         color += specular;
     }
+
+    float shadow = shadowCalculation(pos);
+
+    color = (1.f - shadow) * color;
+
+    color += ambient;
 
     return color;
 }
@@ -153,7 +166,7 @@ vec4 pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir,
     vec4 ambient = la * objColor * fade;
     vec4 diffuse = ld * diff * objColor * fade;
 
-    vec4 color = ambient + diffuse;
+    vec4 color = diffuse;
 
     if(colorMode == COLOR_MODE_ALL) {
         vec4 ls = vec4(light.ks * light.is, 1.f); // light's specular
@@ -165,5 +178,23 @@ vec4 pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir,
         color += specular;
     }
 
+    float shadow = shadowCalculation(pos);
+
+    color = (1.f - shadow) * color;
+
+    color += ambient;
+
     return color;
+}
+
+float shadowCalculation(vec3 pos)
+{
+    vec4 lightSpacePos = u_lightPrjMat * u_lightViewMat * vec4(pos, 1.f);
+    // lightPos ranges from [-1, 1]
+    vec3 lightSpaceCoord = lightSpacePos.xyz / lightSpacePos.w;
+    // clamp to [0, 1]
+    lightSpaceCoord = lightSpaceCoord * 0.5f + 0.5f;
+    float closestDepth = texture(u_depthTexture, lightSpaceCoord.xy).r;
+    float curDepth = lightSpaceCoord.z;
+    return (curDepth > closestDepth ? 1.f : 0.f);
 }

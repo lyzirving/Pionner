@@ -10,6 +10,7 @@
 
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
+#include "function/render/resource/buffer/GfxFrameBuffer.h"
 
 #include "core/log/LogSystem.h"
 #include "core/math/MathLib.h"
@@ -57,6 +58,14 @@ namespace Pionner
 			light->dealShader(shader);
 			shader->setVec3("u_viewPos", camera->getCamPos());
 			shader->setMat4("u_normalMat", MathLib::normalMat(modelMat));
+
+			shader->setMat4("u_lightViewMat", light->getViewMat());
+			shader->setMat4("u_lightPrjMat", light->getPrjMat());
+
+			auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
+			shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
+			shadowBuf->bindTarget(5);
+			shader->setInt("u_depthTexture", 5);
 		}
 
 		shader->setMat4("u_modelMat", modelMat);

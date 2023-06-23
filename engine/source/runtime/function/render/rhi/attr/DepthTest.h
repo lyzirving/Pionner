@@ -12,6 +12,20 @@ namespace Pionner
 
 		~DepthTest() = default;
 
+		static DepthTest DepthTest::common()
+		{
+			DepthTest test;
+			test.m_enbale = true;
+			return test;
+		}
+
+		static DepthTest DepthTest::disnable()
+		{
+			DepthTest test;
+			test.m_enbale = false;
+			return test;
+		}
+
 	public:
 		bool          m_enbale;
 	};
