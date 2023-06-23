@@ -101,6 +101,7 @@ namespace Pionner
 		shader->setMat4("u_modelMat", m_transform->getMat());
 		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
 		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
+		shader->setInt("u_calcShadow", 0);
 
 		return true;
 	}

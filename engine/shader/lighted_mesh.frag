@@ -61,7 +61,7 @@ vec4  materialColor(Material material, vec2 texCoord);
 vec4  lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir);
 vec4  directionalLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode);
 vec4  pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode);
-float shadowCalculation(vec3 pos);
+float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir);
 
 void main() {
     vec3 fragPos = vec3(u_modelMat * vec4(v_pos, 1.f));
@@ -143,7 +143,7 @@ vec4 directionalLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 vi
         color += specular;
     }
 
-    float shadow = shadowCalculation(pos);
+    float shadow = shadowCalculation(pos, normal, lightDir);
 
     color = (1.f - shadow) * color;
 
@@ -178,7 +178,7 @@ vec4 pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir,
         color += specular;
     }
 
-    float shadow = shadowCalculation(pos);
+    float shadow = shadowCalculation(pos, normal, lightDir);
 
     color = (1.f - shadow) * color;
 
@@ -187,14 +187,16 @@ vec4 pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir,
     return color;
 }
 
-float shadowCalculation(vec3 pos)
+float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
 {
     vec4 lightSpacePos = u_lightPrjMat * u_lightViewMat * vec4(pos, 1.f);
-    // lightPos ranges from [-1, 1]
+    // LightPos ranges from [-1, 1]
     vec3 lightSpaceCoord = lightSpacePos.xyz / lightSpacePos.w;
-    // clamp to [0, 1]
+    // Clamp to [0, 1]
     lightSpaceCoord = lightSpaceCoord * 0.5f + 0.5f;
     float closestDepth = texture(u_depthTexture, lightSpaceCoord.xy).r;
     float curDepth = lightSpaceCoord.z;
-    return (curDepth > closestDepth ? 1.f : 0.f);
+    // Shadow bias: fix shadow acne
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);  
+    return (curDepth  - bias > closestDepth ? 1.f : 0.f);
 }

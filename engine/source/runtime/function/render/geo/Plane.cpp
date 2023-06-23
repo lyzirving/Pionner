@@ -14,6 +14,7 @@
 
 #include "function/render/shader/ShaderMgr.h"
 
+#include "core/math/MathLib.h"
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -57,6 +58,7 @@ namespace Pionner
 		DepthTest depth = DepthTest::common();
 		Blend blend = Blend::common();
 		CullFace cull = CullFace::common();
+
 		rhi->setCullMode(cull);
 		rhi->setDepthMode(depth);
 		rhi->setBlendMode(blend);
@@ -121,7 +123,6 @@ namespace Pionner
 
 			shader->setMat4("u_lightViewMat", light->getViewMat());
 			shader->setMat4("u_lightPrjMat", light->getPrjMat());
-			shader->setInt("u_calcShadow", 1);
 
 			auto shadowBuf = param.resource->createHolderBuffer(BUF_TEXTURE);
 			shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
@@ -129,10 +130,14 @@ namespace Pionner
 			shader->setInt("u_depthTexture", 5);
 		}
 
+		glm::mat4 modelMat = m_transform->getMat();
+		shader->setMat4("u_modelMat", modelMat);
+		shader->setMat4("u_normalMat", MathLib::normalMat(modelMat));
+
+		shader->setMat4("u_viewMat", scene->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", scene->m_frustum->getPerspectMat());
 		shader->setVec4("u_color", m_mesh->m_color);
-		shader->setMat4("u_modelMat", m_transform->getMat());
-		shader->setMat4("u_viewMat", param.sceneMgr->m_camera->getViewMat());
-		shader->setMat4("u_prjMat", param.sceneMgr->m_frustum->getPerspectMat());
+		shader->setInt("u_calcShadow", lightExist ? 1 : 0);
 
 		return true;
 	}
