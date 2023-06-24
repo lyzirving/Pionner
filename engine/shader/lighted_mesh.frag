@@ -194,9 +194,25 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
     vec3 lightSpaceCoord = lightSpacePos.xyz / lightSpacePos.w;
     // Clamp to [0, 1]
     lightSpaceCoord = lightSpaceCoord * 0.5f + 0.5f;
-    float closestDepth = texture(u_depthTexture, lightSpaceCoord.xy).r;
-    float curDepth = lightSpaceCoord.z;
+    if(lightSpaceCoord.z > 1.f)
+    {
+        return 0.f;
+    }
     // Shadow bias: fix shadow acne
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);  
-    return (curDepth  - bias > closestDepth ? 1.f : 0.f);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005); 
+    float curDepth = lightSpaceCoord.z;
+    vec2 texelSize = 1.0 / textureSize(u_depthTexture, 0);
+
+    float shadow = 0.f;
+    // Pcf: make soft shadow.
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(u_depthTexture, lightSpaceCoord.xy + vec2(x, y) * texelSize).r; 
+            shadow += curDepth - bias > pcfDepth  ? 1.0 : 0.0;        
+        }    
+    } 
+    shadow /= 9.f;
+    return shadow;
 }
