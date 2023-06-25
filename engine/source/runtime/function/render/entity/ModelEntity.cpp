@@ -40,6 +40,7 @@ namespace Pionner
 		auto frustum = sceneMgr->m_frustum;
 		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
 
+		int32_t texUnit{ 0 };
 		glm::mat4 modelMat = part->getTransform();
 		bool lightExist = (light != nullptr);
 
@@ -59,13 +60,10 @@ namespace Pionner
 			shader->setVec3("u_viewPos", camera->getCamPos());
 			shader->setMat4("u_normalMat", MathLib::normalMat(modelMat));
 
-			shader->setMat4("u_lightViewMat", light->getViewMat());
-			shader->setMat4("u_lightPrjMat", light->getPrjMat());
-
 			auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
 			shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
-			shadowBuf->bindTarget(5);
-			shader->setInt("u_depthTexture", 5);
+			shadowBuf->bindTarget(texUnit);
+			shader->setInt("u_depthTexture", texUnit++);
 		}
 
 		shader->setMat4("u_modelMat", modelMat);
@@ -73,20 +71,29 @@ namespace Pionner
 		shader->setMat4("u_prjMat", frustum->getPerspectMat());
 
 		shader->setInt("u_material.colorMode", part->m_material.m_mode);
-		shader->setInt("u_material.texType", part->m_material.m_type);
 
-		if (part->m_material.slotValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_slot)))
+		if (part->m_material.diffValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_diffSlot)))
 		{
 			texture->upload();
-			texture->bindTarget(part->m_partIndex);
-
-			std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_material.diffuseTexture" : "u_material.specTexture";
-			shader->setInt(sampler, part->m_partIndex);
-			shader->setInt("u_material.hasTexture", 1);
+			texture->bindTarget(texUnit);
+			shader->setInt("u_material.diffuseTexture", texUnit++);
+			shader->setInt("u_material.hasDiffTex", 1);
 		}
 		else
 		{
-			shader->setInt("u_material.hasTexture", 0);
+			shader->setInt("u_material.hasDiffTex", 0);
+		}
+
+		if (part->m_material.specValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_specSlot)))
+		{
+			texture->upload();
+			texture->bindTarget(texUnit);
+			shader->setInt("u_material.specTexture", texUnit++);
+			shader->setInt("u_material.hasSpecTex", 1);
+		}
+		else
+		{
+			shader->setInt("u_material.hasSpecTex", 0);
 		}
 
 		shader->setVec3("u_material.ka", part->m_material.m_colorAmbient);

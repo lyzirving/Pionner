@@ -39,6 +39,9 @@ namespace Pionner
 		shader->setFloat("u_light.is", m_is);
 
 		shader->setFloat("u_light.shininess", m_shininess);
+
+		shader->setMat4("u_lightViewMat", getViewMat());
+		shader->setMat4("u_lightPrjMat", getPrjMat());
 	}
 
 	void DirectionLight::calcMatrix()

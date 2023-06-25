@@ -172,38 +172,30 @@ namespace Pionner
 				if (mt->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 				{
 					mt->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
-					part->m_material.m_type = MAT_DIFFUSE;
-					found = true;
+
+					std::string srcPath = rootDir + '/' + texName.C_Str();
+					texture = resource->allocate(BUF_TEXTURE);
+					texture->insertData(srcPath);
+					texture->loadRawData();
+					part->m_material.m_diffSlot = texture->getSlot();
 				}
-				else if (mt->GetTextureCount(aiTextureType_SPECULAR) > 0)
+
+				if (mt->GetTextureCount(aiTextureType_SPECULAR) > 0)
 				{
 					mt->GetTexture(aiTextureType_SPECULAR, 0, &texName);
-					part->m_material.m_type = MAT_SPECULAR;
-					found = true;
+
+					std::string srcPath = rootDir + '/' + texName.C_Str();
+					texture = resource->allocate(BUF_TEXTURE);
+					texture->insertData(srcPath);
+					texture->loadRawData();
+					part->m_material.m_specSlot = texture->getSlot();
 				}
-				else if (mt->GetTextureCount(aiTextureType_AMBIENT) > 0)
+				/*if (mt->GetTextureCount(aiTextureType_AMBIENT) > 0)
 				{
 					mt->GetTexture(aiTextureType_AMBIENT, 0, &texName);
 					part->m_material.m_type = MAT_AMBIENT;
 					found = true;
-				}
-
-				if (found)
-				{
-					std::string srcPath = rootDir + '/' + texName.C_Str();
-
-					texture = resource->allocate(BUF_TEXTURE);
-					texture->insertData(srcPath);
-					texture->loadRawData();
-
-					part->m_material.m_slot = texture->getSlot();
-				}
-				else
-				{
-					part->m_material.m_type = MAT_DIFFUSE;
-				}
-
-				part->m_material.m_hasTexture = found;
+				}*/
 
 				aiColor3D color;
 				ai_real   valFloat;
@@ -213,22 +205,27 @@ namespace Pionner
 				{
 					part->m_material.m_name = valStr.C_Str();
 				}
+
 				if (mt->Get(AI_MATKEY_COLOR_DIFFUSE, color) == aiReturn_SUCCESS)
 				{
 					part->m_material.m_colorDiffuse = glm::vec3(color.r, color.g, color.b);
 				}
+
 				if (mt->Get(AI_MATKEY_COLOR_SPECULAR, color) == aiReturn_SUCCESS)
 				{
 					part->m_material.m_colorSpecular = glm::vec3(color.r, color.g, color.b);
 				}
+
 				if (mt->Get(AI_MATKEY_COLOR_AMBIENT, color) == aiReturn_SUCCESS)
 				{
 					part->m_material.m_colorAmbient = glm::vec3(color.r, color.g, color.b);
 				}
+
 				if (mt->Get(AI_MATKEY_SHININESS, valFloat) == aiReturn_SUCCESS)
 				{
 					part->m_material.m_shiness = valFloat;
 				}
+
 				if (mt->Get(AI_MATKEY_SHADING_MODEL, valInt) == aiReturn_SUCCESS)
 				{
 					if (valInt == MODE_CONSTANT || valInt == MODE_DIFFUSE || valInt == MODE_DIFFUSE_SPECULAR)

@@ -47,7 +47,10 @@ namespace Pionner
 			return;
 
 		if (!m_data)
+		{
+			LOG_ERR("data is null");
 			return;
+		}
 
 		if (m_width == 0 || m_height == 0 || m_channel == 0)
 			return;
@@ -134,6 +137,8 @@ namespace Pionner
 			return;
 
 		m_data = stbi_load(m_path.c_str(), &m_width, &m_height, &m_channel, 0);
+		if (!m_data)
+			LOG_ERR("fail to load data from path[%s]", m_path.c_str());
 	}
 
 	uint32_t GLTexture::colorFormat(int32_t component)

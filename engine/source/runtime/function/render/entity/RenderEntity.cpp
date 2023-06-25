@@ -42,9 +42,13 @@ namespace Pionner
 		{
 			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_INDICE, m_indicesSlot);
 		}
-		if (m_material.slotValid())
+		if (m_material.diffValid())
 		{
-			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_slot);
+			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_diffSlot);
+		}
+		if (m_material.specValid())
+		{
+			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_specSlot);
 		}
 		m_owner.reset();
 	}

@@ -41,6 +41,9 @@ namespace Pionner
 		shader->setFloat("u_light.attParamConst", m_attenParamConst);
 		shader->setFloat("u_light.attParamLinear", m_attenParamLinear);
 		shader->setFloat("u_light.attParamQuad", m_attenParamQuad);
+
+		shader->setMat4("u_lightViewMat", getViewMat());
+		shader->setMat4("u_lightPrjMat", getPrjMat());
 	}
 
 	void PointLight::setAttenuation(float constVal, float linearVal, float quadVal)

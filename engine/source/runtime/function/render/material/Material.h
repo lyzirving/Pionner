@@ -5,8 +5,6 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-#include "function/render/material/MaterialDef.h"
-
 namespace Pionner
 {
 	enum ShadingMode : uint8_t
@@ -24,11 +22,12 @@ namespace Pionner
 		Material();
 		~Material();
 
-		bool slotValid() const { return m_slot >= 0; }
+		bool diffValid() const { return m_diffSlot >= 0; }
+		bool specValid() const { return m_specSlot >= 0; }
 
 	public:
-		MaterialType m_type;
-		int32_t      m_slot;
+		int32_t      m_diffSlot;
+		int32_t      m_specSlot;
 
 		std::string  m_name;
 
@@ -41,7 +40,6 @@ namespace Pionner
 		float        m_shiness;
 
 		ShadingMode  m_mode;
-		bool         m_hasTexture;
 	};
 }
 

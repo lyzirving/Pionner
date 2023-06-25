@@ -28,37 +28,7 @@ namespace Pionner
 		{
 			return false;
 		}
-
-		auto resource = param.resource;
-		auto camera = param.sceneMgr->m_camera;
-		auto frustum = param.sceneMgr->m_frustum;
-
-		shader->use(true);
-
-		shader->setMat4("u_modelMat", part->getTransform());
-		shader->setMat4("u_viewMat", camera->getViewMat());
-		shader->setMat4("u_prjMat", frustum->getPerspectMat());
-
-		shader->setInt("u_material.shadingModel", part->m_material.m_mode);
-		shader->setInt("u_material.texType", part->m_material.m_type);
-
-		if (part->m_material.slotValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_slot)))
-		{
-			texture->upload();
-			texture->bindTarget(part->m_partIndex);
-
-			std::string sampler = (part->m_material.m_type == MAT_DIFFUSE) ? "u_material.diffuseTexture" : "u_material.specTexture";
-			shader->setInt(sampler, part->m_partIndex);
-			shader->setInt("u_material.hasTexture", 1);
-		}
-		else
-		{
-			shader->setInt("u_material.hasTexture", 0);
-		}
-		shader->setVec3("u_material.ka", part->m_material.m_colorAmbient);
-		shader->setVec3("u_material.kd", part->m_material.m_colorDiffuse);
-		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
-
+		// TODO: to be implemented.
 		return true;
 	}
 
