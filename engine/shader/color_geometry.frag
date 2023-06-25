@@ -68,6 +68,8 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
     // Shadow bias: fix shadow acne
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005); 
     float curDepth = lightSpaceCoord.z;
+    //float shadow = curDepth - bias > texture(u_depthTexture, lightSpaceCoord.xy).r  ? 1.0 : 0.0;
+
     vec2 texelSize = 1.0 / textureSize(u_depthTexture, 0);
 
     float shadow = 0.f;
@@ -77,7 +79,9 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
         for(int y = -1; y <= 1; ++y)
         {
             float pcfDepth = texture(u_depthTexture, lightSpaceCoord.xy + vec2(x, y) * texelSize).r; 
-            shadow += curDepth - bias > pcfDepth  ? 1.0 : 0.0;        
+            //shadow += curDepth - bias > pcfDepth  ? 1.0 : 0.0;   
+            // TODO: why if we ignore bias, the shadow will be correct on plane?
+            shadow += curDepth > pcfDepth  ? 1.0 : 0.0;     
         }    
     } 
     shadow /= 9.f;
@@ -86,8 +90,7 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
 
 vec4  lightedGeometry(Light light, vec3 pos, vec3 normal, vec4 color)
 {
-    vec4 la = vec4(light.ka * light.ia, 1.f); // light's ambient 
-    vec4 ambient = la * color;
+    vec3 la = light.ka * light.ia;// light's ambient 
 
     vec3 lightDir = vec3(0.f, 0.f, 0.f);
     if(light.type == LIGHT_TYPE_DIRECTIONAL)
@@ -100,7 +103,10 @@ vec4  lightedGeometry(Light light, vec3 pos, vec3 normal, vec4 color)
     }
     float shadow = shadowCalculation(pos, normal, lightDir);
 
-    vec4 result = ambient + (1.f - shadow) * color;
+    vec3 colorRgb = la + (1.f - shadow) * color.rgb;
+
+    vec4 result = vec4(colorRgb.rgb, color.a);
+
     return result;
 }
 

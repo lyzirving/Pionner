@@ -123,7 +123,7 @@ namespace Pionner
 
 		Blend blend = Blend::disable();
 		DepthTest depth = DepthTest::common();
-		CullFace cullFace = CullFace::disable();
+		CullFace cullFace = CullFace::common();
 
 		rhi->setCullMode(cullFace);
 		rhi->setDepthMode(depth);

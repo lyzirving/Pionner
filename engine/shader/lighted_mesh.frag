@@ -55,7 +55,7 @@ uniform sampler2D u_depthTexture;
 out vec4 o_color;
 
 float computeDepth(vec3 pos);
-float computeAttenuation(Light light, float dist);
+float computeFade(Light light, float dist);
 
 vec4  materialColor(Material material, vec2 texCoord);
 vec4  lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir);
@@ -80,7 +80,8 @@ float computeDepth(vec3 pos)
     return (posClipSpace.z / posClipSpace.w);
 }
 
-float computeAttenuation(Light light, float dist)
+// attenuation for light's intensity/irradiance(power per area)
+float computeFade(Light light, float dist)
 {
     return 1.f / (light.attParamConst + light.attParamLinear * dist + light.attParamQuad * (dist * dist));
 }
@@ -122,69 +123,36 @@ vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 
 
 vec4 directionalLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode)
 {
-    vec4 la = vec4(light.ka * light.ia, 1.f); // light's ambient 
-    vec4 ld = vec4(light.kd * light.id, 1.f); // light's diffuse
+    vec3 la = light.ka * light.ia; // light's ambient 
+    vec3 ld = light.kd * light.id; // light's diffuse
+    vec3 ls = vec3(0.f); // light's specular
 
     vec3  lightDir = -normalize(light.direction);
     float diff = max(dot(normal, lightDir), 0.f);
 
-    vec4 ambient = la * objColor;
-    vec4 diffuse = ld * diff * objColor;
-
-    vec4 color = diffuse;
+    ld *= diff;
 
     if(colorMode == COLOR_MODE_ALL) {
-        vec4 ls = vec4(light.ks * light.is, 1.f); // light's specular
         // blinn-phong mode
+        ls = light.ks * light.is;
         vec3  halfwayDir = normalize(lightDir + viewDir);
         float specFactor = pow(max(dot(halfwayDir, normal), 0.f), light.shininess);
-        vec4  specular = ls * specFactor * objColor;
-
-        color += specular;
+        ls *= specFactor;
     }
 
     float shadow = shadowCalculation(pos, normal, lightDir);
 
-    color = (1.f - shadow) * color;
+    vec3 colorRgb = (la + (1.f - shadow) * (ld + ls)) * objColor.rgb;
 
-    color += ambient;
+    vec4 result = vec4(colorRgb, objColor.a);
 
-    return color;
+    return result;
 }
 
 vec4 pointLight(Light light, vec4 objColor, vec3 pos, vec3 normal, vec3 viewDir, int colorMode)
 {
-    vec4 la = vec4(light.ka * light.ia, 1.f); // light's ambient 
-    vec4 ld = vec4(light.kd * light.id, 1.f); // light's diffuse
-
-    vec3 lightDir = normalize(light.pos - pos);
-    float dist = length(light.pos - pos);
-    float fade = computeAttenuation(light, dist);
-
-    float diff = max(dot(normal, lightDir), 0.f);
-    
-    vec4 ambient = la * objColor * fade;
-    vec4 diffuse = ld * diff * objColor * fade;
-
-    vec4 color = diffuse;
-
-    if(colorMode == COLOR_MODE_ALL) {
-        vec4 ls = vec4(light.ks * light.is, 1.f); // light's specular
-        // blinn-phong mode
-        vec3 halfwayDir = normalize(lightDir + viewDir);
-        float specFactor = pow(max(dot(halfwayDir, normal), 0.f), light.shininess);
-        vec4 specular = ls * specFactor * objColor * fade;
-
-        color += specular;
-    }
-
-    float shadow = shadowCalculation(pos, normal, lightDir);
-
-    color = (1.f - shadow) * color;
-
-    color += ambient;
-
-    return color;
+    // TODO: to be implemented.
+    return objColor;
 }
 
 float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
@@ -201,6 +169,7 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
     // Shadow bias: fix shadow acne
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005); 
     float curDepth = lightSpaceCoord.z;
+
     vec2 texelSize = 1.0 / textureSize(u_depthTexture, 0);
 
     float shadow = 0.f;
@@ -210,7 +179,7 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
         for(int y = -1; y <= 1; ++y)
         {
             float pcfDepth = texture(u_depthTexture, lightSpaceCoord.xy + vec2(x, y) * texelSize).r; 
-            shadow += curDepth - bias > pcfDepth  ? 1.0 : 0.0;        
+            shadow += curDepth - bias > pcfDepth  ? 1.0 : 0.0; 
         }    
     } 
     shadow /= 9.f;

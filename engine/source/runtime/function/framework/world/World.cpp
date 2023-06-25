@@ -36,17 +36,24 @@ namespace Pionner
 	void World::build()
 	{
 		// Insert default entity
-		auto roleEntity = createEntity<RenderComp, ShadowComp>(ENTITY_OBJ, "role");
-		auto &roleComp = roleEntity->getComp<RenderComp>();
-		roleComp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
-		Loader::load("assets/objects/basic/Marry/Marry.obj", roleComp.m_entity);
-		roleComp.m_entity->m_transComp.translate(0.f, 0.1f, 0.f);
+		auto role0 = createEntity<RenderComp, ShadowComp>(ENTITY_OBJ, "role0");
+		auto &role0Comp = role0->getComp<RenderComp>();
+		role0Comp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
+		Loader::load("assets/objects/basic/spiderman/spiderman.obj", role0Comp.m_entity);
+		role0Comp.m_entity->m_transComp.translate(0.f, 0.1f, 0.f);
+
+		auto role1 = createEntity<RenderComp, ShadowComp>(ENTITY_OBJ, "role1");
+		auto &role1Comp = role1->getComp<RenderComp>();
+		role1Comp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
+		Loader::load("assets/objects/basic/nanosuit/nanosuit.obj", role1Comp.m_entity);
+		role1Comp.m_entity->m_transComp.translate(3.f, 0.1f, 2.5f);
+		role1Comp.m_entity->m_transComp.rotate(-30.f, 0.f, 1.f, 0.f);
 
 		auto lightEntity = createEntity<LightComp>(ENTITY_LIGHT, "light");
 		auto &lightComp = lightEntity->getComp<LightComp>();
 		lightComp.m_type = LIGHT_TYPE_DIRECTIONAL;
 		// Note the directional light points at world center
-		lightComp.m_pos = glm::vec3(-3.f, 5.f, 4.f);
+		lightComp.m_pos = glm::vec3(-3.f, 4.f, 2.5f);
 		lightComp.m_dir = glm::vec3(0.f) - lightComp.m_pos;
 
 		// Add a plane
@@ -55,6 +62,7 @@ namespace Pionner
 		geoComp.m_geometry = Geometry::createGeometry(GEO_TYPE_PLANE);
 		auto planeTrans = geoComp.m_geometry->getTransformComp();
 		planeTrans->translate(0.f, 0.1f, 0.f);
+		planeTrans->scale(6.f, 6.f, 6.f);
 		auto planeMesh = geoComp.m_geometry->getMeshComp();
 		planeMesh->m_color = glm::vec4(0.73f, 0.73f, 0.73f, 1.f);
 	}

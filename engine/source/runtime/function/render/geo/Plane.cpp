@@ -73,7 +73,7 @@ namespace Pionner
 	{
 		if (!m_mesh->m_initialized)
 		{
-			float scale = 3.5f;
+			float scale = 1.f;
 
 			std::vector<Vertex> vArray{};
 			Vertex v{};
