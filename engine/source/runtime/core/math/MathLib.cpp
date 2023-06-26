@@ -85,9 +85,9 @@ namespace Pionner
 		return equalF(lhs.x, rhs.x) && equalF(lhs.y, rhs.y) && equalF(lhs.z, rhs.z);
 	}
 
-	glm::mat4 MathLib::normalMat(const glm::mat4 &modelMat)
+	glm::mat3 MathLib::normalMat(const glm::mat4 &modelMat)
 	{
-		glm::mat4 ret = glm::inverse(modelMat);
-		return glm::transpose(ret);
+		glm::mat3 ret = glm::mat3(glm::transpose(glm::inverse(modelMat)));
+		return ret;
 	}
 }

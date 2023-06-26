@@ -27,8 +27,14 @@ namespace Pionner
 		if (!shader || !shader->isInit())
 			return;
 
+		// filed define as an uniform
+		shader->setVec3("u_lightPos", m_position);
+		shader->setVec3("u_lightDir", m_direction);
+		shader->setMat4("u_lightViewMat", getViewMat());
+		shader->setMat4("u_lightPrjMat", getPrjMat());
+
+		// filed defined as a component of a uniform struct
 		shader->setInt("u_light.type", m_type);
-		shader->setVec3("u_light.direction", m_direction);
 
 		shader->setVec3("u_light.ka", m_ka);
 		shader->setVec3("u_light.kd", m_kd);
@@ -39,9 +45,6 @@ namespace Pionner
 		shader->setFloat("u_light.is", m_is);
 
 		shader->setFloat("u_light.shininess", m_shininess);
-
-		shader->setMat4("u_lightViewMat", getViewMat());
-		shader->setMat4("u_lightPrjMat", getPrjMat());
 	}
 
 	void DirectionLight::calcMatrix()

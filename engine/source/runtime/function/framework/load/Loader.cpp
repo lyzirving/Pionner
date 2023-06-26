@@ -70,7 +70,7 @@ namespace Pionner
 		std::string name = path.substr(lastBackslash + 1, lastDot - lastBackslash - 1);
 
 		Assimp::Importer importer;
-		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
 			LOG_ERR("fail to load obj from [%s], reason[%s]", path.c_str(), importer.GetErrorString());
@@ -131,6 +131,7 @@ namespace Pionner
 			Vertex vertex{};
 			vertex.pos = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
 			vertex.normal = { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z };
+			vertex.tangents = { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
 			min = glm::min(min, vertex.pos);
 			max = glm::max(max, vertex.pos);
 			if (mesh->mTextureCoords[0])
@@ -200,6 +201,17 @@ namespace Pionner
 					texture->insertData(srcPath);
 					texture->loadRawData();
 					part->m_material.m_ambientSlot = texture->getSlot();
+				}
+
+				if (mt->GetTextureCount(aiTextureType_HEIGHT) > 0)
+				{
+					mt->GetTexture(aiTextureType_HEIGHT, 0, &texName);
+
+					std::string srcPath = rootDir + '/' + texName.C_Str();
+					texture = resource->allocate(BUF_TEXTURE);
+					texture->insertData(srcPath);
+					texture->loadRawData();
+					part->m_material.m_normalSlot = texture->getSlot();
 				}
 
 				aiColor3D color;

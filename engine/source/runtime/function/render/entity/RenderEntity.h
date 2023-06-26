@@ -53,7 +53,7 @@ namespace Pionner
 		virtual void draw(RenderParam &param);
 
 		virtual bool dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
-								/*out*/std::shared_ptr<Shader> &shader, /*out*/std::shared_ptr<GfxBuffer> &texture) = 0;
+								/*out*/std::shared_ptr<Shader> &shader) = 0;
 		virtual bool dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
 									 /*out*/std::shared_ptr<Shader> &shader) = 0;
 

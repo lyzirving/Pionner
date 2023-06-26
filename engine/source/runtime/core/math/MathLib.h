@@ -5,7 +5,7 @@
 
 namespace Pionner
 {
-	#define MATH_PI 3.14159265358979323846
+#define MATH_PI 3.14159265358979323846
 
 	class MathLib
 	{
@@ -21,7 +21,7 @@ namespace Pionner
 		static bool equalF(float lhs, float rhs);
 		static bool equalVec3(const glm::vec3 &lhs, const glm::vec3 &rhs);
 
-		static glm::mat4 normalMat(const glm::mat4 &modelMat);
+		static glm::mat3 normalMat(const glm::mat4 &modelMat);
 
 	private:
 		MathLib() {}

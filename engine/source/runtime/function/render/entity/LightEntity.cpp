@@ -21,8 +21,7 @@ namespace Pionner
 	LightEntity::~LightEntity() = default;
 
 	bool LightEntity::dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
-								 /*out*/std::shared_ptr<Shader> &shader,
-								 /*out*/std::shared_ptr<GfxBuffer> &texture)
+								 /*out*/std::shared_ptr<Shader> &shader)
 	{
 		if (!(shader = param.shaderMgr->get(SHADER_TYPE_MESH, param.rhi)))
 		{

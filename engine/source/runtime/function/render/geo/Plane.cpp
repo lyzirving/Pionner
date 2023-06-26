@@ -132,7 +132,7 @@ namespace Pionner
 
 		glm::mat4 modelMat = m_transform->getMat();
 		shader->setMat4("u_modelMat", modelMat);
-		shader->setMat4("u_normalMat", MathLib::normalMat(modelMat));
+		shader->setMat3("u_normalMat", MathLib::normalMat(modelMat));
 
 		shader->setMat4("u_viewMat", scene->m_camera->getViewMat());
 		shader->setMat4("u_prjMat", scene->m_frustum->getPerspectMat());

@@ -25,11 +25,13 @@ namespace Pionner
 		bool ambientValid() const { return m_ambientSlot >= 0; }
 		bool diffValid() const { return m_diffSlot >= 0; }
 		bool specValid() const { return m_specSlot >= 0; }
+		bool normValid() const { return m_normalSlot >= 0; }
 
 	public:
 		int32_t      m_ambientSlot;
 		int32_t      m_diffSlot;
 		int32_t      m_specSlot;
+		int32_t      m_normalSlot;
 
 		std::string  m_name;
 

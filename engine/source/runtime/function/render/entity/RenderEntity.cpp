@@ -54,6 +54,10 @@ namespace Pionner
 		{
 			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_specSlot);
 		}
+		if (m_material.normValid())
+		{
+			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_normalSlot);
+		}
 		m_owner.reset();
 	}
 

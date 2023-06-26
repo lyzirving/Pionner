@@ -30,47 +30,104 @@ namespace Pionner
 	ModelEntity::~ModelEntity() = default;
 
 	bool ModelEntity::dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
-								 /*out*/std::shared_ptr<Shader> &shader,
-								 /*out*/std::shared_ptr<GfxBuffer> &texture)
+								 /*out*/std::shared_ptr<Shader> &shader)
 	{
 		auto resource = param.resource;
 		auto sceneMgr = param.sceneMgr;
 
 		auto camera = sceneMgr->m_camera;
 		auto frustum = sceneMgr->m_frustum;
+
+		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
+		bool lightExist = (light != nullptr);
+		bool normalExist = part->m_material.normValid();
+
+		if (lightExist && normalExist)
+		{
+			return shadeWithNormAndLight(param, part, shader);
+		}
+		else if (lightExist)
+		{
+
+		}
+		else if (!lightExist)
+		{
+
+		}
+
+		return false;
+	}
+
+	bool ModelEntity::dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	{
+		auto scene = param.sceneMgr;
+		LightType curLight = scene->m_curLight;
+		if (curLight == LIGHT_TYPE_DIRECTIONAL)
+		{
+			auto light = scene->m_lights[curLight];
+			if (!light)
+			{
+				LOG_ERR("current light is invalid");
+				goto fail;
+			}
+
+			shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP, param.rhi);
+
+			if (!shader || !shader->isInit())
+			{
+				LOG_ERR("shadow map shader is invalid");
+				goto fail;
+			}
+
+			shader->use(true);
+			shader->setMat4("u_modelMat", part->getTransform());
+			shader->setMat4("u_lightViewMat", light->getViewMat());
+			shader->setMat4("u_lightPrjMat", light->getPrjMat());
+
+			return true;
+		}
+		else if (param.sceneMgr->m_curLight == LIGHT_TYPE_POINT)
+		{
+
+		}
+	fail:
+		return false;
+	}
+
+	bool ModelEntity::shadeWithNormAndLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	{
+		auto resource = param.resource;
+		auto sceneMgr = param.sceneMgr;
+
+		auto camera = sceneMgr->m_camera;
+		auto frustum = sceneMgr->m_frustum;
+
 		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
 
-		int32_t texUnit{ 0 };
-		glm::mat4 modelMat = part->getTransform();
-		bool lightExist = (light != nullptr);
-
-		ShaderType shaderType = lightExist ? SHADER_TYPE_LIGHTED_MESH : SHADER_TYPE_MESH;
-
-		if (!(shader = param.shaderMgr->get(shaderType, param.rhi)))
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHTED_NORM_MESH, param.rhi)))
 		{
-			LOG_ERR("fail to get lighted-mesh shader");
+			LOG_ERR("fail to get lighted_nor_mesh shader");
 			return false;
 		}
 
+		int32_t texUnit{ 0 };
+		std::shared_ptr<GfxBuffer> texture{ nullptr };
+		glm::mat4 modelMat = part->getTransform();
+
 		shader->use(true);
 
-		if (lightExist)
+		if (!(texture = resource->find(BUF_TEXTURE, part->m_material.m_normalSlot)))
 		{
-			light->dealShader(shader);
-			shader->setVec3("u_viewPos", camera->getCamPos());
-			shader->setMat4("u_normalMat", MathLib::normalMat(modelMat));
-
-			auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
-			shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
-			shadowBuf->bindTarget(texUnit);
-			shader->setInt("u_depthTexture", texUnit++);
+			LOG_ERR("err, normal texture is invalid!");
+			shader->use(false);
+			return false;
 		}
 
-		shader->setMat4("u_modelMat", modelMat);
-		shader->setMat4("u_viewMat", camera->getViewMat());
-		shader->setMat4("u_prjMat", frustum->getPerspectMat());
-
-		shader->setInt("u_material.colorMode", part->m_material.m_mode);
+		//>>>>>>> upload material >>>>>>>
+		texture->upload();
+		texture->bindTarget(texUnit);
+		shader->setInt("u_material.normTexture", texUnit++);
+		shader->setInt("u_material.hasNormal", 1);
 
 		if (part->m_material.ambientValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_ambientSlot)))
 		{
@@ -108,46 +165,26 @@ namespace Pionner
 			shader->setInt("u_material.hasSpecTex", 0);
 		}
 
+		shader->setInt("u_material.colorMode", part->m_material.m_mode);
+
 		shader->setVec3("u_material.ka", part->m_material.m_colorAmbient);
 		shader->setVec3("u_material.kd", part->m_material.m_colorDiffuse);
 		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
+		//>>>>>>> finish uploading material >>>>>>>
 
-		return true;
-	}
+		light->dealShader(shader);
 
-	bool ModelEntity::dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
-	{
-		auto scene = param.sceneMgr;
-		LightType curLight = scene->m_curLight;
-		if (curLight == LIGHT_TYPE_DIRECTIONAL)
-		{
-			auto light = scene->m_lights[curLight];
-			if (!light)
-			{
-				LOG_ERR("current light is invalid");
-				goto fail;
-			}
+		shader->setVec3("u_viewPos", camera->getCamPos());
 
-			shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP, param.rhi);
+		auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
+		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
+		shadowBuf->bindTarget(texUnit);
+		shader->setInt("u_depthTexture", texUnit++);
 
-			if (!shader || !shader->isInit())
-			{
-				LOG_ERR("shadow map shader is invalid");
-				goto fail;
-			}
+		shader->setMat4("u_modelMat", modelMat);
+		shader->setMat4("u_viewMat", camera->getViewMat());
+		shader->setMat4("u_prjMat", frustum->getPerspectMat());
 
-			shader->use(true);
-			shader->setMat4("u_modelMat", part->getTransform());
-			shader->setMat4("u_lightViewMat", light->getViewMat());
-			shader->setMat4("u_lightPrjMat", light->getPrjMat());
-
-			return true;
-		}
-		else if (param.sceneMgr->m_curLight == LIGHT_TYPE_POINT)
-		{
-
-		}
-	fail:
-		return false;
+		shader->setMat3("u_normalMat", MathLib::normalMat(modelMat));
 	}
 }

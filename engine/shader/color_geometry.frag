@@ -21,7 +21,7 @@ uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
 
-uniform mat4 u_normalMat;
+uniform mat3 u_normalMat;
 
 uniform mat4 u_lightViewMat;
 uniform mat4 u_lightPrjMat;
@@ -44,7 +44,7 @@ void main() {
     vec3 pos = vec3(u_modelMat * vec4(v_pos, 1.f));
     if(u_calcShadow != 0)
     {
-        vec3 normal = normalize(vec3(u_normalMat * vec4(v_normal, 0.f)));
+        vec3 normal = normalize(u_normalMat * v_normal);
         o_color = lightedGeometry(u_light, pos, normal, u_color);
     }
     else

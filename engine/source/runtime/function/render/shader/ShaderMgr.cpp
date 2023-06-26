@@ -43,6 +43,13 @@ namespace Pionner
 						ret = m_shaders[type];
 						break;
 					}
+					case SHADER_TYPE_LIGHTED_NORM_MESH:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "lighted_nor_mesh", "lighted_nor_mesh", "lighted_nor_mesh");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
 					case SHADER_TYPE_SHADOW_MAP:
 					{
 						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "shadow_map", "shadow_map", "shadow_map");

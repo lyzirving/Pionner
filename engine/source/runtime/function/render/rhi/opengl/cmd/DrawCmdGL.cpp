@@ -127,7 +127,7 @@ namespace Pionner
 			return;
 		}
 
-		if (!owner->dealShader(param, part, shader, texture))
+		if (!owner->dealShader(param, part, shader))
 		{
 			LOG_ERR("fail to deal shader");
 			return;
@@ -144,8 +144,6 @@ namespace Pionner
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();
-
-		if (texture) texture->unbind();
 
 		shader->use(false);
 	}
