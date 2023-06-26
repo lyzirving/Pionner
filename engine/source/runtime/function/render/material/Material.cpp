@@ -3,7 +3,7 @@
 namespace Pionner
 {
 	Material::Material()
-		: m_diffSlot(-1), m_specSlot(-1)
+		: m_ambientSlot(-1), m_diffSlot(-1), m_specSlot(-1)
 		, m_name()
 		, m_colorAmbient(0.f)
 		, m_colorDiffuse(0.f)

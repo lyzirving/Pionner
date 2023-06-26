@@ -190,12 +190,17 @@ namespace Pionner
 					texture->loadRawData();
 					part->m_material.m_specSlot = texture->getSlot();
 				}
-				/*if (mt->GetTextureCount(aiTextureType_AMBIENT) > 0)
+
+				if (mt->GetTextureCount(aiTextureType_AMBIENT) > 0)
 				{
 					mt->GetTexture(aiTextureType_AMBIENT, 0, &texName);
-					part->m_material.m_type = MAT_AMBIENT;
-					found = true;
-				}*/
+
+					std::string srcPath = rootDir + '/' + texName.C_Str();
+					texture = resource->allocate(BUF_TEXTURE);
+					texture->insertData(srcPath);
+					texture->loadRawData();
+					part->m_material.m_ambientSlot = texture->getSlot();
+				}
 
 				aiColor3D color;
 				ai_real   valFloat;

@@ -42,6 +42,10 @@ namespace Pionner
 		{
 			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_INDICE, m_indicesSlot);
 		}
+		if (m_material.ambientValid())
+		{
+			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_ambientSlot);
+		}
 		if (m_material.diffValid())
 		{
 			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_diffSlot);

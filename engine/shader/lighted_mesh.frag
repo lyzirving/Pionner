@@ -26,9 +26,11 @@ struct Light {
 
 struct Material {
     int  colorMode;    // mode3 = ambient + diffuse + specular
+    int  hasAmbTex;    // 0 for no texture
     int  hasDiffTex;   // 0 for no texture
     int  hasSpecTex;   // 0 for no texture
     vec3 ka, kd, ks;
+    sampler2D ambTexture;
     sampler2D diffuseTexture;
     sampler2D specTexture;
 };
@@ -117,29 +119,34 @@ vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 
 
 vec4 directionalLight(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir)
 {
+    vec4 objDiff = objDiffColor(material, texCoord);
+
     vec3 la = light.ka * light.ia; // light's ambient 
     vec3 ld = light.kd * light.id; // light's diffuse
-    vec3 ls = vec3(0.f); // light's specular
+    vec3 ls = vec3(0.f);           // light's specular
 
     vec3  lightDir = -normalize(light.direction);
     float diff = max(dot(normal, lightDir), 0.f);
 
     ld *= diff;
 
+    // set object's diffuse color
+    la *= objDiff.rgb;
+    ld *= objDiff.rgb;
+
     if(material.colorMode == COLOR_MODE_ALL) {
         // blinn-phong mode
         vec3  halfwayDir = normalize(lightDir + viewDir);
         float specFactor = pow(max(dot(halfwayDir, normal), 0.f), light.shininess);
-        ls = light.ks * light.is * specFactor;
+        vec4 objSpec = objSpecColor(material, texCoord);
+        ls = light.ks * light.is * specFactor * objSpec.rgb;
     }
 
     float shadow = shadowCalculation(pos, normal, lightDir);
 
-    vec4 objColor = objDiffColor(material, texCoord);
+    vec3 colorRgb = la + (1.f - shadow) * (ld + ls);
 
-    vec3 colorRgb = (la + (1.f - shadow) * (ld + ls)) * objColor.rgb;
-
-    vec4 result = vec4(colorRgb, objColor.a);
+    vec4 result = vec4(colorRgb, objDiff.a);
 
     return result;
 }

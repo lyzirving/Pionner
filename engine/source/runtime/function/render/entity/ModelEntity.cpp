@@ -72,6 +72,18 @@ namespace Pionner
 
 		shader->setInt("u_material.colorMode", part->m_material.m_mode);
 
+		if (part->m_material.ambientValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_ambientSlot)))
+		{
+			texture->upload();
+			texture->bindTarget(texUnit);
+			shader->setInt("u_material.ambTexture", texUnit++);
+			shader->setInt("u_material.hasAmbTex", 1);
+		}
+		else
+		{
+			shader->setInt("u_material.hasAmbTex", 0);
+		}
+
 		if (part->m_material.diffValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_diffSlot)))
 		{
 			texture->upload();
@@ -102,6 +114,7 @@ namespace Pionner
 
 		return true;
 	}
+
 	bool ModelEntity::dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto scene = param.sceneMgr;
