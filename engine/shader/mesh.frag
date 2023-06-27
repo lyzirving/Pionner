@@ -3,13 +3,19 @@
 
 precision highp float;
 
+const int NO_TEXTURE = 0;
+
 struct Material {
-    int  shadingModel; // 1 for constant color, 2 for ambient + diffuse, 3 for ambient + diffuse + specular
-    int  texType;      // 1 for diffuse, 2 for specular
-    int  hasTexture;   // 0 for no texture, otherwise this mesh has one texture
+    int  colorMode;    // mode3 = ambient + diffuse + specular
+    int  hasAmbTex;    // 0 for no texture
+    int  hasDiffTex;   // 0 for no texture
+    int  hasSpecTex;   // 0 for no texture
+    int  hasNormal;    // 0 for no texture
     vec3 ka, kd, ks;
+    sampler2D ambTexture;
     sampler2D diffuseTexture;
     sampler2D specTexture;
+    sampler2D normTexture;
 };
 
 in vec3 v_pos;
@@ -24,11 +30,10 @@ uniform Material u_material;
 out vec4 o_color;
 
 float computeDepth(vec3 pos);
-
-vec4  materialColor(Material material, vec2 texCoord);
+vec4 objDiffColor(vec2 texCoord);
 
 void main() {
-    o_color = materialColor(u_material, v_tex);
+    o_color = objDiffColor(v_tex);
 
     gl_FragDepth = computeDepth(v_pos);
 }
@@ -39,19 +44,8 @@ float computeDepth(vec3 pos)
     return (posClipSpace.z / posClipSpace.w);
 }
 
-vec4 materialColor(Material material, vec2 texCoord)
+vec4 objDiffColor(vec2 texCoord)
 {
-    vec4 color;
-    bool hasTexture = material.hasTexture != 0;
-
-    if(material.texType == 1)
-    {
-        color = hasTexture ? texture(material.diffuseTexture, texCoord) : vec4(material.kd, 1.f);
-    }
-    else
-    {
-        // in this case, if material does not have a texture, we also use kd.
-        color = hasTexture ? texture(material.specTexture, texCoord) : vec4(material.kd, 1.f);
-    }
-    return color;
+    bool hasTexture = u_material.hasDiffTex != NO_TEXTURE;
+    return hasTexture ? texture(u_material.diffuseTexture, texCoord) : vec4(u_material.kd, 1.f);
 }

@@ -93,8 +93,11 @@ namespace Pionner
 		param.world = m_world;
 
 		auto &lights = m_world->getEntities(ENTITY_LIGHT);
-		auto &lightComp = lights[0]->getComp<LightComp>();
-		m_sceneMgr->swap(lightComp, param);
+		if (!lights.empty() && lights[0])
+		{
+			auto &lightComp = lights[0]->getComp<LightComp>();
+			m_sceneMgr->swap(lightComp, param);
+		}
 
 		m_pipeLine->swapData(param);
 	}

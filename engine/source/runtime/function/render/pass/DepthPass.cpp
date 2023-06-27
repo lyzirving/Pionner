@@ -59,7 +59,6 @@ namespace Pionner
 
 		if (!light || !(depthBuf = light->getDepthFbo()) || depthBuf->getWidth() == 0 || depthBuf->getHeight() == 0)
 		{
-			LOG_ERR("no light in the screen, or light's buffer is invalid");
 			return;
 		}
 

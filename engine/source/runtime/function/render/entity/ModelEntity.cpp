@@ -40,15 +40,15 @@ namespace Pionner
 
 		if (lightExist && normalExist)
 		{
-			return dyeWithNormAndLight(param, part, shader);
+			return coloringWithNormAndLight(param, part, shader);
 		}
 		else if (lightExist)
 		{
-			return dyeWithLight(param, part, shader);
+			return coloringWithLight(param, part, shader);
 		}
 		else if (!lightExist)
 		{
-			return dyeSimple(param, part, shader);
+			return coloringSimple(param, part, shader);
 		}
 
 		return false;
@@ -90,7 +90,7 @@ namespace Pionner
 		return false;
 	}
 
-	bool ModelEntity::dyeWithLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	bool ModelEntity::coloringWithLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto resource = param.resource;
 		auto sceneMgr = param.sceneMgr;
@@ -174,7 +174,7 @@ namespace Pionner
 		return true;
 	}
 
-	bool ModelEntity::dyeWithNormAndLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	bool ModelEntity::coloringWithNormAndLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto resource = param.resource;
 		auto sceneMgr = param.sceneMgr;
@@ -270,8 +270,47 @@ namespace Pionner
 		return true;
 	}
 
-	bool ModelEntity::dyeSimple(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	bool ModelEntity::coloringSimple(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
-		return false;
+		auto resource = param.resource;
+		auto sceneMgr = param.sceneMgr;
+
+		auto camera = sceneMgr->m_camera;
+		auto frustum = sceneMgr->m_frustum;
+
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_MESH, param.rhi)))
+		{
+			LOG_ERR("fail to get lighted_nor_mesh shader");
+			return false;
+		}
+
+		shader->use(true);
+
+		int32_t texUnit{ 0 };
+		std::shared_ptr<GfxBuffer> texture{ nullptr };
+
+		if (part->m_material.diffValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_diffSlot)))
+		{
+			texture->upload();
+			texture->bindTarget(texUnit);
+			shader->setInt("u_material.diffuseTexture", texUnit++);
+			shader->setInt("u_material.hasDiffTex", 1);
+		}
+		else
+		{
+			shader->setInt("u_material.hasDiffTex", 0);
+		}
+
+		shader->setInt("u_material.colorMode", part->m_material.m_mode);
+
+		shader->setVec3("u_material.ka", part->m_material.m_colorAmbient);
+		shader->setVec3("u_material.kd", part->m_material.m_colorDiffuse);
+		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
+
+		shader->setMat4("u_modelMat", part->getTransform());
+		shader->setMat4("u_viewMat", camera->getViewMat());
+		shader->setMat4("u_prjMat", frustum->getPerspectMat());
+
+		return true;
 	}
 }
