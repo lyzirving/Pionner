@@ -38,8 +38,6 @@ struct Material {
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
 
-uniform mat4 u_normalMat;
-
 uniform mat4 u_lightViewMat;
 uniform mat4 u_lightPrjMat;
 

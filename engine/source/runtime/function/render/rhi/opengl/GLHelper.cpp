@@ -160,21 +160,13 @@ namespace Pionner
 			LOG_ERR("input program is invalid");
 			return;
 		}
-		GLint infoLen{ 0 };
-		glGetProgramiv(program, GL_LINK_STATUS, &infoLen);
-		if (infoLen)
-		{
-			char *info = new char[infoLen + 1];
-			std::memset(info, 0, (infoLen + 1) * sizeof(char));
+		GLint infoLen{ 512 };
+		char *info = new char[infoLen];
+		std::memset(info, 0, infoLen * sizeof(char));
 
-			glGetProgramInfoLog(program, infoLen, nullptr, info);
-			LOG_ERR("program[%u] link status: %s", program, info);
-			delete[] info;
-		}
-		else
-		{
-			LOG_ERR("no log for program's link status");
-		}
+		glGetProgramInfoLog(program, infoLen, nullptr, info);
+		LOG_ERR("program[%u] link status: %s", program, info);
+		delete[] info;
 	}
 }
 
