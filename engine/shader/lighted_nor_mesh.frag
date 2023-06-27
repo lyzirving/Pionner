@@ -35,7 +35,6 @@ struct Material {
     sampler2D normTexture;
 };
 
-uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
 
@@ -49,71 +48,37 @@ uniform Material u_material;
 
 uniform sampler2D u_depthTexture;
 
-/*in VS_OUT {
+in VS_OUT {
     vec3 fragPos;
     vec2 texCoords;
     vec3 tangentLightPos;
     vec3 tangentLightDir;
     vec3 tangentViewPos;
     vec3 tangentFragPos;
-} vs_out;*/
+} fs_in;
 
 out vec4 o_color;
 
 float computeDepth(vec3 pos);
-float computeFade(Light light, float dist);
+float computeFade(float dist);
 
 vec4  objDiffColor(vec2 texCoord);
 vec4  objSpecColor(vec2 texCoord);
 float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir);
 
+vec4 directionalLight(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tangentLightDir, vec3 tangentViewPos, vec3 tangentFragPos);
+
 void main() {
     vec4 surface = vec4(0.f, 0.f, 0.f, 1.f);
 
-    /*if(u_light.type == LIGHT_TYPE_DIRECTIONAL)
+    if(u_light.type == LIGHT_TYPE_DIRECTIONAL)
     {
-        vec4 objDiff = objDiffColor(fs_in.texCoords);
-
-        // obtain normal from normal map in range [0,1]
-        vec3 tangentNormal = texture(u_material.normTexture, fs_in.texCoords).rgb;
-        // transform normal vector to range [-1,1]
-        tangentNormal = normalize(tangentNormal * 2.0 - 1.0);
-
-        vec3 la = u_light.ka * u_light.ia; // light's ambient 
-        vec3 ld = u_light.kd * u_light.id; // light's diffuse
-        vec3 ls = vec3(0.f);               // light's specular
-
-        vec3  lightDir = -normalize(fs_in.tangentLightDir);
-        float diff = max(dot(tangentNormal, lightDir), 0.f);
-
-        ld *= diff;
-
-        // set object's diffuse color
-        la *= objDiff.rgb;
-        ld *= objDiff.rgb;
-
-        if(u_material.colorMode == COLOR_MODE_ALL) {
-            // blinn-phong mode
-            vec3  viewDir = normalize(fs_in.tangentViewPos - fs_in.tangentFragPos);
-            vec3  halfwayDir = normalize(lightDir + viewDir);
-            float specFactor = pow(max(dot(halfwayDir, tangentNormal), 0.f), u_light.shininess);
-            vec4  objSpec = objSpecColor(fs_in.texCoords);
-            ls = u_light.ks * u_light.is * specFactor * objSpec.rgb;
-        }
-
-        float shadow = shadowCalculation(fs_in.fragPos, tangentNormal, lightDir);
-
-        vec3 colorRgb = la + (1.f - shadow) * (ld + ls);
-
-        surface = vec4(colorRgb, objDiff.a);
-    } 
-    else if(u_light.type == LIGHT_TYPE_POINT)
-    {
-        
-    }*/
+        surface = directionalLight(fs_in.fragPos, fs_in.texCoords, fs_in.tangentLightPos, fs_in.tangentLightDir,
+                                   fs_in.tangentViewPos, fs_in.tangentFragPos);
+    }
 
     o_color = surface;
-    //gl_FragDepth = computeDepth(vs_out.fragPos);
+    gl_FragDepth = computeDepth(fs_in.fragPos);
 }
 
 float computeDepth(vec3 pos)
@@ -123,9 +88,9 @@ float computeDepth(vec3 pos)
 }
 
 // attenuation for light's intensity/irradiance(power per area)
-float computeFade(Light light, float dist)
+float computeFade(float dist)
 {
-    return 1.f / (light.attParamConst + light.attParamLinear * dist + light.attParamQuad * (dist * dist));
+    return 1.f / (u_light.attParamConst + u_light.attParamLinear * dist + u_light.attParamQuad * (dist * dist));
 }
 
 vec4 objDiffColor(vec2 texCoord)
@@ -169,4 +134,43 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
     } 
     shadow /= 9.f;
     return shadow;
+}
+
+vec4 directionalLight(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tangentLightDir, vec3 tangentViewPos, vec3 tangentFragPos)
+{
+    vec4 objDiff = objDiffColor(texCoords);
+
+    // Obtain normal from normal map in range [0,1].
+    // Obtained normal is in tangent space.
+    vec3 normal = texture(u_material.normTexture, texCoords).rgb;
+    // Transform normal vector to range [-1,1].
+    normal = normalize(normal * 2.0 - 1.0);
+
+    vec3 la = u_light.ka * u_light.ia; // light's ambient 
+    vec3 ld = u_light.kd * u_light.id; // light's diffuse
+    vec3 ls = vec3(0.f);               // light's specular
+
+    vec3  lightDir = -normalize(tangentLightDir);
+    float diff = max(dot(normal, lightDir), 0.f);
+
+    ld *= diff;
+
+    // set object's diffuse color
+    la *= objDiff.rgb;
+    ld *= objDiff.rgb;
+
+    if(u_material.colorMode == COLOR_MODE_ALL) {
+        // blinn-phong mode
+        vec3  viewDir = normalize(tangentViewPos - tangentFragPos);
+        vec3  halfwayDir = normalize(lightDir + viewDir);
+        float specFactor = pow(max(dot(halfwayDir, normal), 0.f), u_light.shininess);
+        
+        vec4  objSpec = objSpecColor(texCoords);
+        ls = u_light.ks * u_light.is * specFactor * objSpec.rgb;
+    }
+    float shadow = shadowCalculation(fragPos, normal, lightDir);
+    
+    vec3 colorRgb = la + (1.f - shadow) * (ld + ls);
+
+    return vec4(colorRgb, objDiff.a);
 }

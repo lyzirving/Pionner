@@ -18,28 +18,28 @@ uniform vec3 u_viewPos;
 uniform vec3 u_lightPos;
 uniform vec3 u_lightDir;
 
-/*out VS_OUT {
+out VS_OUT {
     vec3 fragPos;
     vec2 texCoords;
     vec3 tangentLightPos;
     vec3 tangentLightDir;
     vec3 tangentViewPos;
     vec3 tangentFragPos;
-} vs_out;*/
+} vs_out;
 
 void main() {
-    /*vec3 T = normalize(u_normalMat * a_tangents);
+    vec3 T = normalize(u_normalMat * a_tangents);
     vec3 N = normalize(u_normalMat * a_normal);
     T = normalize(T - dot(T, N) * N);
     vec3 B = cross(N, T);
-    mat3 TBN = transpose(mat3(T, B, N));*/
+    mat3 TBN = transpose(mat3(T, B, N));
 
-    /*vs_out.fragPos = vec3(u_modelMat * vec4(a_pos, 1.f));
+    vs_out.fragPos = vec3(u_modelMat * vec4(a_pos, 1.f));
     vs_out.texCoords = a_tex;
     vs_out.tangentLightPos = TBN * u_lightPos;
     vs_out.tangentLightDir = TBN * u_lightDir;
     vs_out.tangentViewPos  = TBN * u_viewPos;
-    vs_out.tangentFragPos  = TBN * vs_out.fragPos;*/
+    vs_out.tangentFragPos  = TBN * vs_out.fragPos;
 
     gl_Position = u_prjMat * u_viewMat * u_modelMat * vec4(a_pos, 1.0);
 }

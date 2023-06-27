@@ -32,13 +32,9 @@ namespace Pionner
 	bool ModelEntity::dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
 								 /*out*/std::shared_ptr<Shader> &shader)
 	{
-		auto resource = param.resource;
 		auto sceneMgr = param.sceneMgr;
-
-		auto camera = sceneMgr->m_camera;
-		auto frustum = sceneMgr->m_frustum;
-
 		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
+
 		bool lightExist = (light != nullptr);
 		bool normalExist = part->m_material.normValid();
 
@@ -186,5 +182,7 @@ namespace Pionner
 		shader->setMat4("u_prjMat", frustum->getPerspectMat());
 
 		shader->setMat3("u_normalMat", MathLib::normalMat(modelMat));
+
+		return true;
 	}
 }
