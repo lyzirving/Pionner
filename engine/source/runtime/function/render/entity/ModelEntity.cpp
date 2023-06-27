@@ -40,15 +40,15 @@ namespace Pionner
 
 		if (lightExist && normalExist)
 		{
-			return shadeWithNormAndLight(param, part, shader);
+			return dyeWithNormAndLight(param, part, shader);
 		}
 		else if (lightExist)
 		{
-
+			return dyeWithLight(param, part, shader);
 		}
 		else if (!lightExist)
 		{
-
+			return dyeSimple(param, part, shader);
 		}
 
 		return false;
@@ -90,7 +90,91 @@ namespace Pionner
 		return false;
 	}
 
-	bool ModelEntity::shadeWithNormAndLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	bool ModelEntity::dyeWithLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	{
+		auto resource = param.resource;
+		auto sceneMgr = param.sceneMgr;
+
+		auto camera = sceneMgr->m_camera;
+		auto frustum = sceneMgr->m_frustum;
+
+		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
+
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHTED_MESH, param.rhi)))
+		{
+			LOG_ERR("fail to get lighted_nor_mesh shader");
+			return false;
+		}
+
+		int32_t texUnit{ 0 };
+		std::shared_ptr<GfxBuffer> texture{ nullptr };
+		glm::mat4 modelMat = part->getTransform();
+
+		shader->use(true);
+
+		//>>>>>>> upload material >>>>>>>
+		if (part->m_material.ambientValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_ambientSlot)))
+		{
+			texture->upload();
+			texture->bindTarget(texUnit);
+			shader->setInt("u_material.ambTexture", texUnit++);
+			shader->setInt("u_material.hasAmbTex", 1);
+		}
+		else
+		{
+			shader->setInt("u_material.hasAmbTex", 0);
+		}
+
+		if (part->m_material.diffValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_diffSlot)))
+		{
+			texture->upload();
+			texture->bindTarget(texUnit);
+			shader->setInt("u_material.diffuseTexture", texUnit++);
+			shader->setInt("u_material.hasDiffTex", 1);
+		}
+		else
+		{
+			shader->setInt("u_material.hasDiffTex", 0);
+		}
+
+		if (part->m_material.specValid() && (texture = resource->find(BUF_TEXTURE, part->m_material.m_specSlot)))
+		{
+			texture->upload();
+			texture->bindTarget(texUnit);
+			shader->setInt("u_material.specTexture", texUnit++);
+			shader->setInt("u_material.hasSpecTex", 1);
+		}
+		else
+		{
+			shader->setInt("u_material.hasSpecTex", 0);
+		}
+
+		shader->setInt("u_material.colorMode", part->m_material.m_mode);
+
+		shader->setVec3("u_material.ka", part->m_material.m_colorAmbient);
+		shader->setVec3("u_material.kd", part->m_material.m_colorDiffuse);
+		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
+		//>>>>>>> finish uploading material >>>>>>>
+
+		light->dealShader(shader);
+
+		shader->setVec3("u_viewPos", camera->getCamPos());
+
+		auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
+		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
+		shadowBuf->bindTarget(texUnit);
+		shader->setInt("u_depthTexture", texUnit++);
+
+		shader->setMat4("u_modelMat", modelMat);
+		shader->setMat4("u_viewMat", camera->getViewMat());
+		shader->setMat4("u_prjMat", frustum->getPerspectMat());
+
+		shader->setMat3("u_normalMat", MathLib::normalMat(modelMat));
+
+		return true;
+	}
+
+	bool ModelEntity::dyeWithNormAndLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto resource = param.resource;
 		auto sceneMgr = param.sceneMgr;
@@ -184,5 +268,10 @@ namespace Pionner
 		shader->setMat3("u_normalMat", MathLib::normalMat(modelMat));
 
 		return true;
+	}
+
+	bool ModelEntity::dyeSimple(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	{
+		return false;
 	}
 }

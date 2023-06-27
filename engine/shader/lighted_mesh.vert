@@ -10,7 +10,6 @@ layout (location = 2) in vec2 a_tex;
 uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
-uniform mat4 u_normalMat;
 
 out vec3 v_pos;
 out vec3 v_normal;

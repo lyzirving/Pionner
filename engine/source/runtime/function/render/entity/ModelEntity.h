@@ -16,7 +16,9 @@ namespace Pionner
 		virtual bool dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, /*out*/std::shared_ptr<Shader> &shader) override;
 
 	private:
-		bool shadeWithNormAndLight(RenderParam &param, std::shared_ptr<EntityPart> &part, /*out*/std::shared_ptr<Shader> &shader);
+		bool dyeWithLight(RenderParam &param, std::shared_ptr<EntityPart> &part, /*out*/std::shared_ptr<Shader> &shader);
+		bool dyeWithNormAndLight(RenderParam &param, std::shared_ptr<EntityPart> &part, /*out*/std::shared_ptr<Shader> &shader);
+		bool dyeSimple(RenderParam &param, std::shared_ptr<EntityPart> &part, /*out*/std::shared_ptr<Shader> &shader);
 	};
 }
 

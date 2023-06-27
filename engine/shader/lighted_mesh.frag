@@ -16,8 +16,6 @@ const int COLOR_MODE_ALL     = 3;
 
 struct Light {
     int   type; // 0 for directional light, 1 for point light
-    vec3  pos;  // light's position in world coordinate system
-    vec3  direction;
     vec3  ka, kd, ks; // color of ambient, diffuse, specular
     float ia, id, is; // intensity of ambient, diffuse, specular
     float shininess;
@@ -39,12 +37,15 @@ in vec3 v_pos;
 in vec3 v_normal;
 in vec2 v_tex;
 
-uniform vec3 u_viewPos;
 uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
 
-uniform mat4 u_normalMat;
+uniform mat3 u_normalMat;
+
+uniform vec3 u_viewPos;
+uniform vec3 u_lightPos;
+uniform vec3 u_lightDir;
 
 uniform mat4 u_lightViewMat;
 uniform mat4 u_lightPrjMat;
@@ -59,20 +60,26 @@ out vec4 o_color;
 float computeDepth(vec3 pos);
 float computeFade(Light light, float dist);
 
-vec4  objDiffColor(Material material, vec2 texCoord);
-vec4  objSpecColor(Material material, vec2 texCoord);
-vec4  lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir);
-vec4  directionalLight(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir);
-vec4  pointLight(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir);
+vec4  objDiffColor(vec2 texCoord);
+vec4  objSpecColor(vec2 texCoord);
 float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir);
+
+vec4  directionalLight(vec3 fragPos, vec2 texCoords, vec3 normal);
 
 void main() {
     vec3 fragPos = vec3(u_modelMat * vec4(v_pos, 1.f));
-    vec3 normal  = normalize(vec3(u_normalMat * vec4(v_normal, 0.f)));
     vec2 texCoord = v_tex;
+    vec3 normal  = normalize(u_normalMat * v_normal);
     vec3 viewDir = normalize(u_viewPos - fragPos);
 
-    o_color = lightedSurface(u_light, u_material, fragPos, normal, texCoord, viewDir);
+    vec4 surface = vec4(0.f, 0.f, 0.f, 1.f);
+
+    if(u_light.type == LIGHT_TYPE_DIRECTIONAL)
+    {
+        surface = directionalLight(fragPos, texCoord, normal);
+    }
+
+    o_color = surface;
 
     gl_FragDepth = computeDepth(v_pos);
 }
@@ -89,72 +96,16 @@ float computeFade(Light light, float dist)
     return 1.f / (light.attParamConst + light.attParamLinear * dist + light.attParamQuad * (dist * dist));
 }
 
-vec4 objDiffColor(Material material, vec2 texCoord)
+vec4 objDiffColor(vec2 texCoord)
 {
-    bool hasTexture = material.hasDiffTex != NO_TEXTURE;
-    return hasTexture ? texture(material.diffuseTexture, texCoord) : vec4(material.kd, 1.f);
+    bool hasTexture = u_material.hasDiffTex != NO_TEXTURE;
+    return hasTexture ? texture(u_material.diffuseTexture, texCoord) : vec4(u_material.kd, 1.f);
 }
 
-vec4 objSpecColor(Material material, vec2 texCoord)
+vec4 objSpecColor(vec2 texCoord)
 {
-    bool hasTexture = material.hasSpecTex != NO_TEXTURE;
-    return hasTexture ? texture(material.specTexture, texCoord) : vec4(material.ks, 1.f);
-}
-
-vec4 lightedSurface(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir)
-{
-    vec4 surface = vec4(0.f);
-
-    if(light.type == LIGHT_TYPE_DIRECTIONAL)
-    {
-        surface = directionalLight(light, material, pos, normal, texCoord, viewDir);
-    } 
-    else if(light.type == LIGHT_TYPE_POINT)
-    {
-        surface = pointLight(light, material, pos, normal, texCoord, viewDir);
-    }
-
-    return surface;
-}
-
-vec4 directionalLight(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir)
-{
-    vec4 objDiff = objDiffColor(material, texCoord);
-
-    vec3 la = light.ka * light.ia; // light's ambient 
-    vec3 ld = light.kd * light.id; // light's diffuse
-    vec3 ls = vec3(0.f);           // light's specular
-
-    vec3  lightDir = -normalize(light.direction);
-    float diff = max(dot(normal, lightDir), 0.f);
-
-    ld *= diff;
-
-    // set object's diffuse color
-    la *= objDiff.rgb;
-    ld *= objDiff.rgb;
-
-    if(material.colorMode == COLOR_MODE_ALL) {
-        // blinn-phong mode
-        vec3  halfwayDir = normalize(lightDir + viewDir);
-        float specFactor = pow(max(dot(halfwayDir, normal), 0.f), light.shininess);
-        vec4 objSpec = objSpecColor(material, texCoord);
-        ls = light.ks * light.is * specFactor * objSpec.rgb;
-    }
-
-    float shadow = shadowCalculation(pos, normal, lightDir);
-
-    vec3 colorRgb = la + (1.f - shadow) * (ld + ls);
-
-    vec4 result = vec4(colorRgb, objDiff.a);
-
-    return result;
-}
-
-vec4 pointLight(Light light, Material material, vec3 pos, vec3 normal, vec2 texCoord, vec3 viewDir)
-{
-    // TODO: to be implemented.
-    return vec4(1.f, 0.f, 0.f, 1.f);
+    bool hasTexture = u_material.hasSpecTex != NO_TEXTURE;
+    return hasTexture ? texture(u_material.specTexture, texCoord) : vec4(u_material.ks, 1.f);
 }
 
 float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
@@ -186,4 +137,38 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
     } 
     shadow /= 9.f;
     return shadow;
+}
+
+vec4 directionalLight(vec3 fragPos, vec2 texCoords, vec3 normal)
+{
+    vec4 objDiff = objDiffColor(texCoords);
+
+    vec3 la = u_light.ka * u_light.ia; // light's ambient 
+    vec3 ld = u_light.kd * u_light.id; // light's diffuse
+    vec3 ls = vec3(0.f);           // light's specular
+
+    vec3  lightDir = -normalize(u_lightDir);
+    float diff = max(dot(normal, lightDir), 0.f);
+
+    ld *= diff;
+
+    // set object's diffuse color
+    la *= objDiff.rgb;
+    ld *= objDiff.rgb;
+
+    if(u_material.colorMode == COLOR_MODE_ALL) {
+        // blinn-phong mode
+        vec3  viewDir = normalize(u_viewPos - fragPos);
+        vec3  halfwayDir = normalize(lightDir + viewDir);
+        float specFactor = pow(max(dot(halfwayDir, normal), 0.f), u_light.shininess);
+        vec4  objSpec = objSpecColor(texCoords);
+
+        ls = u_light.ks * u_light.is * specFactor * objSpec.rgb;
+    }
+
+    float shadow = shadowCalculation(fragPos, normal, lightDir);
+
+    vec3 colorRgb = la + (1.f - shadow) * (ld + ls);
+
+    return vec4(colorRgb, objDiff.a);
 }
