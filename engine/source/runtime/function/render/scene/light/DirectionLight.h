@@ -20,6 +20,9 @@ namespace Pionner
 
 	template<>
 	bool Light::is<DirectionLight>() const;
+
+	template<>
+	DirectionLight *Light::to<DirectionLight>() const;
 }
 
 #endif

@@ -9,6 +9,12 @@
 #include "function/render/resource/buffer/GfxFrameBuffer.h"
 
 #include "core/math/MathLib.h"
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Light"
 
 namespace Pionner
 {
@@ -115,9 +121,27 @@ namespace Pionner
 	{
 		if (!m_depthFbo)
 		{
+			BufferType bufType{ BUF_CNT };
+			switch (m_type)
+			{
+				case Pionner::LIGHT_TYPE_DIRECTIONAL:
+					bufType = BUF_DEPTH;
+					break;
+				case Pionner::LIGHT_TYPE_POINT:
+					bufType = BUF_CUBE_DEPTH;
+					break;
+				default:
+					break;
+			}
 			auto resource = param.resource;
-			m_depthFbo = resource->allocFbo(BUF_DEPTH);
+			m_depthFbo = resource->allocFbo(bufType);
+			if (!m_depthFbo)
+			{
+				LOG_ERR("light[%u] fail to create buffer", m_type);
+				return;
+			}
 			m_depthFbo->setSize(width, height);
+			m_dataChange = true;
 		}
 	}
 }

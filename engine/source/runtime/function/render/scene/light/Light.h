@@ -13,6 +13,16 @@ namespace Pionner
 	class  GfxFrameBuffer;
 	struct RenderParam;
 
+	enum LightDir : uint8_t
+	{
+		LIGHT_DIR_POSITIVE_X = 0, // GL_TEXTURE_CUBE_MAP_POSITIVE_X
+		LIGHT_DIR_NEGATIVE_X, // GL_TEXTURE_CUBE_MAP_NEGATIVE_X
+		LIGHT_DIR_POSITIVE_Y, // GL_TEXTURE_CUBE_MAP_POSITIVE_Y
+		LIGHT_DIR_NEGATIVE_Y, // GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
+		LIGHT_DIR_NEGATIVE_Z, // GL_TEXTURE_CUBE_MAP_POSITIVE_Z
+		LIGHT_DIR_POSITIVE_Z  // GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+	};
+
 	class Light
 	{
 	public:
@@ -37,6 +47,9 @@ namespace Pionner
 
 		template<class T>
 		bool is() const;
+
+		template<class T>
+		T *to() const;
 
 		inline const std::shared_ptr<GfxFrameBuffer> &getDepthFbo() { return m_depthFbo; }
 
@@ -96,6 +109,12 @@ namespace Pionner
 	bool Light::is() const
 	{
 		return false;
+	}
+
+	template<class T>
+	T *Light::to() const
+	{
+		return nullptr;
 	}
 }
 

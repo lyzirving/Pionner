@@ -37,8 +37,10 @@ namespace Pionner
 	{
 		m_curLight = comp.m_type;
 		if (!m_lights[m_curLight])
+		{
 			m_lights[m_curLight] = Light::createLight(m_curLight);
-
+			m_lights[m_curLight]->initDepthBuffer(1024, 1024, param);
+		}
 		m_lights[m_curLight]->setPosition(comp.m_pos);
 		m_lights[m_curLight]->setDirection(comp.m_dir);
 		m_lights[m_curLight]->setColor(comp.m_ka, comp.m_kd, comp.m_ks);
@@ -47,8 +49,6 @@ namespace Pionner
 
 		m_lights[m_curLight]->setNear(m_frustum->near());
 		m_lights[m_curLight]->setFar(m_frustum->far());
-
-		m_lights[m_curLight]->initDepthBuffer(1024, 1024, param);
 	}
 
 	void SceneMgr::shutdown()

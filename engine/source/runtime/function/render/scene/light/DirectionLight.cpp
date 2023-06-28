@@ -58,4 +58,14 @@ namespace Pionner
 	{
 		return m_type == LIGHT_TYPE_DIRECTIONAL;
 	}
+
+	template<>
+	DirectionLight *Light::to<DirectionLight>() const
+	{
+		if (is<DirectionLight>())
+		{
+			return (DirectionLight *)(this);
+		}
+		return nullptr;
+	}
 }

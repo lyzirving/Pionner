@@ -16,15 +16,23 @@ namespace Pionner
 
 		void setAttenuation(float constVal, float linearVal, float quadVal);
 
+		const glm::mat4 &getLightMat(LightDir dir);
+
 	protected:
 		virtual void calcMatrix() override;
 
 	protected:
 		float m_attenParamConst, m_attenParamLinear, m_attenParamQuad;
+
+	private:
+		glm::mat4 m_lightMat[6];
 	};
 
 	template<>
 	bool Light::is<PointLight>() const;
+
+	template<>
+	PointLight *Light::to<PointLight>() const;
 }
 
 #endif
