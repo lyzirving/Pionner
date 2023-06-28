@@ -116,7 +116,7 @@ namespace Pionner
 		if (!m_depthFbo)
 		{
 			auto resource = param.resource;
-			m_depthFbo = resource->allocFbo(BUF_DEPTH_FRAMEBUFFER);
+			m_depthFbo = resource->allocFbo(BUF_DEPTH);
 			m_depthFbo->setSize(width, height);
 		}
 	}

@@ -4,7 +4,7 @@
 #include "function/render/rhi/opengl/buffer/GLIndexBuffer.h"
 #include "function/render/rhi/opengl/buffer/GLTetxure.h"
 
-#include "function/render/rhi/opengl/buffer/GLDepthFrameBuffer.h"
+#include "function/render/rhi/opengl/buffer/GLDepthBuffer.h"
 
 #include "core/log/LogSystem.h"
 
@@ -110,7 +110,8 @@ namespace Pionner
 				m_textureArray.release(slot);
 				break;
 			}
-			case BUF_DEPTH_FRAMEBUFFER:
+			case BUF_DEPTH:
+			case BUF_CUBE_DEPTH:
 			{
 				m_frameBuffers.release(slot);
 				break;

@@ -7,7 +7,8 @@
 #include "function/render/rhi/opengl/buffer/GLIndexBuffer.h"
 #include "function/render/rhi/opengl/buffer/GLTetxure.h"
 
-#include "function/render/rhi/opengl/buffer/GLDepthFrameBuffer.h"
+#include "function/render/rhi/opengl/buffer/GLDepthBuffer.h"
+#include "function/render/rhi/opengl/buffer/GLCubeDepthBuffer.h"
 
 namespace Pionner
 {
@@ -38,8 +39,11 @@ namespace Pionner
 		std::shared_ptr<GfxFrameBuffer> ret{ nullptr };
 		switch (type)
 		{
-			case BUF_DEPTH_FRAMEBUFFER:
-				ret = std::shared_ptr<GfxFrameBuffer>(new GLDepthFrameBuffer(mgr));
+			case BUF_DEPTH:
+				ret = std::shared_ptr<GfxFrameBuffer>(new GLDepthBuffer(mgr));
+				break;
+			case BUF_CUBE_DEPTH:
+				ret = std::shared_ptr<GfxFrameBuffer>(new GLCubeDepthBuffer(mgr));
 				break;
 			default:
 				break;

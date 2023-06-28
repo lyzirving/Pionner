@@ -69,9 +69,12 @@ namespace Pionner
 		rhi->clear(DEPTH_BUF_BIT);
 		rhi->setViewport(0, 0, depthBuf->getWidth(), depthBuf->getHeight());
 
+		DepthTest depthTest = DepthTest::common();
 		CullFace cull = CullFace::common();
 		// Solve Perter panning, but the model has some problem.
 		cull.m_mode = CULL_FRONT;
+
+		rhi->setDepthMode(depthTest);
 		rhi->setCullMode(cull);
 
 		world->iterate([&](decs::EntityID id, ShadowComp &comp)

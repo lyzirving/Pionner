@@ -1,4 +1,4 @@
-#include "GLDepthFrameBuffer.h"
+#include "GLDepthBuffer.h"
 
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/RhiHeader.h"
@@ -8,25 +8,25 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "GLDepthFrameBuffer"
+#define LOCAL_TAG "GLDepthBuffer"
 
 namespace Pionner
 {
-	GLDepthFrameBuffer::GLDepthFrameBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
+	GLDepthBuffer::GLDepthBuffer(const std::shared_ptr<RenderResourceMgr> &mgr)
 		: GfxFrameBuffer(mgr)
 	{
-		m_bufferType = BUF_DEPTH_FRAMEBUFFER;
+		m_bufferType = BUF_DEPTH;
 	}
 
-	GLDepthFrameBuffer::GLDepthFrameBuffer(uint32_t width, uint32_t height, const std::shared_ptr<RenderResourceMgr> &mgr)
+	GLDepthBuffer::GLDepthBuffer(uint32_t width, uint32_t height, const std::shared_ptr<RenderResourceMgr> &mgr)
 		: GfxFrameBuffer(width, height, mgr)
 	{
-		m_bufferType = BUF_DEPTH_FRAMEBUFFER;
+		m_bufferType = BUF_DEPTH;
 	}
 
-	GLDepthFrameBuffer::~GLDepthFrameBuffer() = default;
+	GLDepthBuffer::~GLDepthBuffer() = default;
 
-	void GLDepthFrameBuffer::upload()
+	void GLDepthBuffer::upload()
 	{
 		if (isAbandonded())
 		{
@@ -80,7 +80,7 @@ namespace Pionner
 		}
 	}
 
-	void GLDepthFrameBuffer::bind()
+	void GLDepthBuffer::bind()
 	{
 		if (isAbandonded())
 		{
@@ -100,12 +100,12 @@ namespace Pionner
 		}
 	}
 
-	void GLDepthFrameBuffer::unbind()
+	void GLDepthBuffer::unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void GLDepthFrameBuffer::deleteResource()
+	void GLDepthBuffer::deleteResource()
 	{
 		if (m_attachIds[DEPTH_ATTACH] != 0)
 		{
@@ -121,17 +121,17 @@ namespace Pionner
 	}
 
 	template<>
-	bool GfxBuffer::is<GLDepthFrameBuffer>() const
+	bool GfxBuffer::is<GLDepthBuffer>() const
 	{
-		return getBufferType() == BUF_DEPTH_FRAMEBUFFER;
+		return getBufferType() == BUF_DEPTH;
 	}
 
 	template<>
-	GLDepthFrameBuffer *GfxBuffer::getPtr<GLDepthFrameBuffer>()
+	GLDepthBuffer *GfxBuffer::getPtr<GLDepthBuffer>()
 	{
-		if (is<GLDepthFrameBuffer>())
+		if (is<GLDepthBuffer>())
 		{
-			GLDepthFrameBuffer *ret = dynamic_cast<GLDepthFrameBuffer *>(this);
+			GLDepthBuffer *ret = dynamic_cast<GLDepthBuffer *>(this);
 			return ret;
 		}
 		return nullptr;

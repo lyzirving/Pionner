@@ -5,12 +5,12 @@
 
 namespace Pionner
 {
-	class GLDepthFrameBuffer : public GfxFrameBuffer
+	class GLDepthBuffer : public GfxFrameBuffer
 	{
 	public:
-		GLDepthFrameBuffer(const std::shared_ptr<RenderResourceMgr> &mgr);
-		GLDepthFrameBuffer(uint32_t width, uint32_t height, const std::shared_ptr<RenderResourceMgr> &mgr);
-		virtual ~GLDepthFrameBuffer();
+		GLDepthBuffer(const std::shared_ptr<RenderResourceMgr> &mgr);
+		GLDepthBuffer(uint32_t width, uint32_t height, const std::shared_ptr<RenderResourceMgr> &mgr);
+		virtual ~GLDepthBuffer();
 
 		virtual void upload() override;
 
@@ -20,10 +20,10 @@ namespace Pionner
 	};
 
 	template<>
-	bool GfxBuffer::is<GLDepthFrameBuffer>() const;
+	bool GfxBuffer::is<GLDepthBuffer>() const;
 
 	template<>
-	GLDepthFrameBuffer *GfxBuffer::getPtr<GLDepthFrameBuffer>();
+	GLDepthBuffer *GfxBuffer::getPtr<GLDepthBuffer>();
 }
 
 #endif
