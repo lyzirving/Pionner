@@ -11,6 +11,7 @@
 #include "function/render/rhi/Rhi.h"
 
 #include "function/render/geo/screen/DepthScreenRender.h"
+#include "function/render/geo/screen/PointShadowScreenRender.h"
 #include "function/render/shader/ShaderMgr.h"
 
 #include "function/render/resource/RenderResourceMgr.h"
@@ -25,19 +26,21 @@
 
 namespace Pionner
 {
-	DepthPass::DepthPass() : RenderPassBase(), m_depthScreenRender(nullptr)
+	DepthPass::DepthPass() : RenderPassBase(), m_depthScreenRender(nullptr), m_ptShadowScreenRender(nullptr)
 	{
 	}
 
 	DepthPass::~DepthPass()
 	{
 		m_depthScreenRender.reset();
+		m_ptShadowScreenRender.reset();
 	}
 
 	void DepthPass::initialize(const RenderPassInitInfo &info)
 	{
 		m_rhi = info.rhi;
 		//m_depthScreenRender = std::shared_ptr<ScreenRender>(new DepthScreenRender);
+		//m_ptShadowScreenRender = std::shared_ptr<ScreenRender>(new PointShadowScreenRender);
 	}
 
 	void DepthPass::shutdown()
@@ -106,6 +109,12 @@ namespace Pionner
 		{
 			m_depthScreenRender->setTextureId(depthBuf->getAttachment(DEPTH_ATTACH));
 			m_depthScreenRender->draw(param);
+		}
+
+		if (m_ptShadowScreenRender)
+		{
+			m_ptShadowScreenRender->setTextureId(depthBuf->getAttachment(DEPTH_ATTACH));
+			m_ptShadowScreenRender->draw(param);
 		}
 	}
 }

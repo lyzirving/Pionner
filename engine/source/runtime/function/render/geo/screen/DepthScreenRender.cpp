@@ -47,8 +47,7 @@ namespace Pionner
 		rhi->setViewport(port.m_left, port.m_top, port.m_width, port.m_height);
 		rhi->clear(COLOR_BUF_BIT | DEPTH_BUF_BIT);
 
-		DepthTest depthtest{};
-		depthtest.m_enbale = true;
+		DepthTest depthtest = DepthTest::common();
 		rhi->setDepthMode(depthtest);
 
 		// temporary buffer that holds an initialized buffer
@@ -64,9 +63,6 @@ namespace Pionner
 		drawcmd->drawGeometry(*((Geometry *)this), param);
 
 		holdertex->unbind();
-
-		depthtest.m_enbale = false;
-		rhi->setDepthMode(depthtest);
 
 		shader->use(false);
 	}

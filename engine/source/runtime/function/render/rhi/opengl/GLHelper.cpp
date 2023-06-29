@@ -199,6 +199,18 @@ namespace Pionner
 		}
 	}
 
+	uint32_t GLHelper::colorFormat(int32_t component)
+	{
+		if (component == 1)
+			return GL_RED;
+		else if (component == 2)
+			return GL_RG;
+		else if (component == 3)
+			return GL_RGB;
+		else
+			return GL_RGBA;
+	}
+
 	bool GLHelper::createShader(uint32_t type, const char *source, uint32_t &shader)
 	{
 		shader = glCreateShader(type);

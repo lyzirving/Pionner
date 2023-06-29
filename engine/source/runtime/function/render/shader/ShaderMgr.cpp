@@ -73,6 +73,13 @@ namespace Pionner
 						ret = m_shaders[type];
 						break;
 					}
+					case SHADER_TYPE_PT_SHADOW_SCREEN:
+					{
+						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "pt_shadow_screen", "pt_shadow_screen", "pt_shadow_screen");
+						m_shaders[type]->init();
+						ret = m_shaders[type];
+						break;
+					}
 					case SHADER_TYPE_INFINITE_GRID:
 					{
 						m_shaders[type] = std::make_shared<Shader>(rhi->getShaderRhi(), "infinite_grid", "infinite_grid", "infinite_grid");

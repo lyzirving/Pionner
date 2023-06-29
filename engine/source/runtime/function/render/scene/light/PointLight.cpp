@@ -22,9 +22,7 @@ namespace Pionner
 		m_position = position;
 	}
 
-	PointLight::~PointLight()
-	{
-	}
+	PointLight::~PointLight() = default;
 
 	void PointLight::dealShader(const std::shared_ptr<Shader> &shader)
 	{

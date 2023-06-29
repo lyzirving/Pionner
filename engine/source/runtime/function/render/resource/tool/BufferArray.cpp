@@ -5,7 +5,8 @@
 
 #include "function/render/rhi/opengl/buffer/GLVertexBuffer.h"
 #include "function/render/rhi/opengl/buffer/GLIndexBuffer.h"
-#include "function/render/rhi/opengl/buffer/GLTetxure.h"
+#include "function/render/rhi/opengl/buffer/GLTexture.h"
+#include "function/render/rhi/opengl/buffer/GLCubeTexture.h"
 
 #include "function/render/rhi/opengl/buffer/GLDepthBuffer.h"
 #include "function/render/rhi/opengl/buffer/GLCubeDepthBuffer.h"
@@ -27,6 +28,9 @@ namespace Pionner
 			case BUF_TEXTURE:
 				ret = std::shared_ptr<GfxBuffer>(new GLTexture(mgr));
 				break;
+			case BUF_CUBE_TEXTURE:
+				ret = std::shared_ptr<GfxBuffer>(new GLCubeTexture(mgr));
+				break;
 			default:
 				break;
 		}
@@ -39,10 +43,10 @@ namespace Pionner
 		std::shared_ptr<GfxFrameBuffer> ret{ nullptr };
 		switch (type)
 		{
-			case BUF_DEPTH:
+			case BUF_DEPTH_FBO:
 				ret = std::shared_ptr<GfxFrameBuffer>(new GLDepthBuffer(mgr));
 				break;
-			case BUF_CUBE_DEPTH:
+			case BUF_CUBE_DEPTH_FBO:
 				ret = std::shared_ptr<GfxFrameBuffer>(new GLCubeDepthBuffer(mgr));
 				break;
 			default:

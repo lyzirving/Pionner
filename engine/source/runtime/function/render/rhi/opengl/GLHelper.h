@@ -11,7 +11,8 @@ namespace Pionner
 	public:
 		static uint32_t buildProgram(const char *vert, const char *frag);
 		static uint32_t buildProgram(const char *vert, const char *frag, const char *geo);
-		static bool checkGLErr(const char *fmt, ...);
+		static bool     checkGLErr(const char *fmt, ...);
+		static uint32_t colorFormat(int32_t component);
 
 	private:
 		static bool createShader(uint32_t type, const char *source, uint32_t &shader);

@@ -55,6 +55,22 @@ namespace Pionner
 		}
 	}
 
+	void DrawCmdGL::drawEntityOnly(RenderEntity &entity, RenderParam &param)
+	{
+		for (auto &part : entity.m_parts)
+		{
+			drawPartOnly(part, param);
+		}
+
+		if (!entity.m_children.empty())
+		{
+			for (auto &child : entity.m_children)
+			{
+				drawEntityOnly(*child, param);
+			}
+		}
+	}
+
 	void DrawCmdGL::drawGeometry(Geometry &geometry, RenderParam &param)
 	{
 		auto meshComp = geometry.getMeshComp();
@@ -146,6 +162,36 @@ namespace Pionner
 		indiceBuf->unbind();
 
 		shader->use(false);
+	}
+
+	void DrawCmdGL::drawPartOnly(std::shared_ptr<EntityPart> &part, RenderParam &param)
+	{
+		if (!part->vetexSlotValid() || !part->indiceSlotValid())
+		{
+			return;
+		}
+
+		auto resource = param.resource;
+		auto vertexBuf = resource->find(BUF_VERTEX, part->m_vertexSlot);
+		auto indiceBuf = resource->find(BUF_INDICE, part->m_indicesSlot);
+
+		if (!vertexBuf || !indiceBuf)
+		{
+			LOG_ERR("buffer is invalid");
+			return;
+		}
+
+		vertexBuf->upload();
+		indiceBuf->upload();
+
+		vertexBuf->bind();
+		indiceBuf->bind();
+
+		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::checkGLErr("err happens when drawing part");
+
+		vertexBuf->unbind();
+		indiceBuf->unbind();
 	}
 
 	void DrawCmdGL::drawPartDepth(std::shared_ptr<EntityPart> &part, RenderParam &param)

@@ -4,9 +4,10 @@
 #endif // !STB_IMAGE_STATIC
 #include <stb/stb_image.h>
 
-#include "function/render/rhi/opengl/buffer/GLTetxure.h"
+#include "function/render/rhi/opengl/buffer/GLTexture.h"
 #include "function/render/rhi/Rhi.h"
 #include "function/render/rhi/RhiHeader.h"
+#include "function/render/rhi/opengl/GLHelper.h"
 
 #include "function/render/resource/RenderResourceMgr.h"
 
@@ -60,7 +61,7 @@ namespace Pionner
 			glGenTextures(1, &m_id);
 		}
 
-		GLenum fmt = colorFormat(m_channel);
+		GLenum fmt = GLHelper::colorFormat(m_channel);
 
 		glBindTexture(GL_TEXTURE_2D, m_id);
 
@@ -122,7 +123,6 @@ namespace Pionner
 	{
 		if (isCreated())
 		{
-			//LOG_DEBUG("texture id[%u]", m_id);
 			glDeleteTextures(1, &m_id);
 			m_id = 0;
 		}
@@ -139,18 +139,6 @@ namespace Pionner
 		m_data = stbi_load(m_path.c_str(), &m_width, &m_height, &m_channel, 0);
 		if (!m_data)
 			LOG_ERR("fail to load data from path[%s]", m_path.c_str());
-	}
-
-	uint32_t GLTexture::colorFormat(int32_t component)
-	{
-		if (component == 1)
-			return GL_RED;
-		else if (component == 2)
-			return GL_RG;
-		else if (component == 3)
-			return GL_RGB;
-		else
-			return GL_RGBA;
 	}
 
 	template<>

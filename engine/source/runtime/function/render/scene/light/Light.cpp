@@ -125,10 +125,10 @@ namespace Pionner
 			switch (m_type)
 			{
 				case Pionner::LIGHT_TYPE_DIRECTIONAL:
-					bufType = BUF_DEPTH;
+					bufType = BUF_DEPTH_FBO;
 					break;
 				case Pionner::LIGHT_TYPE_POINT:
-					bufType = BUF_CUBE_DEPTH;
+					bufType = BUF_CUBE_DEPTH_FBO;
 					break;
 				default:
 					break;

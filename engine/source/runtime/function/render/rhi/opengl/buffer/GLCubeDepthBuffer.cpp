@@ -15,13 +15,13 @@ namespace Pionner
 	GLCubeDepthBuffer::GLCubeDepthBuffer(const std::shared_ptr<RenderResourceMgr> &mgr) 
 		: GLDepthBuffer(mgr)
 	{
-		m_bufferType = BUF_CUBE_DEPTH;
+		m_bufferType = BUF_CUBE_DEPTH_FBO;
 	}
 
 	GLCubeDepthBuffer::GLCubeDepthBuffer(uint32_t width, uint32_t height, const std::shared_ptr<RenderResourceMgr> &mgr)
 		: GLDepthBuffer(width, height, mgr)
 	{
-		m_bufferType = BUF_CUBE_DEPTH;
+		m_bufferType = BUF_CUBE_DEPTH_FBO;
 	}
 
 	GLCubeDepthBuffer::~GLCubeDepthBuffer() = default;
@@ -86,7 +86,7 @@ namespace Pionner
 	template<>
 	bool GfxBuffer::is<GLCubeDepthBuffer>() const
 	{
-		return getBufferType() == BUF_CUBE_DEPTH;
+		return getBufferType() == BUF_CUBE_DEPTH_FBO;
 	}
 
 	template<>

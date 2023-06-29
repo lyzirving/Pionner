@@ -26,9 +26,6 @@ namespace Pionner
 		virtual void loadRawData() override;
 
 	private:
-		static uint32_t colorFormat(int32_t component);
-
-	private:
 		std::string m_path;
 		uint8_t *m_data;
 		int m_width, m_height;

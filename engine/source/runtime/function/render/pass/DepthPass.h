@@ -19,6 +19,7 @@ namespace Pionner
 
 	private:
 		std::shared_ptr<ScreenRender>   m_depthScreenRender;
+		std::shared_ptr<ScreenRender>   m_ptShadowScreenRender;
 	};
 }
 

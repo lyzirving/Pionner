@@ -2,7 +2,8 @@
 
 #include "function/render/rhi/opengl/buffer/GLVertexBuffer.h"
 #include "function/render/rhi/opengl/buffer/GLIndexBuffer.h"
-#include "function/render/rhi/opengl/buffer/GLTetxure.h"
+#include "function/render/rhi/opengl/buffer/GLTexture.h"
+#include "function/render/rhi/opengl/buffer/GLCubeTexture.h"
 
 #include "function/render/rhi/opengl/buffer/GLDepthBuffer.h"
 
@@ -45,6 +46,7 @@ namespace Pionner
 					ret = m_indiceArray.allocate(type, mgr);
 					break;
 				case BUF_TEXTURE:
+				case BUF_CUBE_TEXTURE:
 					ret = m_textureArray.allocate(type, mgr);
 					break;
 				default:
@@ -76,6 +78,9 @@ namespace Pionner
 				case Pionner::BUF_TEXTURE:
 					result = std::shared_ptr<GfxBuffer>(new GLTexture(true, mgr));
 					break;
+				case Pionner::BUF_CUBE_TEXTURE:
+					result = std::shared_ptr<GfxBuffer>(new GLCubeTexture(true, mgr));
+					break;
 				default:
 					break;
 			}
@@ -106,12 +111,13 @@ namespace Pionner
 				break;
 			}
 			case BUF_TEXTURE:
+			case BUF_CUBE_TEXTURE:
 			{
 				m_textureArray.release(slot);
 				break;
 			}
-			case BUF_DEPTH:
-			case BUF_CUBE_DEPTH:
+			case BUF_DEPTH_FBO:
+			case BUF_CUBE_DEPTH_FBO:
 			{
 				m_frameBuffers.release(slot);
 				break;
@@ -137,6 +143,7 @@ namespace Pionner
 				break;
 			}
 			case BUF_TEXTURE:
+			case BUF_CUBE_TEXTURE:
 			{
 				ret = m_textureArray.find(slot);
 				break;
