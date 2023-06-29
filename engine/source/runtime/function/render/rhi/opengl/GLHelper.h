@@ -10,6 +10,7 @@ namespace Pionner
 	{
 	public:
 		static uint32_t buildProgram(const char *vert, const char *frag);
+		static uint32_t buildProgram(const char *vert, const char *frag, const char *geo);
 		static bool checkGLErr(const char *fmt, ...);
 
 	private:

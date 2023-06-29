@@ -16,7 +16,7 @@ namespace Pionner
 {
 	Shader::Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName)
 		: m_rhi(rhi), m_name(name)
-		, m_vert(), m_frag(), m_program(0)
+		, m_vert(), m_frag(), m_geo(), m_program(0)
 	{
 		std::ifstream vertFile, fragFile;
 		std::stringstream vertStream, fragStream;
@@ -51,6 +51,32 @@ namespace Pionner
 		LOG_DEBUG("succeed to open shader[%s]\n", m_name.c_str());
 	}
 
+	Shader::Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, 
+				   const char *fragName, const char *geoName)
+		: Shader(rhi, name, vertName, fragName)
+	{
+		std::ifstream geoFile;
+		std::stringstream geoStream;
+
+		std::string root{ "shader/" };
+		std::string geoPath = root + geoName + ".geo";
+
+		geoFile.open(geoPath.c_str());
+		if (!geoFile.is_open())
+		{
+			LOG_ERR("fail to open geometry shader file[%s]", geoPath.c_str());
+			return;
+		}
+
+		geoStream << geoFile.rdbuf();
+
+		geoFile.close();
+
+		m_geo = geoStream.str();
+
+		LOG_DEBUG("succeed to open geometry shader[%s]\n", m_name.c_str());
+	}
+
 	Shader::~Shader()
 	{
 		if (m_rhi)
@@ -72,8 +98,16 @@ namespace Pionner
 			return false;
 		}
 
-		bool success = m_rhi->build(m_vert.c_str(), m_frag.c_str(), m_program);
-
+		bool success{false};
+		if (!m_geo.empty())
+		{
+			success = m_rhi->build(m_vert.c_str(), m_frag.c_str(), m_geo.c_str(), m_program);
+		}
+		else
+		{
+			success = m_rhi->build(m_vert.c_str(), m_frag.c_str(), m_program);
+		}
+		
 		if (success)
 		{
 			LOG_DEBUG("succeed to init shader[%s][%u]", m_name.c_str(), m_program);

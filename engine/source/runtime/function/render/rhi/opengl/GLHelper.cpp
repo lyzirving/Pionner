@@ -19,7 +19,7 @@ namespace Pionner
 		GLuint vertShader{ 0 };
 		GLuint fragShader{ 0 };
 		GLuint program{ 0 };
-		GLint linkStatus{ GL_FALSE };
+		GLint  linkStatus{ GL_FALSE };
 
 		if (vert == nullptr || std::strlen(vert) == 0)
 		{
@@ -84,6 +84,99 @@ namespace Pionner
 
 		if (fragShader)
 			glDeleteShader(fragShader);
+		return 0;
+	}
+
+	uint32_t GLHelper::buildProgram(const char *vert, const char *frag, const char *geo)
+	{
+		GLuint vertShader{ 0 }, fragShader{ 0 }, geoShader{ 0 };
+		GLuint program{ 0 };
+		GLint  linkStatus{ GL_FALSE };
+
+		if (vert == nullptr || std::strlen(vert) == 0)
+		{
+			LOG_ERR("input vertex shader is null");
+			goto err;
+		}
+
+		if (frag == nullptr || std::strlen(frag) == 0)
+		{
+			LOG_ERR("input fragment shader is null");
+			goto err;
+		}
+
+		if (geo == nullptr || std::strlen(geo) == 0)
+		{
+			LOG_ERR("input geometry shader is null");
+			goto err;
+		}
+
+		if (!createShader(GL_VERTEX_SHADER, vert, vertShader))
+		{
+			LOG_ERR("fail to create vertex shader:\n %s", vert);
+			goto err;
+		}
+
+		if (!createShader(GL_FRAGMENT_SHADER, frag, fragShader))
+		{
+			LOG_ERR("fail to create fragment shader:\n %s", frag);
+			goto err;
+		}
+
+		if (!createShader(GL_GEOMETRY_SHADER, geo, geoShader))
+		{
+			LOG_ERR("fail to create geometry shader:\n %s", geo);
+			goto err;
+		}
+
+		program = glCreateProgram();
+		if (!program)
+		{
+			checkGLErr("fail to create program");
+			goto err;
+		}
+
+		glAttachShader(program, vertShader);
+		if (!checkGLErr("fail to attach vertex shader"))
+			goto err;
+
+		glAttachShader(program, fragShader);
+		if (!checkGLErr("fail to attach fragment shader"))
+			goto err;
+
+		glAttachShader(program, geoShader);
+		if (!checkGLErr("fail to attach geometry shader"))
+			goto err;
+
+		glLinkProgram(program);
+		glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+		if (linkStatus != GL_TRUE)
+		{
+			LOG_ERR("fail to link program[%u]", program);
+			logLinkStatus(program);
+			goto err;
+		}
+
+		// work is done, delete created shaders
+		glDeleteShader(vertShader);
+		glDeleteShader(fragShader);
+		glDeleteShader(geoShader);
+
+		return program;
+
+	err:
+		if (program)
+			glDeleteProgram(program);
+
+		if (vertShader)
+			glDeleteShader(vertShader);
+
+		if (fragShader)
+			glDeleteShader(fragShader);
+
+		if (geoShader)
+			glDeleteShader(geoShader);
+
 		return 0;
 	}
 

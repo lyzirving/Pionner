@@ -14,6 +14,8 @@ namespace Pionner
 	{
 	public:
 		Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName);
+		Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, 
+			   const char *fragName, const char* geoName);
 		virtual ~Shader();
 
 		inline bool isInit() { return m_program > 0; }
@@ -41,7 +43,7 @@ namespace Pionner
 	protected:
 		std::shared_ptr<ShaderRhi> m_rhi;
 		std::string m_name;
-		std::string m_vert, m_frag;
+		std::string m_vert, m_frag, m_geo;
 		uint32_t m_program;
 
 	};

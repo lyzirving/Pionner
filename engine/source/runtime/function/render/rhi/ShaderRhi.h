@@ -13,6 +13,7 @@ namespace Pionner
 		virtual ~ShaderRhi() = default;
 
 		virtual bool build(const char *vert, const char *frag, uint32_t &program) = 0;
+		virtual bool build(const char *vert, const char *frag, const char *geo, uint32_t &program) = 0;
 		virtual void activate(uint32_t program, bool active) = 0;
 		virtual void destroy(uint32_t &program) = 0;
 

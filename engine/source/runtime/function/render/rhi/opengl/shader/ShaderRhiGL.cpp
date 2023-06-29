@@ -25,17 +25,25 @@ namespace Pionner
 		if (vert == nullptr || frag == nullptr)
 		{
 			LOG_ERR("input src is invalid");
-			goto fail;
+			program = 0;
+			return false;
 		}
 		program = GLHelper::buildProgram(vert, frag);
-		if (program <= 0)
-			goto fail;
+		
+		return program > 0;
+	}
 
-		return true;
+	bool ShaderRhiGL::build(const char *vert, const char *frag, const char *geo, uint32_t &program)
+	{
+		if (vert == nullptr || frag == nullptr || geo == nullptr)
+		{
+			LOG_ERR("input src is invalid");
+			program = 0;
+			return false;
+		}
+		program = GLHelper::buildProgram(vert, frag, geo);
 
-	fail:
-		program = 0;
-		return false;
+		return program > 0;
 	}
 
 	void ShaderRhiGL::activate(uint32_t program, bool active)
