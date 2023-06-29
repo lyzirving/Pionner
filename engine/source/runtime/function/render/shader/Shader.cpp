@@ -51,15 +51,15 @@ namespace Pionner
 		LOG_DEBUG("succeed to open shader[%s]\n", m_name.c_str());
 	}
 
-	Shader::Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, 
-				   const char *fragName, const char *geoName)
+	Shader::Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName, 
+				   const char *geoName)
 		: Shader(rhi, name, vertName, fragName)
 	{
 		std::ifstream geoFile;
 		std::stringstream geoStream;
 
 		std::string root{ "shader/" };
-		std::string geoPath = root + geoName + ".geo";
+		std::string geoPath = root + geoName + ".geom";
 
 		geoFile.open(geoPath.c_str());
 		if (!geoFile.is_open())

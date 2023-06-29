@@ -62,6 +62,9 @@ namespace Pionner
 		inline const glm::vec3 &diffuse() { return m_kd; }
 		inline const glm::vec3 &specular() { return m_ks; }
 
+		inline float near() const { return m_near; }
+		inline float far() const  { return m_far; }
+
 		inline float ambientIntensity() { return m_ia; }
 		inline float diffuseIntensity() { return m_id; }
 		inline float specularIntensity() { return m_is; }

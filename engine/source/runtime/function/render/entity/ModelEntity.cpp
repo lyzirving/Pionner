@@ -7,6 +7,7 @@
 #include "function/render/shader/ShaderMgr.h"
 
 #include "function/render/scene/SceneMgr.h"
+#include "function/render/scene/light/PointLight.h"
 
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
@@ -56,37 +57,16 @@ namespace Pionner
 
 	bool ModelEntity::dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
-		auto scene = param.sceneMgr;
-		LightType curLight = scene->m_curLight;
+		LightType curLight = param.sceneMgr->m_curLight;
 		if (curLight == LIGHT_TYPE_DIRECTIONAL)
 		{
-			auto light = scene->m_lights[curLight];
-			if (!light)
-			{
-				LOG_ERR("current light is invalid");
-				goto fail;
-			}
-
-			shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP, param.rhi);
-
-			if (!shader || !shader->isInit())
-			{
-				LOG_ERR("shadow map shader is invalid");
-				goto fail;
-			}
-
-			shader->use(true);
-			shader->setMat4("u_modelMat", part->getTransform());
-			shader->setMat4("u_lightViewMat", light->getViewMat());
-			shader->setMat4("u_lightPrjMat", light->getPrjMat());
-
-			return true;
+			return dealDirectionLightShader(param, part, shader);
 		}
-		else if (param.sceneMgr->m_curLight == LIGHT_TYPE_POINT)
+		else if (curLight == LIGHT_TYPE_POINT)
 		{
-
+			return dealPointLightShader(param, part, shader);
 		}
-	fail:
+		LOG_ERR("invalid light type[%u]", curLight);
 		return false;
 	}
 
@@ -311,6 +291,73 @@ namespace Pionner
 		shader->setMat4("u_viewMat", camera->getViewMat());
 		shader->setMat4("u_prjMat", frustum->getPerspectMat());
 
+		return true;
+	}
+
+	bool ModelEntity::dealDirectionLightShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	{
+		auto scene = param.sceneMgr;
+		LightType curLight = scene->m_curLight;
+
+		auto light = scene->m_lights[curLight];
+		if (!light)
+		{
+			LOG_ERR("current light is invalid");
+			return false;
+		}
+
+		shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP, param.rhi);
+
+		if (!shader || !shader->isInit())
+		{
+			LOG_ERR("shadow map shader is invalid");
+			return false;
+		}
+
+		shader->use(true);
+		shader->setMat4("u_modelMat", part->getTransform());
+		shader->setMat4("u_lightViewMat", light->getViewMat());
+		shader->setMat4("u_lightPrjMat", light->getPrjMat());
+
+		return true;
+	}
+
+	bool ModelEntity::dealPointLightShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	{
+		auto scene = param.sceneMgr;
+		LightType curLight = scene->m_curLight;
+
+		auto light = scene->m_lights[curLight];
+		if (!light)
+		{
+			LOG_ERR("current light is invalid");
+			return false;
+		}
+		auto pPtLight = light->to<PointLight>();
+		if (pPtLight)
+		{
+			LOG_ERR("fail to convert to PointLight ptr");
+			return false;
+		}
+
+		shader = param.shaderMgr->get(SHADER_TYPE_POINT_SHADOW_MAP, param.rhi);
+
+		if (!shader || !shader->isInit())
+		{
+			LOG_ERR("pt shadow map shader is invalid");
+			return false;
+		}
+
+		shader->use(true);
+
+		shader->setMat4("u_modelMat", part->getTransform());
+		shader->setVec3("u_lightPos", light->position());
+		shader->setFloat("u_farPlane", light->far());
+		for (uint32_t i = 0; i < 6; ++i)
+		{
+			LightDir dir = LightDir(i);
+			shader->setMat4("u_lightMats[" + std::to_string(i) + "]", pPtLight->getLightMat(dir));
+		}
 		return true;
 	}
 }
