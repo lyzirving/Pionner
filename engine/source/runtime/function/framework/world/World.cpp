@@ -52,8 +52,9 @@ namespace Pionner
 		auto lightEntity = createEntity<LightComp>(ENTITY_LIGHT, "light");
 		auto &lightComp = lightEntity->getComp<LightComp>();
 		lightComp.m_type = LIGHT_TYPE_DIRECTIONAL;
-		// Note the directional light points at world center
+		//lightComp.m_type = LIGHT_TYPE_POINT;
 		lightComp.m_pos = glm::vec3(-3.f, 4.f, 2.5f);
+		// Note the directional light points at world center
 		lightComp.m_dir = glm::vec3(0.f) - lightComp.m_pos;
 
 		// Add a plane

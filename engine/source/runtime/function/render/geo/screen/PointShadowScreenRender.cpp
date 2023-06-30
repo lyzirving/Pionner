@@ -9,6 +9,7 @@
 
 #include "function/render/RenderDef.h"
 #include "function/render/rhi/Rhi.h"
+#include "function/render/entity/RenderEntity.h"
 
 #include "function/render/resource/ResourceDef.h"
 #include "function/render/scene/SceneMgr.h"
@@ -86,7 +87,7 @@ namespace Pionner
 			if (entity->hasComp<RenderComp>())
 			{
 				auto &renderComp = entity->getComp<RenderComp>();
-				cmd->drawEntityOnly(*renderComp.m_entity.get(), param);
+				drawEntity(*renderComp.m_entity.get(), param, shader);
 			}
 		}
 		});
@@ -98,5 +99,63 @@ namespace Pionner
 	{
 		shader = param.shaderMgr->get(m_shaderType, param.rhi);
 		return shader && shader->isInit();
+	}
+
+	void PointShadowScreenRender::drawEntity(RenderEntity &entity, RenderParam &param, std::shared_ptr<Shader> &shader)
+	{
+		for (auto &part : entity.m_parts)
+		{
+			drawPart(part, param, shader);
+		}
+
+		if (!entity.m_children.empty())
+		{
+			for (auto &child : entity.m_children)
+			{
+				drawEntity(*child, param, shader);
+			}
+		}
+	}
+
+	void PointShadowScreenRender::drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param, std::shared_ptr<Shader> &shader)
+	{
+		if (!part->vetexSlotValid() || !part->indiceSlotValid())
+		{
+			return;
+		}
+
+		auto resource = param.resource;
+		auto scene = param.sceneMgr;
+		auto vertexBuf = resource->find(BUF_VERTEX, part->m_vertexSlot);
+		auto indiceBuf = resource->find(BUF_INDICE, part->m_indicesSlot);
+		auto cmd = param.rhi->getDrawCmd();
+		auto owner = part->m_owner;
+
+		if (!owner)
+		{
+			LOG_ERR("owner is null");
+			return;
+		}
+
+		if (!vertexBuf || !indiceBuf)
+		{
+			LOG_ERR("buffer is invalid");
+			return;
+		}
+
+		shader->setMat4("u_modelMat", owner->m_transComp.getMat());
+		shader->setMat4("u_viewMat", scene->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", scene->m_frustum->getPerspectMat());
+
+		vertexBuf->upload();
+		indiceBuf->upload();
+
+		vertexBuf->bind();
+		indiceBuf->bind();
+
+		cmd->drawIdxTriangle(indiceBuf->size());
+
+		vertexBuf->unbind();
+		indiceBuf->unbind();
 	}
 }

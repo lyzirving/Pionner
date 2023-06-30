@@ -15,13 +15,12 @@ namespace Pionner
 		virtual ~DrawCmdGL();
 
 		virtual void drawEntity(RenderEntity &entity, RenderParam &param) override;
-		virtual void drawEntityOnly(RenderEntity &entity, RenderParam &param) override;
 		virtual void drawGeometry(Geometry &geometry, RenderParam &param) override;
 		virtual void drawDepth(RenderEntity &entity, RenderParam &param) override;
+		virtual bool drawIdxTriangle(uint32_t idxSize) override;
 
 	private:
 		void drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param);
-		void drawPartOnly(std::shared_ptr<EntityPart> &part, RenderParam &param);
 		void drawPartDepth(std::shared_ptr<EntityPart> &part, RenderParam &param);
 	};
 }

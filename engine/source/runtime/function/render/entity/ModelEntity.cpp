@@ -334,7 +334,7 @@ namespace Pionner
 			return false;
 		}
 		auto pPtLight = light->to<PointLight>();
-		if (pPtLight)
+		if (!pPtLight)
 		{
 			LOG_ERR("fail to convert to PointLight ptr");
 			return false;

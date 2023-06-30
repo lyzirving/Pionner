@@ -5,6 +5,10 @@
 
 namespace Pionner
 {
+	class  RenderEntity;
+	class  EntityPart;
+	struct RenderParam;
+
 	class PointShadowScreenRender : public ScreenRender
 	{
 	public:
@@ -15,6 +19,10 @@ namespace Pionner
 
 	protected:
 		virtual bool dealShader(RenderParam &param, std::shared_ptr<Shader> &shader) override;
+
+	private:
+		void drawEntity(RenderEntity &entity, RenderParam &param, std::shared_ptr<Shader> &shader);
+		void drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param, std::shared_ptr<Shader> &shader);
 	};
 }
 
