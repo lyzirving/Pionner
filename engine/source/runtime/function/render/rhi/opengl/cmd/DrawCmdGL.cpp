@@ -55,6 +55,22 @@ namespace Pionner
 		}
 	}
 
+	void DrawCmdGL::drawDepth(RenderEntity &entity, RenderParam &param)
+	{
+		for (auto &part : entity.m_parts)
+		{
+			drawPartDepth(part, param);
+		}
+
+		if (!entity.m_children.empty())
+		{
+			for (auto &child : entity.m_children)
+			{
+				drawDepth(*child, param);
+			}
+		}
+	}
+
 	void DrawCmdGL::drawGeometry(Geometry &geometry, RenderParam &param)
 	{
 		auto meshComp = geometry.getMeshComp();
@@ -87,19 +103,14 @@ namespace Pionner
 		indiceBuf->unbind();
 	}
 
-	void DrawCmdGL::drawDepth(RenderEntity &entity, RenderParam &param)
+	void DrawCmdGL::drawGeometryDepth(Geometry &geometry, RenderParam &param)
 	{
-		for (auto &part : entity.m_parts)
+		std::shared_ptr<Shader> shader{ nullptr };
+		geometry.initialize(param);
+		if (geometry.dealDepthShader(param, shader))
 		{
-			drawPartDepth(part, param);
-		}
-
-		if (!entity.m_children.empty())
-		{
-			for (auto &child : entity.m_children)
-			{
-				drawDepth(*child, param);
-			}
+			drawGeometry(geometry, param);
+			shader->use(false);
 		}
 	}
 

@@ -7,6 +7,7 @@ namespace Pionner
 {
 	class  RenderEntity;
 	class  EntityPart;
+	class  Geometry;
 	struct RenderParam;
 
 	class PointShadowScreenRender : public ScreenRender
@@ -23,6 +24,8 @@ namespace Pionner
 	private:
 		void drawEntity(RenderEntity &entity, RenderParam &param, std::shared_ptr<Shader> &shader);
 		void drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param, std::shared_ptr<Shader> &shader);
+
+		void drawGeometry(Geometry &geometry, RenderParam &param, std::shared_ptr<Shader> &shader);
 	};
 }
 

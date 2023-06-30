@@ -7,6 +7,8 @@
 #include "function/render/scene/SceneMgr.h"
 #include "function/render/shader/ShaderMgr.h"
 
+#include "function/render/scene/light/PointLight.h"
+
 #include "Plane.h"
 
 #include "core/log/LogSystem.h"
@@ -56,6 +58,7 @@ namespace Pionner
 			LOG_ERR("geometry[%s]'s transform is invalid", m_name.c_str());
 			return false;
 		}
+
 		auto scene = param.sceneMgr;
 		LightType curLight = scene->m_curLight;
 		auto light = scene->m_lights[curLight];
@@ -64,24 +67,73 @@ namespace Pionner
 			LOG_ERR("geometry[%s] fail to get light[%u]", m_name.c_str(), curLight);
 			return false;
 		}
+
+		if (curLight == LIGHT_TYPE_DIRECTIONAL)
+		{
+			return dealDirectionLightShader(param, shader);
+		}
+		else if (curLight == LIGHT_TYPE_POINT)
+		{
+			return dealPointLightShader(param, shader);
+		}
+		else
+		{
+			LOG_ERR("geometry[%s] other type[%u] light is not supported now", m_name.c_str(), curLight);
+			return false;
+		}
+	}
+
+	bool Geometry::dealDirectionLightShader(RenderParam &param, /*out*/std::shared_ptr<Shader> &shader)
+	{
 		shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP, param.rhi);
 		if (!shader)
 		{
 			LOG_ERR("geometry[%s] fail to get shadow map shader", m_name.c_str());
 			return false;
 		}
-		if (curLight == LIGHT_TYPE_DIRECTIONAL)
+
+		auto scene = param.sceneMgr;
+		LightType curLight = scene->m_curLight;
+		auto light = scene->m_lights[curLight];
+
+		shader->use(true);
+		shader->setMat4("u_lightViewMat", light->getViewMat());
+		shader->setMat4("u_lightPrjMat", light->getPrjMat());
+		shader->setMat4("u_modelMat", m_transform->getMat());
+		shader->setInt("u_calcShadow", 0);
+
+		return true;
+	}
+
+	bool Geometry::dealPointLightShader(RenderParam &param, /*out*/std::shared_ptr<Shader> &shader)
+	{
+		auto scene = param.sceneMgr;
+		LightType curLight = scene->m_curLight;
+
+		auto light = scene->m_lights[curLight];
+		auto pPtLight = light->to<PointLight>();
+		if (!pPtLight)
 		{
-			shader->use(true);
-			shader->setMat4("u_lightViewMat", light->getViewMat());
-			shader->setMat4("u_lightPrjMat", light->getPrjMat());
-			shader->setMat4("u_modelMat", m_transform->getMat());
-			shader->setInt("u_calcShadow", 0);
-		}
-		else
-		{
-			LOG_ERR("geometry[%s] other type[%u] light is not supported now", m_name.c_str(), curLight);
+			LOG_ERR("fail to convert to PointLight ptr");
 			return false;
+		}
+
+		shader = param.shaderMgr->get(SHADER_TYPE_POINT_SHADOW_MAP, param.rhi);
+		if (!shader)
+		{
+			LOG_ERR("geometry[%s] fail to get point shadow map shader", m_name.c_str());
+			return false;
+		}
+		
+		shader->use(true);
+
+		shader->setMat4("u_modelMat", m_transform->getMat());
+		shader->setVec3("u_lightPos", light->position());
+		shader->setFloat("u_farPlane", light->far());
+		for (uint32_t i = 0; i < 6; ++i)
+		{
+			LightDir dir = LightDir(i);
+			shader->setMat4("u_lightMats[" + std::to_string(i) + "]", pPtLight->getLightMat(dir));
 		}
 		return true;
 	}

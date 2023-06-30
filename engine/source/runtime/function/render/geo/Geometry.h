@@ -42,6 +42,10 @@ namespace Pionner
 		template<class T>
 		T *as();
 
+	private:
+		bool dealDirectionLightShader(RenderParam &param, /*out*/std::shared_ptr<Shader> &shader);
+		bool dealPointLightShader(RenderParam &param, /*out*/std::shared_ptr<Shader> &shader);
+
 	protected:
 		GeometryType m_type;
 		std::string  m_name;

@@ -73,11 +73,11 @@ namespace Pionner
 		rhi->setViewport(0, 0, depthBuf->getWidth(), depthBuf->getHeight());
 
 		DepthTest depthTest = DepthTest::common();
+		rhi->setDepthMode(depthTest);
+
 		CullFace cull = CullFace::common();
 		// Solve Perter panning, but the model has some problem.
 		cull.m_mode = CULL_FRONT;
-
-		rhi->setDepthMode(depthTest);
 		rhi->setCullMode(cull);
 
 		world->iterate([&](decs::EntityID id, ShadowComp &comp)
@@ -93,12 +93,7 @@ namespace Pionner
 			else if (entity->hasComp<GeometryComp>())
 			{
 				auto &geoComp = entity->getComp<GeometryComp>();
-				geoComp.m_geometry->initialize(param);
-				if (geoComp.m_geometry->dealDepthShader(param, shader))
-				{
-					cmd->drawGeometry(*geoComp.m_geometry.get(), param);
-					shader->use(false);
-				}
+				cmd->drawGeometryDepth(*geoComp.m_geometry.get(), param);
 			}
 		}
 		});

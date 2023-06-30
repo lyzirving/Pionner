@@ -10,11 +10,13 @@
 #include "function/render/RenderDef.h"
 #include "function/render/rhi/Rhi.h"
 #include "function/render/entity/RenderEntity.h"
+#include "function/render/scene/SceneMgr.h"
 
 #include "function/render/resource/ResourceDef.h"
-#include "function/render/scene/SceneMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
 #include "function/render/resource/RenderResourceMgr.h"
+
+#include "function/render/geo/Geometry.h"
 
 #include "function/render/shader/ShaderMgr.h"
 
@@ -89,6 +91,11 @@ namespace Pionner
 				auto &renderComp = entity->getComp<RenderComp>();
 				drawEntity(*renderComp.m_entity.get(), param, shader);
 			}
+			else if (entity->hasComp<GeometryComp>())
+			{
+				auto &geoComp = entity->getComp<GeometryComp>();
+				drawGeometry(*geoComp.m_geometry.get(), param, shader);
+			}
 		}
 		});
 
@@ -129,13 +136,6 @@ namespace Pionner
 		auto vertexBuf = resource->find(BUF_VERTEX, part->m_vertexSlot);
 		auto indiceBuf = resource->find(BUF_INDICE, part->m_indicesSlot);
 		auto cmd = param.rhi->getDrawCmd();
-		auto owner = part->m_owner;
-
-		if (!owner)
-		{
-			LOG_ERR("owner is null");
-			return;
-		}
 
 		if (!vertexBuf || !indiceBuf)
 		{
@@ -143,7 +143,52 @@ namespace Pionner
 			return;
 		}
 
-		shader->setMat4("u_modelMat", owner->m_transComp.getMat());
+		shader->setMat4("u_modelMat", part->getTransform());
+		shader->setMat4("u_viewMat", scene->m_camera->getViewMat());
+		shader->setMat4("u_prjMat", scene->m_frustum->getPerspectMat());
+
+		vertexBuf->upload();
+		indiceBuf->upload();
+
+		vertexBuf->bind();
+		indiceBuf->bind();
+
+		cmd->drawIdxTriangle(indiceBuf->size());
+
+		vertexBuf->unbind();
+		indiceBuf->unbind();
+	}
+
+	void PointShadowScreenRender::drawGeometry(Geometry &geometry, RenderParam &param, std::shared_ptr<Shader> &shader)
+	{
+		geometry.initialize(param);
+
+		auto meshComp = geometry.getMeshComp();
+		if (!meshComp || !meshComp->m_initialized || meshComp->m_vBufSlot < 0 || meshComp->m_indBufSlot < 0)
+		{
+			LOG_ERR("mesh comp is invalid");
+			return;
+		}
+		auto transComp = geometry.getTransformComp();
+		if (!transComp)
+		{
+			LOG_ERR("transform comp is invalid");
+			return;
+		}
+
+		auto resource = param.resource;
+		auto scene = param.sceneMgr;
+		auto vertexBuf = resource->find(BUF_VERTEX, meshComp->m_vBufSlot);
+		auto indiceBuf = resource->find(BUF_INDICE, meshComp->m_indBufSlot);
+		auto cmd = param.rhi->getDrawCmd();
+
+		if (!vertexBuf || !indiceBuf)
+		{
+			LOG_ERR("buffer is invalid");
+			return;
+		}
+
+		shader->setMat4("u_modelMat", transComp->getMat());
 		shader->setMat4("u_viewMat", scene->m_camera->getViewMat());
 		shader->setMat4("u_prjMat", scene->m_frustum->getPerspectMat());
 

@@ -15,8 +15,11 @@ namespace Pionner
 		virtual ~DrawCmdGL();
 
 		virtual void drawEntity(RenderEntity &entity, RenderParam &param) override;
-		virtual void drawGeometry(Geometry &geometry, RenderParam &param) override;
 		virtual void drawDepth(RenderEntity &entity, RenderParam &param) override;
+
+		virtual void drawGeometry(Geometry &geometry, RenderParam &param) override;
+		virtual void drawGeometryDepth(Geometry &geometry, RenderParam &param) override;
+
 		virtual bool drawIdxTriangle(uint32_t idxSize) override;
 
 	private:
