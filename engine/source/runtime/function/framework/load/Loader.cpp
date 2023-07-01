@@ -204,7 +204,8 @@ namespace Pionner
 					part->m_material.m_ambientSlot = texture->getSlot();
 				}
 
-				if (mt->GetTextureCount(aiTextureType_HEIGHT) > 0)
+				// This texture is used for normal mapping.
+				/*if (mt->GetTextureCount(aiTextureType_HEIGHT) > 0)
 				{
 					mt->GetTexture(aiTextureType_HEIGHT, 0, &texName);
 
@@ -213,7 +214,7 @@ namespace Pionner
 					texture->insertData(srcPath);
 					texture->loadRawData();
 					part->m_material.m_normalSlot = texture->getSlot();
-				}
+				}*/
 
 				aiColor3D color;
 				ai_real   valFloat;
