@@ -22,6 +22,11 @@ namespace Pionner
 		m_transform.position(x, y, z);
 	}
 
+	void TransformComp::translate(const glm::vec3 &pos)
+	{
+		m_transform.position(pos.x, pos.y, pos.z);
+	}
+
 	void TransformComp::rotate(float angle, float x, float y, float z)
 	{
 		m_transform.rotate(angle, glm::vec3(x, y, z));

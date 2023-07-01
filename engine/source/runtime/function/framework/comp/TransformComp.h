@@ -17,6 +17,7 @@ namespace Pionner
 		glm::mat4 getMat();
 
 		void translate(float x, float y, float z);
+		void translate(const glm::vec3 &pos);
 		void rotate(float angle, float x, float y, float z);
 		void scale(float x, float y, float z);
 

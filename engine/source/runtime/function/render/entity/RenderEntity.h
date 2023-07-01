@@ -46,6 +46,7 @@ namespace Pionner
 	{
 	public:
 		RenderEntity();
+		RenderEntity(RenderMode mode);
 		virtual ~RenderEntity();
 
 		static std::shared_ptr<RenderEntity> makeEntity(RenderEntityType type);
@@ -60,6 +61,7 @@ namespace Pionner
 	public:
 		std::string      m_name;
 		RenderEntityType m_type;
+		RenderMode       m_renderMode;
 		DrawOrder        m_order;
 		uint32_t         m_entityId;
 		TransformComp    m_transComp;

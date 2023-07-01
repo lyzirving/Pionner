@@ -32,6 +32,7 @@ namespace Pionner
 	void ModelLayer::draw(RenderParam &param)
 	{
 		auto rhi = param.rhi;
+		auto cmd = rhi->getDrawCmd();
 
 		const RenderViewport &port = param.renderViewport;
 		rhi->setViewport(port.m_left, port.m_top, port.m_width, port.m_height);
@@ -48,10 +49,10 @@ namespace Pionner
 			comp.m_geometry->draw(param);
 		});
 
-		/*world->iterate([&](decs::EntityID id, LightComp &comp)
+		world->iterate([&](decs::EntityID id, LightComp &comp)
 		{
-
-		});*/
+			cmd->drawEntity(*comp.m_obj, param);
+		});
 
 		m_grid->draw(param);
 	}

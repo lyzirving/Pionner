@@ -100,6 +100,7 @@ namespace Pionner
 		{
 			auto child = RenderEntity::makeEntity(entity->m_type);
 			child->m_parent = entity;
+			child->m_renderMode = entity->m_renderMode;
 			child->m_name = node->mChildren[i]->mName.C_Str();
 			entity->m_children.push_back(child);
 			processNode(node->mChildren[i], scene, rootDir, child);

@@ -23,7 +23,7 @@
 
 namespace Pionner
 {
-	ModelEntity::ModelEntity() : RenderEntity()
+	ModelEntity::ModelEntity(RenderMode mode) : RenderEntity(mode)
 	{
 		m_type = RENDER_ENTITY_TYPE_MODEL;
 	}
@@ -32,6 +32,40 @@ namespace Pionner
 
 	bool ModelEntity::dealShader(RenderParam &param, std::shared_ptr<EntityPart> &part,
 								 /*out*/std::shared_ptr<Shader> &shader)
+	{
+		switch (m_renderMode)
+		{
+			case Pionner::RENDER_MODE_WIRE_FRAME:
+				break;
+			case Pionner::RENDER_MODE_SOLID:
+				break;
+			case Pionner::RENDER_MODE_MATERIAL_DISPLAY:
+				return coloringSimple(param, part, shader);
+			case Pionner::RENDER_MODE_RENDERED_DISPLAY:
+				return coloringByRenderMode(param, part, shader);
+			default:
+				break;
+		}
+		LOG_ERR("invalid render mode[%u]", m_renderMode);
+		return false;
+	}
+
+	bool ModelEntity::dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	{
+		LightType curLight = param.sceneMgr->m_curLight;
+		if (curLight == LIGHT_TYPE_DIRECTIONAL)
+		{
+			return dealDirectionLightDepthShader(param, part, shader);
+		}
+		else if (curLight == LIGHT_TYPE_POINT)
+		{
+			return dealPointLightDepthShader(param, part, shader);
+		}
+		LOG_ERR("invalid light type[%u]", curLight);
+		return false;
+	}
+
+	bool ModelEntity::coloringByRenderMode(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto sceneMgr = param.sceneMgr;
 		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
@@ -51,23 +85,6 @@ namespace Pionner
 		{
 			return coloringSimple(param, part, shader);
 		}
-
-		return false;
-	}
-
-	bool ModelEntity::dealDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
-	{
-		LightType curLight = param.sceneMgr->m_curLight;
-		if (curLight == LIGHT_TYPE_DIRECTIONAL)
-		{
-			return dealDirectionLightDepthShader(param, part, shader);
-		}
-		else if (curLight == LIGHT_TYPE_POINT)
-		{
-			return dealPointLightDepthShader(param, part, shader);
-		}
-		LOG_ERR("invalid light type[%u]", curLight);
-		return false;
 	}
 
 	bool ModelEntity::coloringWithLight(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)

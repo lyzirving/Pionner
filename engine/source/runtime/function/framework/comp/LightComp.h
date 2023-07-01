@@ -2,6 +2,7 @@
 #define __PIONNER_LIGHT_COMP_H__
 
 #include <glm/glm.hpp>
+#include <memory>
 
 #include "Comp.h"
 
@@ -9,6 +10,7 @@
 
 namespace Pionner
 {
+	class RenderEntity;
 	class LightComp : public Comp
 	{
 	public:
@@ -32,6 +34,8 @@ namespace Pionner
 		 *         It is used as an exponent to calculate the power of dot(bisector, normal).
 		 */
 		float m_shininess;
+
+		std::shared_ptr<RenderEntity> m_obj;
 
 		LightType m_type;
 	};

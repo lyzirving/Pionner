@@ -2,7 +2,6 @@
 
 #include "RenderEntity.h"
 #include "ModelEntity.h"
-#include "LightEntity.h"
 
 #include "function/global/GlobalContext.h"
 
@@ -84,6 +83,20 @@ namespace Pionner
 	RenderEntity::RenderEntity()
 		: m_name()
 		, m_type(RENDER_ENTITY_TYPE_MODEL)
+		, m_renderMode(RENDER_MODE_MATERIAL_DISPLAY)
+		, m_order(ORDER_LOWEST)
+		, m_entityId(g_entityId++)
+		, m_transComp()
+		, m_parent(nullptr)
+		, m_parts()
+		, m_children()
+	{
+	}
+
+	RenderEntity::RenderEntity(RenderMode mode)
+		: m_name()
+		, m_type(RENDER_ENTITY_TYPE_MODEL)
+		, m_renderMode(mode)
 		, m_order(ORDER_LOWEST)
 		, m_entityId(g_entityId++)
 		, m_transComp()
@@ -118,9 +131,6 @@ namespace Pionner
 		{
 			case Pionner::RENDER_ENTITY_TYPE_MODEL:
 				result = std::shared_ptr<RenderEntity>(new ModelEntity);
-				break;
-			case Pionner::RENDER_ENTITY_TYPE_LIGHT:
-				result = std::shared_ptr<RenderEntity>(new LightEntity);
 				break;
 			default:
 				break;
