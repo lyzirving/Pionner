@@ -22,7 +22,7 @@ namespace Pionner
 		: m_position(0.f), m_direction(0.f)
 		, m_ka(1.f), m_kd(1.f), m_ks(1.f)
 		, m_ia(0.2f), m_id(0.6f), m_is(0.7f)
-		, m_shininess(64.f), m_near(0.1f), m_far(30.f)
+		, m_shininess(32.f), m_near(0.1f), m_far(30.f)
 		, m_viewMat(1.f), m_prjMat(1.f), m_dataChange(true)
 		, m_type(LIGHT_TYPE_DIRECTIONAL)
 		, m_depthFbo(nullptr)

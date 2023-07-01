@@ -49,7 +49,7 @@ out vec4 o_color;
 
 vec4  lightedGeometry(vec3 fragPos, vec3 normal, vec4 color);
 
-float directionLightShadow(vec3 fragPos, vec3 normal, vec3 lightDir);
+float directionLightShadowSoft(vec3 fragPos, vec3 normal, vec3 lightDir);
 float pointLightShadow(vec3 fragPos, vec3 normal, vec3 lightDir);
 float pointLightShadowSoft(vec3 fragPos, vec3 normal, vec3 lightDir);
 
@@ -68,7 +68,7 @@ void main() {
     gl_FragDepth = computeDepth(v_fragPos);
 }
 
-float directionLightShadow(vec3 fragPos, vec3 normal, vec3 lightDir)
+float directionLightShadowSoft(vec3 fragPos, vec3 normal, vec3 lightDir)
 {
     vec4 lightSpacePos = u_lightPrjMat * u_lightViewMat * vec4(fragPos, 1.f);
     // lightPos ranges from [-1, 1]
@@ -164,7 +164,7 @@ vec4  lightedGeometry(vec3 fragPos, vec3 normal, vec4 color)
     else
     {
         lightDir = -normalize(u_lightDir);
-        shadow = directionLightShadow(fragPos, normal, lightDir);
+        shadow = directionLightShadowSoft(fragPos, normal, lightDir);
 
         colorRgb = (la + 1.f - shadow) * color.rgb;
     }

@@ -75,9 +75,9 @@ out vec4 o_color;
 vec4  objDiffColor(vec2 texCoord);
 vec4  objSpecColor(vec2 texCoord);
 
-float directionLightShadow(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir);
-float pointLightShadow(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir);
-float pointLightShadowSoft(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir);
+float directionLightShadowSoft(vec3 fragPos, vec3 tangentNormal, vec3 tangentLightDir);
+float pointLightShadow(vec3 fragPos, vec3 tangentNormal, vec3 tangentLightDir);
+float pointLightShadowSoft(vec3 fragPos, vec3 tangentNormal, vec3 tangentLightDir);
 
 vec4 lightedSurface(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tangentLightDir, 
                     vec3 tangentViewPos, vec3 tangentFragPos);
@@ -116,9 +116,9 @@ vec4 objSpecColor(vec2 texCoord)
     return hasTexture ? texture(u_material.specTexture, texCoord) : vec4(u_material.ks, 1.f);
 }
 
-float directionLightShadow(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir)
+float directionLightShadowSoft(vec3 fragPos, vec3 tangentNormal, vec3 tangentLightDir)
 {
-    vec4 lightSpacePos = u_lightPrjMat * u_lightViewMat * vec4(pos, 1.f);
+    vec4 lightSpacePos = u_lightPrjMat * u_lightViewMat * vec4(fragPos, 1.f);
     // LightPos ranges from [-1, 1]
     vec3 lightSpaceCoord = lightSpacePos.xyz / lightSpacePos.w;
     // Clamp to [0, 1]
@@ -227,7 +227,7 @@ vec4 lightedSurface(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tan
     }
 
     // calculate shadow factor
-    float shadow = 0.f;
+    float shadow;
     vec3 colorRgb;
     if(u_light.type == LIGHT_TYPE_POINT)
     {
@@ -238,7 +238,7 @@ vec4 lightedSurface(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tan
     }
     else
     {
-        shadow = directionLightShadow(fragPos, normal, lightDir);
+        shadow = directionLightShadowSoft(fragPos, normal, lightDir);
         colorRgb = la + (1.f - shadow) * (ld + ls);
     }
 

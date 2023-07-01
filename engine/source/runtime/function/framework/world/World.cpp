@@ -57,6 +57,7 @@ namespace Pionner
 		lightComp.m_obj = std::shared_ptr<RenderEntity>(new ModelEntity(RENDER_MODE_MATERIAL_DISPLAY));
 		Loader::load("assets/objects/bulb/bulb.obj", lightComp.m_obj);
 		lightComp.m_obj->m_transComp.translate(lightComp.m_pos);
+		lightComp.m_obj->m_transComp.rotate(180.f, 1.f, 0.f, 0.f);
 
 		// Add a plane
 		auto planeEntity = createEntity<GeometryComp, ShadowComp>(ENTITY_GEOMETRY, "plane");

@@ -40,7 +40,7 @@ namespace Pionner
 			case Pionner::RENDER_MODE_SOLID:
 				break;
 			case Pionner::RENDER_MODE_MATERIAL_DISPLAY:
-				return coloringSimple(param, part, shader);
+				return coloringMaterialDisplay(param, part, shader);
 			case Pionner::RENDER_MODE_RENDERED_DISPLAY:
 				return coloringRenderDisplay(param, part, shader);
 			default:
@@ -83,7 +83,7 @@ namespace Pionner
 		}
 		else if (!lightExist)
 		{
-			return coloringSimple(param, part, shader);
+			return coloringMaterialDisplay(param, part, shader);
 		}
 	}
 
@@ -253,7 +253,7 @@ namespace Pionner
 		return true;
 	}
 
-	bool ModelEntity::coloringSimple(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	bool ModelEntity::coloringMaterialDisplay(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto resource = param.resource;
 		auto sceneMgr = param.sceneMgr;
