@@ -62,6 +62,8 @@ namespace Pionner
 		shader->setInt("u_cubeDepthTexture", texUnit);
 
 		shader->setFloat("u_farPlane", scene->m_frustum->far());
+	
+		shader->setVec3("u_viewPos", scene->m_camera->getCamPos());
 	}
 
 	void PointLight::setAttenuation(float constVal, float linearVal, float quadVal)

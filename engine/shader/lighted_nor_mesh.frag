@@ -14,6 +14,15 @@ const int NO_TEXTURE = 0;
 const int COLOR_MODE_DIFFUSE = 2;
 const int COLOR_MODE_ALL     = 3;
 
+const vec3 SPL_DIR[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
 struct Light {
     int   type; // 0 for directional light, 1 for point light
     vec3  ka, kd, ks; // color of ambient, diffuse, specular
@@ -44,7 +53,9 @@ uniform mat4 u_lightPrjMat;
 uniform Light    u_light;
 uniform Material u_material;
 
+uniform vec3  u_viewPos;
 uniform vec3  u_lightPos;
+
 uniform float u_farPlane;
 
 uniform sampler2D   u_depthTexture;
@@ -61,16 +72,18 @@ in VS_OUT {
 
 out vec4 o_color;
 
-float computeDepth(vec3 pos);
-float computeFade(float dist);
-
 vec4  objDiffColor(vec2 texCoord);
 vec4  objSpecColor(vec2 texCoord);
+
 float directionLightShadow(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir);
-float pointLightShadow(vec3 pos);
+float pointLightShadow(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir);
+float pointLightShadowSoft(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir);
 
 vec4 lightedSurface(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tangentLightDir, 
                     vec3 tangentViewPos, vec3 tangentFragPos);
+
+float computeDepth(vec3 pos);
+float computeFade(float dist);
 
 void main() {
     o_color = lightedSurface(fs_in.fragPos, fs_in.texCoords, fs_in.tangentLightPos, fs_in.tangentLightDir,
@@ -134,7 +147,7 @@ float directionLightShadow(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir)
     return shadow;
 }
 
-float pointLightShadow(vec3 fragPos)
+float pointLightShadow(vec3 fragPos, vec3 tangentNormal, vec3 tangentLightDir)
 {
     // get vector between fragment position and light position
     vec3 fragToLight = fragPos - u_lightPos;
@@ -144,10 +157,33 @@ float pointLightShadow(vec3 fragPos)
     closestDepth *= u_farPlane;
     // now get current linear depth as the length between the fragment and light position
     float currentDepth = length(fragToLight);
-    // test for shadows
-    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
-    float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;        
-         
+    // we use a much larger bias since depth is now in [near_plane, far_plane] range
+    float bias = max(0.005f * (1.0 - dot(tangentNormal, tangentLightDir)), (0.005f)); 
+       
+    return currentDepth -  bias > closestDepth ? 1.0 : 0.0; 
+}
+
+float pointLightShadowSoft(vec3 fragPos, vec3 tangentNormal, vec3 tangentLightDir)
+{
+    vec3 fragToLight = fragPos - u_lightPos;       
+    float currentDepth = length(fragToLight);
+
+    float shadow = 0.f;
+    float bias = max(0.005f * (1.0 - dot(tangentNormal, tangentLightDir)), (0.005f)); 
+    int sampleCnt = 20;
+
+    float viewDist = length(u_viewPos - fragPos);
+    float diskRadius = (1.f + (viewDist / u_farPlane)) / 25.f;
+
+    for(int i = 0; i < sampleCnt; ++i)
+    {
+        float closestDepth = texture(u_cubeDepthTexture, fragToLight + normalize(SPL_DIR[i]) * diskRadius).r;
+        closestDepth *= u_farPlane;   // undo mapping [0;1]
+        if(currentDepth - bias > closestDepth)
+            shadow += 1.0;
+    }
+
+    shadow /= float(sampleCnt);
     return shadow;
 }
 
@@ -192,16 +228,19 @@ vec4 lightedSurface(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tan
 
     // calculate shadow factor
     float shadow = 0.f;
+    vec3 colorRgb;
     if(u_light.type == LIGHT_TYPE_POINT)
     {
-        shadow = pointLightShadow(fragPos);
+        shadow = pointLightShadowSoft(fragPos, normal, lightDir);
+        float dist = length(tangentLightPos - tangentFragPos);
+
+        colorRgb = (la + (1.f - shadow) * (ld + ls)) * computeFade(dist);
     }
     else
     {
         shadow = directionLightShadow(fragPos, normal, lightDir);
+        colorRgb = la + (1.f - shadow) * (ld + ls);
     }
-    
-    vec3 colorRgb = la + (1.f - shadow) * (ld + ls);
 
     return vec4(colorRgb, objDiff.a);
 }

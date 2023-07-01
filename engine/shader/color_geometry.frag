@@ -1,10 +1,19 @@
 // specify the minimum version of opengl glsl, if current version is lower than this, the shader will not complie
 #version 330 core
 
+precision highp float;
+
 const int LIGHT_TYPE_DIRECTIONAL = 0;
 const int LIGHT_TYPE_POINT       = 1;
 
-precision highp float;
+const vec3 SPL_DIR[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
 
 struct Light {
     int   type; // 0 for directional light, 1 for point light
@@ -28,7 +37,9 @@ uniform Light u_light;
 uniform vec4  u_color;
 
 uniform vec3  u_lightPos;
+uniform vec3  u_viewPos;
 uniform vec3  u_lightDir;
+
 uniform float u_farPlane;
 
 in vec3 v_fragPos;
@@ -37,9 +48,13 @@ in vec3 v_normal;
 out vec4 o_color;
 
 vec4  lightedGeometry(vec3 fragPos, vec3 normal, vec4 color);
+
 float directionLightShadow(vec3 fragPos, vec3 normal, vec3 lightDir);
-float pointLightShadow(vec3 fragPos);
+float pointLightShadow(vec3 fragPos, vec3 normal, vec3 lightDir);
+float pointLightShadowSoft(vec3 fragPos, vec3 normal, vec3 lightDir);
+
 float computeDepth(vec3 fragPos);
+float computeFade(float dist);
 
 void main() {
     if(u_calcShadow != 0)
@@ -87,7 +102,7 @@ float directionLightShadow(vec3 fragPos, vec3 normal, vec3 lightDir)
     return shadow;
 }
 
-float pointLightShadow(vec3 fragPos)
+float pointLightShadow(vec3 fragPos, vec3 normal, vec3 lightDir)
 {
     // get vector between fragment position and light position
     vec3 fragToLight = fragPos - u_lightPos;
@@ -98,9 +113,34 @@ float pointLightShadow(vec3 fragPos)
     // now get current linear depth as the length between the fragment and light position
     float currentDepth = length(fragToLight);
     // test for shadows
-    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+    // should we need a larger bias?
+    float bias = max(0.005f * (1.0 - dot(normal, lightDir)), (0.005f)); 
     float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;        
          
+    return shadow;
+}
+
+float pointLightShadowSoft(vec3 fragPos, vec3 normal, vec3 lightDir)
+{
+    vec3 fragToLight = fragPos - u_lightPos;       
+    float currentDepth = length(fragToLight);
+
+    float shadow = 0.f;
+    float bias = max(0.005f * (1.0 - dot(normal, lightDir)), (0.005f)); 
+    int sampleCnt = 20;
+
+    float viewDist = length(u_viewPos - fragPos);
+    float diskRadius = (1.f + (viewDist / u_farPlane)) / 25.f;
+
+    for(int i = 0; i < sampleCnt; ++i)
+    {
+        float closestDepth = texture(u_cubeDepthTexture, fragToLight + normalize(SPL_DIR[i]) * diskRadius).r;
+        closestDepth *= u_farPlane;   // undo mapping [0;1]
+        if(currentDepth - bias > closestDepth)
+            shadow += 1.0;
+    }
+
+    shadow /= float(sampleCnt);
     return shadow;
 }
 
@@ -111,19 +151,23 @@ vec4  lightedGeometry(vec3 fragPos, vec3 normal, vec4 color)
     vec3 lightDir;
     float shadow;
     
+    vec3 colorRgb;
     if(u_light.type == LIGHT_TYPE_POINT)
     {
         lightDir = normalize(u_lightPos - fragPos);
-        shadow = pointLightShadow(fragPos);
+        shadow = pointLightShadowSoft(fragPos, normal, lightDir);
+
+        float dist = length(u_lightPos - fragPos);
+
+        colorRgb = (la + 1.f - shadow) * color.rgb * computeFade(dist);
     }
     else
     {
         lightDir = -normalize(u_lightDir);
         shadow = directionLightShadow(fragPos, normal, lightDir);
-    }
 
-    // TODO: need diffuse and sepcular color?
-    vec3 colorRgb = (la + 1.f - shadow) * color.rgb;
+        colorRgb = (la + 1.f - shadow) * color.rgb;
+    }
 
     return vec4(colorRgb.rgb, color.a);
 }
@@ -132,4 +176,10 @@ float computeDepth(vec3 fragPos)
 {
     vec4 posClipSpace = u_prjMat * u_viewMat * vec4(fragPos, 1.f);
     return (posClipSpace.z / posClipSpace.w);
+}
+
+// attenuation for light's intensity/irradiance(power per area)
+float computeFade(float dist)
+{
+    return 1.f / (u_light.attParamConst + u_light.attParamLinear * dist + u_light.attParamQuad * (dist * dist));
 }

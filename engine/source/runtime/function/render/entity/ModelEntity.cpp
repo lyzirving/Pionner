@@ -42,7 +42,7 @@ namespace Pionner
 			case Pionner::RENDER_MODE_MATERIAL_DISPLAY:
 				return coloringSimple(param, part, shader);
 			case Pionner::RENDER_MODE_RENDERED_DISPLAY:
-				return coloringByRenderMode(param, part, shader);
+				return coloringRenderDisplay(param, part, shader);
 			default:
 				break;
 		}
@@ -65,7 +65,7 @@ namespace Pionner
 		return false;
 	}
 
-	bool ModelEntity::coloringByRenderMode(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	bool ModelEntity::coloringRenderDisplay(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto sceneMgr = param.sceneMgr;
 		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
@@ -155,8 +155,6 @@ namespace Pionner
 
 		light->dealShader(param, shader, texUnit++);
 
-		shader->setVec3("u_viewPos", camera->getCamPos());
-
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", camera->getViewMat());
 		shader->setMat4("u_prjMat", frustum->getPerspectMat());
@@ -245,8 +243,6 @@ namespace Pionner
 		//>>>>>>> finish uploading material >>>>>>>
 
 		light->dealShader(param, shader, texUnit++);
-
-		shader->setVec3("u_viewPos", camera->getCamPos());
 
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", camera->getViewMat());

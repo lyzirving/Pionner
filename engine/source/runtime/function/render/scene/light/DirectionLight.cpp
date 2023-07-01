@@ -38,6 +38,8 @@ namespace Pionner
 		auto light = scene->m_lights[scene->m_curLight];
 
 		// filed define as an uniform
+		shader->setVec3("u_viewPos", scene->m_camera->getCamPos());
+
 		shader->setVec3("u_lightPos", m_position);
 		shader->setVec3("u_lightDir", m_direction);
 		shader->setMat4("u_lightViewMat", getViewMat());
