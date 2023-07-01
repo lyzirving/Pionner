@@ -2,7 +2,13 @@
 
 #include "DirectionLight.h"
 
+#include "function/render/resource/RenderResourceMgr.h"
+#include "function/render/resource/buffer/GfxFrameBuffer.h"
+
+#include "function/render/scene/SceneMgr.h"
+
 #include "function/render/shader/Shader.h"
+#include "function/render/RenderDef.h"
 
 namespace Pionner
 {
@@ -22,10 +28,14 @@ namespace Pionner
 	{
 	}
 
-	void DirectionLight::dealShader(const std::shared_ptr<Shader> &shader)
+	void DirectionLight::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t texUnit)
 	{
 		if (!shader || !shader->isInit())
 			return;
+
+		auto resource = param.resource;
+		auto scene = param.sceneMgr;
+		auto light = scene->m_lights[scene->m_curLight];
 
 		// filed define as an uniform
 		shader->setVec3("u_lightPos", m_position);
@@ -45,6 +55,11 @@ namespace Pionner
 		shader->setFloat("u_light.is", m_is);
 
 		shader->setFloat("u_light.shininess", m_shininess);
+
+		auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
+		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
+		shadowBuf->bindTarget(texUnit);
+		shader->setInt("u_depthTexture", texUnit);
 	}
 
 	void DirectionLight::calcMatrix()

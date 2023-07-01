@@ -119,15 +119,7 @@ namespace Pionner
 
 		if (lightExist)
 		{
-			light->dealShader(shader);
-
-			shader->setMat4("u_lightViewMat", light->getViewMat());
-			shader->setMat4("u_lightPrjMat", light->getPrjMat());
-
-			auto shadowBuf = param.resource->createHolderBuffer(BUF_TEXTURE);
-			shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
-			shadowBuf->bindTarget(5);
-			shader->setInt("u_depthTexture", 5);
+			light->dealShader(param, shader, 0);
 		}
 
 		glm::mat4 modelMat = m_transform->getMat();

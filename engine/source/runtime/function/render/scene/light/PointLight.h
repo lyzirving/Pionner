@@ -12,7 +12,7 @@ namespace Pionner
 		PointLight(const glm::vec3 &position);
 		~PointLight();
 
-		virtual void dealShader(const std::shared_ptr<Shader> &shader) override;
+		virtual void dealShader(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t texUnit = 0) override;
 
 		void setAttenuation(float constVal, float linearVal, float quadVal);
 

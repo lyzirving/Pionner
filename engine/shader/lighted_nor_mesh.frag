@@ -44,7 +44,11 @@ uniform mat4 u_lightPrjMat;
 uniform Light    u_light;
 uniform Material u_material;
 
-uniform sampler2D u_depthTexture;
+uniform vec3  u_lightPos;
+uniform float u_farPlane;
+
+uniform sampler2D   u_depthTexture;
+uniform samplerCube u_cubeDepthTexture;
 
 in VS_OUT {
     vec3 fragPos;
@@ -62,20 +66,16 @@ float computeFade(float dist);
 
 vec4  objDiffColor(vec2 texCoord);
 vec4  objSpecColor(vec2 texCoord);
-float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir);
+float directionLightShadow(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir);
+float pointLightShadow(vec3 pos);
 
-vec4 directionalLight(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tangentLightDir, vec3 tangentViewPos, vec3 tangentFragPos);
+vec4 lightedSurface(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tangentLightDir, 
+                    vec3 tangentViewPos, vec3 tangentFragPos);
 
 void main() {
-    vec4 surface = vec4(0.f, 0.f, 0.f, 1.f);
+    o_color = lightedSurface(fs_in.fragPos, fs_in.texCoords, fs_in.tangentLightPos, fs_in.tangentLightDir,
+                             fs_in.tangentViewPos, fs_in.tangentFragPos);
 
-    if(u_light.type == LIGHT_TYPE_DIRECTIONAL)
-    {
-        surface = directionalLight(fs_in.fragPos, fs_in.texCoords, fs_in.tangentLightPos, fs_in.tangentLightDir,
-                                   fs_in.tangentViewPos, fs_in.tangentFragPos);
-    }
-
-    o_color = surface;
     gl_FragDepth = computeDepth(fs_in.fragPos);
 }
 
@@ -103,7 +103,7 @@ vec4 objSpecColor(vec2 texCoord)
     return hasTexture ? texture(u_material.specTexture, texCoord) : vec4(u_material.ks, 1.f);
 }
 
-float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
+float directionLightShadow(vec3 pos, vec3 tangentNormal, vec3 tangentLightDir)
 {
     vec4 lightSpacePos = u_lightPrjMat * u_lightViewMat * vec4(pos, 1.f);
     // LightPos ranges from [-1, 1]
@@ -113,9 +113,9 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
     if(lightSpaceCoord.z > 1.f)
     {
         return 0.f;
-    }
+    }   
     // Shadow bias: fix shadow acne
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005); 
+    float bias = max(0.05 * (1.0 - dot(tangentNormal, tangentLightDir)), 0.005); 
     float curDepth = lightSpaceCoord.z;
 
     vec2 texelSize = 1.0 / textureSize(u_depthTexture, 0);
@@ -134,7 +134,24 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir)
     return shadow;
 }
 
-vec4 directionalLight(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tangentLightDir, vec3 tangentViewPos, vec3 tangentFragPos)
+float pointLightShadow(vec3 fragPos)
+{
+    // get vector between fragment position and light position
+    vec3 fragToLight = fragPos - u_lightPos;
+    // ise the fragment to light vector to sample from the depth map    
+    float closestDepth = texture(u_cubeDepthTexture, fragToLight).r;
+    // it is currently in linear range between [0,1], let's re-transform it back to original depth value
+    closestDepth *= u_farPlane;
+    // now get current linear depth as the length between the fragment and light position
+    float currentDepth = length(fragToLight);
+    // test for shadows
+    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+    float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;        
+         
+    return shadow;
+}
+
+vec4 lightedSurface(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 tangentLightDir, vec3 tangentViewPos, vec3 tangentFragPos)
 {
     vec4 objDiff = objDiffColor(texCoords);
 
@@ -148,14 +165,19 @@ vec4 directionalLight(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 t
     vec3 ld = u_light.kd * u_light.id; // light's diffuse
     vec3 ls = vec3(0.f);               // light's specular
 
-    vec3  lightDir = -normalize(tangentLightDir);
+    vec3 lightDir;
+    if(u_light.type == LIGHT_TYPE_POINT)
+    {
+        lightDir = normalize(tangentLightPos - tangentFragPos);
+    }
+    else
+    {
+        lightDir = -normalize(tangentLightDir);
+    }
+
     float diff = max(dot(normal, lightDir), 0.f);
-
-    ld *= diff;
-
-    // set object's diffuse color
+    ld *= diff * objDiff.rgb;
     la *= objDiff.rgb;
-    ld *= objDiff.rgb;
 
     if(u_material.colorMode == COLOR_MODE_ALL) {
         // blinn-phong mode
@@ -164,9 +186,20 @@ vec4 directionalLight(vec3 fragPos, vec2 texCoords, vec3 tangentLightPos, vec3 t
         float specFactor = pow(max(dot(halfwayDir, normal), 0.f), u_light.shininess);
         
         vec4  objSpec = objSpecColor(texCoords);
+
         ls = u_light.ks * u_light.is * specFactor * objSpec.rgb;
     }
-    float shadow = shadowCalculation(fragPos, normal, lightDir);
+
+    // calculate shadow factor
+    float shadow = 0.f;
+    if(u_light.type == LIGHT_TYPE_POINT)
+    {
+        shadow = pointLightShadow(fragPos);
+    }
+    else
+    {
+        shadow = directionLightShadow(fragPos, normal, lightDir);
+    }
     
     vec3 colorRgb = la + (1.f - shadow) * (ld + ls);
 

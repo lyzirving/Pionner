@@ -2,8 +2,13 @@
 
 #include "PointLight.h"
 
+#include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxFrameBuffer.h"
+
+#include "function/render/scene/SceneMgr.h"
+
 #include "function/render/shader/Shader.h"
+#include "function/render/RenderDef.h"
 
 namespace Pionner
 {
@@ -24,10 +29,14 @@ namespace Pionner
 
 	PointLight::~PointLight() = default;
 
-	void PointLight::dealShader(const std::shared_ptr<Shader> &shader)
+	void PointLight::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t texUnit)
 	{
 		if (!shader || !shader->isInit())
 			return;
+
+		auto resource = param.resource;
+		auto scene = param.sceneMgr;
+		auto light = scene->m_lights[scene->m_curLight];
 
 		shader->setVec3("u_lightPos", m_position);
 
@@ -46,6 +55,13 @@ namespace Pionner
 		shader->setFloat("u_light.attParamConst", m_attenParamConst);
 		shader->setFloat("u_light.attParamLinear", m_attenParamLinear);
 		shader->setFloat("u_light.attParamQuad", m_attenParamQuad);
+
+		auto shadowBuf = resource->createHolderBuffer(BUF_CUBE_TEXTURE);
+		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
+		shadowBuf->bindTarget(texUnit);
+		shader->setInt("u_cubeDepthTexture", texUnit);
+
+		shader->setFloat("u_farPlane", scene->m_frustum->far());
 	}
 
 	void PointLight::setAttenuation(float constVal, float linearVal, float quadVal)

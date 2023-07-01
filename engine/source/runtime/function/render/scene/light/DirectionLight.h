@@ -12,7 +12,7 @@ namespace Pionner
 		DirectionLight(const glm::vec3 &direction);
 		~DirectionLight();
 
-		virtual void dealShader(const std::shared_ptr<Shader> &shader) override;
+		virtual void dealShader(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t texUnit = 0) override;
 
 	protected:
 		virtual void calcMatrix() override;

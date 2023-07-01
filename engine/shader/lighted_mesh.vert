@@ -11,13 +11,16 @@ uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
 
-out vec3 v_pos;
+uniform mat3 u_normalMat;
+
+out vec3 v_fragPos;
 out vec3 v_normal;
 out vec2 v_tex;
 
 void main() {
-    v_pos = a_pos;
-    v_normal = a_normal;
+    // Reduce matrix multiplication in fragment shader
+    v_fragPos = vec3(u_modelMat * vec4(a_pos, 1.f));
+    v_normal = normalize(u_normalMat * a_normal);
     v_tex = a_tex;
 
     gl_Position = u_prjMat * u_viewMat * u_modelMat * vec4(a_pos, 1.0);

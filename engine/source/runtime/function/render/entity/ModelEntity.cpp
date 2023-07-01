@@ -60,11 +60,11 @@ namespace Pionner
 		LightType curLight = param.sceneMgr->m_curLight;
 		if (curLight == LIGHT_TYPE_DIRECTIONAL)
 		{
-			return dealDirectionLightShader(param, part, shader);
+			return dealDirectionLightDepthShader(param, part, shader);
 		}
 		else if (curLight == LIGHT_TYPE_POINT)
 		{
-			return dealPointLightShader(param, part, shader);
+			return dealPointLightDepthShader(param, part, shader);
 		}
 		LOG_ERR("invalid light type[%u]", curLight);
 		return false;
@@ -136,14 +136,9 @@ namespace Pionner
 		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
 		//>>>>>>> finish uploading material >>>>>>>
 
-		light->dealShader(shader);
+		light->dealShader(param, shader, texUnit++);
 
 		shader->setVec3("u_viewPos", camera->getCamPos());
-
-		auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
-		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
-		shadowBuf->bindTarget(texUnit);
-		shader->setInt("u_depthTexture", texUnit++);
 
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", camera->getViewMat());
@@ -232,14 +227,9 @@ namespace Pionner
 		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
 		//>>>>>>> finish uploading material >>>>>>>
 
-		light->dealShader(shader);
+		light->dealShader(param, shader, texUnit++);
 
 		shader->setVec3("u_viewPos", camera->getCamPos());
-
-		auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
-		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
-		shadowBuf->bindTarget(texUnit);
-		shader->setInt("u_depthTexture", texUnit++);
 
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", camera->getViewMat());
@@ -294,7 +284,7 @@ namespace Pionner
 		return true;
 	}
 
-	bool ModelEntity::dealDirectionLightShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	bool ModelEntity::dealDirectionLightDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto scene = param.sceneMgr;
 		LightType curLight = scene->m_curLight;
@@ -322,7 +312,7 @@ namespace Pionner
 		return true;
 	}
 
-	bool ModelEntity::dealPointLightShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
+	bool ModelEntity::dealPointLightDepthShader(RenderParam &param, std::shared_ptr<EntityPart> &part, std::shared_ptr<Shader> &shader)
 	{
 		auto scene = param.sceneMgr;
 		LightType curLight = scene->m_curLight;

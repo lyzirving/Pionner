@@ -33,15 +33,12 @@ struct Material {
     sampler2D specTexture;
 };
 
-in vec3 v_pos;
+in vec3 v_fragPos;
 in vec3 v_normal;
 in vec2 v_tex;
 
-uniform mat4 u_modelMat;
 uniform mat4 u_viewMat;
 uniform mat4 u_prjMat;
-
-uniform mat3 u_normalMat;
 
 uniform vec3 u_viewPos;
 uniform vec3 u_lightPos;
@@ -67,26 +64,23 @@ float shadowCalculation(vec3 pos, vec3 normal, vec3 lightDir);
 vec4  directionalLight(vec3 fragPos, vec2 texCoords, vec3 normal);
 
 void main() {
-    vec3 fragPos = vec3(u_modelMat * vec4(v_pos, 1.f));
-    vec2 texCoord = v_tex;
-    vec3 normal  = normalize(u_normalMat * v_normal);
-    vec3 viewDir = normalize(u_viewPos - fragPos);
+    vec3 viewDir = normalize(u_viewPos - v_fragPos);
 
     vec4 surface = vec4(0.f, 0.f, 0.f, 1.f);
 
     if(u_light.type == LIGHT_TYPE_DIRECTIONAL)
     {
-        surface = directionalLight(fragPos, texCoord, normal);
+        surface = directionalLight(v_fragPos, v_tex, v_normal);
     }
 
     o_color = surface;
 
-    gl_FragDepth = computeDepth(v_pos);
+    gl_FragDepth = computeDepth(v_fragPos);
 }
 
 float computeDepth(vec3 pos)
 {
-    vec4 posClipSpace = u_prjMat * u_viewMat * u_modelMat * vec4(pos, 1.f);
+    vec4 posClipSpace = u_prjMat * u_viewMat * vec4(pos, 1.f);
     return (posClipSpace.z / posClipSpace.w);
 }
 
