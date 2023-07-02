@@ -12,7 +12,7 @@
 #include "function/render/geo/CoordinateAixs.h"
 #include "function/render/geo/Sphere.h"
 
-#include "function/event/EventMgr.h"
+#include "function/framework/event/EventMgr.h"
 
 #include "function/render/resource/ResourceDef.h"
 

@@ -1,9 +1,9 @@
 #ifndef __RENDER_SYSTEM_H__
 #define __RENDER_SYSTEM_H__
 
+#include "function/SystemBase.h"
 #include "function/render/RenderDef.h"
 #include "function/render/resource/ResourceDef.h"
-#include "function/framework/system/BaseSystem.h"
 
 namespace Pionner
 {
@@ -11,7 +11,7 @@ namespace Pionner
 	class  ShaderMgr;
 	class  RenderResourceMgr;
 
-	class RenderSystem : public BaseSystem
+	class RenderSystem : public SystemBase
 	{
 	public:
 		RenderSystem(const std::shared_ptr<World> &world);

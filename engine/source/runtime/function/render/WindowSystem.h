@@ -2,14 +2,14 @@
 #define __WINDOW_SYSTEM_H__
 
 #include <atomic>
+#include "function/SystemBase.h"
 #include "function/render/RenderDef.h"
-#include "function/framework/system/BaseSystem.h"
 
 namespace Pionner
 {
 	class EventMgr;
 
-	class WindowSystem : public BaseSystem
+	class WindowSystem : public SystemBase
 	{
 	public:
 		WindowSystem(const std::shared_ptr<World> &world);

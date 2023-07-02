@@ -1,5 +1,5 @@
-#include "function/event/EventMgr.h"
-#include "function/event/EventDef.h"
+#include "EventMgr.h"
+#include "EventDef.h"
 
 #include "core/log/LogSystem.h"
 

@@ -4,7 +4,7 @@
 #include "function/render/WindowSystem.h"
 
 #include "function/framework/world/World.h"
-#include "function/event/EventMgr.h"
+#include "function/framework/event/EventMgr.h"
 
 #include "core/log/LogSystem.h"
 
@@ -16,7 +16,7 @@
 namespace Pionner
 {
 	WindowSystem::WindowSystem(const std::shared_ptr<World> &world)
-		: BaseSystem(world)
+		: SystemBase(world)
 		, m_window(nullptr)
 		, m_width(0), m_height(0)
 		, m_sizeChange(false)

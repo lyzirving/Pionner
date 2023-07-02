@@ -1,8 +1,8 @@
 #ifndef __EVENT_MGR_H__
 #define __EVENT_MGR_H__
 
-#include "function/event/Event.h"
-#include "function/event/MotionEvent.h"
+#include "Event.h"
+#include "MotionEvent.h"
 
 namespace Pionner
 {

@@ -23,7 +23,7 @@
 namespace Pionner
 {
 	RenderSystem::RenderSystem(const std::shared_ptr<World> &world)
-		: BaseSystem(world)
+		: SystemBase(world)
 		, m_rhi(nullptr)
 		, m_pipeLine(nullptr)
 		, m_sceneMgr(nullptr)
