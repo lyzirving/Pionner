@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Pionner
+namespace pio
 {
 #define MATH_PI 3.14159265358979323846
 

@@ -3,7 +3,7 @@
 
 #include <memory>
 
-namespace Pionner
+namespace pio
 {
 	class Engine;
 	class EditorUI;

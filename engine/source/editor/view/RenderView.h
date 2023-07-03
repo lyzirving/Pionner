@@ -1,9 +1,9 @@
 #ifndef __RENDER_VIEW_H__
 #define __RENDER_VIEW_H__
 
-#include "function/ui/WindowView.h"
+#include "window/ui/WindowView.h"
 
-namespace Pionner
+namespace pio
 {
 	class RenderView : public WindowView
 	{

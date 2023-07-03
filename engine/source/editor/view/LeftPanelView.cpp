@@ -3,8 +3,8 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "view/LeftPanelView.h"
-#include "function/ui/WindowUI.h"
-#include "function/render/rhi/Rhi.h"
+#include "window/ui/WindowUI.h"
+#include "render/rhi/Rhi.h"
 
 #include "core/log/LogSystem.h"
 
@@ -13,7 +13,7 @@
 #endif
 #define LOCAL_TAG "LeftPanelView"
 
-namespace Pionner
+namespace pio
 {
 	LeftPanelView::LeftPanelView() : WindowView(ORDER_VIEW_2)
 	{

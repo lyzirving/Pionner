@@ -11,8 +11,8 @@
 #include "view/RightPanelView.h"
 #include "view/BottomPanelView.h"
 
-#include "function/render/RenderSystem.h"
-#include "function/render/WindowSystem.h"
+#include "render/RenderSystem.h"
+#include "window/WindowSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -21,7 +21,7 @@
 #endif
 #define LOCAL_TAG "EditorUI"
 
-namespace Pionner
+namespace pio
 {
 	EditorUI::EditorUI() : WindowUI()
 	{

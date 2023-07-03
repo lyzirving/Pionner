@@ -4,9 +4,9 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "function/ui/WindowView.h"
+#include "window/ui/WindowView.h"
 
-namespace Pionner
+namespace pio
 {
 	class  CoordinateAxis;
 	class  Sphere;

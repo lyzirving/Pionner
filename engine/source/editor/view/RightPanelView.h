@@ -1,9 +1,9 @@
 #ifndef __RIGHT_PANEL_VIEW_H__
 #define __RIGHT_PANEL_VIEW_H__
 
-#include "function/ui/WindowView.h"
+#include "window/ui/WindowView.h"
 
-namespace Pionner
+namespace pio
 {
 	class RightPanelView : public WindowView
 	{

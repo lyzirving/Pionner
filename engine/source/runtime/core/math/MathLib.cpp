@@ -8,7 +8,7 @@
 #endif
 #define LOCAL_TAG "MathLib"
 
-namespace Pionner
+namespace pio
 {
 	void MathLib::SCStoCCS(float theta, float phi, float r, glm::vec3 &out)
 	{

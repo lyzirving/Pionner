@@ -8,7 +8,7 @@
 
 #include "core/log/LogSystem.h"
 
-namespace Pionner
+namespace pio
 {
 	std::shared_ptr<spdlog::logger> LogSystem::g_logger{ nullptr };
 
@@ -56,19 +56,19 @@ namespace Pionner
 
 		switch (level)
 		{
-		case Pionner::DEBUG:
+		case pio::DEBUG:
 			g_logger->debug(buf);
 			break;
-		case Pionner::INFO:
+		case pio::INFO:
 			g_logger->info(buf);
 			break;
-		case Pionner::WARN:
+		case pio::WARN:
 			g_logger->warn(buf);
 			break;
-		case Pionner::ERR:
+		case pio::ERR:
 			g_logger->error(buf);
 			break;
-		case Pionner::FATAL:
+		case pio::FATAL:
 			g_logger->critical(buf);
 			break;
 		default:

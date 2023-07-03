@@ -3,8 +3,8 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "view/BottomPanelView.h"
-#include "function/ui/WindowUI.h"
-#include "function/render/rhi/Rhi.h"
+#include "window/ui/WindowUI.h"
+#include "render/rhi/Rhi.h"
 
 #include "core/log/LogSystem.h"
 
@@ -13,7 +13,7 @@
 #endif
 #define LOCAL_TAG "BottomPanelView"
 
-namespace Pionner
+namespace pio
 {
 	BottomPanelView::BottomPanelView() : WindowView(ORDER_VIEW_4)
 	{

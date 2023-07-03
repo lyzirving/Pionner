@@ -2,9 +2,9 @@
 
 #include "Engine.h"
 
-#include "function/global/GlobalContext.h"
-#include "function/render/WindowSystem.h"
-#include "function/render/RenderSystem.h"
+#include "global/GlobalContext.h"
+#include "window/WindowSystem.h"
+#include "render/RenderSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -13,7 +13,7 @@
 #endif
 #define LOCAL_TAG "Engine"
 
-namespace Pionner
+namespace pio
 {
 	Engine::Engine() : m_lastTickTimePoint(std::chrono::steady_clock::now())
 	{

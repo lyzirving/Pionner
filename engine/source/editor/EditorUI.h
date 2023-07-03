@@ -1,11 +1,11 @@
 #ifndef __EDITOR_UI_H__
 #define __EDITOR_UI_H__
 
-#include "function/ui/WindowUI.h"
+#include "window/ui/WindowUI.h"
 
 struct ImGuiStyle;
 
-namespace Pionner
+namespace pio
 {
 	class EditorUI : public WindowUI
 	{

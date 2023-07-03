@@ -2,7 +2,7 @@
 
 #include "core/math/AABB.h"
 
-namespace Pionner
+namespace pio
 {
 	AABB::AABB() : m_aa(0.f), m_bb(0.f) {}
 

@@ -10,7 +10,7 @@
 #endif
 #define LOCAL_TAG "PlatformUtil"
 
-namespace Pionner
+namespace pio
 {
 	uint64_t PlatformUtil::getThreadId()
 	{

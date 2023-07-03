@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace Pionner
+namespace pio
 {
 	class PlatformUtil
 	{

@@ -4,8 +4,8 @@
 #include "EditorUI.h"
 
 #include "Engine.h"
-#include "function/global/GlobalContext.h"
-#include "function/render/RenderSystem.h"
+#include "global/GlobalContext.h"
+#include "render/RenderSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -14,7 +14,7 @@
 #endif
 #define LOCAL_TAG "Editor"
 
-namespace Pionner
+namespace pio
 {
 	Editor::Editor(const std::shared_ptr<Engine> &engine)
 		: m_runtimeEngine(engine)
