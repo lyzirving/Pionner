@@ -11,7 +11,7 @@
 
 namespace spdlog
 {
-    class logger;
+	class logger;
 }
 
 namespace Pionner
@@ -27,53 +27,53 @@ namespace Pionner
 
 	class LogSystem
 	{
-    public:
-        static void initialize();
-        static void shutdown();
+	public:
+		static void initialize();
+		static void shutdown();
 
 		static void log(LogLevel level, const char *fmt, ...);
 
-    private:
-        LogSystem() {};
-        ~LogSystem() = default;
+	private:
+		LogSystem() {};
+		~LogSystem() = default;
 
-        static std::shared_ptr<spdlog::logger> g_logger;
+		static std::shared_ptr<spdlog::logger> g_logger;
 	};
+}
 
-	#define LOG_DEBUG(fmt, ...)								             \
+#define LOG_DEBUG(fmt, ...)								             \
 	        {												             \
-				LogSystem::log(LogLevel::DEBUG, "[%s]:[%s][%s][%d] " fmt,\
+				Pionner::LogSystem::log(Pionner::LogLevel::DEBUG, "[%s]:[%s][%s][%d] " fmt,\
 							     LIB_TAB, LOCAL_TAG, __FUNCTION__,       \
 							     __LINE__, ##__VA_ARGS__);		         \
 			}
 
-    #define LOG_INFO(fmt, ...)								            \
+#define LOG_INFO(fmt, ...)								            \
 	        {												            \
-				LogSystem::log(LogLevel::INFO, "[%s]:[%s][%s][%d] " fmt,\
+				Pionner::LogSystem::log(Pionner::LogLevel::INFO, "[%s]:[%s][%s][%d] " fmt,\
 							   LIB_TAB, LOCAL_TAG, __FUNCTION__,        \
 							   __LINE__, ##__VA_ARGS__);		        \
 			}
 
-    #define LOG_WARN(fmt, ...)								            \
+#define LOG_WARN(fmt, ...)								            \
 	        {												            \
-				LogSystem::log(LogLevel::WARN, "[%s]:[%s][%s][%d] " fmt,\
+				Pionner::LogSystem::log(Pionner::LogLevel::WARN, "[%s]:[%s][%s][%d] " fmt,\
 							    LIB_TAB, LOCAL_TAG, __FUNCTION__,       \
 							    __LINE__, ##__VA_ARGS__);		        \
 			}
 
-    #define LOG_ERR(fmt, ...)								           \
+#define LOG_ERR(fmt, ...)								           \
 	        {												           \
-				LogSystem::log(LogLevel::ERR, "[%s]:[%s][%s][%d] " fmt,\
+				Pionner::LogSystem::log(Pionner::LogLevel::ERR, "[%s]:[%s][%s][%d] " fmt,\
 							   LIB_TAB, LOCAL_TAG, __FUNCTION__,       \
 							   __LINE__, ##__VA_ARGS__);		       \
 			}
 
-	#define LOG_FATAL(fmt, ...)								            \
+#define LOG_FATAL(fmt, ...)								            \
 	        {												            \
-				LogSystem::log(LogLevel::FATAL, "[%s]:[%s][%s][%d] " fmt,\
+				Pionner::LogSystem::log(Pionner::LogLevel::FATAL, "[%s]:[%s][%s][%d] " fmt,\
 							     LIB_TAB, LOCAL_TAG, __FUNCTION__,      \
 							     __LINE__, ##__VA_ARGS__);		        \
 			}
-}
 
 #endif

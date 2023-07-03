@@ -1,21 +1,58 @@
 #include "NodeVisitor.h"
 
+#include "Group.h"
+
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "NodeVisitor"
+
 namespace pio
 {
 	namespace scenegrf
 	{
-		NodeVisitor::NodeVisitor()
+		NodeVisitor::NodeVisitor() : m_traversalMode(TRAVERSE_NONE)
+		{
+		}
+
+		NodeVisitor::NodeVisitor(TraversalMode mode) : m_traversalMode(mode)
 		{
 		}
 
 		NodeVisitor::~NodeVisitor() = default;
 
-		void NodeVisitor::apply(const std::shared_ptr<Node> &node)
+		void NodeVisitor::apply(Node *node)
 		{
+			traverse(node);
 		}
 
-		void NodeVisitor::traverse()
+		void NodeVisitor::apply(Group *node)
 		{
+			apply(static_cast<Node *>(node));
+		}
+
+		void NodeVisitor::traverse(Node *node)
+		{
+			if (!node)
+			{
+				LOG_ERR("invalid input node");
+				return;
+			}
+
+			if (m_traversalMode == TRAVERSE_PARENTS)
+			{
+				node->ascend(this);
+			}
+			else if (m_traversalMode == TRAVERSE_ALL_CHILDREN)
+			{
+				LOG_DEBUG("traverse child");
+			}
+			else
+			{
+				LOG_ERR("invalid traversal mode[%u]", m_traversalMode);
+			}
 		}
 	}
 }

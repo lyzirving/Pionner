@@ -5,7 +5,7 @@ namespace pio
 {
 	namespace scenegrf
 	{
-		Group::Group() : SceneGrfObject(), m_children()
+		Group::Group() : Node(), m_children()
 		{
 		}
 

@@ -21,15 +21,16 @@ namespace pio
 		public:
 			Node();
 			virtual ~Node();
+
+			virtual void accept(NodeVisitor *visitor);
+			virtual void ascend(NodeVisitor *visitor);
+			virtual void traverse(NodeVisitor *visitor);
 			
 		protected:
 			typedef std::vector<std::weak_ptr<Group>> ParentList;
 
 			void addParent(const std::shared_ptr<Group> &parent);
 			void removeParent(const std::string &name);
-
-			void ascend(NodeVisitor *visitor);
-			void descend(NodeVisitor *visitor);
 
 		protected:
 			ParentList  m_parents;

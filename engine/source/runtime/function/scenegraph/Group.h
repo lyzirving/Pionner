@@ -4,15 +4,13 @@
 #include <memory>
 #include <unordered_map>
 
-#include "SceneGrfObject.h"
+#include "Node.h"
 
 namespace pio
 {
 	namespace scenegrf
 	{
-		class Node;
-
-		class Group : public std::enable_shared_from_this<Group>, public SceneGrfObject
+		class Group : public Node, public std::enable_shared_from_this<Group>
 		{
 		public:
 			Group();

@@ -48,11 +48,23 @@ namespace pio
 			}
 		}
 
-		void Node::ascend(NodeVisitor *visitor)
+		void Node::accept(NodeVisitor *visitor)
 		{
 		}
 
-		void Node::descend(NodeVisitor *visitor)
+		void Node::ascend(NodeVisitor *visitor)
+		{
+			for (size_t i = 0; i < m_parents.size(); i++)
+			{
+				auto parent = m_parents[i].lock();
+				if (parent)
+				{
+					parent->accept(visitor);
+				}
+			}
+		}
+
+		void Node::traverse(NodeVisitor *visitor)
 		{
 		}
 	}

@@ -8,17 +8,32 @@ namespace pio
 	namespace scenegrf
 	{
 		class Node;
+		class Group;
 
 		class NodeVisitor
 		{
 		public:
+			enum TraversalMode : uint8_t
+			{
+				TRAVERSE_NONE,
+				TRAVERSE_PARENTS,
+				TRAVERSE_ALL_CHILDREN,
+				TRAVERSE_ACTIVE_CHILDREN
+			};
+
+		public:
 			NodeVisitor();
+			NodeVisitor(TraversalMode mode);
 			virtual ~NodeVisitor();
 
-			void apply(const std::shared_ptr<Node> &node);
+			void apply(Node  *node);
+			void apply(Group *node);
 
 		protected:
-			void traverse();
+			void traverse(Node *node);
+
+		protected:
+			TraversalMode m_traversalMode;
 		};
 	}
 }
