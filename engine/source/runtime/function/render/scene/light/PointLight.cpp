@@ -8,6 +8,9 @@
 #include "function/render/scene/SceneMgr.h"
 
 #include "function/render/shader/Shader.h"
+
+#include "function/render/rhi/Rhi.h"
+
 #include "function/render/RenderDef.h"
 
 namespace Pionner
@@ -34,9 +37,7 @@ namespace Pionner
 		if (!shader || !shader->isInit())
 			return;
 
-		auto resource = param.resource;
 		auto scene = param.sceneMgr;
-		auto light = scene->m_lights[scene->m_curLight];
 
 		shader->setVec3("u_lightPos", m_position);
 
@@ -56,14 +57,28 @@ namespace Pionner
 		shader->setFloat("u_light.attParamLinear", m_attenParamLinear);
 		shader->setFloat("u_light.attParamQuad", m_attenParamQuad);
 
-		auto shadowBuf = resource->createHolderBuffer(BUF_CUBE_TEXTURE);
-		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
-		shadowBuf->bindTarget(texUnit);
-		shader->setInt("u_cubeDepthTexture", texUnit);
-
 		shader->setFloat("u_farPlane", scene->m_frustum->far());
 	
 		shader->setVec3("u_viewPos", scene->m_camera->getCamPos());
+
+		bind(param, shader, texUnit);
+	}
+
+	void PointLight::bind(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t slot)
+	{
+		auto resource = param.resource;
+		auto scene = param.sceneMgr;
+		auto light = scene->m_lights[scene->m_curLight];
+
+		auto shadowBuf = resource->createHolderBuffer(BUF_CUBE_TEXTURE);
+		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
+		shadowBuf->bindTarget(slot);
+		shader->setInt("u_cubeDepthTexture", slot);
+	}
+
+	void PointLight::unbind(RenderParam &param)
+	{
+		param.rhi->unbindBufSlot(BUF_CUBE_TEXTURE);
 	}
 
 	void PointLight::setAttenuation(float constVal, float linearVal, float quadVal)

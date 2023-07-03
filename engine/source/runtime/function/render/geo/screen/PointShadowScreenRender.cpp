@@ -99,6 +99,8 @@ namespace Pionner
 		}
 		});
 
+		holdertex->unbind();
+
 		shader->use(false);
 	}
 

@@ -46,6 +46,8 @@ namespace Pionner
 		virtual void setDepthMode(DepthTest &test) {};
 		virtual void setBlendMode(Blend &blend) {};
 
+		virtual void unbindBufSlot(BufferType type) {};
+
 		inline RhiType getType() const { return m_type; }
 		inline std::shared_ptr<WindowSystem> getWindowSystem() const { return m_window; }
 

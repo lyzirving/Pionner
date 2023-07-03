@@ -18,6 +18,13 @@
 
 #include "function/render/RenderDef.h"
 
+#include "core/log/LogSystem.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "ModelLayer"
+
 namespace Pionner
 {
 	ModelLayer::ModelLayer() : RenderLayer(), m_grid(new InfiniteGrid())
@@ -43,17 +50,17 @@ namespace Pionner
 		{
 			if (comp.m_entity) comp.m_entity->draw(param);
 		});
-
+		
 		world->iterate([&](decs::EntityID id, GeometryComp &comp)
 		{
 			comp.m_geometry->draw(param);
 		});
-
+		
 		world->iterate([&](decs::EntityID id, LightComp &comp)
 		{
 			cmd->drawEntity(*comp.m_obj, param);
 		});
-
+		
 		m_grid->draw(param);
 	}
 }

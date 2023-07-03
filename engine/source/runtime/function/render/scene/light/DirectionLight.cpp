@@ -8,6 +8,9 @@
 #include "function/render/scene/SceneMgr.h"
 
 #include "function/render/shader/Shader.h"
+
+#include "function/render/rhi/Rhi.h"
+
 #include "function/render/RenderDef.h"
 
 namespace Pionner
@@ -33,9 +36,7 @@ namespace Pionner
 		if (!shader || !shader->isInit())
 			return;
 
-		auto resource = param.resource;
 		auto scene = param.sceneMgr;
-		auto light = scene->m_lights[scene->m_curLight];
 
 		// filed define as an uniform
 		shader->setVec3("u_viewPos", scene->m_camera->getCamPos());
@@ -58,10 +59,24 @@ namespace Pionner
 
 		shader->setFloat("u_light.shininess", m_shininess);
 
+		bind(param, shader, texUnit);
+	}
+
+	void DirectionLight::bind(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t slot)
+	{
+		auto resource = param.resource;
+		auto scene = param.sceneMgr;
+		auto light = scene->m_lights[scene->m_curLight];
+
 		auto shadowBuf = resource->createHolderBuffer(BUF_TEXTURE);
 		shadowBuf->setHolderId(light->getDepthFbo()->getAttachment(DEPTH_ATTACH));
-		shadowBuf->bindTarget(texUnit);
-		shader->setInt("u_depthTexture", texUnit);
+		shadowBuf->bindTarget(slot);
+		shader->setInt("u_depthTexture", slot);
+	}
+
+	void DirectionLight::unbind(RenderParam &param)
+	{
+		param.rhi->unbindBufSlot(BUF_TEXTURE);
 	}
 
 	void DirectionLight::calcMatrix()

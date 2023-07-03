@@ -153,7 +153,7 @@ namespace Pionner
 		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
 		//>>>>>>> finish uploading material >>>>>>>
 
-		light->dealShader(param, shader, texUnit++);
+		light->dealShader(param, shader, (texUnit != 0) ? (texUnit++) : 1);
 
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", camera->getViewMat());
@@ -241,9 +241,8 @@ namespace Pionner
 		shader->setVec3("u_material.kd", part->m_material.m_colorDiffuse);
 		shader->setVec3("u_material.ks", part->m_material.m_colorSpecular);
 		//>>>>>>> finish uploading material >>>>>>>
-
-		light->dealShader(param, shader, texUnit++);
-
+		light->dealShader(param, shader, (texUnit != 0) ? (texUnit++) : 1);
+			
 		shader->setMat4("u_modelMat", modelMat);
 		shader->setMat4("u_viewMat", camera->getViewMat());
 		shader->setMat4("u_prjMat", frustum->getPerspectMat());

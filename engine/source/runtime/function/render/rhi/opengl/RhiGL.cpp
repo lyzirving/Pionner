@@ -156,6 +156,26 @@ namespace Pionner
 		}
 	}
 
+	void RhiGL::unbindBufSlot(BufferType type)
+	{
+		switch (type)
+		{
+			case Pionner::BUF_TEXTURE:
+				glBindTexture(GL_TEXTURE_2D, 0);
+				break;
+			case Pionner::BUF_CUBE_TEXTURE:
+				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+				break;
+			case Pionner::BUF_DEPTH_FBO:
+			case Pionner::BUF_CUBE_DEPTH_FBO:
+			case Pionner::BUF_COLOR_FRAMEBUFFER:
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				break;
+			default:
+				break;
+		}
+	}
+
 	uint32_t RhiGL::getGLFaceDir(FaceDirection dir)
 	{
 		switch (dir)

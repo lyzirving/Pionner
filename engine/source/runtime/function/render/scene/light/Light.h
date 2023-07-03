@@ -32,6 +32,8 @@ namespace Pionner
 		static std::shared_ptr<Light> createLight(LightType type);
 
 		virtual void dealShader(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t texUnit = 0) = 0;
+		virtual void bind(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t slot) = 0;
+		virtual void unbind(RenderParam &param) = 0;
 
 		const glm::mat4 &getViewMat();
 		const glm::mat4 &getPrjMat();

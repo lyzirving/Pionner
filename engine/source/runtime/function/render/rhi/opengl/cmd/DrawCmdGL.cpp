@@ -2,6 +2,7 @@
 
 #include "function/render/rhi/opengl/cmd/DrawCmdGL.h"
 #include "function/render/rhi/RhiHeader.h"
+#include "function/render/rhi/Rhi.h"
 
 #include "function/render/resource/RenderResourceMgr.h"
 #include "function/render/resource/buffer/GfxBuffer.h"
@@ -123,6 +124,9 @@ namespace Pionner
 	void DrawCmdGL::drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param)
 	{
 		auto owner = part->m_owner;
+		auto scene = param.sceneMgr;
+		std::shared_ptr<Light> light{ nullptr };
+		if (scene->lightExist()) { light = scene->selectedLight(); }
 
 		if (!owner)
 			return;
@@ -157,10 +161,18 @@ namespace Pionner
 		indiceBuf->bind();
 
 		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::checkGLErr("err happens when drawing part");
+		bool success = GLHelper::checkGLErr("err happens when drawing part");
+		if (!success)
+		{
+			LOG_ERR("draw failed, part's owener name[%s], part index[%u], material name[%s]", 
+					part->m_owner->m_name.c_str(), part->m_partIndex, part->m_material.m_name.c_str());
+		}
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();
+
+		if (light) { light->unbind(param); }
+		param.rhi->unbindBufSlot(BUF_TEXTURE);
 
 		shader->use(false);
 	}

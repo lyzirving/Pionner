@@ -66,6 +66,11 @@ namespace Pionner
 		auto cmd = param.rhi->getDrawCmd();
 		cmd->drawGeometry(*this, param);
 
+		if (param.sceneMgr->lightExist()) 
+		{ 
+			param.sceneMgr->selectedLight()->unbind(param);
+		}
+
 		shader->use(false);
 	}
 
@@ -105,8 +110,10 @@ namespace Pionner
 	bool Plane::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader)
 	{
 		auto scene = param.sceneMgr;
-		auto light = scene->m_lights[scene->m_curLight];
-		bool lightExist = light != nullptr;
+		std::shared_ptr<Light> light{ nullptr };
+		bool lightExist = scene->lightExist();
+		if (lightExist) { light = scene->selectedLight(); }
+
 		shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY, param.rhi);
 
 		if (!shader)
@@ -117,10 +124,7 @@ namespace Pionner
 
 		shader->use(true);
 
-		if (lightExist)
-		{
-			light->dealShader(param, shader, 0);
-		}
+		if (lightExist) { light->dealShader(param, shader, 1); }
 
 		glm::mat4 modelMat = m_transform->getMat();
 		shader->setMat4("u_modelMat", modelMat);

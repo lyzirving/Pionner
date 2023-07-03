@@ -13,6 +13,8 @@ namespace Pionner
 		~PointLight();
 
 		virtual void dealShader(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t texUnit = 0) override;
+		virtual void bind(RenderParam &param, std::shared_ptr<Shader> &shader, uint32_t slot) override;
+		virtual void unbind(RenderParam &param) override;
 
 		void setAttenuation(float constVal, float linearVal, float quadVal);
 

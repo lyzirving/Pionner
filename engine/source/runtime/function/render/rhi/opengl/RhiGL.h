@@ -26,6 +26,8 @@ namespace Pionner
 		virtual void setDepthMode(DepthTest &test) override;
 		virtual void setBlendMode(Blend &blend) override;
 
+		virtual void unbindBufSlot(BufferType type) override;
+
 	protected:
 		virtual void createInstance() override;
 

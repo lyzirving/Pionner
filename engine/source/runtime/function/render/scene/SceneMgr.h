@@ -33,6 +33,8 @@ namespace Pionner
 
 		void resize(int width, int height);
 
+		inline bool lightExist() { return (m_curLight < LIGNT_TYPE_COUNT) && (m_lights[m_curLight] != nullptr); }
+		inline std::shared_ptr<Light> selectedLight() { return m_lights[m_curLight]; }
 	public:
 		std::shared_ptr<RenderScene> m_scene;
 		std::shared_ptr<Camera>      m_camera;
