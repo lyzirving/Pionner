@@ -9,6 +9,8 @@ namespace pio
 	class WindowSystem;
 	class RenderSystem;
 
+	class PioWorld;
+
 	class GlobalContext
 	{
 	public:
@@ -16,12 +18,15 @@ namespace pio
 		~GlobalContext();
 
 		void startSystems();
+		void swapData(float deltaTime);
 		void shutdownSystems();
 
 	public:
 		std::shared_ptr<World>        m_world;
 		std::shared_ptr<WindowSystem> m_windowSystem;
 		std::shared_ptr<RenderSystem> m_renderSystem;
+
+		std::shared_ptr<PioWorld>     m_pioWorld;
 	};
 
 	extern GlobalContext g_runtimeCtx;

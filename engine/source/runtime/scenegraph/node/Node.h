@@ -29,6 +29,8 @@ namespace pio
 
 			virtual void ascend(NodeVisitor *visitor);
 			virtual void descend(NodeVisitor *visitor) {}
+
+			virtual void release() {}
 			
 		protected:
 			virtual bool intercept(NodeVisitor *visitor);

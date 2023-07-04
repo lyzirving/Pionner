@@ -5,6 +5,8 @@
 #include "world/World.h"
 #include "event/EventMgr.h"
 
+#include "world/PioWorld.h"
+
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -20,6 +22,7 @@ namespace pio
 		: m_world(nullptr)
 		, m_windowSystem(nullptr)
 		, m_renderSystem(nullptr)
+		, m_pioWorld(nullptr)
 	{
 	}
 
@@ -43,6 +46,17 @@ namespace pio
 		m_renderSystem->initialize(renderInitInfo);
 
 		m_world->build();
+
+		m_pioWorld = std::make_shared<PioWorld>();
+		m_pioWorld->init();
+	}
+
+	void GlobalContext::swapData(float deltaTime)
+	{
+		if (m_pioWorld->dirty())
+		{
+			m_pioWorld->setDirty(false);
+		}
 	}
 
 	void GlobalContext::shutdownSystems()
@@ -63,6 +77,12 @@ namespace pio
 		{
 			m_world->shutdown();
 			m_world.reset();
+		}
+
+		if (m_pioWorld)
+		{
+			m_pioWorld->shutdown();
+			m_pioWorld.reset();
 		}
 
 		LOG_DEBUG("all systems are shutdown");

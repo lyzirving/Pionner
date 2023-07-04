@@ -63,6 +63,8 @@ namespace pio
 
 	void Engine::tickLogic(float deltaTime)
 	{
+		g_runtimeCtx.swapData(deltaTime);
+
 		g_runtimeCtx.m_renderSystem->swapData(deltaTime);
 	}
 

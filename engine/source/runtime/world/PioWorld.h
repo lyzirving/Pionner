@@ -9,6 +9,11 @@
 
 namespace pio
 {
+	namespace scenegrf 
+	{
+		class Group;
+	}
+
 	class PioWorld
 	{
 	public:
@@ -16,7 +21,11 @@ namespace pio
 		~PioWorld();
 
 		template <class ... CompTypes>
-		std::shared_ptr<PioEntity> createEntity();
+		std::shared_ptr<PioEntity> createEntity(PioEntityType type);
+
+		inline bool dirty() const { return m_dirty.load(); }
+		inline void setDirty(bool b) { m_dirty.store(b); }
+		inline std::shared_ptr<scenegrf::Group> getSceneRoot() { return m_sceneRoot; }
 
 		void init();
 		void shutdown();
@@ -25,12 +34,15 @@ namespace pio
 		static uint32_t g_entityId;
 		typedef std::unordered_map<std::string, std::shared_ptr<PioEntity>> Collection;
 
-		decs::ECSWorld m_ecsWorld;
-		Collection     m_entities;
+		std::atomic<bool> m_dirty;
+		decs::ECSWorld    m_ecsWorld;
+		Collection        m_entities;
+
+		std::shared_ptr<scenegrf::Group> m_sceneRoot;
 	};
 
 	template <class ... CompTypes>
-	std::shared_ptr<PioEntity> PioWorld::createEntity()
+	std::shared_ptr<PioEntity> PioWorld::createEntity(PioEntityType type)
 	{
 		std::string key = "entity_" + std::to_string(g_entityId);
 		auto itr = m_entities.find(key);
@@ -39,7 +51,7 @@ namespace pio
 			// already exist
 			return itr->second;
 		}
-		auto entity = std::shared_ptr<PioEntity>(new PioEntity);
+		auto entity = std::shared_ptr<PioEntity>(new PioEntity(type));
 		entity->m_id = g_entityId;
 		entity->m_key = key;
 		if (entity->createComps<CompTypes ...>())

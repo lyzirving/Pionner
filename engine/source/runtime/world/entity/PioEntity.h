@@ -3,24 +3,37 @@
 
 #include <string>
 #include <memory>
+#include <atomic>
 #include <decs.h>
 
+#include "PioEntityDef.h"
 #include "world/comp/ComponentFactory.h"
 
 namespace pio
 {
+	namespace scenegrf
+	{
+		class Node;
+	}
+
+	class PioWorld;
+
 	class PioEntity
 	{
 		friend class PioWorld;
 	public:
-		PioEntity();
+		PioEntity(PioEntityType type);
 		~PioEntity();
 
 		inline bool compExist(CompDefine d) { return m_comps[d] != nullptr; }
 		inline const std::string &getName() { return m_name; }
 		inline uint32_t getId() { return m_id; }
+		inline bool dirty() { return m_dirty.load(); }
 
 		inline void setName(const std::string &name) { m_name = name; }
+
+		void requestUpdate();
+		void swapData(float deltaTime);
 
 		template <class ... CompTypes>
 		bool createComps();
@@ -30,13 +43,20 @@ namespace pio
 		static bool checkType();
 
 	private:
-		uint32_t       m_id;
-		decs::EntityID m_ecsId;
-		// This filed can be overrided once entity is constructed
-		std::string    m_key;
-		std::string    m_name;
+		uint32_t          m_id;
+		decs::EntityID    m_ecsId;
+		PioWorld          *m_world;
+		// This filed can not be overrided once entity is constructed
+		std::string       m_key;
+		std::string       m_name;
+		// Resource's path
+		std::string       m_path;
+		PioEntityType     m_type;
+		std::atomic<bool> m_dirty;
 
 		std::shared_ptr<Component> m_comps[CMP_CNT];
+
+		std::shared_ptr<scenegrf::Node> m_sceneNode;
 	};
 
 	template <class T>
