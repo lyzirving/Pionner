@@ -9,13 +9,10 @@
 #include "PioEntityDef.h"
 #include "world/comp/ComponentFactory.h"
 
+#include "scenegraph/node/Node.h"
+
 namespace pio
 {
-	namespace scenegrf
-	{
-		class Node;
-	}
-
 	class PioWorld;
 
 	class PioEntity

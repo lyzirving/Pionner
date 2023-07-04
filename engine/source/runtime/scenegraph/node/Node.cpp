@@ -16,7 +16,11 @@ namespace pio
 {
 	namespace scenegrf
 	{
-		Node::Node() : SceneGrfObject(), m_parents()
+		Node::Node() : SceneGrfObject(), m_parents(), m_type(NODE_TYPE_NORMAL)
+		{
+		}
+
+		Node::Node(const std::string &name) : SceneGrfObject(name), m_parents(), m_type(NODE_TYPE_NORMAL)
 		{
 		}
 

@@ -2,10 +2,18 @@
 #define __PIONNER_PIO_WORLD_H__
 
 #include <unordered_map>
+#include <string.h>
 #include <string>
 #include <memory>
 
 #include "entity/PioEntity.h"
+#include "scenegraph/node/NodeFactory.h"
+
+#include "core/log/LogSystem.h"
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "PioWorld"
 
 namespace pio
 {
@@ -20,15 +28,19 @@ namespace pio
 		PioWorld();
 		~PioWorld();
 
-		template <class ... CompTypes>
-		std::shared_ptr<PioEntity> createEntity(PioEntityType type);
-
 		inline bool dirty() const { return m_dirty.load(); }
 		inline void setDirty(bool b) { m_dirty.store(b); }
 		inline std::shared_ptr<scenegrf::Group> getSceneRoot() { return m_sceneRoot; }
 
+		template <class ... CompTypes>
+		void addEntity(const std::string &nodeName, PioEntityType type);
+
 		void init();
 		void shutdown();
+
+	private:
+		template <class ... CompTypes>
+		std::shared_ptr<PioEntity> createEntity(PioEntityType type);
 
 	private:
 		static uint32_t g_entityId;
@@ -41,6 +53,20 @@ namespace pio
 		std::shared_ptr<scenegrf::Group> m_sceneRoot;
 	};
 
+	template<class ...CompTypes>
+	void PioWorld::addEntity(const std::string &nodeName, PioEntityType type)
+	{
+		std::shared_ptr<PioEntity> entity = createEntity<CompTypes...>(type);
+		if (entity)
+		{
+
+		}
+		else
+		{
+			LOG_ERR("fail to add entity[type = %u] to node[%s]", type, nodeName.c_str());
+		}
+	}
+
 	template <class ... CompTypes>
 	std::shared_ptr<PioEntity> PioWorld::createEntity(PioEntityType type)
 	{
@@ -48,7 +74,7 @@ namespace pio
 		auto itr = m_entities.find(key);
 		if (itr != m_entities.end())
 		{
-			// already exist
+			LOG_INFO("entity[%s][%s] already exist", key.c_str(), itr->second->m_name.c_str());
 			return itr->second;
 		}
 		auto entity = std::shared_ptr<PioEntity>(new PioEntity(type));
@@ -57,11 +83,13 @@ namespace pio
 		if (entity->createComps<CompTypes ...>())
 		{
 			entity->m_ecsId = m_ecsWorld.new_entity<CompTypes...>();
+			entity->m_sceneNode = scenegrf::NodeFactory::create(type);
 			g_entityId++;
 			m_entities.insert(std::make_pair(entity->m_key, entity));
 			return entity;
 		}
 		// failed to createComps()
+		LOG_ERR("fail to create entity[%s], creating components err!", key.c_str());
 		entity.reset();
 		return entity;
 	}

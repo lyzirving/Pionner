@@ -49,6 +49,6 @@ namespace pio
 		{
 			m_sceneNode = scenegrf::NodeFactory::create(m_type);
 		}
-		//TODO: swapData called by SceneGraph node
+		m_sceneNode->swapData(*this);
 	}
 }

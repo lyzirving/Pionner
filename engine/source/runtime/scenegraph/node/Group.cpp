@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "Group.h"
 #include "Node.h"
 
@@ -5,8 +7,14 @@ namespace pio
 {
 	namespace scenegrf
 	{
-		Group::Group() : Node(), m_children()
+		Group::Group() : Node(), m_children(), m_childs()
 		{
+			m_type = NODE_TYPE_GROUP;
+		}
+
+		Group::Group(const std::string &name) : Node(name), m_children(), m_childs()
+		{
+			m_type = NODE_TYPE_GROUP;
 		}
 
 		Group::~Group()
@@ -30,6 +38,14 @@ namespace pio
 			node->addParent(self);
 		}
 
+		void Group::addChild(const std::string &nodeName, std::shared_ptr<Node> &node)
+		{
+			if (std::strcmp(nodeName.c_str(), m_name.c_str()) == 0)
+			{
+				//TODO: 
+			}
+		}
+
 		void Group::removeChild(const std::string &name)
 		{
 			auto itr = m_children.find(name);
@@ -48,6 +64,22 @@ namespace pio
 
 			auto itr = m_children.find(node->getName());
 			return itr != m_children.end();
+		}
+
+		template <>
+		bool Node::is<Group>() const
+		{
+			return m_type == NODE_TYPE_GROUP;
+		}
+
+		template <>
+		Group *Node::as<Group>()
+		{
+			if (is<Group>())
+			{
+				return static_cast<Group *>(this);
+			}
+			return nullptr;
 		}
 	}
 }

@@ -4,10 +4,13 @@
 #include <vector>
 #include <memory>
 
+#include "NodeDef.h"
 #include "scenegraph/SceneGrfObject.h"
 
 namespace pio
 {
+	class PioEntity;
+
 	namespace scenegrf
 	{
 		class Group;
@@ -20,6 +23,7 @@ namespace pio
 
 		public:
 			Node();
+			Node(const std::string &name);
 			virtual ~Node();
 
 			/**
@@ -30,7 +34,14 @@ namespace pio
 			virtual void ascend(NodeVisitor *visitor);
 			virtual void descend(NodeVisitor *visitor) {}
 
+			virtual void swapData(const PioEntity &entity) {}
 			virtual void release() {}
+
+			template <class T>
+			bool is() const;
+
+			template <class T>
+			T *as();
 			
 		protected:
 			virtual bool intercept(NodeVisitor *visitor);
@@ -42,7 +53,14 @@ namespace pio
 
 		protected:
 			ParentList  m_parents;
+			NodeType    m_type;
 		};
+
+		template <class T>
+		bool Node::is() const { return false; }
+
+		template <class T>
+		T *Node::as() { return nullptr; }
 	}
 }
 

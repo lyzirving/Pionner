@@ -7,7 +7,6 @@ namespace pio
 {
 	namespace scenegrf
 	{
-
 		class SceneGrfObject
 		{
 		public:

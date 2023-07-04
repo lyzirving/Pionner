@@ -4,6 +4,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include "core/struc/LinkedMap.h"
+
 #include "Node.h"
 
 namespace pio
@@ -14,9 +16,11 @@ namespace pio
 		{
 		public:
 			Group();
+			Group(const std::string &name);
 			~Group();
 
 			void addChild(std::shared_ptr<Node> &node);
+			void addChild(const std::string &nodeName, std::shared_ptr<Node> &node);
 			void removeChild(const std::string &name);
 
 		protected:
@@ -26,6 +30,7 @@ namespace pio
 
 		protected:
 			ChildList m_children;
+			core::LinkedMap<std::string, Node> m_childs;
 		};
 	}
 }
