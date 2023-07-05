@@ -5,7 +5,7 @@
 
 namespace pio
 {
-	namespace scenegrf
+	namespace sgf
 	{
 		class Node;
 		class Group;

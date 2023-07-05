@@ -14,7 +14,7 @@
 
 namespace pio
 {
-	namespace scenegrf
+	namespace sgf
 	{
 		Node::Node() : SceneGrfObject(), m_parents(), m_type(NODE_TYPE_NORMAL)
 		{

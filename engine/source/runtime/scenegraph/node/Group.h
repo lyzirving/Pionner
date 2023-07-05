@@ -10,14 +10,14 @@
 
 namespace pio
 {
-	namespace scenegrf
+	namespace sgf
 	{
 		class Group : public Node, public std::enable_shared_from_this<Group>
 		{
 		public:
 			Group();
 			Group(const std::string &name);
-			~Group();
+			virtual ~Group();
 
 			void addChild(std::shared_ptr<Node> &node);
 			/**

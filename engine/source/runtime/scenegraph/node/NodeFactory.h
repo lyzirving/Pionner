@@ -3,11 +3,11 @@
 
 #include <memory>
 
-#include "world/entity/PioEntityDef.h"
+#include "global/PioEntity.h"
 
 namespace pio
 {
-	namespace scenegrf
+	namespace sgf
 	{
 		class Node;
 

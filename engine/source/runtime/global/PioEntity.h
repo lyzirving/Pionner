@@ -6,14 +6,20 @@
 #include <atomic>
 #include <decs.h>
 
-#include "PioEntityDef.h"
-#include "world/comp/ComponentFactory.h"
+#include "global/comp/ComponentFactory.h"
 
 #include "scenegraph/node/Node.h"
 
 namespace pio
 {
 	class PioWorld;
+
+	enum PioEntityType : uint8_t
+	{
+		PIO_ENTITY_MODEL,
+		PIO_ENTITY_GEO,
+		PIO_ENTITY_CNT
+	};
 
 	class PioEntity
 	{
@@ -53,7 +59,7 @@ namespace pio
 
 		std::shared_ptr<Component> m_comps[CMP_CNT];
 
-		std::shared_ptr<scenegrf::Node> m_sceneNode;
+		std::shared_ptr<sgf::Node> m_sceneNode;
 	};
 
 	template <class T>

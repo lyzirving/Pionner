@@ -11,7 +11,7 @@
 
 namespace pio
 {
-	namespace scenegrf
+	namespace sgf
 	{
 		NodeVisitor::NodeVisitor() : m_traversalMode(TRAVERSE_NONE)
 		{

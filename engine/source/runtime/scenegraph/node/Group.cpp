@@ -11,7 +11,7 @@
 
 namespace pio
 {
-	namespace scenegrf
+	namespace sgf
 	{
 		Group::Group() : Node(), m_children()
 		{

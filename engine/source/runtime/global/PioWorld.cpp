@@ -8,7 +8,7 @@ namespace pio
 	uint32_t PioWorld::g_entityId{ 0 };
 
 	PioWorld::PioWorld() : m_dirty(true), m_ecsWorld(), m_entities()
-		, m_sceneRoot(new scenegrf::Group(scenegrf::ROOT_NODE))
+		, m_sceneRoot(new sgf::Group(sgf::ROOT_NODE))
 	{
 	}
 

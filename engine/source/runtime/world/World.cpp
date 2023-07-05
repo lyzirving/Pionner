@@ -1,13 +1,12 @@
 #include "World.h"
-#include "PioWorld.h"
 
 #include "world/comp/RenderComp.h"
 #include "world/comp/LightComp.h"
 #include "world/comp/GeometryComp.h"
 #include "world/comp/ShadowComp.h"
 
-#include "world/comp/TransformComponent.h"
-#include "world/comp/MaterialComponent.h"
+#include "global/comp/TransformComponent.h"
+#include "global/comp/MaterialComponent.h"
 
 #include "core/system/Loader.h"
 

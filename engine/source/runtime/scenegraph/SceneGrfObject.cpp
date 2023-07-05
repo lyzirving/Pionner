@@ -2,7 +2,7 @@
 
 namespace pio
 {
-	namespace scenegrf
+	namespace sgf
 	{
 		uint32_t SceneGrfObject::g_sceneGrfId{ 0 };
 
@@ -16,6 +16,5 @@ namespace pio
 		}
 
 		SceneGrfObject::~SceneGrfObject() = default;
-
 	}
 }

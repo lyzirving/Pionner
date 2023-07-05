@@ -4,14 +4,14 @@
 #include <vector>
 #include <memory>
 
-#include "NodeDef.h"
+#include "scenegraph/SceneGrfDef.h"
 #include "scenegraph/SceneGrfObject.h"
 
 namespace pio
 {
 	class PioEntity;
 
-	namespace scenegrf
+	namespace sgf
 	{
 		class Group;
 		class NodeVisitor;

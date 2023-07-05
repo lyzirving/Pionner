@@ -2,7 +2,7 @@
 
 namespace pio
 {
-	namespace scenegrf
+	namespace sgf
 	{
 		std::shared_ptr<Node> NodeFactory::create(PioEntityType type)
 		{

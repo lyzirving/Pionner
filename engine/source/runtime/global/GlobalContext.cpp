@@ -5,7 +5,7 @@
 #include "world/World.h"
 #include "event/EventMgr.h"
 
-#include "world/PioWorld.h"
+#include "PioWorld.h"
 
 #include "core/log/LogSystem.h"
 

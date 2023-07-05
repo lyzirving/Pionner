@@ -1,6 +1,5 @@
 #include "PioEntity.h"
-
-#include "world/PioWorld.h"
+#include "PioWorld.h"
 
 #include "scenegraph/node/Node.h"
 #include "scenegraph/node/NodeFactory.h"
@@ -60,7 +59,7 @@ namespace pio
 	{
 		if (!m_sceneNode)
 		{
-			m_sceneNode = scenegrf::NodeFactory::create(m_type);
+			m_sceneNode = sgf::NodeFactory::create(m_type);
 		}
 		m_sceneNode->swapData(*this);
 	}

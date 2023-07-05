@@ -6,7 +6,7 @@
 #include <string>
 #include <memory>
 
-#include "entity/PioEntity.h"
+#include "PioEntity.h"
 #include "scenegraph/node/NodeFactory.h"
 
 #include "core/log/LogSystem.h"
@@ -17,7 +17,7 @@
 
 namespace pio
 {
-	namespace scenegrf 
+	namespace sgf 
 	{
 		class Group;
 	}
@@ -30,7 +30,7 @@ namespace pio
 
 		inline bool dirty() const { return m_dirty.load(); }
 		inline void setDirty(bool b) { m_dirty.store(b); }
-		inline std::shared_ptr<scenegrf::Group> getSceneRoot() { return m_sceneRoot; }
+		inline std::shared_ptr<sgf::Group> getSceneRoot() { return m_sceneRoot; }
 
 		/**
 		* @brief: This method will directly add new node to selected parent node.
@@ -62,7 +62,7 @@ namespace pio
 		decs::ECSWorld    m_ecsWorld;
 		Collection        m_entities;
 
-		std::shared_ptr<scenegrf::Group> m_sceneRoot;
+		std::shared_ptr<sgf::Group> m_sceneRoot;
 	};
 
 	template<class ...CompTypes>
@@ -114,7 +114,7 @@ namespace pio
 		if (entity->createComps<CompTypes ...>())
 		{
 			entity->m_ecsId = m_ecsWorld.new_entity<CompTypes...>();
-			entity->m_sceneNode = scenegrf::NodeFactory::create(type);
+			entity->m_sceneNode = sgf::NodeFactory::create(type);
 			g_entityId++;
 			m_entities.insert(std::make_pair(entity->m_key, entity));
 			return entity;

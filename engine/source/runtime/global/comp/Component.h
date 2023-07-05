@@ -3,10 +3,16 @@
 
 #include <memory>
 
-#include "ComponentDef.h"
-
 namespace pio
 {
+	enum CompDefine : uint8_t
+	{
+		CMP_TRANSFORM,
+		CMP_LIGHT,
+		CMP_MATERIAL,
+		CMP_CNT
+	};
+
 	class Component
 	{
 	public:
