@@ -32,8 +32,20 @@ namespace pio
 		inline void setDirty(bool b) { m_dirty.store(b); }
 		inline std::shared_ptr<scenegrf::Group> getSceneRoot() { return m_sceneRoot; }
 
+		/**
+		* @brief: This method will directly add new node to selected parent node.
+		* @param parentNodeName: target node's name, the node should be the parent node of the newly created node
+		* @param nodeName:       name of the newly created node
+		* @param type:           type of the entity that will hold the newly created node.
+		*/
 		template <class ... CompTypes>
-		void addEntity(const std::string &nodeName, PioEntityType type);
+		std::shared_ptr<PioEntity> addEntity(const std::string &parentNodeName, const std::string &nodeName, PioEntityType type);
+
+		/*
+		* @brief: This method will directly add new node to scene root.
+		*/
+		template <class ... CompTypes>
+		std::shared_ptr<PioEntity> addEntity(const std::string &nodeName, PioEntityType type);
 
 		void init();
 		void shutdown();
@@ -54,17 +66,36 @@ namespace pio
 	};
 
 	template<class ...CompTypes>
-	void PioWorld::addEntity(const std::string &nodeName, PioEntityType type)
+	std::shared_ptr<PioEntity> PioWorld::addEntity(const std::string &parentNodeName, const std::string &nodeName, 
+												   PioEntityType type)
 	{
 		std::shared_ptr<PioEntity> entity = createEntity<CompTypes...>(type);
 		if (entity)
 		{
-
+			entity->setName(nodeName);
+			m_sceneRoot->addChild(parentNodeName, entity->m_sceneNode);
 		}
 		else
 		{
 			LOG_ERR("fail to add entity[type = %u] to node[%s]", type, nodeName.c_str());
 		}
+		return entity;
+	}
+
+	template<class ...CompTypes>
+	std::shared_ptr<PioEntity> PioWorld::addEntity(const std::string &nodeName, PioEntityType type)
+	{
+		std::shared_ptr<PioEntity> entity = createEntity<CompTypes...>(type);
+		if (entity)
+		{
+			entity->setName(nodeName);
+			m_sceneRoot->addChild(entity->m_sceneNode);
+		}
+		else
+		{
+			LOG_ERR("fail to add entity[type = %u] to node[%s]", type, nodeName.c_str());
+		}
+		return entity;
 	}
 
 	template <class ... CompTypes>

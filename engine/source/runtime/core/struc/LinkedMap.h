@@ -43,6 +43,17 @@ namespace pio
 				}
 			}
 
+			std::shared_ptr<T> get(const K &key)
+			{
+				std::shared_ptr<T> result{ nullptr };
+				CoreMapItr itr = m_map.find(key);
+				if (itr != m_map.end())
+				{
+					result = itr->second;
+				}
+				return result;
+			}
+
 			void remove(const K &key)
 			{
 				CoreMapItr itr = m_map.find(key);

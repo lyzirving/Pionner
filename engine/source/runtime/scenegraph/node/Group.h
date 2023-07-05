@@ -20,18 +20,36 @@ namespace pio
 			~Group();
 
 			void addChild(std::shared_ptr<Node> &node);
-			void addChild(const std::string &nodeName, std::shared_ptr<Node> &node);
+			/**
+			* @param parentNodeName: target node's name
+			* @param node:           child node that needs to be added 
+			*/
+			void addChild(const std::string &parentNodeName, std::shared_ptr<Node> &node);
+			/**
+			* @brief: remove child node in current child list.
+			*/
 			void removeChild(const std::string &name);
+			/**
+			* @brief: remove child node in target node's list.
+			*/
+			void removeChild(const std::string &parentNodeName, const std::string &name);
 
 		protected:
-			typedef std::unordered_map<std::string, std::shared_ptr<Node>> ChildList;
-
-			bool childExist(std::shared_ptr<Node> &node);
+			/**
+			* @brief find named child node in depth-first order.
+			*/
+			std::shared_ptr<Node> findChild(const std::string &name);
 
 		protected:
-			ChildList m_children;
-			core::LinkedMap<std::string, Node> m_childs;
+			core::LinkedMap<std::string, Node> m_children;
 		};
+
+		template <>
+		bool Node::is<Group>() const;
+
+		template <>
+		Group *Node::as<Group>();
+
 	}
 }
 

@@ -43,6 +43,19 @@ namespace pio
 		}
 	}
 
+	void PioEntity::setName(const std::string &name)
+	{
+		m_name = name;
+		if (m_sceneNode)
+		{
+			m_sceneNode->setName(name);
+		}
+		else
+		{
+			LOG_ERR("failed[%s], scene node has not been created yet", name.c_str());
+		}
+	}
+
 	void PioEntity::swapData(float deltaTime)
 	{
 		if (!m_sceneNode)

@@ -45,12 +45,12 @@ namespace pio
 		Loader::load("assets/objects/spiderman/spiderman.obj", role0Comp.m_entity);
 		role0Comp.m_entity->m_transComp.translate(0.f, 0.1f, 0.f);
 
-		auto role1 = createEntity<RenderComp, ShadowComp>(ENTITY_OBJ, "role1");
+		/*auto role1 = createEntity<RenderComp, ShadowComp>(ENTITY_OBJ, "role1");
 		auto &role1Comp = role1->getComp<RenderComp>();
 		role1Comp.m_entity = std::shared_ptr<RenderEntity>(new ModelEntity);
 		Loader::load("assets/objects/nanosuit/nanosuit.obj", role1Comp.m_entity);
 		role1Comp.m_entity->m_transComp.translate(3.f, 0.1f, 2.5f);
-		role1Comp.m_entity->m_transComp.rotate(-30.f, 0.f, 1.f, 0.f);
+		role1Comp.m_entity->m_transComp.rotate(-30.f, 0.f, 1.f, 0.f);*/
 
 		auto lightEntity = createEntity<LightComp>(ENTITY_LIGHT, "light");
 		auto &lightComp = lightEntity->getComp<LightComp>();

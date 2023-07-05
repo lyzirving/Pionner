@@ -3,73 +3,118 @@
 #include "Group.h"
 #include "Node.h"
 
+#include "core/log/LogSystem.h"
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Group"
+
 namespace pio
 {
 	namespace scenegrf
 	{
-		Group::Group() : Node(), m_children(), m_childs()
+		Group::Group() : Node(), m_children()
 		{
 			m_type = NODE_TYPE_GROUP;
 		}
 
-		Group::Group(const std::string &name) : Node(name), m_children(), m_childs()
+		Group::Group(const std::string &name) : Node(name), m_children()
 		{
 			m_type = NODE_TYPE_GROUP;
 		}
 
 		Group::~Group()
 		{
-			auto itr = m_children.begin();
-			while (itr != m_children.end())
-			{
-				itr->second.reset();
-				itr = m_children.erase(itr);
-			}
+			m_children.release();
 		}
 
 		void Group::addChild(std::shared_ptr<Node> &node)
 		{
-			if (childExist(node))
+			if (m_children.itemExist(node->getName()))
 				return;
 
-			m_children.insert(std::make_pair(node->getName(), node));
+			m_children.add(node->getName(), node);
 
 			auto self = shared_from_this();
 			node->addParent(self);
 		}
 
-		void Group::addChild(const std::string &nodeName, std::shared_ptr<Node> &node)
+		void Group::addChild(const std::string &parentNodeName, std::shared_ptr<Node> &node)
 		{
-			if (std::strcmp(nodeName.c_str(), m_name.c_str()) == 0)
+			if (std::strcmp(parentNodeName.c_str(), m_name.c_str()) == 0)
 			{
-				//TODO: 
+				addChild(node);
+			}
+			else
+			{
+				auto target = findChild(parentNodeName);
+				if (!target)
+				{
+					LOG_ERR("fail to find child node named [%s]", parentNodeName.c_str());
+					return;
+				}
+				Group *pGroup = target->as<Group>();
+				if (!pGroup)
+				{
+					LOG_ERR("child node[%s] is not a group", parentNodeName.c_str());
+					return;
+				}
+				pGroup->addChild(node);
 			}
 		}
 
 		void Group::removeChild(const std::string &name)
 		{
-			auto itr = m_children.find(name);
-			if (itr != m_children.end())
-			{
-				itr->second->removeParent(m_name);
-				itr->second.reset();
-				m_children.erase(itr);
-			}
+			m_children.remove(name);
 		}
 
-		bool Group::childExist(std::shared_ptr<Node> &node)
+		void Group::removeChild(const std::string &parentNodeName, const std::string &name)
 		{
-			if(!node)
-				return false;
+			auto parent = findChild(parentNodeName);
+			if (!parent)
+			{
+				LOG_ERR("fail to find target node[%s]", parentNodeName.c_str());
+				return;
+			}
+			Group *pGroup = parent->as<Group>();
+			if (!pGroup)
+			{
+				LOG_ERR("parent node[%s] is not a group", parentNodeName.c_str());
+				return;
+			}
+			pGroup->removeChild(name);
+		}
 
-			auto itr = m_children.find(node->getName());
-			return itr != m_children.end();
+		std::shared_ptr<Node> Group::findChild(const std::string &name)
+		{
+			// if we find the child in map, the function will directly return
+			std::shared_ptr<Node> target = m_children.get(name);
+
+			// if m_children does not contain this child
+			if (!target)
+			{
+				auto itr = m_children.begin();
+				auto end = m_children.end();
+				while (itr != end)
+				{
+					auto item = *itr;
+					auto pGroup = item->as<Group>();
+					if (pGroup)
+					{
+						target = pGroup->findChild(name);
+						if (target)
+							break;
+					}
+				}
+			}
+
+			return target;
 		}
 
 		template <>
 		bool Node::is<Group>() const
 		{
-			return m_type == NODE_TYPE_GROUP;
+			return m_type >= NODE_TYPE_GROUP && m_type < NODE_TYPE_CNT;
 		}
 
 		template <>

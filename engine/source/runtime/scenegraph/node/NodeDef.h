@@ -10,7 +10,9 @@ namespace pio
 		enum NodeType
 		{
 			NODE_TYPE_NORMAL,
+			// Types bellow are referenced to a group
 			NODE_TYPE_GROUP,
+			// Type count
 			NODE_TYPE_CNT
 		};
 	}

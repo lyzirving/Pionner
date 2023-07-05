@@ -27,9 +27,8 @@ namespace pio
 		inline uint32_t getId() { return m_id; }
 		inline bool dirty() { return m_dirty.load(); }
 
-		inline void setName(const std::string &name) { m_name = name; }
-
 		void requestUpdate();
+		void setName(const std::string &name);
 		void swapData(float deltaTime);
 
 		template <class ... CompTypes>
@@ -43,10 +42,11 @@ namespace pio
 		uint32_t          m_id;
 		decs::EntityID    m_ecsId;
 		PioWorld          *m_world;
-		// This filed can not be overrided once entity is constructed
+		// This filed can not be overrided once entity is constructed.
 		std::string       m_key;
+		// Name of the entity, pay attention that m_name should be the same with m_sceneNode's m_name.
 		std::string       m_name;
-		// Resource's path
+		// Resource's path if the entity has any resources.
 		std::string       m_path;
 		PioEntityType     m_type;
 		std::atomic<bool> m_dirty;
