@@ -38,7 +38,7 @@ namespace pio
 			virtual void release() {}
 
 			template <class T>
-			bool is() const;
+			bool is();
 
 			template <class T>
 			T *as();
@@ -57,7 +57,7 @@ namespace pio
 		};
 
 		template <class T>
-		bool Node::is() const { return false; }
+		bool Node::is() { return false; }
 
 		template <class T>
 		T *Node::as() { return nullptr; }

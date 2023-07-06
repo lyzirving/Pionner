@@ -3,16 +3,28 @@
 
 #include <memory>
 #include <vector>
-#include "render/resource/ResourceDef.h"
 
 namespace pio
 {
 	namespace gfx
 	{
+		enum GfxBufType
+		{
+			GFX_BUF_VERTEX,
+			GFX_BUF_INDICE,
+			GFX_BUF_TEXTURE,
+			GFX_BUF_CUBE_TEXTURE,
+			GFX_BUF_DEPTH_FBO,
+			GFX_BUF_CUBE_DEPTH_FBO,
+			GFX_BUF_COLOR_FRAMEBUFFER,
+			GFX_BUF_CNT
+		};
+
 		class Buffer
 		{
 		public:
 			Buffer();
+			Buffer(GfxBufType type);
 			virtual ~Buffer();
 
 			virtual void upload() = 0;
@@ -21,16 +33,15 @@ namespace pio
 			virtual void bindTarget(uint32_t target);
 			virtual void unbind();
 
-			virtual void     load();
 			virtual uint32_t size();
 			virtual void     release();
 
 			inline uint32_t   getId() const { return m_id; }
-			inline BufferType getBufferType() const { return m_bufferType; }
+			inline GfxBufType getBufType() const { return m_bufferType; }
 			inline bool       isUpload() const { return m_uploaded; }
 
 			template<class T>
-			bool is() const;
+			bool is();
 
 			template<class T>
 			T *as();
@@ -39,13 +50,13 @@ namespace pio
 			inline bool isCreated() { return m_id > 0; }
 
 		protected:
-			uint32_t   m_id;
-			BufferType m_bufferType;
-			bool       m_uploaded;
+			uint32_t   m_id{0};
+			GfxBufType m_bufferType{ GFX_BUF_CNT };
+			bool       m_uploaded{false};
 		};
 
 		template<class T>
-		bool Buffer::is() const { return false; }
+		bool Buffer::is() { return false; }
 
 		template<class T>
 		T *Buffer::as() { return nullptr; }

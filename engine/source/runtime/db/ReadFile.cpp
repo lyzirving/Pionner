@@ -7,6 +7,8 @@
 
 #include "ReadFile.h"
 
+#include "gfx/buffer/Texture2d.h"
+
 #include "scenegraph/node/GeoNode.h"
 #include "scenegraph/node/drawable/Geometry.h"
 
@@ -131,31 +133,42 @@ namespace pio
 					if (mt->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 					{
 						mt->GetTexture(aiTextureType_DIFFUSE, 0, &texName);
-
-						//TODO: add support for texture
 						std::string srcPath = ASSETS_ROOT_DIR + objName + '/' + texName.C_Str();
+
+						auto texture = std::shared_ptr<gfx::Texture>(new gfx::Texture2d(gfx::SURFACE_DIFFUSE));
+						texture->setPath(srcPath);
+						pGeometry->addTexture(texture);
 					}
 
 					if (mt->GetTextureCount(aiTextureType_SPECULAR) > 0)
 					{
 						mt->GetTexture(aiTextureType_SPECULAR, 0, &texName);
-
 						std::string srcPath = ASSETS_ROOT_DIR + objName + '/' + texName.C_Str();
+
+						auto texture = std::shared_ptr<gfx::Texture>(new gfx::Texture2d(gfx::SURFACE_SPECULAR));
+						texture->setPath(srcPath);
+						pGeometry->addTexture(texture);
 					}
 
 					if (mt->GetTextureCount(aiTextureType_AMBIENT) > 0)
 					{
 						mt->GetTexture(aiTextureType_AMBIENT, 0, &texName);
-
 						std::string srcPath = ASSETS_ROOT_DIR + objName + '/' + texName.C_Str();
+
+						auto texture = std::shared_ptr<gfx::Texture>(new gfx::Texture2d(gfx::SURFACE_AMBIENT));
+						texture->setPath(srcPath);
+						pGeometry->addTexture(texture);
 					}
 
 					// This texture is used for normal mapping.
 					/*if (mt->GetTextureCount(aiTextureType_HEIGHT) > 0)
 					{
 						mt->GetTexture(aiTextureType_HEIGHT, 0, &texName);
-
 						std::string srcPath = ASSETS_ROOT_DIR + objName + '/' + texName.C_Str();
+
+						auto texture = std::shared_ptr<gfx::Texture>(new gfx::Texture2d(gfx::SURFACE_NORMAL));
+						texture->setPath(srcPath);
+						pGeometry->addTexture(texture);
 					}*/
 
 					aiColor3D color;

@@ -47,7 +47,7 @@ namespace pio
 		};
 
 		template <>
-		bool Node::is<Group>() const;
+		bool Node::is<Group>();
 
 		template <>
 		Group *Node::as<Group>();

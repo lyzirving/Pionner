@@ -4,18 +4,23 @@ namespace pio
 {
 	namespace sgf
 	{
-		Geometry::Geometry() : Drawable(), m_vertexs(), m_indices()
+		Geometry::Geometry() : Drawable()
 		{
 			m_type = NODE_TYPE_GEOMETRY;
 		}
 
-		Geometry::Geometry(const std::string &name) : Drawable(name), m_vertexs(), m_indices()
+		Geometry::Geometry(const std::string &name) : Drawable(name)
 		{
 			m_type = NODE_TYPE_GEOMETRY;
 		}
 
 		Geometry::~Geometry()
 		{
+		}
+
+		void Geometry::addTexture(const std::shared_ptr<gfx::Texture> &texture)
+		{
+			m_textures.push_back(texture);
 		}
 
 		void Geometry::setVertexArray(const std::vector<Vertex> &vertexArray)
@@ -41,7 +46,7 @@ namespace pio
 		}
 
 		template <>
-		bool Node::is<Geometry>() const
+		bool Node::is<Geometry>()
 		{
 			return m_type == NODE_TYPE_GEOMETRY;
 		}

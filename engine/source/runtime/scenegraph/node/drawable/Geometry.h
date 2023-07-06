@@ -8,6 +8,11 @@
 
 namespace pio
 {
+	namespace gfx
+	{
+		class Texture;
+	}
+
 	namespace sgf
 	{
 		class Geometry : public Drawable
@@ -17,6 +22,7 @@ namespace pio
 			Geometry(const std::string &name);
 			virtual ~Geometry();
 
+			void addTexture(const std::shared_ptr<gfx::Texture> &texture);
 			void setVertexArray(const std::vector<Vertex> &vertexArray);
 			void setIndiceArray(const std::vector<uint32_t> &indiceArray);
 
@@ -24,13 +30,14 @@ namespace pio
 			virtual void drawImplementation(RenderInfo &info) override;
 
 		protected:
-			std::vector<Vertex>   m_vertexs;
-			std::vector<uint32_t> m_indices;
-			matl::Material   m_material;
+			std::vector<Vertex>                        m_vertexs{};
+			std::vector<uint32_t>                      m_indices{};
+			std::vector<std::shared_ptr<gfx::Texture>> m_textures{};
+			matl::Material                             m_material{};
 		};
 
 		template <>
-		bool Node::is<Geometry>() const;
+		bool Node::is<Geometry>();
 
 		template <>
 		Geometry *Node::as<Geometry>();

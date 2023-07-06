@@ -10,7 +10,11 @@ namespace pio
 {
 	namespace gfx
 	{
-		Buffer::Buffer() : m_id(0), m_bufferType(BUF_CNT), m_uploaded(false)
+		Buffer::Buffer()
+		{
+		}
+
+		Buffer::Buffer(GfxBufType type) : m_bufferType(type)
 		{
 		}
 
@@ -29,11 +33,6 @@ namespace pio
 		}
 
 		void Buffer::unbind()
-		{
-			//empty implementation by default
-		}
-
-		void Buffer::load()
 		{
 			//empty implementation by default
 		}

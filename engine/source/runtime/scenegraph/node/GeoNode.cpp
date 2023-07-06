@@ -19,7 +19,7 @@ namespace pio
 		}
 
 		template <>
-		bool Node::is<GeoNode>() const
+		bool Node::is<GeoNode>()
 		{
 			return m_type == NODE_TYPE_GEOMETRY_GROUP;
 		}

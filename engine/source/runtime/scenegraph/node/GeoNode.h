@@ -16,7 +16,7 @@ namespace pio
 		};
 
 		template <>
-		bool Node::is<GeoNode>() const;
+		bool Node::is<GeoNode>();
 
 		template <>
 		GeoNode *Node::as<GeoNode>();

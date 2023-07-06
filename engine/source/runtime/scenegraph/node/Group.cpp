@@ -112,7 +112,7 @@ namespace pio
 		}
 
 		template <>
-		bool Node::is<Group>() const
+		bool Node::is<Group>()
 		{
 			return m_type >= NODE_TYPE_GROUP && m_type < NODE_TYPE_CNT;
 		}
