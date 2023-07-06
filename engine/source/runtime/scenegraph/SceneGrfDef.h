@@ -12,8 +12,10 @@ namespace pio
 		enum NodeType
 		{
 			NODE_TYPE_NORMAL,
+			NODE_TYPE_GEOMETRY,
 			// Types bellow are referenced to a group
 			NODE_TYPE_GROUP,
+			NODE_TYPE_GEOMETRY_GROUP,
 			// Type count
 			NODE_TYPE_CNT
 		};
@@ -27,6 +29,7 @@ namespace pio
 			glm::vec3 pos;
 			glm::vec3 normal;
 			glm::vec2 texCoord;
+			glm::vec3 tangents;
 		};
 	}
 }

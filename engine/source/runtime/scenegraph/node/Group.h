@@ -34,6 +34,8 @@ namespace pio
 			*/
 			void removeChild(const std::string &parentNodeName, const std::string &name);
 
+			inline uint32_t childSize() { return m_children.size(); }
+
 		protected:
 			/**
 			* @brief find named child node in depth-first order.

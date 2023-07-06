@@ -14,6 +14,12 @@ namespace pio
 			GeoNode(const std::string &name);
 			virtual ~GeoNode();
 		};
+
+		template <>
+		bool Node::is<GeoNode>() const;
+
+		template <>
+		GeoNode *Node::as<GeoNode>();
 	}
 }
 

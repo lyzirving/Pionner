@@ -4,6 +4,10 @@ namespace pio
 {
 	namespace matl
 	{
+		Material::Material()
+		{
+		}
 
+		Material::~Material() = default;
 	}
 }

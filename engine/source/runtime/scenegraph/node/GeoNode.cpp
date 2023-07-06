@@ -6,14 +6,32 @@ namespace pio
 	{
 		GeoNode::GeoNode() : Group()
 		{
+			m_type = NODE_TYPE_GEOMETRY_GROUP;
 		}
 
 		GeoNode::GeoNode(const std::string &name) : Group(name)
 		{
+			m_type = NODE_TYPE_GEOMETRY_GROUP;
 		}
 
 		GeoNode::~GeoNode()
 		{
+		}
+
+		template <>
+		bool Node::is<GeoNode>() const
+		{
+			return m_type == NODE_TYPE_GEOMETRY_GROUP;
+		}
+
+		template <>
+		GeoNode *Node::as<GeoNode>()
+		{
+			if (is<GeoNode>())
+			{
+				return static_cast<GeoNode *>(this);
+			}
+			return nullptr;
 		}
 	}
 }

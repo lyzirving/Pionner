@@ -1,6 +1,7 @@
 #ifndef __PIONNER_CORE_LINKED_MAP_H__
 #define __PIONNER_CORE_LINKED_MAP_H__
 
+#include <cassert>
 #include <map>
 #include <list>
 #include <string>
@@ -87,7 +88,7 @@ namespace pio
 			{
 				uint32_t mapCnt = m_map.size();
 				uint32_t listCnt = m_list.size();
-				static_assert(mapCnt == listCnt);
+				assert(mapCnt == listCnt);
 				return listCnt;
 			}
 
@@ -95,7 +96,7 @@ namespace pio
 			{
 				bool mapEmpt = m_map.empty();
 				bool listEmpt = m_list.empty();
-				static_assert(mapEmpt == listEmpt);
+				assert(mapEmpt == listEmpt);
 				return listEmpt;
 			}
 

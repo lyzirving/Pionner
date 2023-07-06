@@ -4,11 +4,15 @@
 #include <string>
 #include <memory>
 
+struct aiNode;
+struct aiScene;
+struct aiMesh;
+
 namespace pio
 {
 	namespace sgf
 	{
-		class GeoNode;
+		class Node;
 	}
 
 	namespace db
@@ -16,7 +20,13 @@ namespace pio
 		class ReadFile
 		{
 		public:
-			static std::shared_ptr<sgf::GeoNode> readObj(const std::string &name);
+			static std::shared_ptr<sgf::Node> readObj(const std::string &name);
+
+		private:
+			static void processNode(const aiScene *scene, aiNode *node, const std::string &objName,
+									std::shared_ptr<sgf::Node> &parent);
+			static void processMesh(int meshIndex, const aiScene *scene, aiMesh *mesh, const std::string &objName, 
+									std::shared_ptr<sgf::Node> &parent);
 
 		private:
 			ReadFile();
@@ -24,6 +34,8 @@ namespace pio
 
 		private:
 			static const std::string ASSETS_ROOT_DIR;
+
+			static const std::string POSTFIX_OBJ;
 		};
 	}
 }
