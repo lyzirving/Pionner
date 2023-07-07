@@ -7,6 +7,8 @@
 #include "scenegraph/SceneGrfDef.h"
 #include "scenegraph/SceneGrfObject.h"
 
+#include "gfx/shape/Shape.h"
+
 namespace pio
 {
 	class PioEntity;
@@ -37,6 +39,8 @@ namespace pio
 			virtual void swapData(const PioEntity &entity) {}
 			virtual void release() {}
 
+			void setBound(const std::shared_ptr<gfx::Shape> &shape) { m_bound = shape; }
+
 			template <class T>
 			bool is();
 
@@ -52,8 +56,9 @@ namespace pio
 			void removeParent(const std::string &name);
 
 		protected:
-			ParentList  m_parents;
-			NodeType    m_type;
+			ParentList                  m_parents{};
+			NodeType                    m_type{ NODE_TYPE_CNT };
+			std::shared_ptr<gfx::Shape> m_bound{ nullptr };
 		};
 
 		template <class T>

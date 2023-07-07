@@ -8,6 +8,7 @@
 #include "ReadFile.h"
 
 #include "gfx/buffer/Texture2d.h"
+#include "gfx/shape/BoundingBox.h"
 
 #include "scenegraph/node/GeoNode.h"
 #include "scenegraph/node/drawable/Geometry.h"
@@ -110,7 +111,7 @@ namespace pio
 			}
 			pGeometry->setVertexArray(vertexArray);
 
-			// TODO: add BoundingBox
+			pGeometry->setBound(std::shared_ptr<gfx::Shape>(new gfx::BoundingBox(min, max)));
 
 			// every face represent a primitive
 			// we use flag aiProcess_Triangulate to import the model, so a single primitive is a triangle
@@ -175,35 +176,35 @@ namespace pio
 					ai_real   valFloat;
 					aiString  valStr;
 					ai_int    valInt;
+					matl::Material material{};
 					if (mt->Get(AI_MATKEY_NAME, valStr) == aiReturn_SUCCESS)
 					{
-						valStr.C_Str();
+						material.setName(valStr.C_Str());
 					}
 
 					if (mt->Get(AI_MATKEY_COLOR_DIFFUSE, color) == aiReturn_SUCCESS)
 					{
-						glm::vec3(color.r, color.g, color.b);
+						material.setDiffuse(glm::vec3(color.r, color.g, color.b));
 					}
 
 					if (mt->Get(AI_MATKEY_COLOR_SPECULAR, color) == aiReturn_SUCCESS)
 					{
-						glm::vec3(color.r, color.g, color.b);
+						material.setSpecular(glm::vec3(color.r, color.g, color.b));
 					}
 
 					if (mt->Get(AI_MATKEY_COLOR_AMBIENT, color) == aiReturn_SUCCESS)
 					{
-						glm::vec3(color.r, color.g, color.b);
+						material.setAmbient(glm::vec3(color.r, color.g, color.b));
 					}
 
 					if (mt->Get(AI_MATKEY_SHININESS, valFloat) == aiReturn_SUCCESS)
 					{
-						valFloat;
+						material.setShiness(valFloat);
 					}
-
-					if (mt->Get(AI_MATKEY_SHADING_MODEL, valInt) == aiReturn_SUCCESS)
+					/*if (mt->Get(AI_MATKEY_SHADING_MODEL, valInt) == aiReturn_SUCCESS)
 					{
-						
-					}
+					}*/
+					pGeometry->setMaterial(material);
 				}
 			}
 		}

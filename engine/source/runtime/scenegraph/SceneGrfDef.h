@@ -20,6 +20,12 @@ namespace pio
 			NODE_TYPE_CNT
 		};
 
+		enum LayerType : uint8_t
+		{
+			LAYER_TYPE_CLEAR,
+			LAYER_TYPE_CNT
+		};
+
 		struct RenderInfo
 		{
 		};

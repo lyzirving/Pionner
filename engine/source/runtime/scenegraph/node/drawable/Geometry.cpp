@@ -41,6 +41,11 @@ namespace pio
 			}
 		}
 
+		void Geometry::setMaterial(const matl::Material &material)
+		{
+			m_material = material;
+		}
+
 		void Geometry::drawImplementation(RenderInfo &info)
 		{
 		}

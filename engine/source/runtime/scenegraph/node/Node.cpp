@@ -16,11 +16,11 @@ namespace pio
 {
 	namespace sgf
 	{
-		Node::Node() : SceneGrfObject(), m_parents(), m_type(NODE_TYPE_NORMAL)
+		Node::Node() : SceneGrfObject()
 		{
 		}
 
-		Node::Node(const std::string &name) : SceneGrfObject(name), m_parents(), m_type(NODE_TYPE_NORMAL)
+		Node::Node(const std::string &name) : SceneGrfObject(name)
 		{
 		}
 
@@ -32,6 +32,8 @@ namespace pio
 				(*itr).reset();
 				itr = m_parents.erase(itr);
 			}
+
+			m_bound.reset();
 		}
 
 		void Node::addParent(const std::shared_ptr<Group> &parent)
