@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "PioEntity.h"
+
+#include "scenegraph/Scene.h"
 #include "scenegraph/node/NodeFactory.h"
 
 #include "core/log/LogSystem.h"
@@ -22,7 +24,7 @@ namespace pio
 		class Group;
 	}
 
-	class PioWorld
+	class PioWorld : public std::enable_shared_from_this<PioWorld>
 	{
 	public:
 		PioWorld();
@@ -30,66 +32,63 @@ namespace pio
 
 		inline bool dirty() const { return m_dirty.load(); }
 		inline void setDirty(bool b) { m_dirty.store(b); }
-		inline std::shared_ptr<sgf::Group> getSceneRoot() { return m_sceneRoot; }
+		inline std::shared_ptr<sgf::Scene> getScene() { return m_scene; }
 
 		/**
 		* @brief: This method will directly add new node to selected parent node.
-		* @param parentNodeName: target node's name, the node should be the parent node of the newly created node
+		* @param parentName: target node's name, the node should be the parent node of the newly created node
 		* @param nodeName:       name of the newly created node
 		* @param type:           type of the entity that will hold the newly created node.
 		*/
 		template <class ... CompTypes>
-		std::shared_ptr<PioEntity> addEntity(const std::string &parentNodeName, const std::string &nodeName, PioEntityType type);
+		std::shared_ptr<PioEntity> addEntity(const std::string &parentName, const EntityParam &param);
 
 		/*
 		* @brief: This method will directly add new node to scene root.
 		*/
 		template <class ... CompTypes>
-		std::shared_ptr<PioEntity> addEntity(const std::string &nodeName, PioEntityType type);
+		std::shared_ptr<PioEntity> addEntity(const EntityParam &param);
 
 		void init();
 		void shutdown();
 
 	private:
 		template <class ... CompTypes>
-		std::shared_ptr<PioEntity> createEntity(PioEntityType type);
+		std::shared_ptr<PioEntity> createEntity(const EntityParam &param);
 
 	private:
 		static uint32_t g_entityId;
 		typedef std::unordered_map<std::string, std::shared_ptr<PioEntity>> Collection;
 
-		std::atomic<bool> m_dirty;
-		decs::ECSWorld    m_ecsWorld;
-		Collection        m_entities;
+		std::atomic<bool> m_dirty{true};
+		decs::ECSWorld    m_ecsWorld{};
+		Collection        m_entities{};
 
-		std::shared_ptr<sgf::Group> m_sceneRoot;
+		std::shared_ptr<sgf::Scene> m_scene;
 	};
 
 	template<class ...CompTypes>
-	std::shared_ptr<PioEntity> PioWorld::addEntity(const std::string &parentNodeName, const std::string &nodeName, 
-												   PioEntityType type)
+	std::shared_ptr<PioEntity> PioWorld::addEntity(const std::string &parentName, const EntityParam &param)
 	{
-		std::shared_ptr<PioEntity> entity = createEntity<CompTypes...>(type);
+		std::shared_ptr<PioEntity> entity = createEntity<CompTypes...>(param);
 		if (entity)
 		{
-			entity->setName(nodeName);
-			m_sceneRoot->addChild(parentNodeName, entity->m_sceneNode);
+			m_scene->addNode(parentName, entity->m_sceneNode);
 		}
 		else
 		{
-			LOG_ERR("fail to add entity[type = %u] to node[%s]", type, nodeName.c_str());
+			LOG_ERR("fail to add entity[type = %u] to node[%s]", param.type, nodeName.c_str());
 		}
 		return entity;
 	}
 
 	template<class ...CompTypes>
-	std::shared_ptr<PioEntity> PioWorld::addEntity(const std::string &nodeName, PioEntityType type)
+	std::shared_ptr<PioEntity> PioWorld::addEntity(const EntityParam &param)
 	{
-		std::shared_ptr<PioEntity> entity = createEntity<CompTypes...>(type);
+		std::shared_ptr<PioEntity> entity = createEntity<CompTypes...>(param);
 		if (entity)
 		{
-			entity->setName(nodeName);
-			m_sceneRoot->addChild(entity->m_sceneNode);
+			m_scene->addNode(entity->m_sceneNode);
 		}
 		else
 		{
@@ -99,7 +98,7 @@ namespace pio
 	}
 
 	template <class ... CompTypes>
-	std::shared_ptr<PioEntity> PioWorld::createEntity(PioEntityType type)
+	std::shared_ptr<PioEntity> PioWorld::createEntity(const EntityParam &param)
 	{
 		std::string key = "entity_" + std::to_string(g_entityId);
 		auto itr = m_entities.find(key);
@@ -108,15 +107,16 @@ namespace pio
 			LOG_INFO("entity[%s][%s] already exist", key.c_str(), itr->second->m_name.c_str());
 			return itr->second;
 		}
-		auto entity = std::shared_ptr<PioEntity>(new PioEntity(type));
+		auto entity = std::shared_ptr<PioEntity>(new PioEntity(param.type, shared_from_this()));
 		entity->m_id = g_entityId;
 		entity->m_key = key;
+		entity->setName(param.nodeName);
 		if (entity->createComps<CompTypes ...>())
 		{
 			entity->m_ecsId = m_ecsWorld.new_entity<CompTypes...>();
-			entity->m_sceneNode = sgf::NodeFactory::create(type);
-			g_entityId++;
+			entity->m_sceneNode = sgf::NodeFactory::create(param);
 			m_entities.insert(std::make_pair(entity->m_key, entity));
+			g_entityId++;
 			return entity;
 		}
 		// failed to createComps()

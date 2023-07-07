@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "global/PioEntity.h"
+#include "global/GlobalDef.h"
 
 namespace pio
 {
@@ -14,7 +14,7 @@ namespace pio
 		class NodeFactory
 		{
 		public:
-			static std::shared_ptr<Node> create(PioEntityType type);
+			static std::shared_ptr<Node> create(const EntityParam &param);
 		private:
 			NodeFactory() {}
 			~NodeFactory() = default;

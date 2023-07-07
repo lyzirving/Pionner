@@ -2,10 +2,8 @@
 #include "PioWorld.h"
 
 #include "scenegraph/node/Node.h"
-#include "scenegraph/node/NodeFactory.h"
 
 #include "core/log/LogSystem.h"
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -13,54 +11,30 @@
 
 namespace pio
 {
-	PioEntity::PioEntity(PioEntityType type) 
-		: m_id(), m_ecsId()
-		, m_world(nullptr)
-		, m_key(), m_name(), m_type(type), m_path()
-		, m_dirty(true)
-		, m_comps()
-		, m_sceneNode(nullptr)
+	PioEntity::PioEntity(PioEntityType type, const std::shared_ptr<PioWorld> &world)
+		: m_type(type), m_world(world)
 	{
 	}
 
 	PioEntity::~PioEntity()
 	{
 		m_sceneNode.reset();
-		m_world = nullptr;
+		m_world.reset();
 	}
 
 	void PioEntity::requestUpdate()
 	{
-		if (m_world)
-		{
-			m_world->setDirty(true);
-		}
-		else
-		{
-			LOG_ERR("pio world ptr is invalid, entity name[%s], key[%s]",
-					m_name.c_str(), m_key.c_str());
-		}
+		m_world->setDirty(true);
 	}
 
 	void PioEntity::setName(const std::string &name)
 	{
 		m_name = name;
-		if (m_sceneNode)
-		{
-			m_sceneNode->setName(name);
-		}
-		else
-		{
-			LOG_ERR("failed[%s], scene node has not been created yet", name.c_str());
-		}
+		m_sceneNode->setName(name);
 	}
 
 	void PioEntity::swapData(float deltaTime)
 	{
-		if (!m_sceneNode)
-		{
-			m_sceneNode = sgf::NodeFactory::create(m_type);
-		}
 		m_sceneNode->swapData(*this);
 	}
 }

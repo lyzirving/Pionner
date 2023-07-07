@@ -7,8 +7,7 @@ namespace pio
 {
 	uint32_t PioWorld::g_entityId{ 0 };
 
-	PioWorld::PioWorld() : m_dirty(true), m_ecsWorld(), m_entities()
-		, m_sceneRoot(new sgf::Group(sgf::ROOT_NODE))
+	PioWorld::PioWorld() : m_scene(new sgf::Scene)
 	{
 	}
 
@@ -22,18 +21,18 @@ namespace pio
 
 	void PioWorld::shutdown()
 	{
+		if (m_scene)
+		{
+			m_scene->release();
+			m_scene.reset();
+		}
+
 		auto itr = m_entities.begin();
 		while (itr != m_entities.end())
 		{
 			m_ecsWorld.destroy(itr->second->m_ecsId);
 			itr->second.reset();
 			itr = m_entities.erase(itr);
-		}
-
-		if (m_sceneRoot)
-		{
-			m_sceneRoot->release();
-			m_sceneRoot.reset();
 		}
 	}
 }

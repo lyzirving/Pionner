@@ -36,7 +36,7 @@ namespace pio
 			if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 			{
 				LOG_ERR("fail to load obj from [%s], reason[%s]", absPath.c_str(), importer.GetErrorString());
-				return false;
+				return std::shared_ptr<sgf::Node>();
 			}
 			auto root = std::shared_ptr<sgf::Node>(new sgf::GeoNode(name));
 			processNode(scene, scene->mRootNode, name, root);

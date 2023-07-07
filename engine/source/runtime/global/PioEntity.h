@@ -7,6 +7,7 @@
 #include <decs.h>
 
 #include "global/comp/ComponentFactory.h"
+#include "GlobalDef.h"
 
 #include "scenegraph/node/Node.h"
 
@@ -14,18 +15,11 @@ namespace pio
 {
 	class PioWorld;
 
-	enum PioEntityType : uint8_t
-	{
-		PIO_ENTITY_MODEL,
-		PIO_ENTITY_GEO,
-		PIO_ENTITY_CNT
-	};
-
 	class PioEntity
 	{
 		friend class PioWorld;
 	public:
-		PioEntity(PioEntityType type);
+		PioEntity(PioEntityType type, const std::shared_ptr<PioWorld> &world);
 		~PioEntity();
 
 		inline bool compExist(CompDefine d) { return m_comps[d] != nullptr; }
@@ -45,21 +39,19 @@ namespace pio
 		static bool checkType();
 
 	private:
-		uint32_t          m_id;
-		decs::EntityID    m_ecsId;
-		PioWorld          *m_world;
+		uint32_t                   m_id{0};
+		decs::EntityID             m_ecsId{};
+		std::shared_ptr<PioWorld>  m_world{nullptr};
 		// This filed can not be overrided once entity is constructed.
-		std::string       m_key;
+		std::string                m_key{};
 		// Name of the entity, pay attention that m_name should be the same with m_sceneNode's m_name.
-		std::string       m_name;
+		std::string                m_name{};
 		// Resource's path if the entity has any resources.
-		std::string       m_path;
-		PioEntityType     m_type;
-		std::atomic<bool> m_dirty;
-
+		std::string                m_path{};
+		PioEntityType              m_type{ PIO_ENTITY_CNT };
+		std::atomic<bool>          m_dirty{true};
+		std::shared_ptr<sgf::Node> m_sceneNode{nullptr};
 		std::shared_ptr<Component> m_comps[CMP_CNT];
-
-		std::shared_ptr<sgf::Node> m_sceneNode;
 	};
 
 	template <class T>

@@ -23,6 +23,7 @@ namespace pio
 		enum LayerType : uint8_t
 		{
 			LAYER_TYPE_CLEAR,
+			LAYER_TYPE_OBJ,
 			LAYER_TYPE_CNT
 		};
 

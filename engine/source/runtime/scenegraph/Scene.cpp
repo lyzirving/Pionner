@@ -1,6 +1,7 @@
 #include "Scene.h"
 
-#include "layer/Layer.h"
+#include "layer/ClearLayer.h"
+#include "layer/ObjectLayer.h"
 
 namespace pio
 {
@@ -11,11 +12,21 @@ namespace pio
 			createLayers();
 		}
 
-		Scene::~Scene()
+		Scene::~Scene() = default;
+
+		void Scene::addNode(std::shared_ptr<Node> &node)
 		{
-			for (auto &layer : m_layers)
+			if (m_layers[LAYER_TYPE_OBJ])
 			{
-				layer.reset();
+				m_layers[LAYER_TYPE_OBJ]->addNode(node);
+			}
+		}
+
+		void Scene::addNode(const std::string &parentNodeName, std::shared_ptr<Node> &node)
+		{
+			if (m_layers[LAYER_TYPE_OBJ])
+			{
+				m_layers[LAYER_TYPE_OBJ]->addNode(parentNodeName, node);
 			}
 		}
 
@@ -28,8 +39,19 @@ namespace pio
 			}
 		}
 
+		void Scene::release()
+		{
+			for (auto &layer : m_layers)
+			{
+				if (layer) { layer->release(); }
+				layer.reset();
+			}
+		}
+
 		void Scene::createLayers()
 		{
+			m_layers[LAYER_TYPE_CLEAR] = std::shared_ptr<Layer>(new ClearLayer);
+			m_layers[LAYER_TYPE_OBJ] = std::shared_ptr<Layer>(new ObjectLayer);
 		}
 	}
 }
