@@ -19,6 +19,20 @@ namespace pio
 	{
 	}
 
+	void PioWorld::swap(uint64_t deltaMs)
+	{
+		if (dirty())
+		{
+			auto itr = m_entities.begin();
+			while (itr != m_entities.end())
+			{
+				itr->second->swap(deltaMs);
+				itr++;
+			}
+			setDirty(false);
+		}
+	}
+
 	void PioWorld::shutdown()
 	{
 		if (m_scene)

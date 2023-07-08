@@ -11,6 +11,11 @@ namespace pio
 
 	class PioWorld;
 
+	namespace render
+	{
+		class Render;
+	}
+
 	class GlobalContext
 	{
 	public:
@@ -18,7 +23,7 @@ namespace pio
 		~GlobalContext();
 
 		void startSystems();
-		void swapData(float deltaTime);
+		void swapData(uint64_t deltaMs);
 		void shutdownSystems();
 
 	public:
@@ -26,7 +31,8 @@ namespace pio
 		std::shared_ptr<WindowSystem> m_windowSystem;
 		std::shared_ptr<RenderSystem> m_renderSystem;
 
-		std::shared_ptr<PioWorld>     m_pioWorld;
+		std::shared_ptr<PioWorld>       m_pioWorld{ nullptr };
+		std::shared_ptr<render::Render> m_render{ nullptr };
 	};
 
 	extern GlobalContext g_runtimeCtx;

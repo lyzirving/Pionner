@@ -6,6 +6,9 @@
 #include "global/window/WindowSystem.h"
 #include "render/RenderSystem.h"
 
+#include "render2/Render.h"
+
+#include "core/system/TimeUtil.h"
 #include "core/log/LogSystem.h"
 
 #ifdef LOCAL_TAG
@@ -15,7 +18,7 @@
 
 namespace pio
 {
-	Engine::Engine() : m_lastTickTimePoint(std::chrono::steady_clock::now())
+	Engine::Engine()
 	{
 	}
 
@@ -31,28 +34,25 @@ namespace pio
 		g_runtimeCtx.shutdownSystems();
 	}
 
-	float Engine::calculateDeltaTime()
+	uint64_t Engine::calculateDeltaTime()
 	{
-		float deltaTime{ 0.f };
+		uint64_t delta{ 0 };
+		uint64_t curTimeMs = TimeUtil::currentTimeMs();
+		if (m_lastTimeMs != 0)
 		{
-			using namespace std::chrono;
-
-			steady_clock::time_point tickPoint = steady_clock::now();
-			duration<float> timeSpan = duration_cast<duration<float>>(tickPoint - m_lastTickTimePoint);
-			deltaTime = timeSpan.count();
-
-			m_lastTickTimePoint = tickPoint;
+			delta = curTimeMs - m_lastTimeMs;
 		}
-		return deltaTime;
+		m_lastTimeMs = curTimeMs;
+		return delta;
 	}
 
-	bool Engine::tickFrame(float deltaTime)
+	bool Engine::tickFrame(uint64_t deltaMs)
 	{
-		tickLogic(deltaTime);
+		tickLogic(deltaMs);
 
 		g_runtimeCtx.m_windowSystem->makeCurrent();
 
-		tickRender(deltaTime);
+		tickRender(deltaMs);
 
 		g_runtimeCtx.m_windowSystem->swapBuffers();
 
@@ -61,15 +61,17 @@ namespace pio
 		return !g_runtimeCtx.m_windowSystem->shouldClose();
 	}
 
-	void Engine::tickLogic(float deltaTime)
+	void Engine::tickLogic(uint64_t deltaMs)
 	{
-		g_runtimeCtx.swapData(deltaTime);
+		g_runtimeCtx.swapData(deltaMs);
 
-		g_runtimeCtx.m_renderSystem->swapData(deltaTime);
+		g_runtimeCtx.m_renderSystem->swapData(deltaMs);
 	}
 
-	void Engine::tickRender(float deltaTime)
+	void Engine::tickRender(uint64_t deltaMs)
 	{
-		g_runtimeCtx.m_renderSystem->tick(deltaTime);
+		g_runtimeCtx.m_renderSystem->tick(deltaMs);
+
+		g_runtimeCtx.m_render->tick(deltaMs);
 	}
 }

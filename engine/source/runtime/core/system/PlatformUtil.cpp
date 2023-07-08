@@ -3,8 +3,8 @@
 #endif // WIN32
 
 #include "core/system/PlatformUtil.h"
-#include "core/log/LogSystem.h"
 
+#include "core/log/LogSystem.h"
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif

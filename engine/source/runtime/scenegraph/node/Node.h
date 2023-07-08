@@ -36,7 +36,7 @@ namespace pio
 			virtual void ascend(NodeVisitor *visitor);
 			virtual void descend(NodeVisitor *visitor) {}
 
-			virtual void swapData(const PioEntity &entity) {}
+			virtual void swap(const PioEntity &entity) {}
 			virtual void release() {}
 
 			void setBound(const std::shared_ptr<gfx::Shape> &shape) { m_bound = shape; }

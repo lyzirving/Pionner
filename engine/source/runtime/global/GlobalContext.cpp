@@ -6,6 +6,7 @@
 #include "global/event/EventMgr.h"
 
 #include "PioWorld.h"
+#include "render2/Render.h"
 
 #include "core/log/LogSystem.h"
 
@@ -22,7 +23,6 @@ namespace pio
 		: m_world(nullptr)
 		, m_windowSystem(nullptr)
 		, m_renderSystem(nullptr)
-		, m_pioWorld(nullptr)
 	{
 	}
 
@@ -49,14 +49,17 @@ namespace pio
 
 		m_pioWorld = std::make_shared<PioWorld>();
 		m_pioWorld->init();
+
+		m_render = std::make_shared<render::Render>("Main Render");
 	}
 
-	void GlobalContext::swapData(float deltaTime)
+	void GlobalContext::swapData(uint64_t deltaMs)
 	{
-		if (m_pioWorld->dirty())
+		if (m_render->emptyScene())
 		{
-			m_pioWorld->setDirty(false);
+			m_render->setScene(m_pioWorld->getScene());
 		}
+		m_pioWorld->swap(deltaMs);
 	}
 
 	void GlobalContext::shutdownSystems()
@@ -77,6 +80,12 @@ namespace pio
 		{
 			m_world->shutdown();
 			m_world.reset();
+		}
+
+		if (m_render)
+		{
+			m_render->release();
+			m_render.reset();
 		}
 
 		if (m_pioWorld)

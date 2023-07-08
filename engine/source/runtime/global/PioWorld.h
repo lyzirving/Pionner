@@ -50,6 +50,7 @@ namespace pio
 		std::shared_ptr<PioEntity> addEntity(const EntityParam &param);
 
 		void init();
+		void swap(uint64_t deltaMs);
 		void shutdown();
 
 	private:

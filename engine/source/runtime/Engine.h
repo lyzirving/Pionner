@@ -1,7 +1,7 @@
 #ifndef __ENGINE_H__
 #define __ENGINE_H__
 
-#include <chrono>
+#include <cstdint>
 
 namespace pio
 {
@@ -14,16 +14,16 @@ namespace pio
 		void initialize();
 		void shutdown();
 
-		float calculateDeltaTime();
-		bool tickFrame(float deltaTime);
+		uint64_t calculateDeltaTime();
+		bool     tickFrame(uint64_t deltaMs);
 
 	protected:
 
-		void tickLogic(float deltaTime);
-		void tickRender(float deltaTime);
+		void tickLogic(uint64_t deltaMs);
+		void tickRender(uint64_t deltaMs);
 
 	private:
-		std::chrono::steady_clock::time_point m_lastTickTimePoint;
+		uint64_t m_lastTimeMs{ 0 };
 	};
 }
 

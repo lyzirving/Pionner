@@ -63,7 +63,7 @@ namespace pio
 		}
 		while (true)
 		{
-			float delta = m_runtimeEngine->calculateDeltaTime();
+			uint64_t delta = m_runtimeEngine->calculateDeltaTime();
 			if (!m_runtimeEngine->tickFrame(delta))
 				return;
 		}

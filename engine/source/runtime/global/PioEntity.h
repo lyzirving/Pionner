@@ -26,10 +26,11 @@ namespace pio
 		inline const std::string &getName() { return m_name; }
 		inline uint32_t getId() { return m_id; }
 		inline bool dirty() { return m_dirty.load(); }
+		inline void setDirty(bool b) { m_dirty.store(b); }
 
 		void requestUpdate();
 		void setName(const std::string &name);
-		void swapData(float deltaTime);
+		void swap(uint64_t deltaMs);
 
 		template <class ... CompTypes>
 		bool createComps();

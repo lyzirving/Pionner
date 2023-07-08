@@ -33,8 +33,12 @@ namespace pio
 		m_sceneNode->setName(name);
 	}
 
-	void PioEntity::swapData(float deltaTime)
+	void PioEntity::swap(uint64_t deltaMs)
 	{
-		m_sceneNode->swapData(*this);
+		if (dirty())
+		{
+			m_sceneNode->swap(*this);
+			setDirty(false);
+		}
 	}
 }
