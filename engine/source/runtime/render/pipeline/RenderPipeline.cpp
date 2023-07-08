@@ -9,8 +9,8 @@
 #include "render/pass/UIPass.h"
 #include "render/pass/DepthPass.h"
 
-#include "window/WindowSystem.h"
-#include "event/EventMgr.h"
+#include "global/window/WindowSystem.h"
+#include "global/event/EventMgr.h"
 
 #include "core/system/PlatformUtil.h"
 #include "core/log/LogSystem.h"

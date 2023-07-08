@@ -1,7 +1,7 @@
 #ifndef __EDITOR_UI_H__
 #define __EDITOR_UI_H__
 
-#include "window/ui/WindowUI.h"
+#include "global/window/ui/WindowUI.h"
 
 struct ImGuiStyle;
 

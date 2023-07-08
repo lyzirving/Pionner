@@ -9,7 +9,7 @@
 #include "render/rhi/opengl/shader/ShaderRhiGL.h"
 #include "render/rhi/opengl/cmd/DrawCmdGL.h"
 
-#include "window/WindowSystem.h"
+#include "global/window/WindowSystem.h"
 
 #include "core/log/LogSystem.h"
 

@@ -13,7 +13,7 @@
 #include "render/rhi/attr/DepthTest.h"
 #include "render/rhi/attr/Blend.h"
 
-#include "window/WindowSystem.h"
+#include "global/window/WindowSystem.h"
 
 struct GLFWwindow;
 

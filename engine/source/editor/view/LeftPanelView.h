@@ -1,7 +1,7 @@
 #ifndef __LEFT_PANEL_VIEW_H__
 #define __LEFT_PANEL_VIEW_H__
 
-#include "window/ui/WindowView.h"
+#include "global/window/ui/WindowView.h"
 
 namespace pio
 {

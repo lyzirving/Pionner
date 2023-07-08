@@ -4,7 +4,7 @@
 #include "WindowSystem.h"
 
 #include "world/World.h"
-#include "event/EventMgr.h"
+#include "global/event/EventMgr.h"
 
 #include "core/log/LogSystem.h"
 

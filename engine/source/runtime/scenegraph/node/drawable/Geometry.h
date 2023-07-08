@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Drawable.h"
-#include "matl/Material.h"
+#include "gfx/matl/Material.h"
 
 namespace pio
 {

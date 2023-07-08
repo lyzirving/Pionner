@@ -1,5 +1,5 @@
-#ifndef __WINDOW_SYSTEM_H__
-#define __WINDOW_SYSTEM_H__
+#ifndef __PIONNER_GLOBAL_WINDOW_SYSTEM_H__
+#define __PIONNER_GLOBAL_WINDOW_SYSTEM_H__
 
 #include <atomic>
 #include "global/SystemBase.h"

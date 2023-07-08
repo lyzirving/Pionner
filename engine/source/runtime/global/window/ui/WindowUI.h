@@ -1,5 +1,5 @@
-#ifndef __WINDOW_UI_H__
-#define __WINDOW_UI_H__
+#ifndef __PIONNER_GLOBAL_WINDOW_UI_H__
+#define __PIONNER_GLOBAL_WINDOW_UI_H__
 
 #include <memory>
 #include <vector>

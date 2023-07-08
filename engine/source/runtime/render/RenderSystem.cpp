@@ -1,5 +1,5 @@
 #include "render/RenderSystem.h"
-#include "window/WindowSystem.h"
+#include "global/window/WindowSystem.h"
 
 #include "world/World.h"
 #include "world/comp/LightComp.h"
@@ -11,7 +11,7 @@
 
 #include "render/scene/SceneMgr.h"
 
-#include "window/ui/WindowUI.h"
+#include "global/window/ui/WindowUI.h"
 
 #include "core/log/LogSystem.h"
 

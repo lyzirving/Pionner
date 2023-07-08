@@ -1,9 +1,9 @@
 #include "global/GlobalContext.h"
-#include "window/WindowSystem.h"
+#include "global/window/WindowSystem.h"
 #include "render/RenderSystem.h"
 
 #include "world/World.h"
-#include "event/EventMgr.h"
+#include "global/event/EventMgr.h"
 
 #include "PioWorld.h"
 

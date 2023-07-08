@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
-#include "core/struc/LinkedMap.h"
+#include "core/struct/LinkedMap.h"
 
 #include "Node.h"
 

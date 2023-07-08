@@ -1,5 +1,5 @@
-#ifndef __WINDOW_VIEW_H__
-#define __WINDOW_VIEW_H__
+#ifndef __PIONNER_GLOBAL_WINDOW_VIEW_H__
+#define __PIONNER_GLOBAL_WINDOW_VIEW_H__
 
 #include <memory>
 

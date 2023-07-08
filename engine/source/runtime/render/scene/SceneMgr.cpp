@@ -1,7 +1,7 @@
 #include "SceneMgr.h"
 
 #include "render/rhi/Rhi.h"
-#include "window/WindowSystem.h"
+#include "global/window/WindowSystem.h"
 
 #include "world/comp/LightComp.h"
 

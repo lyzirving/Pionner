@@ -1,8 +1,8 @@
 #include "VisualAngleView.h"
 
-#include "window/ui/WindowUI.h"
+#include "global/window/ui/WindowUI.h"
 
-#include "event/EventMgr.h"
+#include "global/event/EventMgr.h"
 
 #include "render/RenderDef.h"
 #include "render/rhi/Rhi.h"

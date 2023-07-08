@@ -1,7 +1,7 @@
 #ifndef __UI_PASS_H__
 #define __UI_PASS_H__
 
-#include "window/ui/WindowView.h"
+#include "global/window/ui/WindowView.h"
 #include "RenderPassBase.h"
 
 namespace pio

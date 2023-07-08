@@ -3,7 +3,7 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "view/LeftPanelView.h"
-#include "window/ui/WindowUI.h"
+#include "global/window/ui/WindowUI.h"
 #include "render/rhi/Rhi.h"
 
 #include "core/log/LogSystem.h"

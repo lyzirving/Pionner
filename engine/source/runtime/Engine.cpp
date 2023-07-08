@@ -3,7 +3,7 @@
 #include "Engine.h"
 
 #include "global/GlobalContext.h"
-#include "window/WindowSystem.h"
+#include "global/window/WindowSystem.h"
 #include "render/RenderSystem.h"
 
 #include "core/log/LogSystem.h"

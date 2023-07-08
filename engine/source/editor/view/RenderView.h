@@ -1,7 +1,7 @@
 #ifndef __RENDER_VIEW_H__
 #define __RENDER_VIEW_H__
 
-#include "window/ui/WindowView.h"
+#include "global/window/ui/WindowView.h"
 
 namespace pio
 {
