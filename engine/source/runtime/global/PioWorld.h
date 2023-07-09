@@ -8,7 +8,7 @@
 
 #include "PioEntity.h"
 
-#include "scenegraph/Scene.h"
+#include "scenegraph/view/Scene.h"
 #include "scenegraph/node/NodeFactory.h"
 
 #include "core/log/LogSystem.h"

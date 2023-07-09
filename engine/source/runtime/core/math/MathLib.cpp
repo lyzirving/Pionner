@@ -65,19 +65,19 @@ namespace pio
 		}
 	}
 
-	bool MathLib::nearZeroF(float val)
+	bool MathLib::equalZeroF(float val)
 	{
-		return std::abs(val) < 1e-3;
+		return std::abs(val) < 1e-4;
 	}
 
-	bool MathLib::nearZeroVec3(const glm::vec3 &val)
+	bool MathLib::equalZeroVec3(const glm::vec3 &val)
 	{
-		return nearZeroF(val.x) && nearZeroF(val.y) && nearZeroF(val.z);
+		return equalZeroF(val.x) && equalZeroF(val.y) && equalZeroF(val.z);
 	}
 
 	bool MathLib::equalF(float lhs, float rhs)
 	{
-		return nearZeroF(lhs - rhs);
+		return equalZeroF(lhs - rhs);
 	}
 
 	bool MathLib::equalVec3(const glm::vec3 &lhs, const glm::vec3 &rhs)

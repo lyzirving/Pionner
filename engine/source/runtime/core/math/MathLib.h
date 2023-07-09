@@ -15,8 +15,8 @@ namespace pio
 		// cartesian coordinate system to spherical coordinate system
 		static void CCStoSCS(const glm::vec3 &ccs, glm::vec3 &out);
 
-		static bool nearZeroF(float val);
-		static bool nearZeroVec3(const glm::vec3 &val);
+		static bool equalZeroF(float val);
+		static bool equalZeroVec3(const glm::vec3 &val);
 
 		static bool equalF(float lhs, float rhs);
 		static bool equalVec3(const glm::vec3 &lhs, const glm::vec3 &rhs);

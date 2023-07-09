@@ -5,6 +5,7 @@
 
 #include "core/log/LogSystem.h"
 #include "core/math/MathLib.h"
+#include "Frustum.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

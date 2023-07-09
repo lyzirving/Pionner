@@ -1,7 +1,7 @@
 #ifndef __PIONNER_RENDER_RENDER_H__
 #define __PIONNER_RENDER_RENDER_H__
 
-#include "scenegraph/Scene.h"
+#include "scenegraph/view/Scene.h"
 
 namespace pio
 {

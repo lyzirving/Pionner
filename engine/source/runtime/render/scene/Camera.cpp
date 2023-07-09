@@ -53,7 +53,7 @@ namespace pio
 
 	void Camera::dealScrollPosition(float deltaX, float deltaY)
 	{
-		if (MathLib::nearZeroF(deltaX) && MathLib::nearZeroF(deltaY))
+		if (MathLib::equalZeroF(deltaX) && MathLib::equalZeroF(deltaY))
 			return;
 		glm::vec2 scroll{ -deltaX, -deltaY };
 		m_theta += scroll.y;

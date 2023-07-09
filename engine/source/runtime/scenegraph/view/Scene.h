@@ -1,10 +1,10 @@
-#ifndef __PIONNER_SCENEGRAPH_SCENE_H__
-#define __PIONNER_SCENEGRAPH_SCENE_H__
+#ifndef __PIONNER_SCENEGRAPH_VIEW_SCENE_H__
+#define __PIONNER_SCENEGRAPH_VIEW_SCENE_H__
 
 #include <memory>
 #include <string>
 
-#include "SceneGrfDef.h"
+#include "scenegraph/SceneGrfDef.h"
 
 namespace pio
 {
