@@ -6,6 +6,7 @@
 #include "global/event/EventMgr.h"
 
 #include "PioWorld.h"
+#include "render2/RenderSystem.h"
 #include "scenegraph/view/Scene.h"
 
 #include "core/log/LogSystem.h"
@@ -47,11 +48,11 @@ namespace pio
 
 		m_world->build();
 
-		m_scene = std::make_shared<sgf::Scene>();
+		m_render = std::make_shared<render::RenderSystem>();
 
 		m_pioWorld = std::make_shared<PioWorld>();
 		// attach() must be called before init()
-		m_pioWorld->attach(m_scene);
+		m_pioWorld->attach(m_render->getScene());
 		m_pioWorld->init();
 	}
 
@@ -86,10 +87,10 @@ namespace pio
 			m_pioWorld.reset();
 		}
 
-		if (m_scene)
+		if (m_render)
 		{
-			m_scene->release();
-			m_scene.reset();
+			m_render->shutdown();
+			m_render.reset();
 		}
 
 		LOG_DEBUG("all systems are shutdown");

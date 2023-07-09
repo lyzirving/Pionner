@@ -11,9 +11,9 @@ namespace pio
 
 	class PioWorld;
 
-	namespace sgf
+	namespace render
 	{
-		class Scene;
+		class RenderSystem;
 	}
 
 	class GlobalContext
@@ -31,8 +31,8 @@ namespace pio
 		std::shared_ptr<WindowSystem> m_windowSystem;
 		std::shared_ptr<RenderSystem> m_renderSystem;
 
-		std::shared_ptr<sgf::Scene> m_scene{ nullptr };
-		std::shared_ptr<PioWorld>   m_pioWorld{ nullptr };
+		std::shared_ptr<render::RenderSystem> m_render{ nullptr };
+		std::shared_ptr<PioWorld>             m_pioWorld{ nullptr };
 	};
 
 	extern GlobalContext g_runtimeCtx;
