@@ -1,5 +1,5 @@
-#ifndef __PIONNER_SCENEGRAPH_LAYER_H__
-#define __PIONNER_SCENEGRAPH_LAYER_H__
+#ifndef __PIONNER_SCENEGRAPH_VIEW_LAYER_H__
+#define __PIONNER_SCENEGRAPH_VIEW_LAYER_H__
 
 #include <memory>
 
@@ -24,7 +24,8 @@ namespace pio
 			void addNode(std::shared_ptr<Node> &node);
 			void addNode(const std::string &parentNodeName, std::shared_ptr<Node> &node);
 
-			std::shared_ptr<Group> getRootNode() { return m_root; }
+			inline std::shared_ptr<Group> getRootNode() { return m_root; }
+			inline LayerType              getLayerType() { return m_type; }
 
 		protected:
 			LayerType              m_type{ LAYER_TYPE_CNT };

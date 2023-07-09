@@ -2,6 +2,7 @@
 #define __PIONNER_SCENEGRAPH_VIEW_SCENE_H__
 
 #include <memory>
+#include <vector>
 #include <string>
 
 #include "scenegraph/SceneGrfDef.h"
@@ -12,6 +13,7 @@ namespace pio
 	{
 		class Layer;
 		class Node;
+		class Camera;
 
 		class Scene
 		{
@@ -21,14 +23,23 @@ namespace pio
 
 			virtual void addNode(std::shared_ptr<Node> &node);
 			virtual void addNode(const std::string &parentNodeName, std::shared_ptr<Node> &node);
-			virtual void update(RenderInfo &info);
 			virtual void release();
 
+			void tick(uint64_t deltaMs);
+
+			inline void sortLayer() { m_sortLayer = true; }
+
 		protected:
+			static bool layerSorter(const std::shared_ptr<Layer> &lhs, const std::shared_ptr<Layer> &rhs);
+
+			virtual void createCameras();
 			virtual void createLayers();
+			virtual void update(RenderInfo &info);
 
 		private:
-			std::shared_ptr<Layer> m_layers[LAYER_TYPE_CNT];
+			std::vector<std::shared_ptr<Camera>> m_cameras{};
+			std::vector<std::shared_ptr<Layer>>  m_layers{};
+			bool                                 m_sortLayer{ true };
 		};
 	}
 }

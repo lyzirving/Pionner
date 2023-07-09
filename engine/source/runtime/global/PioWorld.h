@@ -49,6 +49,7 @@ namespace pio
 		template <class ... CompTypes>
 		std::shared_ptr<PioEntity> addEntity(const EntityParam &param);
 
+		void attach(const std::shared_ptr<sgf::Scene> &scene);
 		void init();
 		void swap(uint64_t deltaMs);
 		void shutdown();

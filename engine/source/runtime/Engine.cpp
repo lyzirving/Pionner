@@ -6,7 +6,7 @@
 #include "global/window/WindowSystem.h"
 #include "render/RenderSystem.h"
 
-#include "render2/Render.h"
+#include "scenegraph/view/Scene.h"
 
 #include "core/system/TimeUtil.h"
 #include "core/log/LogSystem.h"
@@ -72,6 +72,6 @@ namespace pio
 	{
 		g_runtimeCtx.m_renderSystem->tick(deltaMs);
 
-		g_runtimeCtx.m_render->tick(deltaMs);
+		g_runtimeCtx.m_scene->tick(deltaMs);
 	}
 }

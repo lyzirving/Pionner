@@ -6,7 +6,7 @@
 #include "global/event/EventMgr.h"
 
 #include "PioWorld.h"
-#include "render2/Render.h"
+#include "scenegraph/view/Scene.h"
 
 #include "core/log/LogSystem.h"
 
@@ -47,18 +47,16 @@ namespace pio
 
 		m_world->build();
 
-		m_pioWorld = std::make_shared<PioWorld>();
-		m_pioWorld->init();
+		m_scene = std::make_shared<sgf::Scene>();
 
-		m_render = std::make_shared<render::Render>("Main Render");
+		m_pioWorld = std::make_shared<PioWorld>();
+		// attach() must be called before init()
+		m_pioWorld->attach(m_scene);
+		m_pioWorld->init();
 	}
 
 	void GlobalContext::swapData(uint64_t deltaMs)
 	{
-		if (m_render->emptyScene())
-		{
-			m_render->setScene(m_pioWorld->getScene());
-		}
 		m_pioWorld->swap(deltaMs);
 	}
 
@@ -82,16 +80,16 @@ namespace pio
 			m_world.reset();
 		}
 
-		if (m_render)
-		{
-			m_render->release();
-			m_render.reset();
-		}
-
 		if (m_pioWorld)
 		{
 			m_pioWorld->shutdown();
 			m_pioWorld.reset();
+		}
+
+		if (m_scene)
+		{
+			m_scene->release();
+			m_scene.reset();
 		}
 
 		LOG_DEBUG("all systems are shutdown");

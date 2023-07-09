@@ -22,13 +22,19 @@ namespace pio
 
 		enum LayerType : uint8_t
 		{
-			LAYER_TYPE_CLEAR,
 			LAYER_TYPE_OBJ,
 			LAYER_TYPE_CNT
 		};
 
+		enum CameraId : uint8_t
+		{
+			CAM_ID_MAIN,
+			CAM_ID_CNT
+		};
+
 		struct RenderInfo
 		{
+			uint64_t deltaMs{ 0 };
 		};
 
 		struct Vertex

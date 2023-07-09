@@ -4,7 +4,7 @@ namespace pio
 {
 	namespace sgf
 	{
-		Camera::Camera()
+		Camera::Camera(CameraId id) : m_id(id)
 		{
 		}
 

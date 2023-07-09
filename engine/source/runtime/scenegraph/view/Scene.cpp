@@ -1,7 +1,9 @@
-#include "Scene.h"
+#include <algorithm>
 
-#include "scenegraph/layer/ClearLayer.h"
-#include "scenegraph/layer/ObjectLayer.h"
+#include "Scene.h"
+#include "camera/MainCamera.h"
+
+#include "scenegraph/view/layer/ObjectLayer.h"
 
 namespace pio
 {
@@ -9,6 +11,7 @@ namespace pio
 	{
 		Scene::Scene()
 		{
+			createCameras();
 			createLayers();
 		}
 
@@ -16,7 +19,7 @@ namespace pio
 
 		void Scene::addNode(std::shared_ptr<Node> &node)
 		{
-			if (m_layers[LAYER_TYPE_OBJ])
+			if ((m_layers.size() > LAYER_TYPE_OBJ) && m_layers[LAYER_TYPE_OBJ])
 			{
 				m_layers[LAYER_TYPE_OBJ]->addNode(node);
 			}
@@ -24,34 +27,84 @@ namespace pio
 
 		void Scene::addNode(const std::string &parentNodeName, std::shared_ptr<Node> &node)
 		{
-			if (m_layers[LAYER_TYPE_OBJ])
+			if ((m_layers.size() > LAYER_TYPE_OBJ) && m_layers[LAYER_TYPE_OBJ])
 			{
 				m_layers[LAYER_TYPE_OBJ]->addNode(parentNodeName, node);
 			}
 		}
 
-		void Scene::update(RenderInfo &info)
+		void Scene::release()
 		{
-			for (auto &layer : m_layers)
+			auto itrLayer = m_layers.begin();
+			while (itrLayer != m_layers.end())
 			{
-				if (layer)
-					layer->update(info);
+				if ((*itrLayer).get())
+				{
+					(*itrLayer)->release();
+					(*itrLayer).reset();
+				}
+				itrLayer = m_layers.erase(itrLayer);
+			}
+
+			auto itrCam = m_cameras.begin();
+			while (itrCam != m_cameras.end())
+			{
+				if ((*itrCam).get())
+				{
+					(*itrCam)->release();
+					(*itrCam).reset();
+				}
+				itrCam = m_cameras.erase(itrCam);
 			}
 		}
 
-		void Scene::release()
+		void Scene::tick(uint64_t deltaMs)
 		{
-			for (auto &layer : m_layers)
+			RenderInfo info{ deltaMs };
+			update(info);
+		}
+
+		bool Scene::layerSorter(const std::shared_ptr<Layer> &lhs, const std::shared_ptr<Layer> &rhs)
+		{
+			if (!lhs)
 			{
-				if (layer) { layer->release(); }
-				layer.reset();
+				return false;
 			}
+			if (!rhs)
+			{
+				return true;
+			}
+			return lhs->getLayerType() <= rhs->getLayerType();
+		}
+
+		void Scene::createCameras()
+		{
+			auto mainCam = std::shared_ptr<Camera>(new MainCamera);
+			mainCam->setVisible(true);
+			m_cameras.push_back(mainCam);
 		}
 
 		void Scene::createLayers()
 		{
-			m_layers[LAYER_TYPE_CLEAR] = std::shared_ptr<Layer>(new ClearLayer);
-			m_layers[LAYER_TYPE_OBJ] = std::shared_ptr<Layer>(new ObjectLayer);
+			auto objLayer = std::shared_ptr<Layer>(new ObjectLayer);
+			m_layers.push_back(objLayer);
+		}
+
+		void Scene::update(RenderInfo &info)
+		{
+			if (m_sortLayer)
+			{
+				std::sort(m_layers.begin(), m_layers.end(), Scene::layerSorter);
+				m_sortLayer = false;
+			}
+
+			for (auto &cam : m_cameras)
+			{
+				if (cam && cam->isVisible())
+				{
+					cam->update(m_layers, info);
+				}
+			}
 		}
 	}
 }
