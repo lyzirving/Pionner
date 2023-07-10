@@ -28,6 +28,12 @@ namespace pio
 			std::shared_ptr<gfx::Buffer> m_vertexBuffer;
 			std::shared_ptr<gfx::Buffer> m_indiceBuffer;
 		};
+
+		template <>
+		bool Node::is<Drawable>();
+
+		template <>
+		Drawable *Node::as<Drawable>();
 	}
 }
 

@@ -1,6 +1,7 @@
 #include "NodeVisitor.h"
 
-#include "scenegraph/node/Group.h"
+#include "scenegraph/node/GeoNode.h"
+#include "scenegraph/node/drawable/Geometry.h"
 
 #include "core/log/LogSystem.h"
 
@@ -28,9 +29,36 @@ namespace pio
 			traverse(node);
 		}
 
+		void NodeVisitor::apply(Drawable *node)
+		{
+			if (!node)
+				return;
+
+			apply(static_cast<Node *>(node));
+		}
+
+		void NodeVisitor::apply(Geometry *node)
+		{
+			if (!node)
+				return;
+
+			apply(static_cast<Drawable *>(node));
+		}
+
 		void NodeVisitor::apply(Group *node)
 		{
+			if (!node)
+				return;
+
 			apply(static_cast<Node *>(node));
+		}
+
+		void NodeVisitor::apply(GeoNode *node)
+		{
+			if (!node)
+				return;
+
+			apply(static_cast<Group *>(node));
 		}
 
 		void NodeVisitor::traverse(Node *node)

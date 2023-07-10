@@ -1,6 +1,6 @@
 #include "ObjectLayer.h"
 
-#include "render/rhi/RhiHeader.h"
+#include "scenegraph/visitor/DrawVisitor.h"
 
 namespace pio
 {
@@ -15,6 +15,12 @@ namespace pio
 
 		void ObjectLayer::update(RenderInfo &info)
 		{
+			if (!m_root)
+				return;
+
+			DrawVisitor visitor{};
+			visitor.setRenderInfo(&info);
+			m_root->accept(&visitor);
 		}
 	}
 }

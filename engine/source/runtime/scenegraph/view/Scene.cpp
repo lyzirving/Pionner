@@ -58,9 +58,24 @@ namespace pio
 			}
 		}
 
+		void Scene::setWndSize(int32_t width, int32_t height)
+		{
+			// set each camera's render viewport
+			for (auto &cam : m_cameras)
+			{
+				if (!cam)
+					continue;
+				if (cam->getCameraId() == CAM_ID_MAIN)
+				{
+					cam->setViewport(0, 0, width, height);
+				}
+			}
+		}
+
 		void Scene::tick(uint64_t deltaMs)
 		{
-			RenderInfo info{ deltaMs };
+			RenderInfo info{};
+			info.deltaMs = deltaMs;
 			update(info);
 		}
 

@@ -9,6 +9,9 @@ namespace pio
 	{
 		class Node;
 		class Group;
+		class GeoNode;
+		class Geometry;
+		class Drawable;
 
 		class NodeVisitor
 		{
@@ -26,8 +29,13 @@ namespace pio
 			NodeVisitor(TraversalMode mode);
 			virtual ~NodeVisitor();
 
-			void apply(Node  *node);
+			// Sub class should implement this method to do its logic.
+			virtual void apply(Node *node);
+
+			void apply(Drawable *node);
+			void apply(Geometry *node);
 			void apply(Group *node);
+			void apply(GeoNode *node);
 
 		protected:
 			void traverse(Node *node);

@@ -74,9 +74,6 @@ namespace pio
 
 		void Node::ascend(NodeVisitor *visitor)
 		{
-			if (intercept(visitor))
-				return;
-
 			for (size_t i = 0; i < m_parents.size(); i++)
 			{
 				auto parent = m_parents[i].lock();
@@ -85,11 +82,6 @@ namespace pio
 					parent->accept(visitor);
 				}
 			}
-		}
-
-		bool Node::intercept(NodeVisitor *visitor)
-		{
-			return false;
 		}
 	}
 }

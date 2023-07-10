@@ -25,6 +25,7 @@ namespace pio
 			virtual void addNode(const std::string &parentNodeName, std::shared_ptr<Node> &node);
 			virtual void release();
 
+			void setWndSize(int32_t width, int32_t height);
 			void tick(uint64_t deltaMs);
 
 			inline void sortLayer() { m_sortLayer = true; }

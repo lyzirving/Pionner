@@ -16,6 +16,13 @@ namespace pio
 
 		void ForwardRender::update(const std::vector<std::shared_ptr<sgf::Layer>> &layers, sgf::RenderInfo &info)
 		{
+			for (auto &layer : layers)
+			{
+				if (layer)
+				{
+					layer->update(info);
+				}
+			}
 		}
 
 		void ForwardRender::release()

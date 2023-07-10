@@ -23,5 +23,21 @@ namespace pio
 		void Drawable::draw(RenderInfo &info)
 		{
 		}
+
+		template <>
+		bool Node::is<Drawable>() 
+		{
+			return m_type == NODE_TYPE_GEOMETRY;
+		}
+
+		template <>
+		Drawable *Node::as<Drawable>()
+		{
+			if (is<Drawable>())
+			{
+				return static_cast<Drawable *>(this);
+			}
+			return nullptr;
+		}
 	}
 }

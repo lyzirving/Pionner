@@ -28,6 +28,28 @@ namespace pio
 			m_children.release();
 		}
 
+		void Group::descend(NodeVisitor *visitor)
+		{
+			auto itr = m_children.begin();
+			auto end = m_children.end();
+			while (itr != end)
+			{
+				if ((*itr)->isLeaf())
+				{
+					(*itr)->accept(visitor);
+				}
+				else
+				{
+					auto *p = (*itr)->as<Group>();
+					if (p)
+					{
+						p->descend(visitor);
+					}
+				}
+				itr++;
+			}
+		}
+
 		void Group::addChild(std::shared_ptr<Node> &node)
 		{
 			if (m_children.itemExist(node->getName()))

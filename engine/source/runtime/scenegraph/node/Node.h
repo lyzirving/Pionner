@@ -28,18 +28,17 @@ namespace pio
 			Node(const std::string &name);
 			virtual ~Node();
 
-			/**
-			* Entry to traverse the node's hierarchy.
-			*/
-			virtual void accept(NodeVisitor *visitor);
-
 			virtual void ascend(NodeVisitor *visitor);
 			virtual void descend(NodeVisitor *visitor) {}
 
 			virtual void swap(const PioEntity &entity) {}
 			virtual void release() {}
 
+			// Entry to traverse the node's hierarchy.
+			void accept(NodeVisitor *visitor);
 			void setBound(const std::shared_ptr<gfx::Shape> &shape) { m_bound = shape; }
+
+			inline bool isLeaf() { return m_type < NODE_TYPE_GROUP; }
 
 			template <class T>
 			bool is();
@@ -48,8 +47,6 @@ namespace pio
 			T *as();
 			
 		protected:
-			virtual bool intercept(NodeVisitor *visitor);
-
 			typedef std::vector<std::weak_ptr<Group>> ParentList;
 
 			void addParent(const std::shared_ptr<Group> &parent);

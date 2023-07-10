@@ -32,9 +32,17 @@ namespace pio
 			CAM_ID_CNT
 		};
 
+		struct Viewport
+		{
+			int32_t x{ 0 }, y{ 0 };
+			int32_t width{ 0 }, height{ 0 };
+		};
+
 		struct RenderInfo
 		{
-			uint64_t deltaMs{ 0 };
+			uint64_t  deltaMs{ 0 };
+			glm::mat4 viewMat{ 1.f };
+			glm::mat4 prjMat { 1.f };
 		};
 
 		struct Vertex

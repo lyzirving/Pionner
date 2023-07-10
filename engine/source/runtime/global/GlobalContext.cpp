@@ -58,7 +58,12 @@ namespace pio
 
 	void GlobalContext::swapData(uint64_t deltaMs)
 	{
+		auto eventMgr = m_windowSystem->getEvtMgr();
+		Event event = eventMgr->processEvent();
+
 		m_pioWorld->swap(deltaMs);
+		m_render->setWndSize(m_windowSystem->getWidth(), m_windowSystem->getHeight());
+		m_render->dispatchEvent(event);
 	}
 
 	void GlobalContext::shutdownSystems()

@@ -17,6 +17,8 @@ namespace pio
 
 		void MainCamera::update(const std::vector<std::shared_ptr<Layer>> &layers, RenderInfo &info)
 		{
+			info.viewMat = getViewMat();
+			info.prjMat  = getPrjMat();
 			m_render->update(layers, info);
 		}
 

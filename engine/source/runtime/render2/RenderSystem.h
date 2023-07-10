@@ -5,20 +5,28 @@
 
 namespace pio
 {
+	class Event;
+
 	namespace render
 	{
+		class UiPass;
+
 		class RenderSystem
 		{
 		public:
 			RenderSystem();
 			~RenderSystem();
 
-			void tick(uint64_t deltaMs);
+			void dispatchEvent(const Event &event);
+			void setWndSize(int32_t width, int32_t height);
 			void shutdown();
+			void tick(uint64_t deltaMs);
 
 			inline const std::shared_ptr<sgf::Scene> &getScene() { return m_scene; }
 
 		private:
+			glm::ivec2                  m_wndSize{ 0, 0 };
+			std::shared_ptr<UiPass>     m_uiPass{ nullptr };
 			std::shared_ptr<sgf::Scene> m_scene{ nullptr };
 		};
 	}

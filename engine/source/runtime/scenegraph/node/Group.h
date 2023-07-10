@@ -19,6 +19,8 @@ namespace pio
 			Group(const std::string &name);
 			virtual ~Group();
 
+			virtual void descend(NodeVisitor *visitor) override;
+
 			void addChild(std::shared_ptr<Node> &node);
 			/**
 			* @param parentNodeName: target node's name
