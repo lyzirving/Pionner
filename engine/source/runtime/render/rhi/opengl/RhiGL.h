@@ -15,7 +15,6 @@ namespace pio
 		virtual void initUIRenderBackend() override;
 		virtual void shutdownUIRenderBackend() override;
 		virtual void shutdown() override;
-		virtual std::shared_ptr<ShaderRhi> getShaderRhi() override;
 		virtual std::shared_ptr<DrawCmd> getDrawCmd() override;
 
 		virtual void clear(uint32_t flags) override;

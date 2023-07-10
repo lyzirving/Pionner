@@ -43,6 +43,7 @@ namespace pio
 			uint64_t  deltaMs{ 0 };
 			glm::mat4 viewMat{ 1.f };
 			glm::mat4 prjMat { 1.f };
+			Viewport  viewport{};
 		};
 
 		struct Vertex

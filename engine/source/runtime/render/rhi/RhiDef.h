@@ -6,7 +6,6 @@
 namespace pio
 {
 	class WindowSystem;
-	class ShaderRhi;
 
 	static const uint32_t COLOR_BUF_BIT = 0x00004000;
 	static const uint32_t DEPTH_BUF_BIT = 0x00000100;

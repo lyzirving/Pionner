@@ -82,7 +82,7 @@ namespace pio
 			return false;
 		}
 
-		shader = param.shaderMgr->get(SHADER_TYPE_INFINITE_GRID, param.rhi);
+		shader = param.shaderMgr->get(SHADER_TYPE_INFINITE_GRID);
 
 		if (!shader)
 		{

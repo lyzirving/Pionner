@@ -114,7 +114,7 @@ namespace pio
 		bool lightExist = scene->lightExist();
 		if (lightExist) { light = scene->selectedLight(); }
 
-		shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY, param.rhi);
+		shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY);
 
 		if (!shader)
 		{

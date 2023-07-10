@@ -97,7 +97,7 @@ namespace pio
 
 		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
 
-		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHTED_MESH, param.rhi)))
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHTED_MESH)))
 		{
 			LOG_ERR("fail to get lighted_nor_mesh shader");
 			return false;
@@ -174,7 +174,7 @@ namespace pio
 
 		auto light = sceneMgr->m_lights[sceneMgr->m_curLight];
 
-		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHTED_NORM_MESH, param.rhi)))
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_LIGHTED_NORM_MESH)))
 		{
 			LOG_ERR("fail to get lighted_nor_mesh shader");
 			return false;
@@ -260,7 +260,7 @@ namespace pio
 		auto camera = sceneMgr->m_camera;
 		auto frustum = sceneMgr->m_frustum;
 
-		if (!(shader = param.shaderMgr->get(SHADER_TYPE_MESH, param.rhi)))
+		if (!(shader = param.shaderMgr->get(SHADER_TYPE_MESH)))
 		{
 			LOG_ERR("fail to get lighted_nor_mesh shader");
 			return false;
@@ -308,7 +308,7 @@ namespace pio
 			return false;
 		}
 
-		shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP, param.rhi);
+		shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP);
 
 		if (!shader || !shader->isInit())
 		{
@@ -342,7 +342,7 @@ namespace pio
 			return false;
 		}
 
-		shader = param.shaderMgr->get(SHADER_TYPE_POINT_SHADOW_MAP, param.rhi);
+		shader = param.shaderMgr->get(SHADER_TYPE_POINT_SHADOW_MAP);
 
 		if (!shader || !shader->isInit())
 		{

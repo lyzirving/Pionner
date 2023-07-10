@@ -29,6 +29,9 @@ namespace pio
 
 		protected:
 			virtual void drawImplementation(RenderInfo &info) override;
+			virtual bool upload() override;
+
+			void renderMaterialDisplay();
 
 		protected:
 			std::vector<Vertex>                        m_vertexs{};

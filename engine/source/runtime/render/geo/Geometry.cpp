@@ -85,7 +85,7 @@ namespace pio
 
 	bool Geometry::dealDirectionLightShader(RenderParam &param, /*out*/std::shared_ptr<Shader> &shader)
 	{
-		shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP, param.rhi);
+		shader = param.shaderMgr->get(SHADER_TYPE_SHADOW_MAP);
 		if (!shader)
 		{
 			LOG_ERR("geometry[%s] fail to get shadow map shader", m_name.c_str());
@@ -118,7 +118,7 @@ namespace pio
 			return false;
 		}
 
-		shader = param.shaderMgr->get(SHADER_TYPE_POINT_SHADOW_MAP, param.rhi);
+		shader = param.shaderMgr->get(SHADER_TYPE_POINT_SHADOW_MAP);
 		if (!shader)
 		{
 			LOG_ERR("geometry[%s] fail to get point shadow map shader", m_name.c_str());

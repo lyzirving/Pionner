@@ -72,6 +72,6 @@ namespace pio
 	{
 		g_runtimeCtx.m_renderSystem->tick(deltaMs);
 
-		g_runtimeCtx.m_render->tick(deltaMs);
+		//g_runtimeCtx.m_render->tick(deltaMs);
 	}
 }

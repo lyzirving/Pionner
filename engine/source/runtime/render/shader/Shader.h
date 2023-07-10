@@ -2,20 +2,16 @@
 #define __RENDER_SHADER_H__
 
 #include <string>
-#include <memory>
 
 #include <glm/glm.hpp>
 
 namespace pio
 {
-	class ShaderRhi;
-
 	class Shader
 	{
 	public:
-		Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName);
-		Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName, 
-			   const char* geoName);
+		Shader(const char *name, const char *vertName, const char *fragName);
+		Shader(const char *name, const char *vertName, const char *fragName, const char *geoName);
 		virtual ~Shader();
 
 		inline bool isInit() { return m_program > 0; }
@@ -27,24 +23,23 @@ namespace pio
 
 		void use(bool active);
 
-		void setFloat(const std::string &name, float value) const;
-		void setInt(const std::string &name, int value) const;
+		void setFloat(const std::string &name, float value);
+		void setInt(const std::string &name, int value);
 
-		void setMat3(const std::string &name, const glm::mat3 &mat) const;
-		void setMat4(const std::string &name, const glm::mat4 &mat) const;
+		void setMat3(const std::string &name, const glm::mat3 &mat);
+		void setMat4(const std::string &name, const glm::mat4 &mat);
 
-		void setVec2(const std::string &name, const glm::vec2 &vec2) const;
-		void setVec2(const std::string &name, float val0, float val1) const;
-		void setVec3(const std::string &name, const glm::vec3 &vec3) const;
-		void setVec3(const std::string &name, float val0, float val1, float val2) const;
-		void setVec4(const std::string &name, const glm::vec4 &vec4) const;
-		void setVec4(const std::string &name, float x0, float x1, float x2, float x3) const;
+		void setVec2(const std::string &name, const glm::vec2 &vec2);
+		void setVec2(const std::string &name, float val0, float val1);
+		void setVec3(const std::string &name, const glm::vec3 &vec3);
+		void setVec3(const std::string &name, float val0, float val1, float val2);
+		void setVec4(const std::string &name, const glm::vec4 &vec4);
+		void setVec4(const std::string &name, float x0, float x1, float x2, float x3);
 
 	protected:
-		std::shared_ptr<ShaderRhi> m_rhi;
-		std::string m_name;
-		std::string m_vert, m_frag, m_geo;
-		uint32_t m_program;
+		std::string m_name{};
+		std::string m_vert{}, m_frag{}, m_geo{};
+		uint32_t    m_program{ 0 };
 
 	};
 }

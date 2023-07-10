@@ -8,8 +8,6 @@
 
 namespace pio
 {
-	class Rhi;
-
 	class ShaderMgr
 	{
 		friend class RenderSystem;
@@ -17,7 +15,7 @@ namespace pio
 		ShaderMgr();
 		~ShaderMgr();
 
-		std::shared_ptr<Shader> get(ShaderType type, const std::shared_ptr<Rhi> &rhi);
+		std::shared_ptr<Shader> get(ShaderType type);
 		void shutdown();
 
 	private:

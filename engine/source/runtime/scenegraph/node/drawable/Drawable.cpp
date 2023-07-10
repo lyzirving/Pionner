@@ -6,11 +6,11 @@ namespace pio
 {
 	namespace sgf
 	{
-		Drawable::Drawable() : Node(), m_vertexBuffer(nullptr), m_indiceBuffer(nullptr)
+		Drawable::Drawable() : Node()
 		{
 		}
 
-		Drawable::Drawable(const std::string &name) : Node(name), m_vertexBuffer(nullptr), m_indiceBuffer(nullptr)
+		Drawable::Drawable(const std::string &name) : Node(name)
 		{
 		}
 
@@ -22,6 +22,7 @@ namespace pio
 
 		void Drawable::draw(RenderInfo &info)
 		{
+			drawImplementation(info);
 		}
 
 		template <>

@@ -1,12 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <glm/gtc/type_ptr.hpp>
 
-#include "render/shader/Shader.h"
-#include "render/rhi/ShaderRhi.h"
+#include "Shader.h"
+#include "render/rhi/RhiHeader.h"
 
 #include "core/log/LogSystem.h"
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -14,9 +14,8 @@
 
 namespace pio
 {
-	Shader::Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName)
-		: m_rhi(rhi), m_name(name)
-		, m_vert(), m_frag(), m_geo(), m_program(0)
+	Shader::Shader(const char *name, const char *vertName, const char *fragName)
+		: m_name(name)
 	{
 		std::ifstream vertFile, fragFile;
 		std::stringstream vertStream, fragStream;
@@ -51,9 +50,8 @@ namespace pio
 		LOG_DEBUG("succeed to open shader[%s]\n", m_name.c_str());
 	}
 
-	Shader::Shader(const std::shared_ptr<ShaderRhi> &rhi, const char *name, const char *vertName, const char *fragName, 
-				   const char *geoName)
-		: Shader(rhi, name, vertName, fragName)
+	Shader::Shader(const char *name, const char *vertName, const char *fragName, const char *geoName)
+		: Shader(name, vertName, fragName)
 	{
 		std::ifstream geoFile;
 		std::stringstream geoStream;
@@ -79,16 +77,11 @@ namespace pio
 
 	Shader::~Shader()
 	{
-		if (m_rhi)
-			m_rhi->destroy(m_program);
-		m_rhi.reset();
+		destroy();
 	}
 
 	bool Shader::init()
 	{
-		if (!m_rhi)
-			return false;
-
 		if (isInit())
 			return true;
 
@@ -98,16 +91,16 @@ namespace pio
 			return false;
 		}
 
-		bool success{false};
 		if (!m_geo.empty())
 		{
-			success = m_rhi->build(m_vert.c_str(), m_frag.c_str(), m_geo.c_str(), m_program);
+			m_program = GLHelper::buildProgram(m_vert.c_str(), m_frag.c_str(), m_geo.c_str());
 		}
 		else
 		{
-			success = m_rhi->build(m_vert.c_str(), m_frag.c_str(), m_program);
+			m_program = GLHelper::buildProgram(m_vert.c_str(), m_frag.c_str());
 		}
 		
+		bool success = m_program > 0;
 		if (success)
 		{
 			LOG_DEBUG("succeed to init shader[%s][%u]", m_name.c_str(), m_program);
@@ -118,76 +111,129 @@ namespace pio
 
 	void Shader::destroy()
 	{
-		if (isInit() && m_rhi)
+		if (isInit())
 		{
-			m_rhi->destroy(m_program);
+			glDeleteProgram(m_program);
+			m_program = 0;
 		}
 	}
 
 	void Shader::use(bool active)
 	{
-		if (m_rhi)
-			m_rhi->activate(m_program, active);
+		if (isInit())
+		{
+			glUseProgram(active ? m_program : 0);
+			GLHelper::checkGLErr("call activate err, program[%u], active[%s]",
+								 m_program, active ? "true" : "false");
+		}
 	}
 
-	void Shader::setFloat(const std::string &name, float value) const
+	void Shader::setFloat(const std::string &name, float value) 
 	{
-		if (m_rhi)
-			m_rhi->setFloat(m_program, name, value);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniform1f(ind, value);
+			GLHelper::checkGLErr("setFloat err, program[%u], name[%s], val[%f]",
+								 m_program, name.c_str(), value);
+		}
 	}
 
-	void Shader::setInt(const std::string &name, int value) const
+	void Shader::setInt(const std::string &name, int value)
 	{
-		if (m_rhi)
-			m_rhi->setInt(m_program, name, value);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniform1i(ind, value);
+			GLHelper::checkGLErr("setInt err, program[%u], name[%s], val[%d]",
+								 m_program, name.c_str(), value);
+		}
 	}
 
-	void Shader::setMat3(const std::string &name, const glm::mat3 &mat) const
+	void Shader::setMat3(const std::string &name, const glm::mat3 &mat)
 	{
-		if (m_rhi)
-			m_rhi->setMat3(m_program, name, mat);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniformMatrix3fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
+			GLHelper::checkGLErr("setMat3 err, program[%u], name[%s]", m_program, name.c_str());
+		}
 	}
 
-	void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const
+	void Shader::setMat4(const std::string &name, const glm::mat4 &mat)
 	{
-		if (m_rhi)
-			m_rhi->setMat4(m_program, name, mat);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniformMatrix4fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
+			GLHelper::checkGLErr("setMat4 err, program[%u], name[%s]", m_program, name.c_str());
+		}
 	}
 
-	void Shader::setVec2(const std::string &name, const glm::vec2 &vec2) const
+	void Shader::setVec2(const std::string &name, const glm::vec2 &val)
 	{
-		if (m_rhi)
-			m_rhi->setVec2(m_program, name, vec2);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniform2f(ind, val.x, val.y);
+			GLHelper::checkGLErr("setVec2 err, program[%u], name[%s], val[%f, %f]",
+								 m_program, name.c_str(), val.x, val.y);
+		}
 	}
 
-	void Shader::setVec2(const std::string &name, float val0, float val1) const
+	void Shader::setVec2(const std::string &name, float val0, float val1)
 	{
-		if (m_rhi)
-			m_rhi->setVec2(m_program, name, val0, val1);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniform2f(ind, val0, val1);
+			GLHelper::checkGLErr("setVec2 err, program[%u], name[%s], val[%f, %f]",
+								 m_program, name.c_str(), val0, val1);
+		}
 	}
 
-	void Shader::setVec3(const std::string &name, const glm::vec3 &vec3) const
+	void Shader::setVec3(const std::string &name, const glm::vec3 &val)
 	{
-		if (m_rhi)
-			m_rhi->setVec3(m_program, name, vec3);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniform3f(ind, val.x, val.y, val.z);
+			GLHelper::checkGLErr("setVec3 err, program[%u], name[%s], val[%f, %f, %f]",
+								 m_program, name.c_str(), val.x, val.y, val.z);
+		}
 	}
 
-	void Shader::setVec3(const std::string &name, float val0, float val1, float val2) const
+	void Shader::setVec3(const std::string &name, float val0, float val1, float val2) 
 	{
-		if (m_rhi)
-			m_rhi->setVec3(m_program, name, val0, val1, val2);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniform3f(ind, val0, val1, val2);
+			GLHelper::checkGLErr("setVec3 err, program[%u], name[%s], val[%f, %f, %f]",
+								 m_program, name.c_str(), val0, val1, val2);
+		}
 	}
 
-	void Shader::setVec4(const std::string &name, const glm::vec4 &vec4) const
+	void Shader::setVec4(const std::string &name, const glm::vec4 &val)
 	{
-		if (m_rhi)
-			m_rhi->setVec4(m_program, name, vec4);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniform4f(ind, val.x, val.y, val.z, val.w);
+			GLHelper::checkGLErr("setVec4 err, program[%u], name[%s], val[%f, %f, %f£¬ %f]",
+								 m_program, name.c_str(), val.x, val.y, val.z, val.w);
+		}
 	}
 
-	void Shader::setVec4(const std::string &name, float x0, float x1, float x2, float x3) const
+	void Shader::setVec4(const std::string &name, float val0, float val1, float val2, float val3)
 	{
-		if (m_rhi)
-			m_rhi->setVec4(m_program, name, x0, x1, x2, x3);
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_program, name.c_str());
+			glUniform4f(ind, val0, val1, val2, val3);
+			GLHelper::checkGLErr("setVec4 err, program[%u], name[%s], val[%f, %f, %f£¬ %f]",
+								 m_program, name.c_str(), val0, val1, val2, val3);
+		}
 	}
 
 }

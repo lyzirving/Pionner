@@ -1,5 +1,10 @@
 #include "Geometry.h"
 
+#include "gfx/buffer/VertexBuffer.h"
+#include "gfx/buffer/IndiceBuffer.h"
+
+#include "render/shader/ShaderMgr.h"
+
 namespace pio
 {
 	namespace sgf
@@ -48,6 +53,39 @@ namespace pio
 
 		void Geometry::drawImplementation(RenderInfo &info)
 		{
+			if (!upload())
+				return;
+
+			renderMaterialDisplay();
+		}
+
+		bool Geometry::upload()
+		{
+			if (m_vertexs.empty() || m_indices.empty())
+				return false;
+
+			if (!m_vertexBuffer)
+			{
+				m_vertexBuffer = std::shared_ptr<gfx::Buffer>(new gfx::VertexBuffer);
+				auto *p = m_vertexBuffer->as<gfx::VertexBuffer>();
+				p->setVertexArray(m_vertexs);
+				p->upload();
+			}
+
+			if (!m_indiceBuffer)
+			{
+				m_indiceBuffer = std::shared_ptr<gfx::Buffer>(new gfx::IndiceBuffer);
+				auto *p = m_indiceBuffer->as<gfx::IndiceBuffer>();
+				p->setIndiceArray(m_indices);
+				p->upload();
+			}
+
+			return true;
+		}
+
+		void Geometry::renderMaterialDisplay()
+		{
+
 		}
 
 		template <>

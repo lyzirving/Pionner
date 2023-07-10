@@ -81,7 +81,6 @@ namespace pio
 			TextureParam m_param{};
 			int32_t m_width{ 0 }, m_height{ 0 };
 			int32_t m_channel{ 0 };
-			std::atomic<bool> m_dataChange{ false };
 		};
 
 		template<>

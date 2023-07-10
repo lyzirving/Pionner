@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <atomic>
 
 namespace pio
 {
@@ -50,9 +51,10 @@ namespace pio
 			inline bool isCreated() { return m_id > 0; }
 
 		protected:
-			uint32_t   m_id{0};
-			GfxBufType m_bufferType{ GFX_BUF_CNT };
-			bool       m_uploaded{false};
+			uint32_t          m_id{0};
+			GfxBufType        m_bufferType{ GFX_BUF_CNT };
+			bool              m_uploaded{false};
+			std::atomic<bool> m_dataChange{ false };
 		};
 
 		template<class T>

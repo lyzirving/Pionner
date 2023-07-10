@@ -87,7 +87,7 @@ namespace pio
 			return false;
 		}
 
-		shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY, param.rhi);
+		shader = param.shaderMgr->get(SHADER_TYPE_COLOR_GEOMETRY);
 
 		if (!shader)
 		{

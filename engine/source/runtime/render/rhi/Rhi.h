@@ -23,7 +23,7 @@ namespace pio
 	class Rhi
 	{
 	public:
-		Rhi() : m_window(nullptr), m_shaderRhi(nullptr), m_drawCmd(nullptr), m_type(RHI_COUNT)
+		Rhi() : m_window(nullptr), m_drawCmd(nullptr), m_type(RHI_COUNT)
 		{}
 
 		virtual ~Rhi()
@@ -35,7 +35,6 @@ namespace pio
 		virtual void initUIRenderBackend() = 0;
 		virtual void shutdownUIRenderBackend() = 0;
 		virtual void shutdown() = 0;
-		virtual std::shared_ptr<ShaderRhi> getShaderRhi() = 0;
 		virtual std::shared_ptr<DrawCmd>   getDrawCmd() = 0;
 
 		virtual void clear(uint32_t flags) {};
@@ -56,7 +55,6 @@ namespace pio
 		virtual void createWindowSurface() {};
 
 		std::shared_ptr<WindowSystem> m_window;
-		std::shared_ptr<ShaderRhi>    m_shaderRhi;
 		std::shared_ptr<DrawCmd>      m_drawCmd;
 
 		RhiType                       m_type;

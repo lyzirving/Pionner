@@ -6,7 +6,6 @@
 #include "render/rhi/RhiHeader.h"
 
 #include "render/rhi/opengl/RhiGL.h"
-#include "render/rhi/opengl/shader/ShaderRhiGL.h"
 #include "render/rhi/opengl/cmd/DrawCmdGL.h"
 
 #include "global/window/WindowSystem.h"
@@ -67,15 +66,6 @@ namespace pio
 	void RhiGL::shutdown()
 	{
 		m_window.reset();
-	}
-
-	std::shared_ptr<ShaderRhi> RhiGL::getShaderRhi()
-	{
-		if (!m_shaderRhi.get())
-		{
-			m_shaderRhi = std::shared_ptr<ShaderRhi>(new ShaderRhiGL);
-		}
-		return m_shaderRhi;
 	}
 
 	std::shared_ptr<DrawCmd> RhiGL::getDrawCmd()

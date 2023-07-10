@@ -69,7 +69,7 @@ namespace pio
 
 	bool DepthScreenRender::dealShader(RenderParam &param, std::shared_ptr<Shader> &shader)
 	{
-		shader = param.shaderMgr->get(m_shaderType, param.rhi);
+		shader = param.shaderMgr->get(m_shaderType);
 		return shader && shader->isInit();
 	}
 }

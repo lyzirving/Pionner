@@ -19,14 +19,15 @@ namespace pio
 			Drawable(const std::string &name);
 			virtual ~Drawable();
 
-			void draw(RenderInfo &info);
+			virtual void draw(RenderInfo &info);
 
 		protected:
 			virtual void drawImplementation(RenderInfo &info) = 0;
+			virtual bool upload() = 0;
 
 		protected:
-			std::shared_ptr<gfx::Buffer> m_vertexBuffer;
-			std::shared_ptr<gfx::Buffer> m_indiceBuffer;
+			std::shared_ptr<gfx::Buffer> m_vertexBuffer{ nullptr };
+			std::shared_ptr<gfx::Buffer> m_indiceBuffer{ nullptr };
 		};
 
 		template <>
