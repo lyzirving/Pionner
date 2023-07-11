@@ -8,7 +8,7 @@
 
 #include "render/rhi/Rhi.h"
 #include "render/rhi/RhiHeader.h"
-#include "render/rhi/opengl/GLHelper.h"
+#include "gfx/context/GLHelper.h"
 
 #include "render/resource/RenderResourceMgr.h"
 
@@ -57,7 +57,7 @@ namespace pio
 		{
 			if (m_info[i].data)
 			{
-				GLenum fmt = GLHelper::colorFormat(m_info[i].channel);
+				GLenum fmt = gfx::GLHelper::colorFormat(m_info[i].channel);
 				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, fmt,
 							 m_info[i].width, m_info[i].height, 0, fmt, GL_UNSIGNED_BYTE, 
 							 m_info[i].data);
@@ -75,7 +75,7 @@ namespace pio
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-		m_uploaded = GLHelper::checkGLErr("fail to build texture");
+		m_uploaded = gfx::GLHelper::checkGLErr("fail to build texture");
 	}
 
 	void GLCubeTexture::bindTarget(uint32_t target)

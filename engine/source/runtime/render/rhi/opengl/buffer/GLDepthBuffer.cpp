@@ -96,7 +96,7 @@ namespace pio
 		if (isUpload())
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, m_id);
-			GLHelper::checkGLErr("fail to bind depth framebuffer");
+			gfx::GLHelper::checkGLErr("fail to bind depth framebuffer");
 		}
 	}
 

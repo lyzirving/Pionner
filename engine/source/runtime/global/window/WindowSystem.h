@@ -12,7 +12,7 @@ namespace pio
 	class WindowSystem : public SystemBase
 	{
 	public:
-		WindowSystem(const std::shared_ptr<World> &world);
+		WindowSystem();
 		virtual ~WindowSystem();
 
 		inline int getWidth() const { return m_width; }
@@ -41,10 +41,10 @@ namespace pio
 		static void windowScrollCallback(GLFWwindow *window, double deltaX, double deltaY);
 
 	private:
-		GLFWwindow *m_window;
-		int m_width, m_height;
-		std::atomic<bool>         m_sizeChange;
-		std::shared_ptr<EventMgr> m_evtMgr;
+		GLFWwindow *m_window{ nullptr };
+		int m_width{ 0 }, m_height{ 0 };
+		std::atomic<bool>         m_sizeChange{ false };
+		std::shared_ptr<EventMgr> m_evtMgr{ nullptr };
 	};
 }
 

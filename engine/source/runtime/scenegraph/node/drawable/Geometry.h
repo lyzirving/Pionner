@@ -31,7 +31,7 @@ namespace pio
 			virtual void drawImplementation(RenderInfo &info) override;
 			virtual bool upload() override;
 
-			void renderMaterialDisplay();
+			void renderMaterialDisplay(RenderInfo &info);
 
 		protected:
 			std::vector<Vertex>                        m_vertexs{};

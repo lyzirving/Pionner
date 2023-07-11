@@ -42,7 +42,7 @@ namespace pio
 						 &m_indiceArray[0], 
 						 GL_STATIC_DRAW);
 
-			m_uploaded = GLHelper::checkGLErr("fail to build indice buffer");
+			m_uploaded = gfx::GLHelper::checkGLErr("fail to build indice buffer");
 			m_dataChange.store(false);
 		}
 

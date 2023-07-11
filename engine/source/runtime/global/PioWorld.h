@@ -94,7 +94,7 @@ namespace pio
 		}
 		else
 		{
-			LOG_ERR("fail to add entity[type = %u] to node[%s]", type, nodeName.c_str());
+			LOG_ERR("fail to add entity[type = %u] to node[%s]", param.type, param.nodeName.c_str());
 		}
 		return entity;
 	}
@@ -110,13 +110,13 @@ namespace pio
 			return itr->second;
 		}
 		auto entity = std::shared_ptr<PioEntity>(new PioEntity(param.type, shared_from_this()));
-		entity->m_id = g_entityId;
-		entity->m_key = key;
-		entity->setName(param.nodeName);
 		if (entity->createComps<CompTypes ...>())
 		{
-			entity->m_ecsId = m_ecsWorld.new_entity<CompTypes...>();
 			entity->m_sceneNode = sgf::NodeFactory::create(param);
+			entity->m_ecsId = m_ecsWorld.new_entity<CompTypes...>();
+			entity->m_id = g_entityId;
+			entity->m_key = key;
+			entity->setName(param.nodeName);
 			m_entities.insert(std::make_pair(entity->m_key, entity));
 			g_entityId++;
 			return entity;

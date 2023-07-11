@@ -67,7 +67,7 @@ namespace pio
 			// step 3: unbind vao
 			glBindVertexArray(0);
 
-			m_uploaded = GLHelper::checkGLErr("fail to build vertex buffer");
+			m_uploaded = gfx::GLHelper::checkGLErr("fail to build vertex buffer");
 			m_dataChange.store(false);
 		}
 

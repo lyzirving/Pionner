@@ -36,8 +36,8 @@ namespace pio
 			void calcViewMat();
 
 		private:
-			glm::vec3   m_camPos{ 0.f, 0.f, 5.f };
-			SphereCoord m_camPosSpherical{ 90.f, 0.f, 5.f };
+			glm::vec3   m_camPos{ 0.f, 0.f, 0.f };
+			SphereCoord m_camPosSpherical{ 50.f, 320.f, 7.f };
 			// m_lookAt is set (0.f, 0.f, 0.f) by default
 			// -(m_lookAt - m_camPos) is camera's +z
 			glm::vec3   m_lookAt{ 0.f };

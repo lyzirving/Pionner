@@ -1,7 +1,8 @@
 #include "PioWorld.h"
 
-#include "scenegraph/node/Group.h"
+#include "global/comp/TransformComponent.h"
 
+#include "scenegraph/node/Group.h"
 
 namespace pio
 {
@@ -22,6 +23,8 @@ namespace pio
 
 	void PioWorld::init()
 	{
+		EntityParam param{ PIO_ENTITY_GEO, "spiderman"};
+		addEntity<TransformComponent>(param);
 	}
 
 	void PioWorld::swap(uint64_t deltaMs)

@@ -61,13 +61,13 @@ namespace pio
 		{
 			if (m_dirty.test(CAM_BIT_VIEW_MAT))
 			{
-				glm::vec3 viewDir = glm::normalize(m_lookAt - m_camPos);
 				// Test the bit to avoid invalid calculation.
 				if (m_dirty.test(CAM_BIT_POS))
 				{
 					m_camPos = m_camPosSpherical.toCartesian();
 				}
-
+				glm::vec3 viewDir = glm::normalize(m_lookAt - m_camPos);
+				
 				// compute the right and up vector by view direction and world up
 				m_camRight = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
 				m_camUp = glm::normalize(glm::cross(m_camRight, viewDir));

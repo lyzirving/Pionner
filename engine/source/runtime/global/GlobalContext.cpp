@@ -3,6 +3,7 @@
 #include "render/RenderSystem.h"
 
 #include "world/World.h"
+
 #include "global/event/EventMgr.h"
 
 #include "PioWorld.h"
@@ -33,20 +34,20 @@ namespace pio
 	{
 		LogSystem::initialize();
 
-		m_world = std::make_shared<World>();
-
-		std::shared_ptr<EventMgr> evtMgr = std::make_shared<EventMgr>();
-
+		// window will initialize glfw which create a rendering context.
 		WindowSystemInitInfo windowInitInfo;
-		m_windowSystem = std::make_shared<WindowSystem>(m_world);
+		m_windowSystem = std::make_shared<WindowSystem>();
 		m_windowSystem->initialize(windowInitInfo);
 
+		m_world = std::make_shared<World>();
+		// TODO: abstract device to initialize glew.
+		// render system will initialize glew whic relies on a rendering context.
 		RenderSystemInitInfo renderInitInfo;
 		renderInitInfo.window = m_windowSystem;
 		m_renderSystem = std::make_shared<RenderSystem>(m_world);
 		m_renderSystem->initialize(renderInitInfo);
 
-		m_world->build();
+		//m_world->build();
 
 		m_render = std::make_shared<render::RenderSystem>();
 
@@ -58,12 +59,12 @@ namespace pio
 
 	void GlobalContext::swapData(uint64_t deltaMs)
 	{
-		/*auto eventMgr = m_windowSystem->getEvtMgr();
-		Event event = eventMgr->processEvent();*/
+		auto eventMgr = m_windowSystem->getEvtMgr();
+		Event event = eventMgr->processEvent();
 
 		m_pioWorld->swap(deltaMs);
 		m_render->setWndSize(m_windowSystem->getWidth(), m_windowSystem->getHeight());
-		//m_render->dispatchEvent(event);
+		m_render->dispatchEvent(event);
 	}
 
 	void GlobalContext::shutdownSystems()
@@ -74,16 +75,16 @@ namespace pio
 			m_renderSystem.reset();
 		}
 
-		if (m_windowSystem)
-		{
-			m_windowSystem->shutdown();
-			m_windowSystem.reset();
-		}
-
 		if (m_world)
 		{
 			m_world->shutdown();
 			m_world.reset();
+		}
+
+		if (m_windowSystem)
+		{
+			m_windowSystem->shutdown();
+			m_windowSystem.reset();
 		}
 
 		if (m_pioWorld)

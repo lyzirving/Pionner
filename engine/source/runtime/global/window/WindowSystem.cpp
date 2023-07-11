@@ -15,11 +15,7 @@
 
 namespace pio
 {
-	WindowSystem::WindowSystem(const std::shared_ptr<World> &world)
-		: SystemBase(world)
-		, m_window(nullptr)
-		, m_width(0), m_height(0)
-		, m_sizeChange(false)
+	WindowSystem::WindowSystem() : SystemBase()
 	{
 	}
 

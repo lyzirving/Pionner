@@ -93,11 +93,11 @@ namespace pio
 
 		if (!m_geo.empty())
 		{
-			m_program = GLHelper::buildProgram(m_vert.c_str(), m_frag.c_str(), m_geo.c_str());
+			m_program = gfx::GLHelper::buildProgram(m_vert.c_str(), m_frag.c_str(), m_geo.c_str());
 		}
 		else
 		{
-			m_program = GLHelper::buildProgram(m_vert.c_str(), m_frag.c_str());
+			m_program = gfx::GLHelper::buildProgram(m_vert.c_str(), m_frag.c_str());
 		}
 		
 		bool success = m_program > 0;
@@ -123,7 +123,7 @@ namespace pio
 		if (isInit())
 		{
 			glUseProgram(active ? m_program : 0);
-			GLHelper::checkGLErr("call activate err, program[%u], active[%s]",
+			gfx::GLHelper::checkGLErr("call activate err, program[%u], active[%s]",
 								 m_program, active ? "true" : "false");
 		}
 	}
@@ -134,7 +134,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniform1f(ind, value);
-			GLHelper::checkGLErr("setFloat err, program[%u], name[%s], val[%f]",
+			gfx::GLHelper::checkGLErr("setFloat err, program[%u], name[%s], val[%f]",
 								 m_program, name.c_str(), value);
 		}
 	}
@@ -145,7 +145,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniform1i(ind, value);
-			GLHelper::checkGLErr("setInt err, program[%u], name[%s], val[%d]",
+			gfx::GLHelper::checkGLErr("setInt err, program[%u], name[%s], val[%d]",
 								 m_program, name.c_str(), value);
 		}
 	}
@@ -156,7 +156,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniformMatrix3fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
-			GLHelper::checkGLErr("setMat3 err, program[%u], name[%s]", m_program, name.c_str());
+			gfx::GLHelper::checkGLErr("setMat3 err, program[%u], name[%s]", m_program, name.c_str());
 		}
 	}
 
@@ -166,7 +166,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniformMatrix4fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
-			GLHelper::checkGLErr("setMat4 err, program[%u], name[%s]", m_program, name.c_str());
+			gfx::GLHelper::checkGLErr("setMat4 err, program[%u], name[%s]", m_program, name.c_str());
 		}
 	}
 
@@ -176,7 +176,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniform2f(ind, val.x, val.y);
-			GLHelper::checkGLErr("setVec2 err, program[%u], name[%s], val[%f, %f]",
+			gfx::GLHelper::checkGLErr("setVec2 err, program[%u], name[%s], val[%f, %f]",
 								 m_program, name.c_str(), val.x, val.y);
 		}
 	}
@@ -187,7 +187,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniform2f(ind, val0, val1);
-			GLHelper::checkGLErr("setVec2 err, program[%u], name[%s], val[%f, %f]",
+			gfx::GLHelper::checkGLErr("setVec2 err, program[%u], name[%s], val[%f, %f]",
 								 m_program, name.c_str(), val0, val1);
 		}
 	}
@@ -198,7 +198,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniform3f(ind, val.x, val.y, val.z);
-			GLHelper::checkGLErr("setVec3 err, program[%u], name[%s], val[%f, %f, %f]",
+			gfx::GLHelper::checkGLErr("setVec3 err, program[%u], name[%s], val[%f, %f, %f]",
 								 m_program, name.c_str(), val.x, val.y, val.z);
 		}
 	}
@@ -209,7 +209,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniform3f(ind, val0, val1, val2);
-			GLHelper::checkGLErr("setVec3 err, program[%u], name[%s], val[%f, %f, %f]",
+			gfx::GLHelper::checkGLErr("setVec3 err, program[%u], name[%s], val[%f, %f, %f]",
 								 m_program, name.c_str(), val0, val1, val2);
 		}
 	}
@@ -220,7 +220,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniform4f(ind, val.x, val.y, val.z, val.w);
-			GLHelper::checkGLErr("setVec4 err, program[%u], name[%s], val[%f, %f, %f£¬ %f]",
+			gfx::GLHelper::checkGLErr("setVec4 err, program[%u], name[%s], val[%f, %f, %f£¬ %f]",
 								 m_program, name.c_str(), val.x, val.y, val.z, val.w);
 		}
 	}
@@ -231,7 +231,7 @@ namespace pio
 		{
 			GLint ind = glGetUniformLocation(m_program, name.c_str());
 			glUniform4f(ind, val0, val1, val2, val3);
-			GLHelper::checkGLErr("setVec4 err, program[%u], name[%s], val[%f, %f, %f£¬ %f]",
+			gfx::GLHelper::checkGLErr("setVec4 err, program[%u], name[%s], val[%f, %f, %f£¬ %f]",
 								 m_program, name.c_str(), val0, val1, val2, val3);
 		}
 	}

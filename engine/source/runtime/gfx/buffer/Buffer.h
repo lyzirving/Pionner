@@ -1,5 +1,5 @@
-#ifndef __GFX_BUFFER_H__
-#define __GFX_BUFFER_H__
+#ifndef __PIONNER_GFX_BUFFER_BUFFER_H__
+#define __PIONNER_GFX_BUFFER_BUFFER_H__
 
 #include <memory>
 #include <vector>

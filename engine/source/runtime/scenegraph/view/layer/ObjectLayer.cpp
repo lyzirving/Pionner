@@ -2,6 +2,13 @@
 
 #include "scenegraph/visitor/DrawVisitor.h"
 
+#include "core/system/TimeUtil.h"
+#include "core/log/LogSystem.h"
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "ObjectLayer"
+
 namespace pio
 {
 	namespace sgf

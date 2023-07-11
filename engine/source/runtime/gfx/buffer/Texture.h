@@ -54,6 +54,8 @@ namespace pio
 		class Texture : public Buffer
 		{
 		public:
+			static uint32_t getTextureType(TextureType type);
+
 			Texture();
 			Texture(TextureType type);
 			virtual ~Texture();

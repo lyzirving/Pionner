@@ -98,7 +98,7 @@ namespace pio
 		indiceBuf->bind();
 
 		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::checkGLErr("err happens when color geometry");
+		gfx::GLHelper::checkGLErr("err happens when color geometry");
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();
@@ -118,7 +118,7 @@ namespace pio
 	bool DrawCmdGL::drawIdxTriangle(uint32_t idxSize)
 	{
 		glDrawElements(GL_TRIANGLES, idxSize, GL_UNSIGNED_INT, nullptr);
-		return GLHelper::checkGLErr("err happens when drawing indexed triangles");
+		return gfx::GLHelper::checkGLErr("err happens when drawing indexed triangles");
 	}
 
 	void DrawCmdGL::drawPart(std::shared_ptr<EntityPart> &part, RenderParam &param)
@@ -161,7 +161,7 @@ namespace pio
 		indiceBuf->bind();
 
 		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
-		bool success = GLHelper::checkGLErr("err happens when drawing part");
+		bool success = gfx::GLHelper::checkGLErr("err happens when drawing part");
 		if (!success)
 		{
 			LOG_ERR("draw failed, part's owener name[%s], part index[%u], material name[%s]", 
@@ -214,7 +214,7 @@ namespace pio
 		indiceBuf->bind();
 
 		glDrawElements(GL_TRIANGLES, indiceBuf->size(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::checkGLErr("err happens when drawing part's depth");
+		gfx::GLHelper::checkGLErr("err happens when drawing part's depth");
 
 		vertexBuf->unbind();
 		indiceBuf->unbind();

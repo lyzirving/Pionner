@@ -65,13 +65,13 @@ namespace pio
 	{
 		g_runtimeCtx.swapData(deltaMs);
 
-		g_runtimeCtx.m_renderSystem->swapData(deltaMs);
+		//g_runtimeCtx.m_renderSystem->swapData(deltaMs);
 	}
 
 	void Engine::tickRender(uint64_t deltaMs)
 	{
-		g_runtimeCtx.m_renderSystem->tick(deltaMs);
+		//g_runtimeCtx.m_renderSystem->tick(deltaMs);
 
-		//g_runtimeCtx.m_render->tick(deltaMs);
+		g_runtimeCtx.m_render->tick(deltaMs);
 	}
 }

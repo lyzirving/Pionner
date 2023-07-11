@@ -45,7 +45,7 @@ namespace pio
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(uint32_t), &m_indices[0], GL_STATIC_DRAW);
 
-		m_uploaded = GLHelper::checkGLErr("fail to build indices buffer");
+		m_uploaded = gfx::GLHelper::checkGLErr("fail to build indices buffer");
 	}
 
 	void GLIndexBuffer::bind()

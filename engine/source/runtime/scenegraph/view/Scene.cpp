@@ -68,6 +68,7 @@ namespace pio
 				if (cam->getCameraId() == CAM_ID_MAIN)
 				{
 					cam->setViewport(0, 0, width, height);
+					cam->setAspect(float(width) / float(height));
 				}
 			}
 		}

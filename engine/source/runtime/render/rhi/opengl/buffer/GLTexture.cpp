@@ -7,7 +7,7 @@
 #include "render/rhi/opengl/buffer/GLTexture.h"
 #include "render/rhi/Rhi.h"
 #include "render/rhi/RhiHeader.h"
-#include "render/rhi/opengl/GLHelper.h"
+#include "gfx/context/GLHelper.h"
 
 #include "render/resource/RenderResourceMgr.h"
 
@@ -61,7 +61,7 @@ namespace pio
 			glGenTextures(1, &m_id);
 		}
 
-		GLenum fmt = GLHelper::colorFormat(m_channel);
+		GLenum fmt = gfx::GLHelper::colorFormat(m_channel);
 
 		glBindTexture(GL_TEXTURE_2D, m_id);
 
@@ -77,7 +77,7 @@ namespace pio
 		stbi_image_free(m_data);
 		m_data = nullptr;
 
-		m_uploaded = GLHelper::checkGLErr("fail to build texture");
+		m_uploaded = gfx::GLHelper::checkGLErr("fail to build texture");
 	}
 
 	void GLTexture::bindTarget(uint32_t target)

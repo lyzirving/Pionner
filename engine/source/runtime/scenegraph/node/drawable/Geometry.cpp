@@ -67,7 +67,7 @@ namespace pio
 			if (!upload())
 				return;
 
-			renderMaterialDisplay();
+			renderMaterialDisplay(info);
 		}
 
 		bool Geometry::upload()
@@ -94,7 +94,7 @@ namespace pio
 			return true;
 		}
 
-		void Geometry::renderMaterialDisplay()
+		void Geometry::renderMaterialDisplay(RenderInfo &info)
 		{
 			if (!m_vertexBuffer || !m_indiceBuffer)
 				return;
@@ -107,6 +107,11 @@ namespace pio
 			}
 
 			shader->use(true);
+
+			glm::mat4 modelMat{ 1.f };
+			shader->setMat4("u_modelMat", modelMat);
+			shader->setMat4("u_viewMat", info.viewMat);
+			shader->setMat4("u_prjMat", info.prjMat);
 
 			// Find diffuse texture
 			int32_t textureUnit{ 0 };
@@ -143,17 +148,16 @@ namespace pio
 			m_vertexBuffer->bind();
 			m_indiceBuffer->bind();
 
-			glDrawElements(GL_TRIANGLES, m_indiceBuffer->size(), GL_UNSIGNED_INT, nullptr);
-			bool success = GLHelper::checkGLErr("err happens when drawing part");
-			if (!success)
+			if (!gfx::GLHelper::drawTriangleElements(m_indiceBuffer->size(), DATA_UNSIGNED_INT))
 			{
-				LOG_ERR("fail to draw geometry[%s]draw failed, material name[%s]", m_name.c_str(), m_material.getName().c_str());
+				LOG_ERR("fail to draw geometry[%s]draw failed, material name[%s]",
+						m_name.c_str(), m_material.getName().c_str());
 			}
-
+			
 			m_vertexBuffer->unbind();
 			m_indiceBuffer->unbind();
 
-			glBindTexture(GL_TEXTURE_2D, 0);
+			gfx::GLHelper::unbindTexture(gfx::TEXTURE_TYPE_2D);
 
 			shader->use(false);
 		}
