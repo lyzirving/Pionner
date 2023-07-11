@@ -32,6 +32,8 @@ namespace pio
 			virtual uint32_t size() override;
 			virtual void release() override;
 
+			inline SurfaceType getSurfaceType() { return m_surfaceType; }
+
 		private:
 			SurfaceType m_surfaceType{ SURFACE_CNT };
 		};

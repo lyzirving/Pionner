@@ -1,12 +1,23 @@
 #include "Geometry.h"
 
+#include "render/rhi/RhiHeader.h"
+
 #include "gfx/buffer/VertexBuffer.h"
 #include "gfx/buffer/IndiceBuffer.h"
 
-#include "render/shader/ShaderMgr.h"
+#include "gfx/shader/ShaderManager.h"
+#include "gfx/buffer/Texture2d.h"
+
+#include "core/log/LogSystem.h"
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Geometry"
 
 namespace pio
 {
+	using namespace gfx;
+
 	namespace sgf
 	{
 		Geometry::Geometry() : Drawable()
@@ -85,7 +96,66 @@ namespace pio
 
 		void Geometry::renderMaterialDisplay()
 		{
+			if (!m_vertexBuffer || !m_indiceBuffer)
+				return;
 
+			auto shader = ShaderManager::self()->get(SHADER_TYPE_MESH);
+			if (!shader)
+			{
+				LOG_ERR("mesh shader is invalid");
+				return;
+			}
+
+			shader->use(true);
+
+			// Find diffuse texture
+			int32_t textureUnit{ 0 };
+			for (auto &texture : m_textures)
+			{
+				Texture2d *p{ nullptr };
+				if (!texture || !(p = texture->as<Texture2d>()))
+					continue;
+
+				if (p->getSurfaceType() == SURFACE_DIFFUSE)
+				{
+					// Only upload diffuse in material display mode.
+					p->upload();
+					p->bindTarget(textureUnit);
+					shader->setInt("u_material.diffuseTexture", textureUnit++);
+					shader->setInt("u_material.hasDiffTex", 1);
+					break;
+				} 
+			}
+
+			// Diffuse texture does not exist
+			if (textureUnit == 0)
+			{
+				shader->setInt("u_material.hasDiffTex", 0);
+			}
+
+			shader->setVec3("u_material.ka", m_material.getAmbient());
+			shader->setVec3("u_material.kd", m_material.getDifffuse());
+			shader->setVec3("u_material.ks", m_material.getSpecular());
+
+			m_vertexBuffer->upload();
+			m_indiceBuffer->upload();
+
+			m_vertexBuffer->bind();
+			m_indiceBuffer->bind();
+
+			glDrawElements(GL_TRIANGLES, m_indiceBuffer->size(), GL_UNSIGNED_INT, nullptr);
+			bool success = GLHelper::checkGLErr("err happens when drawing part");
+			if (!success)
+			{
+				LOG_ERR("fail to draw geometry[%s]draw failed, material name[%s]", m_name.c_str(), m_material.getName().c_str());
+			}
+
+			m_vertexBuffer->unbind();
+			m_indiceBuffer->unbind();
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+
+			shader->use(false);
 		}
 
 		template <>

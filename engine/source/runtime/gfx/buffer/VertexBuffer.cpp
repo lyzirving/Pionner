@@ -91,14 +91,7 @@ namespace pio
 
 		uint32_t VertexBuffer::size()
 		{
-			if (m_vertexArray.empty())
-			{
-				return 0;
-			}
-			else
-			{
-				return m_vertexArray.size() * sizeof(sgf::Vertex);
-			}
+			return m_vertexArray.size();
 		}
 
 		void VertexBuffer::release()

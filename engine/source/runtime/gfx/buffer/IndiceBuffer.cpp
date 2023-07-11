@@ -66,14 +66,7 @@ namespace pio
 
 		uint32_t IndiceBuffer::size()
 		{
-			if (m_indiceArray.empty())
-			{
-				return 0;
-			}
-			else
-			{
-				return m_indiceArray.size() * sizeof(uint32_t);
-			}
+			return m_indiceArray.size();
 		}
 
 		void IndiceBuffer::release()
