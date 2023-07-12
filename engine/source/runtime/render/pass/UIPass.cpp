@@ -79,7 +79,7 @@ namespace pio
 	{
 		m_windowWidth = width;
 		m_windowHeight = height;
-		if (m_ui) m_ui->resize(width, height);
+		if (m_ui) m_ui->setWndSize(width, height);
 		calcLayout();
 	}
 
@@ -103,7 +103,6 @@ namespace pio
 
 	void UIPass::draw(RenderParam &param)
 	{
-		if (m_ui)
-			m_ui->draw(param);
+		
 	}
 }

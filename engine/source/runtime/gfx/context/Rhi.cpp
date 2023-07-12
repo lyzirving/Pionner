@@ -93,6 +93,11 @@ namespace pio
 			return GLHelper::checkGLErr("draw call failed for triangle elements");
 		}
 
+		void Rhi::setViewport(int32_t l, int32_t t, int32_t width, int32_t height)
+		{
+			glViewport(l, t, width, height);
+		}
+
 		void Rhi::unbindTexture(TextureType type)
 		{
 			glBindTexture(Texture::textureType(type), 0);

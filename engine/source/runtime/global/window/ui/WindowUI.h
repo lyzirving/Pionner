@@ -10,15 +10,20 @@
 namespace pio
 {
 	struct RenderParam;
-	class  WindowSystem;
 	class  WindowView;
 	class  RenderParam;
 	class  Event;
 
 	struct WindowUIInitInfo
 	{
-		std::shared_ptr<WindowSystem> windowSystem;
+		int32_t	wndWidth{ 0 };
+		int32_t windHeight{ 0 };
 	};
+
+	namespace sgf
+	{
+		struct RenderInfo;
+	}
 
 	class WindowUI : public std::enable_shared_from_this<WindowUI>
 	{
@@ -27,18 +32,20 @@ namespace pio
 		virtual ~WindowUI();
 
 		virtual void initialize(WindowUIInitInfo &info) = 0;
-		virtual void draw(RenderParam &param) = 0;
+		virtual void draw(sgf::RenderInfo &info) = 0;
 		virtual bool dealEvent(RenderParam &param, const Event &evt);
 
 		void addView(const std::shared_ptr<WindowView> &view);
 		bool contain(const std::shared_ptr<WindowView> &view);
 		void layout();
 		void resetTargetView();
+		void setWndSize(int width, int height);
 
 		std::shared_ptr<WindowUI>   selfPtr();
 		std::shared_ptr<WindowView> getView(uint8_t uid);
 
-		void resize(int width, int height);
+		inline int32_t getWndWidth()  { return m_windowWidth; }
+		inline int32_t getWndHeight() { return m_windowHeight; }
 
 	protected:
 		typedef std::pair<uint8_t, std::shared_ptr<WindowView>> ViewItem;

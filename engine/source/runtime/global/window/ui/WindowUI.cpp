@@ -94,6 +94,18 @@ namespace pio
 		}
 	}
 
+	void WindowUI::setWndSize(int width, int height)
+	{
+		if (m_windowWidth == width && m_windowHeight == height)
+		{
+			return;
+		}
+		m_windowWidth = width;
+		m_windowHeight = height;
+
+		layout();
+	}
+
 	std::shared_ptr<WindowUI> WindowUI::selfPtr()
 	{
 		return shared_from_this();
@@ -110,18 +122,6 @@ namespace pio
 		{
 			return std::shared_ptr<WindowView>();
 		}
-	}
-
-	void WindowUI::resize(int width, int height)
-	{
-		if (m_windowWidth == width && m_windowHeight == height)
-		{
-			return;
-		}
-		m_windowWidth = width;
-		m_windowHeight = height;
-
-		layout();
 	}
 
 	bool WindowUI::pairSorter(const ViewItem &lhs, const ViewItem &rhs)

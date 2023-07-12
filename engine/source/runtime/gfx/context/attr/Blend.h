@@ -29,23 +29,20 @@ namespace pio
 		class Blend
 		{
 		public:
-			Blend() : m_enable(false),
-				m_src(Bld_Factor_Zero), m_dest(Bld_Factor_Zero)
-			{
-			};
+			Blend() { };
 
 			~Blend() = default;
 
 			static Blend disable()
 			{
-				Blend blend;
+				Blend blend{};
 				blend.m_enable = false;
 				return blend;
 			}
 
 			static Blend common()
 			{
-				Blend blend;
+				Blend blend{};
 				blend.m_enable = true;
 				blend.m_src = Bld_Factor_SrcAlpha;
 				blend.m_dest = Bld_Factor_OneMinusSrcAlpha;
@@ -53,8 +50,8 @@ namespace pio
 			}
 
 		public:
-			bool m_enable;
-			BlendFactor m_src, m_dest;
+			bool m_enable{ false };
+			BlendFactor m_src{ Bld_Factor_Zero }, m_dest{ Bld_Factor_Zero };
 		};
 	}
 }

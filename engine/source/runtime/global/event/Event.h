@@ -1,7 +1,7 @@
 #ifndef __EVENT_H__
 #define __EVENT_H__
 
-#include "EventDef.h"
+#include "global/GlobalDef.h"
 
 namespace pio
 {

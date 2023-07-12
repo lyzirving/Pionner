@@ -5,6 +5,7 @@
 
 #include "Engine.h"
 #include "global/GlobalContext.h"
+#include "global/window/WindowSystem.h"
 #include "render2/RenderSystem.h"
 
 #include "core/log/LogSystem.h"
@@ -30,7 +31,8 @@ namespace pio
 			assert(0);
 
 		m_ui = std::make_shared<EditorUI>();
-		WindowUIInitInfo uiInitInfo{ g_runtimeCtx.m_windowSystem };
+		WindowUIInitInfo uiInitInfo{ g_runtimeCtx.m_windowSystem->getWidth(), 
+									 g_runtimeCtx.m_windowSystem->getHeight() };
 		m_ui->initialize(uiInitInfo);
 		std::shared_ptr<WindowUI> uiSelf = m_ui->selfPtr();
 		m_ui->createUI(uiSelf);

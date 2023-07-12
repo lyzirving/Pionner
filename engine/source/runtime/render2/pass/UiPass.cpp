@@ -1,5 +1,7 @@
 #include "UiPass.h"
 
+#include "global/event/Event.h"
+
 namespace pio
 {
 	namespace render
@@ -12,6 +14,7 @@ namespace pio
 
 		void UiPass::update(sgf::RenderInfo &info)
 		{
+			m_ui->draw(info);
 		}
 
 		void UiPass::release()
@@ -25,9 +28,30 @@ namespace pio
 			updateMainLayout();
 		}
 
+		bool UiPass::dispatchEvent(const Event &evt)
+		{
+			if (!m_ui)
+				return false;
+
+			if (evt.m_type == EVENT_TYPE_NONE)
+			{
+				m_ui->resetTargetView();
+				return false;
+			}
+
+			if ((m_mainLayout.contains(evt.m_posX, evt.m_posY)))
+			{
+				/*if (m_ui->dealEvent(param, evt))
+					return true;*/
+			}
+			m_ui->resetTargetView();
+
+			return false;
+		}
+
 		void UiPass::setWndSize(uint32_t width, uint32_t height)
 		{
-			if (m_ui) m_ui->resize(width, height);
+			m_ui->setWndSize(width, height);
 			updateMainLayout();
 		}
 

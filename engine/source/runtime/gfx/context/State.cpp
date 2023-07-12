@@ -88,6 +88,20 @@ namespace pio
 		{
 		}
 
+		void State::setBlendMode(const Blend &blend)
+		{
+			if (blend.m_enable)
+			{
+				glEnable(GL_BLEND);
+				glBlendFunc(getGLBlendFactor(blend.m_src),
+							getGLBlendFactor(blend.m_dest));
+			}
+			else
+			{
+				glDisable(GL_BLEND);
+			}
+		}
+
 		void State::setCullMode(const CullFace &mode)
 		{
 			if (mode.m_enable)
@@ -102,18 +116,17 @@ namespace pio
 			}
 		}
 
-		void State::setBlendMode(const Blend &blend)
+		void State::setClearMode(const ClearMode &mode)
 		{
-			if (blend.m_enable)
-			{
-				glEnable(GL_BLEND);
-				glBlendFunc(getGLBlendFactor(blend.m_src),
-							getGLBlendFactor(blend.m_dest));
-			}
-			else
-			{
-				glDisable(GL_BLEND);
-			}
+			uint32_t bits{ 0 };
+			if (mode.m_bits.test(CLEAR_MOD_COLOR_BIT))
+				bits |= GL_COLOR_BUFFER_BIT;
+
+			if (mode.m_bits.test(CLEAR_MOD_DEPTH_BIT))
+				bits |= GL_DEPTH_BUFFER_BIT;
+
+			glClear(bits);
+			glClearColor(mode.m_color.r, mode.m_color.g, mode.m_color.b, mode.m_color.a);
 		}
 
 		void State::setDepthMode(const DepthTest &test)

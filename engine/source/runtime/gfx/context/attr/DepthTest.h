@@ -8,9 +8,7 @@ namespace pio
 		class DepthTest
 		{
 		public:
-			DepthTest()
-			{
-			};
+			DepthTest() {};
 
 			~DepthTest() = default;
 

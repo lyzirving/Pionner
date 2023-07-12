@@ -91,7 +91,7 @@ namespace pio
 		auto windowSystem = param.rhi->getWindowSystem();
 
 		// deal window size-change
-		if (windowSystem->sizeChange())
+		/*if (windowSystem->sizeChange())
 		{
 			int width = windowSystem->getWidth();
 			int height = windowSystem->getHeight();
@@ -99,14 +99,14 @@ namespace pio
 			m_uiPass->resize(width, height);
 			param.sceneMgr->resize(width, height);
 			windowSystem->setSizeChange(false);
-		}
+		}*/
 
 		// deal motion event
-		std::shared_ptr<EventMgr> evtMgr{ nullptr };
+		/*std::shared_ptr<EventMgr> evtMgr{ nullptr };
 		if (m_uiPass && (evtMgr = windowSystem->getEvtMgr()))
 		{
 			Event evt = evtMgr->processEvent();
 			m_uiPass->dealEvent(param, evt);
-		}
+		}*/
 	}
 }

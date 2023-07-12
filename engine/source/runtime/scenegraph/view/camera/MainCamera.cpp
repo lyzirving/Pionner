@@ -1,7 +1,8 @@
 #include "MainCamera.h"
 
 #include "render2/ForwardRender.h"
-#include "render/rhi/RhiHeader.h"
+
+#include "gfx/context/GraphicContext.h"
 
 namespace pio
 {
@@ -22,9 +23,12 @@ namespace pio
 			info.prjMat   = getPrjMat();
 			info.viewport = m_viewport;
 
-			glViewport(m_viewport.x, m_viewport.y, m_viewport.width, m_viewport.height);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glClearColor(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
+			auto rhi = info.gfxContext->getRhi();
+			auto state = info.gfxContext->getState();
+
+			rhi->setViewport(m_viewport.x, m_viewport.y, m_viewport.width, m_viewport.height);
+			gfx::ClearMode mode = gfx::ClearMode::common(m_clearColor);
+			state->setClearMode(mode);
 
 			m_render->update(layers, info);
 		}

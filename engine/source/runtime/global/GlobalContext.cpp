@@ -1,12 +1,8 @@
-#include "global/GlobalContext.h"
-#include "global/window/WindowSystem.h"
-#include "render/RenderSystem.h"
-
-#include "world/World.h"
+#include "GlobalContext.h"
+#include "PioWorld.h"
 
 #include "global/event/EventMgr.h"
-
-#include "PioWorld.h"
+#include "global/window/WindowSystem.h"
 
 #include "render2/RenderSystem.h"
 #include "scenegraph/view/Scene.h"
@@ -23,12 +19,7 @@ namespace pio
 {
 	GlobalContext g_runtimeCtx{};
 
-	GlobalContext::GlobalContext()
-		: m_world(nullptr)
-		, m_windowSystem(nullptr)
-		, m_renderSystem(nullptr)
-	{
-	}
+	GlobalContext::GlobalContext() {}
 
 	GlobalContext::~GlobalContext() = default;
 
@@ -36,15 +27,12 @@ namespace pio
 	{
 		LogSystem::initialize();
 
-		/*m_world = std::make_shared<World>();
-		RenderSystemInitInfo renderInitInfo;
-		renderInitInfo.window = m_windowSystem;
-		m_renderSystem = std::make_shared<RenderSystem>(m_world);
-		m_renderSystem->initialize(renderInitInfo);
-		m_world->build();*/
-
 		// window will initialize glfw which create a rendering context.
 		WindowSystemInitInfo windowInitInfo;
+
+		m_eventMgr = std::make_shared<EventMgr>();
+		m_eventMgr->setWindowSize(windowInitInfo.width, windowInitInfo.height);
+
 		m_windowSystem = std::make_shared<WindowSystem>();
 		m_windowSystem->init(windowInitInfo);
 
@@ -65,34 +53,13 @@ namespace pio
 
 	void GlobalContext::swapData(uint64_t deltaMs)
 	{
-		auto eventMgr = m_windowSystem->getEvtMgr();
-		Event event = eventMgr->processEvent();
-
 		m_pioWorld->swap(deltaMs);
 		m_render->setWndSize(m_windowSystem->getWidth(), m_windowSystem->getHeight());
-		m_render->dispatchEvent(event);
+		m_render->dispatchEvent(m_eventMgr->processEvent());
 	}
 
 	void GlobalContext::shutdownSystems()
 	{
-		if (m_renderSystem)
-		{
-			m_renderSystem->shutdown();
-			m_renderSystem.reset();
-		}
-
-		if (m_world)
-		{
-			m_world->shutdown();
-			m_world.reset();
-		}
-
-		if (m_windowSystem)
-		{
-			m_windowSystem->shutdown();
-			m_windowSystem.reset();
-		}
-
 		if (m_pioWorld)
 		{
 			m_pioWorld->shutdown();
@@ -109,6 +76,17 @@ namespace pio
 		{
 			m_gfxContext->shutdown();
 			m_gfxContext.reset();
+		}
+
+		if (m_windowSystem)
+		{
+			m_windowSystem->shutdown();
+			m_windowSystem.reset();
+		}
+
+		if (m_eventMgr)
+		{
+			m_eventMgr.reset();
 		}
 
 		LOG_DEBUG("all systems are shutdown");

@@ -5,10 +5,8 @@
 
 namespace pio
 {
-	class World;
+	class EventMgr;
 	class WindowSystem;
-	class RenderSystem;
-
 	class PioWorld;
 
 	namespace render
@@ -32,10 +30,8 @@ namespace pio
 		void shutdownSystems();
 
 	public:
-		std::shared_ptr<World>        m_world;
-		std::shared_ptr<WindowSystem> m_windowSystem;
-		std::shared_ptr<RenderSystem> m_renderSystem;
-
+		std::shared_ptr<EventMgr>             m_eventMgr{ nullptr };
+		std::shared_ptr<WindowSystem>         m_windowSystem{ nullptr };
 		std::shared_ptr<render::RenderSystem> m_render{ nullptr };
 		std::shared_ptr<gfx::GraphicContext>  m_gfxContext{ nullptr };
 		std::shared_ptr<PioWorld>             m_pioWorld{ nullptr };

@@ -6,6 +6,8 @@
 
 namespace pio
 {
+	class Event;
+
 	namespace render
 	{
 		class UiPass : public RenderPass
@@ -18,6 +20,7 @@ namespace pio
 			virtual void release() override;
 
 			void attachUi(const std::shared_ptr<WindowUI> &ui);
+			bool dispatchEvent(const Event &evt);
 			void setWndSize(uint32_t width, uint32_t height);
 
 			inline const ViewLayout &getMainLayout() { return m_mainLayout; }

@@ -36,14 +36,6 @@ namespace pio
 		RenderViewport                     windowViewport;
 	};
 
-	struct WindowSystemInitInfo
-	{
-		int         width{ 1600 };
-		int         height{ 900 };
-		const char *title{ "Pionner" };
-		bool        fullscreen{ false };
-	};
-
 	struct RenderSystemInitInfo
 	{
 		std::shared_ptr<WindowSystem> window;

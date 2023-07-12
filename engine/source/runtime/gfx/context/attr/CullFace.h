@@ -21,20 +21,18 @@ namespace pio
 		class CullFace
 		{
 		public:
-			CullFace() : m_faceDir(COUNTER_CLOCK_WISE), m_mode(CULL_BACK), m_enable(false)
-			{
-			};
+			CullFace() {};
 
 			static CullFace disable()
 			{
-				CullFace cull;
+				CullFace cull{};
 				cull.m_enable = false;
 				return cull;
 			}
 
 			static CullFace common()
 			{
-				CullFace cull;
+				CullFace cull{};
 				cull.m_enable = true;
 				cull.m_faceDir = COUNTER_CLOCK_WISE;
 				cull.m_mode = CULL_BACK;
@@ -44,9 +42,9 @@ namespace pio
 			~CullFace() = default;
 
 		public:
-			FaceDirection m_faceDir;
-			CullMode      m_mode;
-			bool          m_enable;
+			FaceDirection m_faceDir{ COUNTER_CLOCK_WISE };
+			CullMode      m_mode{ CULL_BACK };
+			bool          m_enable{ false };
 		};
 	}
 }

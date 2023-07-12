@@ -25,6 +25,7 @@ namespace pio
 
 		void RenderSystem::dispatchEvent(const Event &event)
 		{
+			m_uiPass->dispatchEvent(event);
 		}
 
 		void RenderSystem::setWndSize(int32_t width, int32_t height)

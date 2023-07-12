@@ -14,7 +14,7 @@ namespace pio
 		virtual ~EditorUI();
 
 		virtual void initialize(WindowUIInitInfo &info) override;
-		virtual void draw(RenderParam &param) override;
+		virtual void draw(sgf::RenderInfo &info) override;
 
 		void createUI(const std::shared_ptr<WindowUI> &self);
 		void shutdown();

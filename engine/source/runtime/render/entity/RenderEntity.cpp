@@ -5,8 +5,6 @@
 
 #include "global/GlobalContext.h"
 
-#include "core/system/Loader.h"
-
 #include "render/RenderSystem.h"
 
 #include "render/rhi/Rhi.h"
@@ -28,7 +26,7 @@ namespace pio
 
 	EntityPart::~EntityPart()
 	{
-		if (!g_runtimeCtx.m_renderSystem)
+		/*if (!g_runtimeCtx.m_renderSystem)
 		{
 			return;
 		}
@@ -56,7 +54,7 @@ namespace pio
 		if (m_material.normValid())
 		{
 			g_runtimeCtx.m_renderSystem->notifyRelease(BUF_TEXTURE, m_material.m_normalSlot);
-		}
+		}*/
 		m_owner.reset();
 	}
 

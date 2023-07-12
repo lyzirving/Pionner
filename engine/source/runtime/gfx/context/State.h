@@ -5,6 +5,7 @@
 #include <mutex>
 
 #include "attr/Blend.h"
+#include "attr/ClearMode.h"
 #include "attr/CullFace.h"
 #include "attr/DepthTest.h"
 
@@ -22,8 +23,9 @@ namespace pio
 			bool init();
 			void shutdown();
 
-			void setCullMode(const CullFace &mode);
 			void setBlendMode(const Blend &blend);
+			void setClearMode(const ClearMode &mode);
+			void setCullMode(const CullFace &mode);
 			void setDepthMode(const DepthTest &test);
 
 		};

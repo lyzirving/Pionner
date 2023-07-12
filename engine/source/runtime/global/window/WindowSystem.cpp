@@ -3,11 +3,10 @@
 
 #include "WindowSystem.h"
 
-#include "world/World.h"
+#include "global/GlobalContext.h"
 #include "global/event/EventMgr.h"
 
 #include "core/log/LogSystem.h"
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -19,10 +18,7 @@ namespace pio
 	{
 	}
 
-	WindowSystem::~WindowSystem()
-	{
-		m_evtMgr.reset();
-	}
+	WindowSystem::~WindowSystem() = default;
 
 	void WindowSystem::init(const WindowSystemInitInfo &info)
 	{
@@ -33,9 +29,6 @@ namespace pio
 		}
 		m_width = info.width;
 		m_height = info.height;
-
-		m_evtMgr = std::make_shared<EventMgr>();
-		m_evtMgr->setWindowSize(m_width, m_height);
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -77,15 +70,9 @@ namespace pio
 	void WindowSystem::windowSizeCallback(GLFWwindow *window, int width, int height)
 	{
 		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
-		if (app)
-		{
-			app->m_width = width;
-			app->m_height = height;
-			app->setSizeChange(true);
-
-			auto evtMgr = app->getEvtMgr();
-			if (evtMgr) evtMgr->setWindowSize(width, height);
-		}
+		app->m_width = width;
+		app->m_height = height;
+		g_runtimeCtx.m_eventMgr->setWindowSize(width, height);
 	}
 
 	void WindowSystem::windowCloseCallback(GLFWwindow *window)
@@ -96,34 +83,22 @@ namespace pio
 	void WindowSystem::windowMouseMoveCallback(GLFWwindow *window, double xPos, double yPos)
 	{
 		//LOG_DEBUG("pos[%lf, %lf]", xPos, yPos);
-		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
-		std::shared_ptr<EventMgr> evtMgr;
-		if (app && (evtMgr = app->getEvtMgr()))
-		{
-			evtMgr->setCursorPos(xPos, yPos);
-		}
+		//WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
+		g_runtimeCtx.m_eventMgr->setCursorPos(xPos, yPos);
 	}
 
 	void WindowSystem::windowMouseBtnCallback(GLFWwindow *window, int button, int action, int mods)
 	{
 		//LOG_DEBUG("button[%d], action[%d], mods[%d]", button, action, mods);
-		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
-		std::shared_ptr<EventMgr> evtMgr;
-		if (app && (evtMgr = app->getEvtMgr()))
-		{
-			evtMgr->setMotionEvent(button, action, mods);
-		}
+		//WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
+		g_runtimeCtx.m_eventMgr->setMotionEvent(button, action, mods);
 	}
 
 	void WindowSystem::windowScrollCallback(GLFWwindow *window, double deltaX, double deltaY)
 	{
 		//LOG_DEBUG("pos[%lf, %lf]", deltaX, deltaY);
-		WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
-		std::shared_ptr<EventMgr> evtMgr;
-		if (app && (evtMgr = app->getEvtMgr()))
-		{
-			evtMgr->setScroll(deltaX, deltaY);
-		}
+		//WindowSystem *app = (WindowSystem *)glfwGetWindowUserPointer(window);
+		g_runtimeCtx.m_eventMgr->setScroll(deltaX, deltaY);
 	}
 
 	bool WindowSystem::shouldClose()

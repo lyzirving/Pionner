@@ -1,13 +1,10 @@
 #include "EventMgr.h"
-#include "EventDef.h"
 
 #include "core/log/LogSystem.h"
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
 #define LOCAL_TAG "EventMgr"
-
 namespace pio
 {
 	pio::EventMgr::EventMgr()

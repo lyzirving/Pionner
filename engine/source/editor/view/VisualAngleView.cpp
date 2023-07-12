@@ -16,6 +16,8 @@
 
 #include "render/resource/ResourceDef.h"
 
+#include "scenegraph/SceneGrfDef.h"
+
 #include "core/log/LogSystem.h"
 #include "core/math/MathLib.h"
 
@@ -43,9 +45,9 @@ namespace pio
 		m_sphere.reset();
 	}
 
-	void VisualAngleView::draw(RenderParam &param)
+	void VisualAngleView::draw(sgf::RenderInfo &info)
 	{
-		m_coordinateAxis->initialize(param);
+		/*m_coordinateAxis->initialize(param);
 		m_sphere->initialize(param);
 
 		auto evtMgr = param.rhi->getWindowSystem()->getEvtMgr();
@@ -85,7 +87,7 @@ namespace pio
 		m_coordinateAxis->draw(param);
 
 		camera->popState();
-		frustum->popState();
+		frustum->popState();*/
 	}
 
 	void VisualAngleView::layout(int32_t windowWidth, int32_t windowHeight)

@@ -11,7 +11,7 @@ namespace pio
 	{
 	}
 
-	void RenderView::draw(RenderParam &param)
+	void RenderView::draw(sgf::RenderInfo &info)
 	{
 		// no implementation in RenderView,
 		// it is just a placeholder.

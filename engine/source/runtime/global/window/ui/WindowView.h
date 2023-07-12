@@ -11,6 +11,11 @@ namespace pio
 	class  WindowUI;
 	class  Event;
 
+	namespace sgf
+	{
+		struct RenderInfo;
+	}
+
 	class WindowView
 	{
 	public:
@@ -18,7 +23,7 @@ namespace pio
 		WindowView(uint8_t drawOrder);
 		virtual ~WindowView();
 
-		virtual void draw(RenderParam &param) = 0;
+		virtual void draw(sgf::RenderInfo &info) = 0;
 		virtual void layout(int32_t windowWidth, int32_t windowHeight) = 0;
 		virtual bool processEvent(RenderParam &param, const Event &evt);
 		virtual void resetMotion();

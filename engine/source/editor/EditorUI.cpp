@@ -11,11 +11,9 @@
 #include "view/RightPanelView.h"
 #include "view/BottomPanelView.h"
 
-#include "render/RenderSystem.h"
-#include "global/window/WindowSystem.h"
+#include "scenegraph/SceneGrfDef.h"
 
 #include "core/log/LogSystem.h"
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -34,11 +32,11 @@ namespace pio
 		ImGuiStyle &style = ImGui::GetStyle();
 		setColorStyle(style);
 
-		m_windowWidth = info.windowSystem->getWidth();
-		m_windowHeight = info.windowSystem->getHeight();
+		m_windowWidth = info.wndWidth;
+		m_windowHeight = info.windHeight;
 	}
 
-	void EditorUI::draw(RenderParam &param)
+	void EditorUI::draw(sgf::RenderInfo &info)
 	{
 		sortView();
 
@@ -55,7 +53,7 @@ namespace pio
 		for (size_t i = 0; i < m_viewArray.size(); i++)
 		{
 			if (m_viewArray[i].second)
-				m_viewArray[i].second->draw(param);
+				m_viewArray[i].second->draw(info);
 		}
 
 		ImGui::Render();
@@ -76,7 +74,7 @@ namespace pio
 		bottomPanel->attachParent(self);
 
 		addView(render);
-		addView(visualAngle);
+		//addView(visualAngle);
 		addView(leftPanel);
 		addView(rightPanel);
 		addView(bottomPanel);

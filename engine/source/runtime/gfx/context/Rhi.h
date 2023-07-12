@@ -25,6 +25,7 @@ namespace pio
 			void shutdownUiBackend();
 
 			bool drawTriangleElement(uint32_t indexCnt, DataType type);
+			void setViewport(int32_t l, int32_t t, int32_t width, int32_t height);
 			void unbindTexture(TextureType type);
 
 		private:

@@ -17,7 +17,7 @@ namespace pio
 		VisualAngleView();
 		virtual ~VisualAngleView();
 
-		virtual void draw(RenderParam &param) override;
+		virtual void draw(sgf::RenderInfo &info) override;
 		virtual void layout(int32_t windowWidth, int32_t windowHeight) override;
 		virtual bool processEvent(RenderParam &param, const Event &evt) override;
 		virtual void resetMotion() override;

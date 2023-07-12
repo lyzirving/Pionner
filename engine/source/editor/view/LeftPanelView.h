@@ -11,7 +11,7 @@ namespace pio
 		LeftPanelView();
 		virtual ~LeftPanelView();
 
-		virtual void draw(RenderParam &param) override;
+		virtual void draw(sgf::RenderInfo &info) override;
 		virtual void layout(int32_t windowWidth, int32_t windowHeight) override;
 	};
 }
