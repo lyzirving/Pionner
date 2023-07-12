@@ -10,19 +10,25 @@ namespace pio
 
 		UiPass::~UiPass() = default;
 
-		void UiPass::tick(uint64_t deltaTimeMs)
+		void UiPass::update(sgf::RenderInfo &info)
 		{
 		}
 
-		void UiPass::initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui)
+		void UiPass::release()
+		{
+			m_ui.reset();
+		}
+
+		void UiPass::attachUi(const std::shared_ptr<WindowUI> &ui)
 		{
 			m_ui = ui;
-			// TODO: init ImGui, where? Think about it after the render pipeline is done.
 			updateMainLayout();
 		}
 
-		void UiPass::shutdownUIRenderBackend()
+		void UiPass::setWndSize(uint32_t width, uint32_t height)
 		{
+			if (m_ui) m_ui->resize(width, height);
+			updateMainLayout();
 		}
 
 		void UiPass::updateMainLayout()

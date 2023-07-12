@@ -31,11 +31,6 @@ namespace pio
 
 	void EditorUI::initialize(WindowUIInitInfo &info)
 	{
-		ImGui::CreateContext();
-		ImGui::StyleColorsDark();
-		ImGuiIO &io = ImGui::GetIO();
-		(void)io;
-
 		ImGuiStyle &style = ImGui::GetStyle();
 		setColorStyle(style);
 
@@ -89,8 +84,6 @@ namespace pio
 
 	void EditorUI::shutdown()
 	{
-		ImGui::DestroyContext();
-
 		auto itr = m_viewArray.begin();
 		while (itr != m_viewArray.end())
 		{

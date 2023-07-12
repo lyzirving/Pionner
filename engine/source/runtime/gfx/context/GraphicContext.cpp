@@ -26,10 +26,10 @@ namespace pio
 				return false;
 			}
 
-			/*if (!m_rhi->initUiBackend(param.window))
+			if (!m_rhi->initUiBackend(param.window))
 			{
 				return false;
-			}*/
+			}
 
 			if (!m_state->init())
 			{
@@ -50,7 +50,7 @@ namespace pio
 
 			if (m_rhi)
 			{
-				//m_rhi->shutdownUiBackend();
+				m_rhi->shutdownUiBackend();
 				m_rhi->shutdown();
 				m_rhi.reset();
 			}

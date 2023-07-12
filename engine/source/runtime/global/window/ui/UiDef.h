@@ -27,12 +27,8 @@ namespace pio
 
 	struct ViewLayout
 	{
-		int32_t  m_left;
-		int32_t  m_top;
-		uint32_t m_width;
-		uint32_t m_height;
-
-		ViewLayout() : m_left(0), m_top(0), m_width(0), m_height(0) {}
+		int32_t  m_left{ 0 }, m_top{ 0 };
+		uint32_t m_width{ 0 }, m_height{ 0 };
 
 		bool contains(int32_t x, int32_t y)
 		{

@@ -23,8 +23,8 @@ namespace pio
 			RenderSystem(const std::shared_ptr<gfx::GraphicContext> &gfxContext);
 			~RenderSystem();
 
+			void attachUi(const std::shared_ptr<WindowUI> &ui);
 			void dispatchEvent(const Event &event);
-			void initWindowUI(const std::shared_ptr<WindowUI> &ui);
 			void setWndSize(int32_t width, int32_t height);
 			void shutdown();
 			void tick(uint64_t deltaMs);

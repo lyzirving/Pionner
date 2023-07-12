@@ -14,10 +14,13 @@ namespace pio
 			UiPass();
 			virtual ~UiPass();
 
-			virtual void tick(uint64_t deltaTimeMs) override;
+			virtual void update(sgf::RenderInfo &info) override;
+			virtual void release() override;
 
-			void initializeUIRenderBackend(const std::shared_ptr<WindowUI> &ui);
-			void shutdownUIRenderBackend();
+			void attachUi(const std::shared_ptr<WindowUI> &ui);
+			void setWndSize(uint32_t width, uint32_t height);
+
+			inline const ViewLayout &getMainLayout() { return m_mainLayout; }
 
 		private:
 			void updateMainLayout();

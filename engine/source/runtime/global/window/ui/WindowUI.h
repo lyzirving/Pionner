@@ -11,7 +11,6 @@ namespace pio
 {
 	struct RenderParam;
 	class  WindowSystem;
-	class  RenderSystem;
 	class  WindowView;
 	class  RenderParam;
 	class  Event;
@@ -19,7 +18,6 @@ namespace pio
 	struct WindowUIInitInfo
 	{
 		std::shared_ptr<WindowSystem> windowSystem;
-		std::shared_ptr<RenderSystem> renderSystem;
 	};
 
 	class WindowUI : public std::enable_shared_from_this<WindowUI>
@@ -37,7 +35,7 @@ namespace pio
 		void layout();
 		void resetTargetView();
 
-		std::shared_ptr<WindowUI>   getPtr();
+		std::shared_ptr<WindowUI>   selfPtr();
 		std::shared_ptr<WindowView> getView(uint8_t uid);
 
 		void resize(int width, int height);

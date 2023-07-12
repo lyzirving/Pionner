@@ -5,7 +5,7 @@
 
 #include "Engine.h"
 #include "global/GlobalContext.h"
-#include "render/RenderSystem.h"
+#include "render2/RenderSystem.h"
 
 #include "core/log/LogSystem.h"
 
@@ -30,15 +30,13 @@ namespace pio
 			assert(0);
 
 		m_ui = std::make_shared<EditorUI>();
-		WindowUIInitInfo uiInitInfo;
-		uiInitInfo.windowSystem = g_runtimeCtx.m_windowSystem;
-		uiInitInfo.renderSystem = g_runtimeCtx.m_renderSystem;
+		WindowUIInitInfo uiInitInfo{ g_runtimeCtx.m_windowSystem };
 		m_ui->initialize(uiInitInfo);
-		std::shared_ptr<WindowUI> uiSelf = m_ui->getPtr();
+		std::shared_ptr<WindowUI> uiSelf = m_ui->selfPtr();
 		m_ui->createUI(uiSelf);
 		m_ui->layout();
 
-		g_runtimeCtx.m_renderSystem->initializeUIRenderBackend(uiSelf);
+		g_runtimeCtx.m_render->attachUi(uiSelf);
 
 		LOG_DEBUG("finish initialization");
 	}
@@ -47,7 +45,6 @@ namespace pio
 	{
 		if (m_ui)
 		{
-			g_runtimeCtx.m_renderSystem->shutdownUIRenderBackend();
 			m_ui->shutdown();
 			m_ui.reset();
 		}

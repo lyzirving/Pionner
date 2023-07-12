@@ -17,7 +17,7 @@ namespace pio
 			RenderPass() {};
 			virtual ~RenderPass() = default;
 
-			virtual void tick(uint64_t deltaTimeMs) = 0;
+			virtual void update(sgf::RenderInfo &info) = 0;
 
 			virtual void init() {};
 			virtual void release() {};

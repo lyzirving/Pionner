@@ -26,8 +26,7 @@ namespace pio
 			virtual void update(RenderInfo &info);
 			virtual void release();
 
-			void setWndSize(int32_t width, int32_t height);
-			void tick(uint64_t deltaMs);
+			void setViewport(int32_t l, int32_t t, int32_t width, int32_t height);
 			
 			inline void sortLayer() { m_sortLayer = true; }
 

@@ -58,16 +58,15 @@ namespace pio
 			}
 		}
 
-		void Scene::setWndSize(int32_t width, int32_t height)
+		void Scene::setViewport(int32_t l, int32_t t, int32_t width, int32_t height)
 		{
-			// set each camera's render viewport
 			for (auto &cam : m_cameras)
 			{
 				if (!cam)
 					continue;
 				if (cam->getCameraId() == CAM_ID_MAIN)
 				{
-					cam->setViewport(0, 0, width, height);
+					cam->setViewport(l, t, width, height);
 					cam->setAspect(float(width) / float(height));
 				}
 			}

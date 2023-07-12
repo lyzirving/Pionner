@@ -1,5 +1,7 @@
 #include "Rhi.h"
 
+#include <imgui.h>
+#include <imgui_internal.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_glfw.h>
 
@@ -52,6 +54,11 @@ namespace pio
 				LOG_FATAL("window is invalid");
 				return false;
 			}
+			ImGui::CreateContext();
+			ImGui::StyleColorsDark();
+			ImGuiIO &io = ImGui::GetIO();
+			(void)io;
+
 			const char *version{ "#version 430" };
 			bool ret0 = ImGui_ImplOpenGL3_Init(version);
 			bool ret1 = ImGui_ImplGlfw_InitForOpenGL(window->getWindow(), true);
@@ -76,6 +83,8 @@ namespace pio
 		{
 			ImGui_ImplGlfw_Shutdown();
 			ImGui_ImplOpenGL3_Shutdown();
+
+			ImGui::DestroyContext();
 		}
 
 		bool Rhi::drawTriangleElement(uint32_t indexCnt, DataType type)

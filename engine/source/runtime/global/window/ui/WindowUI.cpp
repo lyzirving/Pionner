@@ -94,7 +94,7 @@ namespace pio
 		}
 	}
 
-	std::shared_ptr<WindowUI> WindowUI::getPtr()
+	std::shared_ptr<WindowUI> WindowUI::selfPtr()
 	{
 		return shared_from_this();
 	}
