@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include "gfx/GfxDef.h"
 #include "State.h"
 #include "Rhi.h"
 
@@ -16,7 +17,7 @@ namespace pio
 			GraphicContext();
 			~GraphicContext();
 
-			bool init();
+			bool init(const GfxContextInitParam &param);
 			void shutdown();
 
 			inline const std::shared_ptr<State> &getState() { return m_state; }

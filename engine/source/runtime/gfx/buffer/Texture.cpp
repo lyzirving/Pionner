@@ -21,6 +21,18 @@ namespace pio
 {
 	namespace gfx
 	{
+		uint32_t Texture::textureType(TextureType type)
+		{
+			switch (type)
+			{
+				case pio::gfx::TEXTURE_TYPE_1D:
+					return GL_TEXTURE_1D;
+				case pio::gfx::TEXTURE_TYPE_2D:
+				default:
+					return GL_TEXTURE_2D;
+			}
+		}
+
 		Texture::Texture() : Buffer(GFX_BUF_TEXTURE)
 		{
 		}

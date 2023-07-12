@@ -5,22 +5,12 @@
 #include <vector>
 #include <atomic>
 
+#include "gfx/GfxDef.h"
+
 namespace pio
 {
 	namespace gfx
 	{
-		enum GfxBufType
-		{
-			GFX_BUF_VERTEX,
-			GFX_BUF_INDICE,
-			GFX_BUF_TEXTURE,
-			GFX_BUF_CUBE_TEXTURE,
-			GFX_BUF_DEPTH_FBO,
-			GFX_BUF_CUBE_DEPTH_FBO,
-			GFX_BUF_COLOR_FRAMEBUFFER,
-			GFX_BUF_CNT
-		};
-
 		class Buffer
 		{
 		public:

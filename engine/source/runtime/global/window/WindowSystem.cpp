@@ -24,7 +24,7 @@ namespace pio
 		m_evtMgr.reset();
 	}
 
-	void WindowSystem::initialize(const WindowSystemInitInfo &info)
+	void WindowSystem::init(const WindowSystemInitInfo &info)
 	{
 		if (!glfwInit())
 		{

@@ -8,28 +8,28 @@ namespace pio
 		class DepthTest
 		{
 		public:
-			DepthTest() : m_enbale(false)
+			DepthTest()
 			{
 			};
 
 			~DepthTest() = default;
 
-			static DepthTest DepthTest::common()
+			static DepthTest common()
 			{
 				DepthTest test;
-				test.m_enbale = true;
+				test.m_enable = true;
 				return test;
 			}
 
-			static DepthTest DepthTest::disnable()
+			static DepthTest disnable()
 			{
 				DepthTest test;
-				test.m_enbale = false;
+				test.m_enable = false;
 				return test;
 			}
 
 		public:
-			bool          m_enbale;
+			bool m_enable{false};
 		};
 	}
 }

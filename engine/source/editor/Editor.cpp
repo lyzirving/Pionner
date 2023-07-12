@@ -17,7 +17,7 @@
 namespace pio
 {
 	Editor::Editor(const std::shared_ptr<Engine> &engine)
-		: m_runtimeEngine(engine)
+		: m_engine(engine)
 		, m_ui(nullptr)
 	{
 	}
@@ -26,7 +26,7 @@ namespace pio
 
 	void Editor::initialize()
 	{
-		if (!m_runtimeEngine)
+		if (!m_engine)
 			assert(0);
 
 		m_ui = std::make_shared<EditorUI>();
@@ -51,20 +51,20 @@ namespace pio
 			m_ui->shutdown();
 			m_ui.reset();
 		}
-		m_runtimeEngine.reset();
+		m_engine.reset();
 	}
 
 	void Editor::run()
 	{
-		if (!m_runtimeEngine)
+		if (!m_engine)
 		{
 			LOG_FATAL("engine is null");
 			assert(0);
 		}
 		while (true)
 		{
-			uint64_t delta = m_runtimeEngine->calculateDeltaTime();
-			if (!m_runtimeEngine->tickFrame(delta))
+			uint64_t delta = m_engine->calculateDeltaTime();
+			if (!m_engine->tickFrame(delta))
 				return;
 		}
 	}

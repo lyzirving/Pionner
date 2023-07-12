@@ -4,8 +4,11 @@
 #include <memory>
 #include <mutex>
 
+#include "gfx/GfxDef.h"
+
 namespace pio
 {
+	class WindowSystem;
 
 	namespace gfx
 	{
@@ -17,7 +20,12 @@ namespace pio
 			~Rhi();
 
 			bool init();
+			bool initUiBackend(const std::shared_ptr<WindowSystem> &window);
 			void shutdown();
+			void shutdownUiBackend();
+
+			bool drawTriangleElement(uint32_t indexCnt, DataType type);
+			void unbindTexture(TextureType type);
 
 		private:
 			bool m_isInit{ false };

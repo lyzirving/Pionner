@@ -2,6 +2,7 @@
 #include "pass/UiPass.h"
 
 #include "global/event/Event.h"
+#include "global/window/ui/WindowUI.h"
 
 namespace pio
 {
@@ -16,6 +17,12 @@ namespace pio
 
 		void RenderSystem::dispatchEvent(const Event &event)
 		{
+		}
+
+		void RenderSystem::initWindowUI(const std::shared_ptr<WindowUI> &ui)
+		{
+			/*if (!m_uiPass)
+				m_uiPass = std::make_shared<UiPass>();*/
 		}
 
 		void RenderSystem::setWndSize(int32_t width, int32_t height)

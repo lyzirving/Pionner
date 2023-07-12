@@ -6,6 +6,7 @@
 namespace pio
 {
 	class Event;
+	class WindowUI;
 
 	namespace gfx
 	{
@@ -23,6 +24,7 @@ namespace pio
 			~RenderSystem();
 
 			void dispatchEvent(const Event &event);
+			void initWindowUI(const std::shared_ptr<WindowUI> &ui);
 			void setWndSize(int32_t width, int32_t height);
 			void shutdown();
 			void tick(uint64_t deltaMs);

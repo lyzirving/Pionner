@@ -22,7 +22,7 @@ namespace pio
 		// it must be member variable.
 		inline std::shared_ptr<EventMgr> &getEvtMgr() { return m_evtMgr; }
 
-		void initialize(const WindowSystemInitInfo &info);
+		void init(const WindowSystemInitInfo &info);
 		void shutdown();
 
 		bool shouldClose();

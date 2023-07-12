@@ -2,10 +2,6 @@
 
 #include "render/rhi/RhiHeader.h"
 
-#include "attr/Blend.h"
-#include "attr/CullFace.h"
-#include "attr/DepthTest.h"
-
 namespace pio
 {
 	namespace gfx
@@ -94,7 +90,7 @@ namespace pio
 
 		void State::setCullMode(const CullFace &mode)
 		{
-			if (mode.m_enbale)
+			if (mode.m_enable)
 			{
 				glEnable(GL_CULL_FACE);
 				glFrontFace(getGLFaceDir(mode.m_faceDir));
@@ -122,7 +118,7 @@ namespace pio
 
 		void State::setDepthMode(const DepthTest &test)
 		{
-			if (test.m_enbale)
+			if (test.m_enable)
 			{
 				glEnable(GL_DEPTH_TEST);
 			}

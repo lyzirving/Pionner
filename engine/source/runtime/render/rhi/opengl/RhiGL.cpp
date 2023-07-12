@@ -108,7 +108,7 @@ namespace pio
 
 	void RhiGL::setCullMode(gfx::CullFace &mode)
 	{
-		if (mode.m_enbale)
+		if (mode.m_enable)
 		{
 			glEnable(GL_CULL_FACE);
 			glFrontFace(getGLFaceDir(mode.m_faceDir));
@@ -122,7 +122,7 @@ namespace pio
 
 	void RhiGL::setDepthMode(gfx::DepthTest &test)
 	{
-		if (test.m_enbale)
+		if (test.m_enable)
 		{
 			glEnable(GL_DEPTH_TEST);
 		}

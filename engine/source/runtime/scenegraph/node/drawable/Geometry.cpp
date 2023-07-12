@@ -1,7 +1,5 @@
 #include "Geometry.h"
 
-#include "render/rhi/RhiHeader.h"
-
 #include "gfx/buffer/VertexBuffer.h"
 #include "gfx/buffer/IndiceBuffer.h"
 #include "gfx/buffer/Texture2d.h"
@@ -57,7 +55,7 @@ namespace pio
 			}
 		}
 
-		void Geometry::setMaterial(const matl::Material &material)
+		void Geometry::setMaterial(const Material &material)
 		{
 			m_material = material;
 		}
@@ -107,6 +105,11 @@ namespace pio
 			}
 
 			auto state = info.gfxContext->getState();
+			auto rhi = info.gfxContext->getRhi();
+
+			state->setBlendMode(Blend::common());
+			state->setCullMode(CullFace::disable());
+			state->setDepthMode(DepthTest::common());
 
 			shader->use(true);
 
@@ -150,14 +153,12 @@ namespace pio
 			m_vertexBuffer->bind();
 			m_indiceBuffer->bind();
 
-			glDrawElements(GL_TRIANGLES, m_indiceBuffer->size(), GL_UNSIGNED_INT, nullptr);
-			GLHelper::checkGLErr("fail to draw geometry[%s], material name[%s]", 
-								 m_name.c_str(), m_material.getName().c_str());
+			rhi->drawTriangleElement(m_indiceBuffer->size(), DATA_TYPE_UNSIGNED_INT);
 			
 			m_vertexBuffer->unbind();
 			m_indiceBuffer->unbind();
 
-			glBindTexture(GL_TEXTURE_2D, 0);
+			rhi->unbindTexture(TEXTURE_TYPE_2D);
 
 			shader->use(false);
 		}

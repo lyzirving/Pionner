@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 
-#include "gfx/buffer/Texture.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {
@@ -17,6 +17,7 @@ namespace pio
 			static uint32_t buildProgram(const char *vert, const char *frag, const char *geo);
 			static bool     checkGLErr(const char *fmt, ...);
 			static uint32_t colorFormat(int32_t component);
+			static uint32_t dataType(DataType type);
 
 		private:
 			static bool createShader(uint32_t type, const char *source, uint32_t &shader);

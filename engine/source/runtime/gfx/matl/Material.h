@@ -1,12 +1,12 @@
-#ifndef __PIONNER_MATL_MATERIAL_H__
-#define __PIONNER_MATL_MATERIAL_H__
+#ifndef __PIONNER_GFX_MATL_MATERIAL_H__
+#define __PIONNER_GFX_MATL_MATERIAL_H__
 
 #include <glm/glm.hpp>
 #include <string>
 
 namespace pio
 {
-	namespace matl
+	namespace gfx
 	{
 		class Material
 		{

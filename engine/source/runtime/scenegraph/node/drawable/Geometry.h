@@ -25,7 +25,7 @@ namespace pio
 			void addTexture(const std::shared_ptr<gfx::Texture> &texture);
 			void setVertexArray(const std::vector<Vertex> &vertexArray);
 			void setIndiceArray(const std::vector<uint32_t> &indiceArray);
-			void setMaterial(const matl::Material &material);
+			void setMaterial(const gfx::Material &material);
 
 		protected:
 			virtual void drawImplementation(RenderInfo &info) override;
@@ -37,7 +37,7 @@ namespace pio
 			std::vector<Vertex>                        m_vertexs{};
 			std::vector<uint32_t>                      m_indices{};
 			std::vector<std::shared_ptr<gfx::Texture>> m_textures{};
-			matl::Material                             m_material{};
+			gfx::Material                              m_material{};
 		};
 
 		template <>

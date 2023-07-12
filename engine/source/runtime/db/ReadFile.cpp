@@ -176,7 +176,7 @@ namespace pio
 					ai_real   valFloat;
 					aiString  valStr;
 					ai_int    valInt;
-					matl::Material material{};
+					gfx::Material material{};
 					if (mt->Get(AI_MATKEY_NAME, valStr) == aiReturn_SUCCESS)
 					{
 						material.setName(valStr.C_Str());

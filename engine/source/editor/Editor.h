@@ -20,7 +20,7 @@ namespace pio
 		void run();
 
 	private:
-		std::shared_ptr<Engine>   m_runtimeEngine;
+		std::shared_ptr<Engine>   m_engine;
 		std::shared_ptr<EditorUI> m_ui;
 	};
 }

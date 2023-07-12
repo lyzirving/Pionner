@@ -46,11 +46,14 @@ namespace pio
 		// window will initialize glfw which create a rendering context.
 		WindowSystemInitInfo windowInitInfo;
 		m_windowSystem = std::make_shared<WindowSystem>();
-		m_windowSystem->initialize(windowInitInfo);
+		m_windowSystem->init(windowInitInfo);
 
 		// gfx context will initialize glew which relies on a rendering context.
+		// gfx context will also init ImGui Context.
+		gfx::GfxContextInitParam gfxCtxParam{};
+		gfxCtxParam.window = m_windowSystem;
 		m_gfxContext = std::make_shared<gfx::GraphicContext>();
-		m_gfxContext->init();
+		m_gfxContext->init(gfxCtxParam);
 
 		m_render = std::make_shared<render::RenderSystem>(m_gfxContext);
 

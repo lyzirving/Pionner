@@ -4,14 +4,14 @@
 #include <memory>
 #include <mutex>
 
+#include "attr/Blend.h"
+#include "attr/CullFace.h"
+#include "attr/DepthTest.h"
+
 namespace pio
 {
 	namespace gfx
 	{
-		class CullFace;
-		class DepthTest;
-		class Blend;
-
 		class State
 		{
 			friend class GraphicContex;

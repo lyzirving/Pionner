@@ -2,7 +2,7 @@
 
 namespace pio
 {
-	namespace matl
+	namespace gfx
 	{
 		Material::Material()
 		{

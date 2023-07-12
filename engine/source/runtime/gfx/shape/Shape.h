@@ -3,16 +3,12 @@
 
 #include <glm/glm.hpp>
 
+#include "gfx/GfxDef.h"
+
 namespace pio
 {
 	namespace gfx
 	{
-		enum ShapeType : uint8_t
-		{
-			SHAPE_BOUNDING_BOX,
-			SHAPE_CNT
-		};
-
 		/** Base class for all shape types.
 		  * Shapes are used to either for culling and collision detection or
 		  * to define the geometric shape of procedurally generate Geometry.
