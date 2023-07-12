@@ -49,9 +49,9 @@ namespace pio
 			return;
 
 		auto rhi = param.rhi;
-		DepthTest depth = DepthTest::common();
-		Blend blend = Blend::common();
-		CullFace cull = CullFace::disable();
+		gfx::DepthTest depth = gfx::DepthTest::common();
+		gfx::Blend blend = gfx::Blend::common();
+		gfx::CullFace cull = gfx::CullFace::disable();
 		rhi->setCullMode(cull);
 		rhi->setDepthMode(depth);
 		rhi->setBlendMode(blend);

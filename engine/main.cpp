@@ -12,7 +12,8 @@ int main()
 	engine->initialize();
 
 	std::shared_ptr<Editor> editor = std::make_shared<Editor>(engine);
-	editor->initialize();
+	//TODO: optimize the init-flow of ui
+	//editor->initialize();
 
 	editor->run();
 

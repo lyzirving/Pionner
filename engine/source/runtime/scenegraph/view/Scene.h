@@ -23,11 +23,12 @@ namespace pio
 
 			virtual void addNode(std::shared_ptr<Node> &node);
 			virtual void addNode(const std::string &parentNodeName, std::shared_ptr<Node> &node);
+			virtual void update(RenderInfo &info);
 			virtual void release();
 
 			void setWndSize(int32_t width, int32_t height);
 			void tick(uint64_t deltaMs);
-
+			
 			inline void sortLayer() { m_sortLayer = true; }
 
 		protected:
@@ -35,7 +36,6 @@ namespace pio
 
 			virtual void createCameras();
 			virtual void createLayers();
-			virtual void update(RenderInfo &info);
 
 		private:
 			std::vector<std::shared_ptr<Camera>> m_cameras{};

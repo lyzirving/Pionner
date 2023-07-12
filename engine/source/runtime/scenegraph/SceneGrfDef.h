@@ -1,10 +1,16 @@
 #ifndef __SCENE_GRAPH_DEF_H__
 #define __SCENE_GRAPH_DEF_H__
 
+#include <memory>
 #include <glm/glm.hpp>
 
 namespace pio
 {
+	namespace gfx
+	{
+		class GraphicContext;
+	}
+
 	namespace sgf
 	{
 		static const char *ROOT_NODE = "Root";
@@ -40,6 +46,7 @@ namespace pio
 
 		struct RenderInfo
 		{
+			std::shared_ptr<gfx::GraphicContext> gfxContext{ nullptr };
 			uint64_t  deltaMs{ 0 };
 			glm::mat4 viewMat{ 1.f };
 			glm::mat4 prjMat { 1.f };

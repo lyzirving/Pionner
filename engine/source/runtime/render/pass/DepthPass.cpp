@@ -72,12 +72,12 @@ namespace pio
 		rhi->clear(DEPTH_BUF_BIT);
 		rhi->setViewport(0, 0, depthBuf->getWidth(), depthBuf->getHeight());
 
-		DepthTest depthTest = DepthTest::common();
+		gfx::DepthTest depthTest = gfx::DepthTest::common();
 		rhi->setDepthMode(depthTest);
 
-		CullFace cull = CullFace::common();
+		gfx::CullFace cull = gfx::CullFace::common();
 		// Solve Perter panning, but the model has some problem.
-		cull.m_mode = CULL_FRONT;
+		cull.m_mode = gfx::CULL_FRONT;
 		rhi->setCullMode(cull);
 
 		world->iterate([&](decs::EntityID id, ShadowComp &comp)

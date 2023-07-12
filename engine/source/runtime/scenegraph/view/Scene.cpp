@@ -73,13 +73,6 @@ namespace pio
 			}
 		}
 
-		void Scene::tick(uint64_t deltaMs)
-		{
-			RenderInfo info{};
-			info.deltaMs = deltaMs;
-			update(info);
-		}
-
 		bool Scene::layerSorter(const std::shared_ptr<Layer> &lhs, const std::shared_ptr<Layer> &rhs)
 		{
 			if (!lhs)

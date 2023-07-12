@@ -7,8 +7,10 @@
 #include "global/event/EventMgr.h"
 
 #include "PioWorld.h"
+
 #include "render2/RenderSystem.h"
 #include "scenegraph/view/Scene.h"
+#include "gfx/context/GraphicContext.h"
 
 #include "core/log/LogSystem.h"
 
@@ -34,22 +36,23 @@ namespace pio
 	{
 		LogSystem::initialize();
 
+		/*m_world = std::make_shared<World>();
+		RenderSystemInitInfo renderInitInfo;
+		renderInitInfo.window = m_windowSystem;
+		m_renderSystem = std::make_shared<RenderSystem>(m_world);
+		m_renderSystem->initialize(renderInitInfo);
+		m_world->build();*/
+
 		// window will initialize glfw which create a rendering context.
 		WindowSystemInitInfo windowInitInfo;
 		m_windowSystem = std::make_shared<WindowSystem>();
 		m_windowSystem->initialize(windowInitInfo);
 
-		m_world = std::make_shared<World>();
-		// TODO: abstract device to initialize glew.
-		// render system will initialize glew whic relies on a rendering context.
-		RenderSystemInitInfo renderInitInfo;
-		renderInitInfo.window = m_windowSystem;
-		m_renderSystem = std::make_shared<RenderSystem>(m_world);
-		m_renderSystem->initialize(renderInitInfo);
+		// gfx context will initialize glew which relies on a rendering context.
+		m_gfxContext = std::make_shared<gfx::GraphicContext>();
+		m_gfxContext->init();
 
-		//m_world->build();
-
-		m_render = std::make_shared<render::RenderSystem>();
+		m_render = std::make_shared<render::RenderSystem>(m_gfxContext);
 
 		m_pioWorld = std::make_shared<PioWorld>();
 		// attach() must be called before init()
@@ -97,6 +100,12 @@ namespace pio
 		{
 			m_render->shutdown();
 			m_render.reset();
+		}
+
+		if (m_gfxContext)
+		{
+			m_gfxContext->shutdown();
+			m_gfxContext.reset();
 		}
 
 		LOG_DEBUG("all systems are shutdown");

@@ -7,6 +7,11 @@ namespace pio
 {
 	class Event;
 
+	namespace gfx
+	{
+		class GraphicContext;
+	}
+
 	namespace render
 	{
 		class UiPass;
@@ -14,7 +19,7 @@ namespace pio
 		class RenderSystem
 		{
 		public:
-			RenderSystem();
+			RenderSystem(const std::shared_ptr<gfx::GraphicContext> &gfxContext);
 			~RenderSystem();
 
 			void dispatchEvent(const Event &event);
@@ -28,6 +33,7 @@ namespace pio
 			glm::ivec2                  m_wndSize{ 0, 0 };
 			std::shared_ptr<UiPass>     m_uiPass{ nullptr };
 			std::shared_ptr<sgf::Scene> m_scene{ nullptr };
+			std::shared_ptr<gfx::GraphicContext> m_gfxContext{ nullptr };
 		};
 	}
 }

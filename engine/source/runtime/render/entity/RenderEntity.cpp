@@ -143,9 +143,9 @@ namespace pio
 		auto rhi = param.rhi;
 		auto cmd = rhi->getDrawCmd();
 
-		Blend blend = Blend::disable();
-		DepthTest depth = DepthTest::common();
-		CullFace cullFace = CullFace::common();
+		gfx::Blend blend = gfx::Blend::disable();
+		gfx::DepthTest depth = gfx::DepthTest::common();
+		gfx::CullFace cullFace = gfx::CullFace::common();
 
 		rhi->setCullMode(cullFace);
 		rhi->setDepthMode(depth);

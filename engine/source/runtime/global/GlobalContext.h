@@ -16,6 +16,11 @@ namespace pio
 		class RenderSystem;
 	}
 
+	namespace gfx
+	{
+		class GraphicContext;
+	}
+
 	class GlobalContext
 	{
 	public:
@@ -32,6 +37,7 @@ namespace pio
 		std::shared_ptr<RenderSystem> m_renderSystem;
 
 		std::shared_ptr<render::RenderSystem> m_render{ nullptr };
+		std::shared_ptr<gfx::GraphicContext>  m_gfxContext{ nullptr };
 		std::shared_ptr<PioWorld>             m_pioWorld{ nullptr };
 	};
 

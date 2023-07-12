@@ -21,9 +21,9 @@ namespace pio
 		virtual void clearColor(const glm::vec4 &color) override;
 
 		virtual void setViewport(int x, int y, int width, int height) override;
-		virtual void setCullMode(CullFace &mode) override;
-		virtual void setDepthMode(DepthTest &test) override;
-		virtual void setBlendMode(Blend &blend) override;
+		virtual void setCullMode(gfx::CullFace &mode) override;
+		virtual void setDepthMode(gfx::DepthTest &test) override;
+		virtual void setBlendMode(gfx::Blend &blend) override;
 
 		virtual void unbindBufSlot(BufferType type) override;
 
@@ -31,9 +31,9 @@ namespace pio
 		virtual void createInstance() override;
 
 	private:
-		static uint32_t getGLFaceDir(FaceDirection dir);
-		static uint32_t getGLCullMode(CullMode mode);
-		static uint32_t getGLBlendFactor(BlendFactor blendFactor);
+		static uint32_t getGLFaceDir(gfx::FaceDirection dir);
+		static uint32_t getGLCullMode(gfx::CullMode mode);
+		static uint32_t getGLBlendFactor(gfx::BlendFactor blendFactor);
 	};
 }
 

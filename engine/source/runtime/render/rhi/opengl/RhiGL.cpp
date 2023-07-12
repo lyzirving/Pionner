@@ -106,7 +106,7 @@ namespace pio
 		glViewport(x, y, width, height);
 	}
 
-	void RhiGL::setCullMode(CullFace &mode)
+	void RhiGL::setCullMode(gfx::CullFace &mode)
 	{
 		if (mode.m_enbale)
 		{
@@ -120,7 +120,7 @@ namespace pio
 		}
 	}
 
-	void RhiGL::setDepthMode(DepthTest &test)
+	void RhiGL::setDepthMode(gfx::DepthTest &test)
 	{
 		if (test.m_enbale)
 		{
@@ -132,7 +132,7 @@ namespace pio
 		}
 	}
 
-	void RhiGL::setBlendMode(Blend &blend)
+	void RhiGL::setBlendMode(gfx::Blend &blend)
 	{
 		if (blend.m_enable)
 		{
@@ -166,67 +166,67 @@ namespace pio
 		}
 	}
 
-	uint32_t RhiGL::getGLFaceDir(FaceDirection dir)
+	uint32_t RhiGL::getGLFaceDir(gfx::FaceDirection dir)
 	{
 		switch (dir)
 		{
-			case CLOCK_WISE:
+			case gfx::CLOCK_WISE:
 				return GL_CW;
-			case COUNTER_CLOCK_WISE:
+			case gfx::COUNTER_CLOCK_WISE:
 				return GL_CCW;
 			default:
 				return GL_FALSE;
 		}
 	}
 
-	uint32_t RhiGL::getGLCullMode(CullMode mode)
+	uint32_t RhiGL::getGLCullMode(gfx::CullMode mode)
 	{
 		switch (mode)
 		{
-			case CULL_BACK:
+			case gfx::CULL_BACK:
 				return GL_BACK;
-			case CULL_FRONT:
+			case gfx::CULL_FRONT:
 				return GL_FRONT;
-			case CULL_FRONT_AND_BACK:
+			case gfx::CULL_FRONT_AND_BACK:
 				return GL_FRONT_AND_BACK;
 			default:
 				return GL_FALSE;
 		}
 	}
 
-	uint32_t RhiGL::getGLBlendFactor(BlendFactor blendFactor)
+	uint32_t RhiGL::getGLBlendFactor(gfx::BlendFactor blendFactor)
 	{
 		switch (blendFactor)
 		{
-			case pio::Bld_Factor_Zero:
+			case pio::gfx::Bld_Factor_Zero:
 				return GL_ZERO;
-			case pio::Bld_Factor_One:
+			case pio::gfx::Bld_Factor_One:
 				return GL_ONE;
-			case pio::Bld_Factor_SrcColor:
+			case pio::gfx::Bld_Factor_SrcColor:
 				return GL_SRC_COLOR;
-			case pio::Bld_Factor_OneMinusSrcColor:
+			case pio::gfx::Bld_Factor_OneMinusSrcColor:
 				return GL_ONE_MINUS_SRC_COLOR;
-			case pio::Bld_Factor_SrcAlpha:
+			case pio::gfx::Bld_Factor_SrcAlpha:
 				return GL_SRC_ALPHA;
-			case pio::Bld_Factor_OneMinusSrcAlpha:
+			case pio::gfx::Bld_Factor_OneMinusSrcAlpha:
 				return GL_ONE_MINUS_SRC_ALPHA;
-			case pio::Bld_Factor_DstAlpha:
+			case pio::gfx::Bld_Factor_DstAlpha:
 				return GL_DST_ALPHA;
-			case pio::Bld_Factor_OneMinusDstAlpha:
+			case pio::gfx::Bld_Factor_OneMinusDstAlpha:
 				return GL_ONE_MINUS_DST_ALPHA;
-			case pio::Bld_Factor_DstColor:
+			case pio::gfx::Bld_Factor_DstColor:
 				return GL_DST_COLOR;
-			case pio::Bld_Factor_OneMinusDstColor:
+			case pio::gfx::Bld_Factor_OneMinusDstColor:
 				return GL_ONE_MINUS_DST_COLOR;
-			case pio::Bld_Factor_SrcAlphaSaturate:
+			case pio::gfx::Bld_Factor_SrcAlphaSaturate:
 				return GL_SRC_ALPHA_SATURATE;
-			case pio::Bld_Factor_ConstantColor:
+			case pio::gfx::Bld_Factor_ConstantColor:
 				return GL_CONSTANT_COLOR;
-			case pio::Bld_Factor_OneMinusConstantColor:
+			case pio::gfx::Bld_Factor_OneMinusConstantColor:
 				return GL_ONE_MINUS_CONSTANT_COLOR;
-			case pio::Bld_Factor_ConstantAlpha:
+			case pio::gfx::Bld_Factor_ConstantAlpha:
 				return GL_CONSTANT_ALPHA;
-			case pio::Bld_Factor_OneMinusConstantAlpha:
+			case pio::gfx::Bld_Factor_OneMinusConstantAlpha:
 				return GL_ONE_MINUS_CONSTANT_ALPHA;
 			default:
 				return 0;

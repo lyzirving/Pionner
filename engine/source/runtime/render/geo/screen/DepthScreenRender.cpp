@@ -47,7 +47,7 @@ namespace pio
 		rhi->setViewport(port.m_left, port.m_top, port.m_width, port.m_height);
 		rhi->clear(COLOR_BUF_BIT | DEPTH_BUF_BIT);
 
-		DepthTest depthtest = DepthTest::common();
+		gfx::DepthTest depthtest = gfx::DepthTest::common();
 		rhi->setDepthMode(depthtest);
 
 		// temporary buffer that holds an initialized buffer

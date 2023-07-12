@@ -9,9 +9,9 @@
 #include "render/rhi/RhiDef.h"
 #include "render/rhi/DrawCmd.h"
 
-#include "render/rhi/attr/CullFace.h"
-#include "render/rhi/attr/DepthTest.h"
-#include "render/rhi/attr/Blend.h"
+#include "gfx/context/attr/CullFace.h"
+#include "gfx/context/attr/DepthTest.h"
+#include "gfx/context/attr/Blend.h"
 
 #include "global/window/WindowSystem.h"
 
@@ -41,9 +41,9 @@ namespace pio
 		virtual void clearColor(const glm::vec4 &color) {};
 		virtual void setViewport(int x, int y, int width, int height) {};
 
-		virtual void setCullMode(CullFace &mode) {};
-		virtual void setDepthMode(DepthTest &test) {};
-		virtual void setBlendMode(Blend &blend) {};
+		virtual void setCullMode(gfx::CullFace &mode) {};
+		virtual void setDepthMode(gfx::DepthTest &test) {};
+		virtual void setBlendMode(gfx::Blend &blend) {};
 
 		virtual void unbindBufSlot(BufferType type) {};
 

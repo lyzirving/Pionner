@@ -8,17 +8,24 @@ namespace pio
 {
 	namespace gfx
 	{
+		class CullFace;
+		class DepthTest;
+		class Blend;
+
 		class State
 		{
+			friend class GraphicContex;
 		public:
-			static State *self();
-
-		private:
-			static State      *g_instance;
-			static std::mutex  g_objMutex;
-
 			State();
 			~State();
+
+			bool init();
+			void shutdown();
+
+			void setCullMode(const CullFace &mode);
+			void setBlendMode(const Blend &blend);
+			void setDepthMode(const DepthTest &test);
+
 		};
 	}
 }

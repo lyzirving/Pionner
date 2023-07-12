@@ -7,7 +7,8 @@ namespace pio
 {
 	namespace render
 	{
-		RenderSystem::RenderSystem() : m_scene(new sgf::Scene)
+		RenderSystem::RenderSystem(const std::shared_ptr<gfx::GraphicContext> &gfxContext) 
+			: m_scene(new sgf::Scene), m_gfxContext(gfxContext)
 		{
 		}
 
@@ -37,14 +38,21 @@ namespace pio
 				m_scene->release();
 				m_scene.reset();
 			}
+
+			m_gfxContext.reset();
 		}
 
 		void RenderSystem::tick(uint64_t deltaMs)
 		{
+			sgf::RenderInfo info;
+			info.gfxContext = m_gfxContext;
+			info.deltaMs = deltaMs;
+
 			if (m_scene)
 			{
-				m_scene->tick(deltaMs);
+				m_scene->update(info);
 			}
+
 			if (m_uiPass)
 			{
 				m_uiPass->tick(deltaMs);

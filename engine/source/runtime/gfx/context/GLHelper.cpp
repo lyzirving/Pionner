@@ -213,17 +213,6 @@ namespace pio
 				return GL_RGBA;
 		}
 
-		bool GLHelper::drawTriangleElements(uint32_t indexCnt, DataType dataType, const void *indices)
-		{
-			glDrawElements(GL_TRIANGLES, indexCnt, getDataType(dataType), indices);
-			return GLHelper::checkGLErr("err happens when drawing triangle elements");
-		}
-
-		void GLHelper::unbindTexture(TextureType type)
-		{
-			glBindTexture(Texture::getTextureType(type), 0);
-		}
-
 		bool GLHelper::createShader(uint32_t type, const char *source, uint32_t &shader)
 		{
 			shader = glCreateShader(type);
@@ -285,20 +274,6 @@ namespace pio
 			glGetProgramInfoLog(program, infoLen, nullptr, info);
 			LOG_ERR("program[%u] link status: %s", program, info);
 			delete[] info;
-		}
-
-		uint32_t GLHelper::getDataType(DataType type)
-		{
-			switch (type)
-			{
-				case DATA_UNSIGNED_BYTE:
-					return GL_UNSIGNED_BYTE;
-				case DATA_UNSIGNED_SHORT:
-					return GL_UNSIGNED_SHORT;
-				case DATA_UNSIGNED_INT:
-				default:
-					return GL_UNSIGNED_INT;
-			}
 		}
 	}
 }

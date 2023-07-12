@@ -4,9 +4,9 @@
 
 #include "gfx/buffer/VertexBuffer.h"
 #include "gfx/buffer/IndiceBuffer.h"
-
-#include "gfx/shader/ShaderManager.h"
 #include "gfx/buffer/Texture2d.h"
+#include "gfx/shader/ShaderManager.h"
+#include "gfx/context/GraphicContext.h"
 
 #include "core/log/LogSystem.h"
 #ifdef LOCAL_TAG
@@ -106,6 +106,8 @@ namespace pio
 				return;
 			}
 
+			auto state = info.gfxContext->getState();
+
 			shader->use(true);
 
 			glm::mat4 modelMat{ 1.f };
@@ -148,16 +150,14 @@ namespace pio
 			m_vertexBuffer->bind();
 			m_indiceBuffer->bind();
 
-			if (!gfx::GLHelper::drawTriangleElements(m_indiceBuffer->size(), DATA_UNSIGNED_INT))
-			{
-				LOG_ERR("fail to draw geometry[%s]draw failed, material name[%s]",
-						m_name.c_str(), m_material.getName().c_str());
-			}
+			glDrawElements(GL_TRIANGLES, m_indiceBuffer->size(), GL_UNSIGNED_INT, nullptr);
+			GLHelper::checkGLErr("fail to draw geometry[%s], material name[%s]", 
+								 m_name.c_str(), m_material.getName().c_str());
 			
 			m_vertexBuffer->unbind();
 			m_indiceBuffer->unbind();
 
-			gfx::GLHelper::unbindTexture(gfx::TEXTURE_TYPE_2D);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 			shader->use(false);
 		}
