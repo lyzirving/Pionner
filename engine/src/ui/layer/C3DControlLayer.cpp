@@ -64,9 +64,9 @@ namespace pio
 		selectBuilder.Shape = CoordinateShape::Arrow;
 		m_selectCoord = CreateRef<UiCoordinate3D>(selectBuilder);
 
-		Ref<PhysicsActor> xActor = m_world->createActor<Ui3DComponent>(m_selectCoord->XAxisEnt, RigidBodyComponent::Type::Dynamic);
-		Ref<PhysicsActor> yActor = m_world->createActor<Ui3DComponent>(m_selectCoord->YAxisEnt, RigidBodyComponent::Type::Dynamic);
-		Ref<PhysicsActor> zActor = m_world->createActor<Ui3DComponent>(m_selectCoord->ZAxisEnt, RigidBodyComponent::Type::Dynamic);
+		Ref<PhysicsActor> xActor = m_world->createActor<C3dUIComponent>(m_selectCoord->XAxisEnt, RigidBodyComponent::Type::Dynamic);
+		Ref<PhysicsActor> yActor = m_world->createActor<C3dUIComponent>(m_selectCoord->YAxisEnt, RigidBodyComponent::Type::Dynamic);
+		Ref<PhysicsActor> zActor = m_world->createActor<C3dUIComponent>(m_selectCoord->ZAxisEnt, RigidBodyComponent::Type::Dynamic);
 
 		xActor->setActorTransform(glm::vec3(m_selectCoord->Builder.ArrowInfo.Offset, 0.f, 0.f),
 								  glm::angleAxis(glm::radians(-90.f), AXIS_Z));
@@ -263,7 +263,7 @@ namespace pio
 
 		// X Axis
 		{
-			auto &meshComp = m_visionCoord->XAxisEnt->getComponent<Ui3DComponent>();
+			auto &meshComp = m_visionCoord->XAxisEnt->getComponent<C3dUIComponent>();
 
 			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
 			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
@@ -286,7 +286,7 @@ namespace pio
 
 		// Y Axis
 		{
-			auto &meshComp = m_visionCoord->YAxisEnt->getComponent<Ui3DComponent>();
+			auto &meshComp = m_visionCoord->YAxisEnt->getComponent<C3dUIComponent>();
 
 			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
 			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
@@ -309,7 +309,7 @@ namespace pio
 
 		// Z Axis
 		{
-			auto &meshComp = m_visionCoord->ZAxisEnt->getComponent<Ui3DComponent>();
+			auto &meshComp = m_visionCoord->ZAxisEnt->getComponent<C3dUIComponent>();
 
 			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
 			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
@@ -370,7 +370,7 @@ namespace pio
 			PIO_ASSERT_RETURN(m_selectCoord->XAxisEnt->getActor(actor), "onDrawSelectionCtl: fail to get X axis's actor");
 			actor->setGlobalPose(slcPos);
 
-			auto &meshComp = m_selectCoord->XAxisEnt->getComponent<Ui3DComponent>();
+			auto &meshComp = m_selectCoord->XAxisEnt->getComponent<C3dUIComponent>();
 
 			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
 			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
@@ -398,7 +398,7 @@ namespace pio
 			PIO_ASSERT_RETURN(m_selectCoord->YAxisEnt->getActor(actor), "onDrawSelectionCtl: fail to get Y axis's actor");
 			actor->setGlobalPose(slcPos);
 
-			auto &meshComp = m_selectCoord->YAxisEnt->getComponent<Ui3DComponent>();
+			auto &meshComp = m_selectCoord->YAxisEnt->getComponent<C3dUIComponent>();
 
 			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
 			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
@@ -426,7 +426,7 @@ namespace pio
 			PIO_ASSERT_RETURN(m_selectCoord->ZAxisEnt->getActor(actor), "onDrawSelectionCtl: fail to get Z axis's actor");
 			actor->setGlobalPose(slcPos);
 
-			auto &meshComp = m_selectCoord->ZAxisEnt->getComponent<Ui3DComponent>();
+			auto &meshComp = m_selectCoord->ZAxisEnt->getComponent<C3dUIComponent>();
 
 			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
 			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
@@ -465,7 +465,7 @@ namespace pio
 
 		glm::vec3 dirDiff = curRay.Dir - lastRay.Dir;
 
-		auto &uiComp = ctlEnt->getComponent<Ui3DComponent>();
+		auto &uiComp = ctlEnt->getComponent<C3dUIComponent>();
 		glm::vec3 diff3d(0.f);
 		if (std::strcmp(uiComp.Name.data(), STR_AXIS_X) == 0)
 		{

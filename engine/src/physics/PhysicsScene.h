@@ -67,7 +67,7 @@ namespace pio
 	void PhysicsScene::makeRigidBody<MeshComponent>(const Ref<Entity> &ent, RigidBodyComponent::Type type);
 
 	template<>
-	void PhysicsScene::makeRigidBody<Ui3DComponent>(const Ref<Entity> &ent, RigidBodyComponent::Type type);
+	void PhysicsScene::makeRigidBody<C3dUIComponent>(const Ref<Entity> &ent, RigidBodyComponent::Type type);
 }
 
 #endif

@@ -22,13 +22,13 @@ namespace pio
 {
 	UiCoordinate3D::UiCoordinate3D(const UiCoordinate3DBuilder &builder) : Shape(builder.Shape), Builder(builder)
 	{
-		XAxisEnt = Registry::Get()->create<Ui3DComponent, TransformComponent, BoxColliderComponent>();
+		XAxisEnt = Registry::Get()->create<C3dUIComponent, TransformComponent, BoxColliderComponent>();
 		XAxisEnt->getComponent<BoxColliderComponent>().ShapeFlags = PIO_BIT(PhysicsShapeFlag::Visualize) | PIO_BIT(PhysicsShapeFlag::Query) | PIO_BIT(PhysicsShapeFlag::Trigger);
 
-		YAxisEnt = Registry::Get()->create<Ui3DComponent, TransformComponent, BoxColliderComponent>();
+		YAxisEnt = Registry::Get()->create<C3dUIComponent, TransformComponent, BoxColliderComponent>();
 		YAxisEnt->getComponent<BoxColliderComponent>().ShapeFlags = PIO_BIT(PhysicsShapeFlag::Visualize) | PIO_BIT(PhysicsShapeFlag::Query) | PIO_BIT(PhysicsShapeFlag::Trigger);
 
-		ZAxisEnt = Registry::Get()->create<Ui3DComponent, TransformComponent, BoxColliderComponent>();
+		ZAxisEnt = Registry::Get()->create<C3dUIComponent, TransformComponent, BoxColliderComponent>();
 		ZAxisEnt->getComponent<BoxColliderComponent>().ShapeFlags = PIO_BIT(PhysicsShapeFlag::Visualize) | PIO_BIT(PhysicsShapeFlag::Query) | PIO_BIT(PhysicsShapeFlag::Trigger);
 
 		build(builder);
@@ -67,7 +67,7 @@ namespace pio
 			const AABB &aabb = submeshes[0].BoundingBox;
 			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(-90.f), glm::vec3(0.f, 0.f, 1.f));
 
-			Ui3DComponent &uiComp = XAxisEnt->getComponent<Ui3DComponent>();
+			C3dUIComponent &uiComp = XAxisEnt->getComponent<C3dUIComponent>();
 			uiComp.Name = STR_AXIS_X;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
@@ -93,7 +93,7 @@ namespace pio
 			std::vector<Submesh> &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());
 			const AABB &aabb = submeshes[0].BoundingBox;
 
-			Ui3DComponent &uiComp = YAxisEnt->getComponent<Ui3DComponent>();
+			C3dUIComponent &uiComp = YAxisEnt->getComponent<C3dUIComponent>();
 			uiComp.Name = STR_AXIS_Y;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
@@ -120,7 +120,7 @@ namespace pio
 			const AABB &aabb = submeshes[0].BoundingBox;
 			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
 
-			Ui3DComponent &uiComp = ZAxisEnt->getComponent<Ui3DComponent>();
+			C3dUIComponent &uiComp = ZAxisEnt->getComponent<C3dUIComponent>();
 			uiComp.Name = STR_AXIS_Z;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
@@ -152,7 +152,7 @@ namespace pio
 			glm::mat4 transform = glm::translate(glm::mat4(1.f), glm::vec3(config.Offset, 0.f, 0.f));
 			submeshes[0].Transform = glm::rotate(transform, glm::radians(-90.f), glm::vec3(0.f, 0.f, 1.f));
 
-			Ui3DComponent &uiComp = XAxisEnt->getComponent<Ui3DComponent>();
+			C3dUIComponent &uiComp = XAxisEnt->getComponent<C3dUIComponent>();
 			uiComp.Name = STR_AXIS_X;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
@@ -180,7 +180,7 @@ namespace pio
 			const AABB &aabb = submeshes[0].BoundingBox;
 			submeshes[0].Transform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, config.Offset, 0.f));
 
-			Ui3DComponent &uiComp = YAxisEnt->getComponent<Ui3DComponent>();
+			C3dUIComponent &uiComp = YAxisEnt->getComponent<C3dUIComponent>();
 			uiComp.Name = STR_AXIS_Y;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
@@ -209,7 +209,7 @@ namespace pio
 			glm::mat4 transform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, config.Offset));
 			submeshes[0].Transform = glm::rotate(transform, glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
 
-			Ui3DComponent &uiComp = ZAxisEnt->getComponent<Ui3DComponent>();
+			C3dUIComponent &uiComp = ZAxisEnt->getComponent<C3dUIComponent>();
 			uiComp.Name = STR_AXIS_Z;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();

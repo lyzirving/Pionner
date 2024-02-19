@@ -112,9 +112,9 @@ namespace pio
 	}
 
 	template<>
-	void PhysicsScene::makeRigidBody<Ui3DComponent>(const Ref<Entity> &ent, RigidBodyComponent::Type type)
+	void PhysicsScene::makeRigidBody<C3dUIComponent>(const Ref<Entity> &ent, RigidBodyComponent::Type type)
 	{
-		auto &smComp = ent->getComponent<Ui3DComponent>();
+		auto &smComp = ent->getComponent<C3dUIComponent>();
 		Ref<MeshSource> source = AssetsManager::GetRuntimeAsset<StaticMesh>(smComp.Handle)->getMeshSource();
 
 		auto &rbComp = ent->getComponent<RigidBodyComponent>();

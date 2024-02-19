@@ -9,7 +9,7 @@
 #include "core/math/Transform.h"
 #include "core/math/SphereCoord.h"
 
-#include "gfx/renderer/Camera.h"
+#include "gfx/struct/Camera.h"
 
 #include "physics/PhysicsDef.h"
 
@@ -69,13 +69,22 @@ namespace pio
 		bool Delay{ false };// Only for deferred shading
 	};
 
-	struct Ui3DComponent
+	struct C3dUIComponent
 	{
 		bool Visible{ true };
 		std::string_view Name;
 		AssetHandle Handle{ NullAsset };
 		AssetHandle SourceHandle{ NullAsset };
 		uint32_t SubmeshIndex{ NullIndex };
+		RenderState State;
+	};
+
+	struct C2dUIComponent
+	{
+		bool Visible{ true };
+		std::string_view Name;
+		AssetHandle QuadMesh{ NullAsset };
+		uint32_t Width{ 50 }, Height{ 50 };
 		RenderState State;
 	};
 

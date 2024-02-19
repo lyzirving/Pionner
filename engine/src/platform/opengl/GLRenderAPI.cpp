@@ -15,6 +15,7 @@
 #include "gfx/struct/ShaderLibrary.h"
 #include "gfx/struct/Geometry2D.h"
 #include "gfx/struct/MeshUtil.h"
+#include "gfx/struct/Camera.h"
 
 #include "gfx/rhi/VertexArray.h"
 #include "gfx/rhi/VertexBuffer.h"
@@ -25,7 +26,6 @@
 #include "gfx/rhi/Texture.h"
 #include "gfx/rhi/RenderPass.h"
 
-#include "gfx/renderer/Camera.h"
 #include "gfx/renderer/RenderData.h"
 #include "gfx/renderer/Renderer.h"
 
@@ -1242,7 +1242,7 @@ namespace pio
 			shader->setBool("u_playAnimation", boneTransformUB.get());
 			shader->setBool("u_bStatic", mesh->is<StaticMesh>());
 			shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
-			shader->setVec4("u_outlineColor", Renderer::GetConfig().Debugger.OutlineColor);
+			shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
 
 			submesh.VertexArray->bind();
 			submesh.IndexBuffer->bind();
@@ -1315,7 +1315,7 @@ namespace pio
 			shader->setBool("u_playAnimation", boneTransformUB.get());
 			shader->setBool("u_bStatic", mesh->is<StaticMesh>());
 			shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
-			shader->setVec4("u_outlineColor", Renderer::GetConfig().Debugger.OutlineColor);
+			shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
 
 			submesh.VertexArray->bind();
 			submesh.IndexBuffer->bind();

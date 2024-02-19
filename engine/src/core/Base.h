@@ -30,6 +30,7 @@
 
 #include "core/utils/StringUtil.h"
 #include "core/utils/TimeUtil.h"
+#include "core/utils/ColorSpace.h"
 
 namespace pio
 {

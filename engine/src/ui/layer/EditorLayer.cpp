@@ -82,8 +82,11 @@ namespace pio
 				ImGui::End();
 				return;
 			}
+			const float rowWidth = m_layoutParam.Viewport.Width;
 			RendererConfig &config = Renderer::GetConfig();
-			ImGui::LabelText("##FPS", "fps:%.1f, frame time:%lu ms", config.FPS, config.FrameTime);
+			ImGui::PushItemWidth(rowWidth);
+			ImGui::LabelText("##FPS", "fps[%.1f], frame-time[%lu]ms", config.FPS, config.FrameTime);
+			ImGui::PopItemWidth();
 
 			EditorComponent &editorComp = registry->getSingleton<EditorComponent>();
 			if (editorComp.SelectedEntIndex != NullIndex)

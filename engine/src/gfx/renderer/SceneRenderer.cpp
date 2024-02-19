@@ -348,7 +348,7 @@ namespace pio
 	void SceneRenderer::createDeferredPass(uint32_t w, uint32_t h)
 	{
 		createGBufferPass(w, h);
-		createPointLightPass(w, h);
+		createLightPass(w, h);
 	}
 
 	void SceneRenderer::createGBufferPass(uint32_t w, uint32_t h)
@@ -455,7 +455,7 @@ namespace pio
 		m_GBufferPass->setState(state);
 	}
 
-	void SceneRenderer::createPointLightPass(uint32_t w, uint32_t h)
+	void SceneRenderer::createLightPass(uint32_t w, uint32_t h)
 	{
 		TextureSpecification colorBufSpec;
 		colorBufSpec.Name = "LightColorBuffer";

@@ -1,6 +1,6 @@
 #include "Ray.h"
 
-#include "gfx/renderer/Camera.h"
+#include "gfx/struct/Camera.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

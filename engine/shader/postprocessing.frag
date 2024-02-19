@@ -14,7 +14,8 @@ void main() {
     // HDR tonemapping
     colorRGB = colorRGB / (colorRGB + vec3(1.0));
     // gamma correct
-    colorRGB = pow(colorRGB, vec3(1.0/2.2)); 
+    float invGamma = 1.0 / 2.2;
+    colorRGB = pow(colorRGB, vec3(invGamma)); 
 
     o_color = vec4(colorRGB.rgb, color.a);
 }

@@ -2,7 +2,7 @@
 #define __PIONNER_GFX_RENDERER_SCENE_RENDERER_H__
 
 #include "RenderData.h"
-#include "Camera.h"
+#include "gfx/struct/Camera.h"
 
 namespace pio
 {
@@ -44,7 +44,7 @@ namespace pio
 		void createForwardPass(uint32_t w, uint32_t h);
 		void createDeferredPass(uint32_t w, uint32_t h);
 		void createGBufferPass(uint32_t w, uint32_t h);
-		void createPointLightPass(uint32_t w, uint32_t h);
+		void createLightPass(uint32_t w, uint32_t h);
 
 		void flushDrawList(const Scene &scene);
 

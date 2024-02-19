@@ -1,11 +1,11 @@
-#ifndef __PIONNER_GFX_RENDERER_CAMERA_H__
-#define __PIONNER_GFX_RENDERER_CAMERA_H__
+#ifndef __PIONNER_GFX_STRUCT_CAMERA_H__
+#define __PIONNER_GFX_STRUCT_CAMERA_H__
 
-#include "RenderState.h"
 #include "Frustum.h"
 
-#include "core/math/SphereCoord.h"
+#include "gfx/renderer/RenderState.h"
 #include "gfx/rhi/Uniform.h"
+#include "core/math/SphereCoord.h"
 
 namespace pio
 {

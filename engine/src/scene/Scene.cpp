@@ -264,7 +264,7 @@ namespace pio
 		{
 			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-2.f, 2.f, 0.f), glm::vec3(0.f), glm::vec3(3.f), 0.12f);
 
-			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent>(NodeType::DistantLight);
+			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, C2dUIComponent>(NodeType::DistantLight);
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 			lightComp.Position = m_lightEnv.DirectionalLight.Position;
 			lightComp.Dest = m_lightEnv.DirectionalLight.Dest;
@@ -276,6 +276,10 @@ namespace pio
 			PIO_RELATION_SET_SELF_INDEX(ent, ent->getCacheIndex());
 			PIO_RELATION_SET_PARENT_INDEX(ent, m_sceneRoot->getCacheIndex());
 			PIO_RELATION_SET_CHILD_INDEX(m_sceneRoot, ent->getCacheIndex());
+
+			auto &uiComp = ent->getComponent<C2dUIComponent>();
+			uiComp.Visible = true;
+			uiComp.Name = rlComp.Tag;
 		}
 
 		//Point Light

@@ -1,5 +1,5 @@
-#ifndef __PIONNER_GFX_RENDERER_FRUSTUM_H__
-#define __PIONNER_GFX_RENDERER_FRUSTUM_H__
+#ifndef __PIONNER_GFX_STRUCT_FRUSTUM_H__
+#define __PIONNER_GFX_STRUCT_FRUSTUM_H__
 
 #include "core/Base.h"
 

@@ -5,7 +5,7 @@
 
 #include "core/Buffer.h"
 
-#include "gfx/renderer/Camera.h"
+#include "gfx/struct/Camera.h"
 #include "gfx/rhi/RenderPass.h"
 
 #ifdef LOCAL_TAG

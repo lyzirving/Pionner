@@ -3,7 +3,7 @@
 
 #include "Layer.h"
 
-#include "gfx/renderer/Camera.h"
+#include "gfx/struct/Camera.h"
 #include "physics/PhysicsDef.h"
 
 namespace pio
