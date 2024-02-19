@@ -192,6 +192,11 @@ namespace pio
 		s_API->renderHDRToCube(meshHandle, submeshIndex, prjMat, viewMat, state, cubeAttach, HDRTexture, cubeFbo);
 	}
 
+	void Renderer::Postprocessing(AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)
+	{
+		s_API->postprocessing(meshHandle, composite, state);
+	}
+
 	void Renderer::BeginRenderPass(Ref<RenderPass> &pass)
 	{
 		s_API->beginRenderPass(pass);

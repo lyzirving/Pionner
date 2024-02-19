@@ -72,4 +72,14 @@ namespace pio
 		Renderer::RenderPointLightQuad_Deferred(Renderer::GetConfig().FullScreenQuad, uniformBufferSet,
 											    GBufferPass, pointLightShadowPass, lightEffectState);
 	}
+
+	void RenderPass::Postprocessing(AssetHandle &quadMesh, Ref<Texture2D> &composite)
+	{
+		RenderState state;
+		state.Blend = Blend::Disable();
+		state.DepthTest = DepthTest::Disable();
+		state.Cull = CullFace::Common();
+		state.Stencil.Enable = false;
+		Renderer::Postprocessing(quadMesh, composite, state);
+	}
 }

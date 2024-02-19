@@ -133,12 +133,6 @@ void main() {
 
     // emission is not affected by lighting
     vec3 color = ambient + m_params.Emission + Lo;
-
-    // HDR tonemapping
-    color = color / (color + vec3(1.0));
-    // gamma correct
-    color = pow(color, vec3(1.0/2.2)); 
-
     o_color = vec4(color.rgb, m_params.Alpha);
 }
 

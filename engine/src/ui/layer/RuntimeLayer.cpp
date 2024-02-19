@@ -9,6 +9,7 @@
 #include "gfx/renderer/SceneRenderer.h"
 #include "gfx/renderer/Renderer.h"
 #include "gfx/rhi/Texture.h"
+#include "gfx/rhi/RenderPass.h"
 #include "gfx/struct/MeshFactory.h"
 
 #ifdef LOCAL_TAG
@@ -67,7 +68,13 @@ namespace pio
 	{
 		m_scene->onUpdate(ts);
 		m_scene->onRender(m_renderer, ts);
-		onDrawQuad(m_screenQuad, m_renderer->getCompositeTexture());
+
+		AssetHandle handle = m_screenQuad;
+		Ref<Texture2D> composite = m_renderer->getCompositeTexture();
+		Renderer::SubmitRC([handle, composite]() mutable
+		{
+			RenderPass::Postprocessing(handle, composite);
+		});		
 	}
 
 	void RuntimeLayer::onWindowSizeChange(uint32_t width, uint32_t height)
@@ -118,21 +125,5 @@ namespace pio
 	bool RuntimeLayer::onHandleClick(const glm::vec2 &cursor)
 	{		
 		return m_scene->dispatchClick(UiDef::ScreenToViewport(cursor, m_layoutParam));
-	}
-
-	void RuntimeLayer::onDrawQuad(const AssetHandle &handle, Ref<Texture2D> &composite)
-	{
-		Ref<Texture2D> t = composite;
-		AssetHandle h = handle;
-
-		Renderer::SubmitRC([t, h]() mutable
-		{
-			RenderState s;
-			s.Blend = Blend::Disable();
-			s.DepthTest = DepthTest::Disable();
-			s.Cull = CullFace::Common();
-			s.Stencil.Enable = false;
-			Renderer::RenderTextureQuad2D(h, t, s);
-		});
 	}
 }

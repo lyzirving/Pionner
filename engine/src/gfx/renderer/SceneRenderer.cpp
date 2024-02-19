@@ -655,7 +655,7 @@ namespace pio
 			skState.Cull = CullFace::Common();
 			skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
 			skState.Stencil.Enable = false;
-			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);
+			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);			
 
 			Renderer::EndRenderPass(lp);	
 		});

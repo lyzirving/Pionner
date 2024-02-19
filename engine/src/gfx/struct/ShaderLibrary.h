@@ -10,7 +10,7 @@ namespace pio
 		PBR_Mesh, DistantLight_ShadowData, PointLight_ShadowData, MaterialPreview, Wireframe, LightVolume,
 		Color_Line, Outline, TextureQuad,
 		Mesh_Deferred, DistantLighting_Deferred, LightingEffect_Deferred, Outline_Deferred,
-		Equirectangular_To_Cube, Skybox, Num
+		Equirectangular_To_Cube, Skybox, Postprocessing, Num
 	};
 
 	class ShaderLibrary

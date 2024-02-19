@@ -78,7 +78,7 @@ out vec4 o_color;
 int nearestInt(float val);
 vec4 meshColor();
 vec3 calculateDistantLights();
-vec3 calcShadow(int mode);
+float calcShadow(int mode);
 
 float distantLightHardShadow();
 float distantLightPCFShadow(int radius);
@@ -119,13 +119,8 @@ vec4 meshColor()
     vec3 lightEffect = calculateDistantLights(); 
     vec3 color = u_distantLight.CastShadow ? ((1.f - calcShadow(u_distantLight.SdMode)) * lightEffect) : lightEffect;
     
-    // TODO: use an unified post effect process
+    // TODO: IBL
     color += ambient + m_params.Emission;
-    // HDR tonemapping
-    color = color / (color + vec3(1.0));
-    // gamma correct
-    color = pow(color, vec3(1.0/2.2));
-
     return vec4(color.rgb, m_params.Alpha);
 }
 
@@ -157,7 +152,7 @@ vec3 calculateDistantLights()
     return (diffuseBRDF + specularBRDF) * NdotL * Lradiance;
 }
 
-vec3 calcShadow(int mode)
+float calcShadow(int mode)
 {
     float shadow = 0.f;
     if(mode == ShadowMode_Hard)

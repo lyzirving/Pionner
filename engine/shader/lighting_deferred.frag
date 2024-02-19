@@ -241,16 +241,7 @@ vec4 meshColor()
     //vec3 ambient = vec3(0.03) * m_params.Albedo * m_params.AO;
     //vec3 color = ambient + m_params.Emission + Lo;
 
-    // emission is not affected by lighting
-    vec3 color = Lo;
-
-    // TODO: use an unified post effect process
-    // HDR tonemapping
-    color = color / (color + vec3(1.0));
-    // gamma correct
-    color = pow(color, vec3(1.0/2.2)); 
-
-    return vec4(color.rgb, m_params.Alpha);
+    return vec4(Lo.rgb, m_params.Alpha);
 }
 
 int nearestInt(float val)

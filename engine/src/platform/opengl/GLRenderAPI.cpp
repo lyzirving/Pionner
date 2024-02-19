@@ -353,7 +353,7 @@ namespace pio
 	void GLRenderAPI::renderPointLightQuad_Deferred(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
 	{
 		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
-		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "Quad Mesh is invalid");
+		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderPointLightQuad_Deferred: Quad Mesh is invalid");
 
 		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::LightingEffect_Deferred);
 		PIO_ASSERT_RETURN(shader.use_count() != 0, "LightingEffect_Deferred shader is invalid");
@@ -442,7 +442,7 @@ namespace pio
 	void GLRenderAPI::renderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
 	{
 		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
-		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "Quad Mesh is invalid");
+		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderDistantLightingQuad_Deferred: Quad Mesh is invalid");
 
 		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::DistantLighting_Deferred);
 		PIO_ASSERT_RETURN(shader.use_count() != 0, "DistantLighting_Deferred shader is invalid");
@@ -562,7 +562,7 @@ namespace pio
 	void GLRenderAPI::renderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state)
 	{
 		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
-		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "Quad Mesh is invalid");
+		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderTextureQuad2D: Quad Mesh is invalid");
 
 		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::TextureQuad);
 		PIO_ASSERT_RETURN(shader.use_count() != 0, "TextureQuad shader is invalid");
@@ -677,6 +677,39 @@ namespace pio
 		submesh.VertexArray->unbind();
 
 		HDRTexture->unbind();
+		shader->bind(false);
+	}
+
+	void GLRenderAPI::postprocessing(AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)
+	{
+		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
+		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "postprocessing: Quad Mesh is invalid");
+
+		PIO_ASSERT_RETURN(composite.use_count() != 0, "postprocessing: composite texture is invalid");
+
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Postprocessing);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "postprocessing: shader is invalid");
+
+		GLState::SetBlendMode(state.Blend);
+		GLState::SetDepthTest(state.DepthTest);
+		GLState::SetCullFace(state.Cull);
+		GLState::SetStencilTest(state.Stencil);
+
+		shader->bind(true);
+
+		composite->active(PIO_UINT(TextureSampler::Slot0));
+		composite->bind();
+		shader->setTextureSampler("u_composite", TextureSampler::Slot0);
+
+		quadMesh->VertexArray->bind();
+		quadMesh->IndexBuffer->bind();
+
+		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::CheckError("postprocessing fail!!");
+
+		quadMesh->IndexBuffer->unbind();
+		quadMesh->VertexArray->unbind();
+
 		shader->bind(false);
 	}
 
