@@ -85,7 +85,7 @@ namespace pio
 			const float rowWidth = m_layoutParam.Viewport.Width;
 			RendererConfig &config = Renderer::GetConfig();
 			ImGui::PushItemWidth(rowWidth);
-			ImGui::LabelText("##FPS", "fps[%.1f], frame-time[%lu]ms", config.FPS, config.FrameTime);
+			ImGui::LabelText("##FPS", "FPS[%.1f], FrameTime[%lu]ms", config.FPS, config.FrameTime);
 			ImGui::PopItemWidth();
 
 			EditorComponent &editorComp = registry->getSingleton<EditorComponent>();

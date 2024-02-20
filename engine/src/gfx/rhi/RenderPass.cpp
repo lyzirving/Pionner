@@ -73,6 +73,15 @@ namespace pio
 											    GBufferPass, pointLightShadowPass, lightEffectState);
 	}
 
+	void RenderPass::RenderSprites(std::map<MeshKey, SpriteCommand> &cmd)
+	{
+		for (auto &it : cmd)
+		{			
+			SpriteCommand &d = it.second;
+			Renderer::RenderSprite(d.QuadMesh, d.Texture, d.State);
+		}
+	}
+
 	void RenderPass::Postprocessing(AssetHandle &quadMesh, Ref<Texture2D> &composite)
 	{
 		RenderState state;

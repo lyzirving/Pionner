@@ -595,6 +595,15 @@ namespace pio
 		shader->bind(false);
 	}
 
+	void GLRenderAPI::renderSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state)
+	{
+		Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(quadMesh);
+		PIO_ASSERT_RETURN(mesh.use_count() != 0, "renderSprite: Quad Mesh is invalid");
+
+		Ref<Texture2D> icon = AssetsManager::GetRuntimeAsset<Texture2D>(texture);
+		PIO_ASSERT_RETURN(icon.use_count() != 0, "renderSprite: texture is invalid");
+	}
+
 	void GLRenderAPI::renderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state)
 	{
 		Ref<MeshBase> cubeMesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);

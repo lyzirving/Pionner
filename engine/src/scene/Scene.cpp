@@ -2,8 +2,10 @@
 #include "Skybox.h"
 
 #include "gfx/renderer/SceneRenderer.h"
+#include "gfx/renderer/Renderer.h"
 #include "gfx/struct/MeshUtil.h" 
 #include "gfx/struct/MaterialLibrary.h"
+#include "gfx/rhi/Texture.h"
 #include "gfx/debug/GDebugger.h"
 
 #include "core/EventBus.h"
@@ -121,7 +123,10 @@ namespace pio
 
 	void Scene::onUpdate(const Timestep &ts)
 	{
-		simulate(ts);
+		Camera &sceneCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
+		sceneCam.flush();
+
+		simulate(ts);		
 
 		// Process Animation
 		{
@@ -162,8 +167,13 @@ namespace pio
 			auto it = view.begin();
 			if (it != view.end())
 			{
-				auto &comp = it->second->getComponent<DirectionalLightComponent>();
-				LightCompToSceneData(comp, m_lightEnv.DirectionalLight);
+				auto &lightComp = it->second->getComponent<DirectionalLightComponent>();
+				LightCompToSceneData(lightComp, m_lightEnv.DirectionalLight);
+				if (it->second->hasComponent<SpriteComponent>())
+				{
+					auto &spriteComp = it->second->getComponent<SpriteComponent>();
+					spriteComp.Position = Math::ToScreenPos(m_lightEnv.DirectionalLight.Position, sceneCam);
+				}
 			}
 		}
 	}
@@ -172,10 +182,8 @@ namespace pio
 	{
 		// -------------------- Render 3D scene ----------------------------
 		// -----------------------------------------------------------------
-		Camera &camera = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
-		camera.flush();
-
-		renderer->beginScene(*this, camera);
+		Camera &sceneCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
+		renderer->beginScene(*this, sceneCam);
 
 		// Process dynamic mesh
 		{
@@ -222,6 +230,20 @@ namespace pio
 					renderer->submitMesh(Ref<MeshBase>(staticMesh), staticMeshComp.SubmeshIndex, transform, staticMeshComp.State);
 			}
 		}
+		
+		// Sprite
+		{
+			auto view = s_registry->view<SpriteComponent>();
+			for (auto &v : view)
+			{
+				auto &entity = v.second;
+				auto &comp = entity->getComponent<SpriteComponent>();
+				if (comp.QuadMesh == NullIndex || !comp.Visible)
+					continue;
+
+				renderer->submitSprite(comp.QuadMesh, comp.Texture, comp.State);
+			}
+		}
 
 		renderer->endScene(*this);
 	}
@@ -264,7 +286,7 @@ namespace pio
 		{
 			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-2.f, 2.f, 0.f), glm::vec3(0.f), glm::vec3(3.f), 0.12f);
 
-			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, C2dUIComponent>(NodeType::DistantLight);
+			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent>(NodeType::DistantLight);
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 			lightComp.Position = m_lightEnv.DirectionalLight.Position;
 			lightComp.Dest = m_lightEnv.DirectionalLight.Dest;
@@ -277,9 +299,16 @@ namespace pio
 			PIO_RELATION_SET_PARENT_INDEX(ent, m_sceneRoot->getCacheIndex());
 			PIO_RELATION_SET_CHILD_INDEX(m_sceneRoot, ent->getCacheIndex());
 
-			auto &uiComp = ent->getComponent<C2dUIComponent>();
-			uiComp.Visible = true;
-			uiComp.Name = rlComp.Tag;
+			auto &spriteComp = ent->getComponent<SpriteComponent>();
+			spriteComp.Visible = true;
+			spriteComp.Name = rlComp.Tag;	
+			spriteComp.QuadMesh = MeshFactory::CreateScreenQuad(0, 0, 1, 1, 1, 1)->getHandle();
+			TextureSpecification spec; spec.SRGB = true; 
+			Ref<Texture2D> icon = Texture2D::Create(AssetsManager::SpriteAbsPath("distant_light", AssetFmt::PNG), spec);
+			spriteComp.Texture = icon->getHandle();
+			AssetsManager::Get()->addRuntimeAsset(icon);
+
+			Renderer::SubmitTask([icon]() mutable { icon->init(); });
 		}
 
 		//Point Light

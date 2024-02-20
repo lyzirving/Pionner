@@ -100,6 +100,7 @@ namespace pio
 		static glm::mat4 GetViewMat(const SphereCoord &position, const glm::vec3 &lookAt = glm::vec3(0.f));
 		static glm::mat4 GetViewMat(const glm::vec3 &position, const glm::vec3 &lookAt = glm::vec3(0.f));
 		static glm::mat4 GetOrtho(float l, float r, float b, float t);
+		static glm::mat4 GetViewportMat(const Viewport &vp);
 
 	public:
 		inline void setVisible(bool b) { m_visible = b; }

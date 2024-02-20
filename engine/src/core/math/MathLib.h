@@ -10,9 +10,12 @@ namespace pio
 {
 	#define PIO_PI (3.141592654f)
 
+	class Camera;
+
 	namespace Math
 	{
 		bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale);
+		glm::uvec2 ToScreenPos(const glm::vec3 &worldPos, const Camera &cam);
 
 		inline glm::vec3 Scale(const glm::vec3 &v, float desiredLength) { return v * desiredLength / glm::length(v); }
 
@@ -25,7 +28,7 @@ namespace pio
 		inline bool Equal(const glm::vec2 &lhs, const glm::vec2 &rhs) { return IsZero(lhs - rhs); }
 		inline bool Equal(const glm::vec3 &lhs, const glm::vec3 &rhs) { return IsZero(lhs - rhs); }
 
-		inline glm::mat3 NormalMat(const glm::mat4 &modelMat) { return glm::transpose(glm::inverse(glm::mat3(modelMat))); }
+		inline glm::mat3 NormalMat(const glm::mat4 &modelMat) { return glm::transpose(glm::inverse(glm::mat3(modelMat))); }		
 
 		// greatest common divisor 
 		inline int32_t GCB(int32_t a, int32_t b)

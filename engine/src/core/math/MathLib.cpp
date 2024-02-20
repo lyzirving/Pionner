@@ -2,6 +2,8 @@
 
 #include "MathLib.h"
 
+#include "gfx/struct/Camera.h"
+
 namespace pio
 {
 	namespace Math
@@ -64,6 +66,15 @@ namespace pio
 			} // End if <= 0
 
 			return true;
+		}
+
+		glm::uvec2 Math::ToScreenPos(const glm::vec3 &worldPos, const Camera &cam)
+		{
+			glm::vec4 clipPos = cam.getPrjMat() * cam.getViewMat() * glm::vec4(worldPos, 1.f);
+			glm::vec4 cvv = glm::vec4(clipPos.x / clipPos.w, clipPos.y / clipPos.w, clipPos.z / clipPos.w, 1.f);
+			glm::mat4 vpMat = Camera::GetViewportMat(cam.getViewport());
+			glm::vec4 screen = vpMat * cvv;
+			return glm::uvec2(cvv.x, cvv.y);
 		}
 	}
 }

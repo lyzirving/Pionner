@@ -155,6 +155,7 @@ namespace pio
 		m_meshDraws.clear();
 		m_delayedMeshDraws.clear();
 		m_shadowPassDraws.clear();
+		m_spriteDraws.clear();
 
 		m_active = false;
 	}
@@ -198,6 +199,18 @@ namespace pio
 					dc.State.Cull = CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front);
 				}
 			}
+		}
+	}
+
+	void SceneRenderer::submitSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state)
+	{
+		MeshKey meshKey{ quadMesh, 0 };
+
+		{
+			auto &dc = m_spriteDraws[meshKey];
+			dc.QuadMesh = quadMesh;
+			dc.Texture = texture;
+			dc.State = state;
 		}
 	}
 
@@ -632,8 +645,9 @@ namespace pio
 		Ref<RenderPass> plsp = m_pointLightShadowPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
 		std::map<MeshKey, DrawCommand> &dCmd = m_delayedMeshDraws;
+		std::map<MeshKey, SpriteCommand> &spriteCmd = m_spriteDraws;
 
-		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, dCmd]() mutable
+		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, dCmd, spriteCmd]() mutable
 		{						
 			Renderer::BeginRenderPass(lp);
 			// Copy depth buffer from G-Buffer into Lighting pass
@@ -655,7 +669,9 @@ namespace pio
 			skState.Cull = CullFace::Common();
 			skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
 			skState.Stencil.Enable = false;
-			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);			
+			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);		
+
+			RenderPass::RenderSprites(spriteCmd);
 
 			Renderer::EndRenderPass(lp);	
 		});

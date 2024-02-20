@@ -79,12 +79,17 @@ namespace pio
 		RenderState State;
 	};
 
-	struct C2dUIComponent
+	struct SpriteComponent
 	{
 		bool Visible{ true };
 		std::string_view Name;
 		AssetHandle QuadMesh{ NullAsset };
-		uint32_t Width{ 50 }, Height{ 50 };
+		AssetHandle Texture{ NullAsset };
+		glm::uvec2 Position{ 0 };
+		uint32_t ScreenWidth{ 50 };
+		uint32_t ScreenHeight{ 50 };
+		glm::vec2 UVStart{ 0.0f, 0.0f };
+		glm::vec2 UVEnd{ 1.0f, 1.0f };	
 		RenderState State;
 	};
 

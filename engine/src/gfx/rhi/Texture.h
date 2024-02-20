@@ -14,19 +14,17 @@ namespace pio
 		int32_t Height{ 1 };
 		int32_t Channel{ 1 };
 		int32_t Num{ 1 };
-		TextureWrap WrapS = TextureWrap::ClampEdge;
-		TextureWrap WrapT = TextureWrap::ClampEdge;
-		TextureWrap WrapR = TextureWrap::ClampEdge;
-		TextureFilterMin MinFilter = TextureFilterMin::Linear;
-		TextureFilterMag MaxFilter = TextureFilterMag::Linear;
+		TextureWrap WrapS{ TextureWrap::ClampEdge };
+		TextureWrap WrapT{ TextureWrap::ClampEdge };
+		TextureWrap WrapR{ TextureWrap::ClampEdge };
+		TextureFilterMin MinFilter{ TextureFilterMin::Linear };
+		TextureFilterMag MaxFilter{ TextureFilterMag::Linear };
 		AssetType AType{ AssetType::Texture };
 		glm::vec4 BorderColor{ 1.f };
 
-		bool GenerateMips = false;
-		// if false, linear rgb
-		bool SRGB = true;
-		bool Storage = false;
-		bool StoreLocally = false;
+		bool GenerateMips{ false };		
+		bool SRGB{ true };// if false, linear rgb
+		bool Storage{ false };
 	};
 
 	class Texture : public Asset
@@ -52,6 +50,7 @@ namespace pio
 		virtual const std::string &getName() const = 0;
 		virtual uint32_t getId() const = 0;
 		virtual uint32_t getMipLevelCount() const = 0;
+		virtual bool SRGB() const = 0;
 
 	public:
 		template<typename T>

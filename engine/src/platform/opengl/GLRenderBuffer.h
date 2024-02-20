@@ -29,6 +29,7 @@ namespace pio
 
 		virtual const std::string &getName() const override { return m_spec.Name; }
 		virtual uint32_t getId() const override { return m_bufferId; }
+		virtual bool SRGB() const override { return m_spec.SRGB; }
 
 	private:
 		uint32_t m_bufferId{ 0 };

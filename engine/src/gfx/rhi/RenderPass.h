@@ -12,6 +12,8 @@ namespace pio
 	class Camera;
 	class Texture2D;
 	struct LightEnvironment;
+	struct SpriteCommand;
+	struct MeshKey;
 
 	struct RenderPassSpecification
 	{
@@ -38,6 +40,7 @@ namespace pio
 		static Ref<RenderPass> Create(const RenderPassSpecification &spec);
 
 		static void RenderLightingEffect_Deferred(const LightEnvironment &lightEnv, Ref<RenderPass> &GBufferPass, Ref<RenderPass> &distantLightShadowPass, Ref<RenderPass> &pointLightShadowPass, Ref<UniformBufferSet> &uniformBufferSet);
+		static void RenderSprites(std::map<MeshKey, SpriteCommand> &cmd);
 		static void Postprocessing(AssetHandle &quadMesh, Ref<Texture2D> &composite);
 	};
 }

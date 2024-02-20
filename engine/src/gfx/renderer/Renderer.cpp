@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Renderer.h"
 #include "RenderThread.h"
 
 #include "asset/AssetsManager.h"
@@ -180,6 +181,11 @@ namespace pio
 	void Renderer::RenderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state)
 	{
 		s_API->renderTextureQuad2D(meshHandle, texture, state);
+	}
+
+	void Renderer::RenderSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state)
+	{
+		s_API->renderSprite(quadMesh, texture, state);
 	}
 
 	void Renderer::RenderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state)

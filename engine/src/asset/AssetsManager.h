@@ -61,10 +61,11 @@ namespace pio
 			}
 			return ret;
 		}
-
+		
 		static std::string AssetsRootDirectory(AssetFmt fmt);
 		static bool FindAssetAbsPath(const std::string &parentDir, AssetFmt fmt, std::string &out);
 		static const char *GetFmtPostfix(AssetFmt fmt);
+		static std::string SpriteAbsPath(const std::string &name, AssetFmt fmt);
 
 	private:
 		Ref<Asset> getPackedAsset(const std::string &path);

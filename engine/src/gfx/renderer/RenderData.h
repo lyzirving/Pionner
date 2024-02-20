@@ -68,12 +68,19 @@ namespace pio
 
 	struct DrawCommand
 	{
-		AssetHandle Mesh{ 0 };
-		uint32_t SubmeshIndex{ 0 };
+		AssetHandle Mesh{ NullAsset };
+		uint32_t SubmeshIndex{ NullAsset };
 		Ref<MaterialTable> MaterialTb;
 		glm::mat4 ModelMat{ 1.f };
 		RenderState State{};
 		bool IsRigged{ false };
+	};
+
+	struct SpriteCommand
+	{
+		AssetHandle QuadMesh{ NullAsset };
+		AssetHandle Texture{ NullAsset };
+		RenderState State{};
 	};
 }
 

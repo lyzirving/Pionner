@@ -176,4 +176,9 @@ namespace pio
 				return "invalid fmt";
 		}
 	}
+
+	std::string AssetsManager::SpriteAbsPath(const std::string &name, AssetFmt fmt)
+	{
+		return AssetsRootDirectory(fmt) + "/sprite/" + name + GetFmtPostfix(fmt);
+	}
 }

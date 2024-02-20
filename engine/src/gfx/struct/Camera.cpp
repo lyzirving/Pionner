@@ -248,4 +248,15 @@ namespace pio
 	{
 		return glm::ortho(l, r, b, t);
 	}
+
+	glm::mat4 Camera::GetViewportMat(const Viewport &vp)
+	{
+		glm::vec4 col0 = glm::vec4(float(vp.Width) / 2.f, 0.f, 0.f, 0.f);
+		glm::vec4 col1 = glm::vec4(0.f, float(vp.Height) / 2.f, 0.f, 0.f);
+		glm::vec4 col2 = glm::vec4(0.f, 0.f, 0.5f, 0.f);
+		glm::vec4 col3 = glm::vec4(float(vp.X) + float(vp.Width) / 2.f,
+								   float(vp.Y) + float(vp.Height) / 2.f,
+								   0.5f, 1.f);
+		return glm::mat4(col0, col1, col2, col3);
+	}
 }

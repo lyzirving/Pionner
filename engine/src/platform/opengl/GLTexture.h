@@ -37,6 +37,7 @@ namespace pio
 		virtual uint32_t getSize() const override { return m_size; }
 		virtual const std::string &getName() const override { return m_spec.Name; }
 		virtual uint32_t getMipLevelCount() const override { return 0; }
+		virtual bool SRGB() const override { return m_spec.SRGB; };
 
 		virtual bool init() override;
 		virtual void destroy() override;
@@ -66,6 +67,7 @@ namespace pio
 		virtual const std::string &getName() const override { return m_spec.Name; }
 		virtual uint32_t getMipLevelCount() const override { return 0; }
 		virtual Ref<Buffer> getBuffer() override { return Ref<Buffer>(); };
+		virtual bool SRGB() const override { return m_spec.SRGB; };
 
 		virtual bool init() override;
 		virtual void destroy() override;
@@ -98,6 +100,7 @@ namespace pio
 		virtual const std::string &getName() const override { return m_spec.Name; }
 		virtual uint32_t getId() const override { return m_textureId; }
 		virtual uint32_t getMipLevelCount() const override { return 0; }
+		virtual bool SRGB() const override { return m_spec.SRGB; };
 	};
 
 	class GLBufferTexture : public BufferTexture, public GLTexture
@@ -113,6 +116,7 @@ namespace pio
 		virtual uint32_t getSize() const override { return m_size; }
 		virtual const std::string &getName() const override { return "BufferTexture"; }
 		virtual uint32_t getMipLevelCount() const override { return 0; }
+		virtual bool SRGB() const override { return m_spec.SRGB; };
 
 		virtual bool init() override;
 		virtual void destroy() override;
