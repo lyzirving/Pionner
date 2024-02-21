@@ -307,7 +307,7 @@ namespace pio
 
 		// Directional Light
 		{
-			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-2.f, 2.f, 0.f), glm::vec3(0.f), glm::vec3(3.f), 0.12f);
+			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-4.5f, 3.8f, -1.f), glm::vec3(0.f), glm::vec3(3.f), 0.12f);
 
 			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent>(NodeType::DistantLight);
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();

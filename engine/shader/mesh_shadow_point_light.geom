@@ -7,11 +7,11 @@ const int POINT_LIGHT_LIMIT = 10;
 
 layout (triangles) in;
 // max_vertices is 3 * 6 * POINT_LIGHT_LIMIT
-// layout (triangle_strip, max_vertices=180) out;
+layout (triangle_strip, max_vertices=180) out;
 
 // max_vertices is 3 * 6 * 4(for hardware compatibility)
 // TODO: how to set max_vertices dynamically? 
-layout (triangle_strip, max_vertices=72) out; 
+// layout (triangle_strip, max_vertices=72) out; 
 
 struct LightMetaData
 {
