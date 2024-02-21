@@ -533,6 +533,7 @@ namespace pio
 				LOGE("render strategy[%u] is not implemented", strategy);
 				break;
 		}
+		onScreenRendering(scene);
 	}
 
 	void SceneRenderer::forwardRendering(const Scene &scene)
@@ -645,9 +646,8 @@ namespace pio
 		Ref<RenderPass> plsp = m_pointLightShadowPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
 		std::map<MeshKey, DrawCommand> &dCmd = m_delayedMeshDraws;
-		std::map<MeshKey, SpriteCommand> &spriteCmd = m_spriteDraws;
 
-		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, dCmd, spriteCmd]() mutable
+		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, dCmd]() mutable
 		{						
 			Renderer::BeginRenderPass(lp);
 			// Copy depth buffer from G-Buffer into Lighting pass
@@ -669,11 +669,22 @@ namespace pio
 			skState.Cull = CullFace::Common();
 			skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
 			skState.Stencil.Enable = false;
-			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);		
-
-			RenderPass::RenderSprites(spriteCmd);
+			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);					
 
 			Renderer::EndRenderPass(lp);	
+		});
+	}
+
+	void SceneRenderer::onScreenRendering(const Scene &scene)
+	{
+		const AssetHandle &handle = scene.m_screenQuad;
+		Ref<Texture2D> composite = m_compositeTexture;
+		std::map<MeshKey, SpriteCommand> &spriteCmd = m_spriteDraws;
+
+		Renderer::SubmitRC([handle, composite, spriteCmd]() mutable
+		{
+			RenderPass::Postprocessing(handle, composite);
+			RenderPass::RenderSprites(spriteCmd);
 		});
 	}
 }

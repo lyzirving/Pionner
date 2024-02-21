@@ -28,7 +28,6 @@ namespace pio
 		bool onMouseButtonReleased(Event &event);
 
 		bool onHandleClick(const glm::vec2 &cursor);
-		void onDrawQuad(const AssetHandle &handle, Ref<Texture2D> &composite);
 
 	private:
 		Ref<Scene> m_scene;

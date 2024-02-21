@@ -95,7 +95,7 @@ namespace pio
 			{
 				m_shaders[index] = Shader::Create("TextureQuad", "quad2d", "quad2d");
 				return m_shaders[index];
-			}			
+			}
 			case ShaderType::Outline_Deferred:
 			{
 				m_shaders[index] = Shader::Create("Outline_Deferred", "outline", "outline_deferred");

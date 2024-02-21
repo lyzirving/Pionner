@@ -108,6 +108,7 @@ namespace pio
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 			glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+			GLHelper::CheckError("GLVertexBuffer: fail to update data");
 		}
 		else
 		{

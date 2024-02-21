@@ -35,6 +35,7 @@ namespace pio
 
 		void moveCamera(float viewPosDiffX, float viewPosDiffY);
 		void setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		void setScreenQuad(const AssetHandle &h) { m_screenQuad = h; }
 
 	private:
 		void createData();
@@ -52,6 +53,7 @@ namespace pio
 
 		Ref<Entity> m_sceneRoot{ nullptr };
 		Ref<Entity> m_mainCameraEnt{ nullptr };
+		AssetHandle m_screenQuad{ NullAsset };
 
 	private:
 		friend class SceneRenderer;

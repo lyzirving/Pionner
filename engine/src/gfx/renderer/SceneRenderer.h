@@ -61,6 +61,7 @@ namespace pio
 		void geometryPass_deferred(const Scene &scene);
 		void lightingPass_deferred(const Scene &scene);
 		// ----------------------------------
+		void onScreenRendering(const Scene &scene);
 
 	private:
 		bool m_active{ false };

@@ -82,7 +82,7 @@ namespace pio
 		}
 	}
 
-	void RenderPass::Postprocessing(AssetHandle &quadMesh, Ref<Texture2D> &composite)
+	void RenderPass::Postprocessing(const AssetHandle &quadMesh, Ref<Texture2D> &composite)
 	{
 		RenderState state;
 		state.Blend = Blend::Disable();

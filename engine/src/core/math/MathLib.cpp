@@ -68,13 +68,14 @@ namespace pio
 			return true;
 		}
 
-		glm::uvec2 Math::ToScreenPos(const glm::vec3 &worldPos, const Camera &cam)
+		glm::uvec2 ToScreenPos(const glm::vec3 &worldPos, const glm::mat4 &mvpMat, const glm::mat4 &vpMat, const glm::uvec2 &windowSize)
 		{
-			glm::vec4 clipPos = cam.getPrjMat() * cam.getViewMat() * glm::vec4(worldPos, 1.f);
+			glm::vec4 clipPos = mvpMat * glm::vec4(worldPos, 1.f);
 			glm::vec4 cvv = glm::vec4(clipPos.x / clipPos.w, clipPos.y / clipPos.w, clipPos.z / clipPos.w, 1.f);
-			glm::mat4 vpMat = Camera::GetViewportMat(cam.getViewport());
 			glm::vec4 screen = vpMat * cvv;
-			return glm::uvec2(cvv.x, cvv.y);
+			// Window's origin is the left-top corner
+			screen.y = windowSize.y - screen.y;
+			return glm::uvec2(screen.x, screen.y);
 		}
 	}
 }

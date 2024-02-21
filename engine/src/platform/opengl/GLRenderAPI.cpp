@@ -600,8 +600,36 @@ namespace pio
 		Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(quadMesh);
 		PIO_ASSERT_RETURN(mesh.use_count() != 0, "renderSprite: Quad Mesh is invalid");
 
-		Ref<Texture2D> icon = AssetsManager::GetRuntimeAsset<Texture2D>(texture);
-		PIO_ASSERT_RETURN(icon.use_count() != 0, "renderSprite: texture is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::TextureQuad);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderSprite: Sprite shader is invalid");
+
+		Ref<Texture2D> sprite = AssetsManager::GetRuntimeAsset<Texture2D>(texture);
+		PIO_ASSERT_RETURN(sprite.use_count() != 0, "renderSprite: texture is invalid");
+
+		GLState::SetBlendMode(state.Blend);
+		GLState::SetDepthTest(state.DepthTest);
+		GLState::SetCullFace(state.Cull);
+		GLState::SetStencilTest(state.Stencil);
+
+		shader->bind(true);
+
+		sprite->active(PIO_UINT(TextureSampler::Slot0));
+		sprite->bind(); 
+
+		shader->setTextureSampler("u_quadTexture", TextureSampler::Slot0);
+
+		mesh->VertexArray->bind();
+		mesh->IndexBuffer->bind();
+
+		glDrawElements(GL_TRIANGLES, mesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::CheckError("renderSprite fail!!");
+
+		mesh->IndexBuffer->unbind();
+		mesh->VertexArray->unbind();
+
+		sprite->unbind();
+
+		shader->bind(false);
 	}
 
 	void GLRenderAPI::renderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state)
@@ -689,7 +717,7 @@ namespace pio
 		shader->bind(false);
 	}
 
-	void GLRenderAPI::postprocessing(AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)
+	void GLRenderAPI::postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)
 	{
 		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
 		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "postprocessing: Quad Mesh is invalid");

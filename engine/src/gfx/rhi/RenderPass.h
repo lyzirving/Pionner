@@ -41,7 +41,7 @@ namespace pio
 
 		static void RenderLightingEffect_Deferred(const LightEnvironment &lightEnv, Ref<RenderPass> &GBufferPass, Ref<RenderPass> &distantLightShadowPass, Ref<RenderPass> &pointLightShadowPass, Ref<UniformBufferSet> &uniformBufferSet);
 		static void RenderSprites(std::map<MeshKey, SpriteCommand> &cmd);
-		static void Postprocessing(AssetHandle &quadMesh, Ref<Texture2D> &composite);
+		static void Postprocessing(const AssetHandle &quadMesh, Ref<Texture2D> &composite);
 	};
 }
 

@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Skybox.h"
+#include "Application.h"
 
 #include "gfx/renderer/SceneRenderer.h"
 #include "gfx/renderer/Renderer.h"
@@ -171,8 +172,30 @@ namespace pio
 				LightCompToSceneData(lightComp, m_lightEnv.DirectionalLight);
 				if (it->second->hasComponent<SpriteComponent>())
 				{
+					const uint32_t winWidth = Application::MainWindow()->getWidth();
+					const uint32_t winHeight = Application::MainWindow()->getHeight();
+
 					auto &spriteComp = it->second->getComponent<SpriteComponent>();
-					spriteComp.Position = Math::ToScreenPos(m_lightEnv.DirectionalLight.Position, sceneCam);
+					glm::uvec2 p = Math::ToScreenPos(m_lightEnv.DirectionalLight.Position, 
+													 sceneCam.getPrjMat() * sceneCam.getViewMat(),
+													 Camera::GetViewportMat(sceneCam.getViewport()),
+													 glm::uvec2(winWidth, winHeight));
+					if (p != spriteComp.Position)
+					{
+						spriteComp.Position = p;
+						const uint32_t w = spriteComp.ScreenWidth;
+						const uint32_t h = spriteComp.ScreenHeight;						
+						Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(spriteComp.QuadMesh);
+						mesh->Vertex.clear(); mesh->Vertex.reserve(4);
+						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y - h / 2, winWidth, winHeight), 0.f), glm::vec2(0.f, 1.f));//lt
+						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y + h / 2, winWidth, winHeight), 0.f), glm::vec2(0.f, 0.f));//lb
+						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y - h / 2, winWidth, winHeight), 0.f), glm::vec2(1.f, 1.f));//rt
+						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y + h / 2, winWidth, winHeight), 0.f), glm::vec2(1.f, 0.f));//rb						
+						Renderer::SubmitTask([mesh]() mutable
+						{
+							mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));
+						});
+					}					
 				}
 			}
 		}
@@ -307,6 +330,10 @@ namespace pio
 			Ref<Texture2D> icon = Texture2D::Create(AssetsManager::SpriteAbsPath("distant_light", AssetFmt::PNG), spec);
 			spriteComp.Texture = icon->getHandle();
 			AssetsManager::Get()->addRuntimeAsset(icon);
+			spriteComp.State.DepthTest = DepthTest::Disable();
+			spriteComp.State.Blend = Blend::Common();
+			spriteComp.State.Cull = CullFace::Common();
+			spriteComp.State.Stencil.Enable = false;
 
 			Renderer::SubmitTask([icon]() mutable { icon->init(); });
 		}

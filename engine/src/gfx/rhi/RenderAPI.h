@@ -70,7 +70,7 @@ namespace pio
 		// ------------------------------- Tools -------------------------------------
 		virtual void renderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state) = 0;
 		virtual void renderHDRToCube(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment cubeAttach, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &cubeFbo) = 0;
-		virtual void postprocessing(AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state) = 0;
+		virtual void postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state) = 0;
 		// ---------------------------------------------------------------------------
 
 		virtual void beginRenderPass(Ref<RenderPass> &pass) = 0;

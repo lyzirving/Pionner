@@ -67,14 +67,7 @@ namespace pio
 	void RuntimeLayer::onUpdate(const Timestep &ts)
 	{
 		m_scene->onUpdate(ts);
-		m_scene->onRender(m_renderer, ts);
-
-		AssetHandle handle = m_screenQuad;
-		Ref<Texture2D> composite = m_renderer->getCompositeTexture();
-		Renderer::SubmitRC([handle, composite]() mutable
-		{
-			RenderPass::Postprocessing(handle, composite);
-		});		
+		m_scene->onRender(m_renderer, ts);			
 	}
 
 	void RuntimeLayer::onWindowSizeChange(uint32_t width, uint32_t height)
@@ -88,6 +81,7 @@ namespace pio
 		{
 			LayoutRect &rect = m_layoutParam.Position;
 			m_screenQuad = MeshFactory::CreateScreenQuad(rect.Left, rect.Top, rect.Right, rect.Bottom, width, height)->getHandle();
+			m_scene->setScreenQuad(m_screenQuad);
 		}
 	}
 
