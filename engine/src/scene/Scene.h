@@ -12,6 +12,7 @@ namespace pio
 {
 	class SceneRenderer;
 	class Skybox;
+	class Event;
 	struct LayoutViewport;
 
 	/*
@@ -37,6 +38,10 @@ namespace pio
 		void setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 		void setScreenQuad(const AssetHandle &h) { m_screenQuad = h; }
 
+		bool onMouseButtonPressed(Event &event);
+		bool onMouseMoved(Event &event);
+		bool onMouseButtonReleased(Event &event);
+
 	private:
 		void createData();
 		void simulate(const Timestep &ts);
@@ -48,12 +53,24 @@ namespace pio
 		static Registry *s_registry;
 
 	private:
+		struct SpriteController
+		{
+			Ref<Entity> Ent;
+			glm::vec2 LastMotionPos{ 0.f };
+
+			bool inUse() { return Ent.use_count() != 0; }
+			void release() { Ent.reset(); }
+		};
+
+	private:
 		LightEnvironment m_lightEnv;
 		Ref<Skybox> m_skybox;
 
 		Ref<Entity> m_sceneRoot{ nullptr };
-		Ref<Entity> m_mainCameraEnt{ nullptr };
+		Ref<Entity> m_mainCameraEnt{ nullptr };		
 		AssetHandle m_screenQuad{ NullAsset };
+
+		SpriteController m_spriteControl;
 
 	private:
 		friend class SceneRenderer;

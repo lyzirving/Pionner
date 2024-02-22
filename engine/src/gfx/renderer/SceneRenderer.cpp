@@ -681,6 +681,7 @@ namespace pio
 		Ref<Texture2D> composite = m_compositeTexture;
 		std::map<MeshKey, SpriteCommand> &spriteCmd = m_spriteDraws;
 
+		// No pass to bind, render on the default framebuffer
 		Renderer::SubmitRC([handle, composite, spriteCmd]() mutable
 		{
 			RenderPass::Postprocessing(handle, composite);

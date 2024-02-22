@@ -93,12 +93,14 @@ namespace pio
 		{
 			m_eventState.ButtonPressed = true;
 			m_eventState.PressedTime = TimeUtil::currentTimeMs();
+			m_scene->onMouseButtonPressed(event);
 		}
 		return m_eventState.ButtonPressed;
 	}
 
 	bool RuntimeLayer::onMouseMoved(Event &event)
 	{
+		m_scene->onMouseMoved(event);
 		return m_eventState.ButtonPressed;
 	}
 
@@ -106,8 +108,8 @@ namespace pio
 	{
 		if (m_eventState.ButtonPressed)
 		{
-			m_eventState.ButtonPressed = false;
-			if (UIEventTracker::IsClick(TimeUtil::currentTimeMs(), m_eventState.PressedTime))
+			m_eventState.ButtonPressed = false;			
+			if (!m_scene->onMouseButtonReleased(event) && UIEventTracker::IsClick(TimeUtil::currentTimeMs(), m_eventState.PressedTime))
 			{
 				onHandleClick(Application::MainWindow()->getCursorPos());
 			}

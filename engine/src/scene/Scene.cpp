@@ -12,6 +12,8 @@
 #include "core/EventBus.h"
 #include "core/math/Ray.h"
 
+#include "window/event/MouseEvent.h"
+
 #include "ui/UiDef.h"
 
 #ifdef LOCAL_TAG
@@ -176,21 +178,25 @@ namespace pio
 					const uint32_t winHeight = Application::MainWindow()->getHeight();
 
 					auto &spriteComp = it->second->getComponent<SpriteComponent>();
-					glm::uvec2 p = Math::ToScreenPos(m_lightEnv.DirectionalLight.Position, 
-													 sceneCam.getPrjMat() * sceneCam.getViewMat(),
-													 Camera::GetViewportMat(sceneCam.getViewport()),
-													 glm::uvec2(winWidth, winHeight));
+					glm::vec2 p = Math::ToScreenPos(m_lightEnv.DirectionalLight.Position, 
+													sceneCam.getPrjMat() * sceneCam.getViewMat(),
+													Camera::GetViewportMat(sceneCam.getViewport()),
+													glm::uvec2(winWidth, winHeight));
 					if (p != spriteComp.Position)
 					{
 						spriteComp.Position = p;
 						const uint32_t w = spriteComp.ScreenWidth;
-						const uint32_t h = spriteComp.ScreenHeight;						
+						const uint32_t h = spriteComp.ScreenHeight;		
+						spriteComp.Rect.LeftTop = glm::vec2(p.x - w / 2, p.y - h / 2);
+						spriteComp.Rect.LeftBottom = glm::vec2(p.x - w / 2, p.y + h / 2);
+						spriteComp.Rect.RightTop = glm::vec2(p.x + w / 2, p.y - h / 2);
+						spriteComp.Rect.RightBottom = glm::vec2(p.x + w / 2, p.y + h / 2);
 						Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(spriteComp.QuadMesh);
-						mesh->Vertex.clear(); mesh->Vertex.reserve(4);
+						mesh->Vertex.clear(); mesh->Vertex.reserve(4);						
 						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y - h / 2, winWidth, winHeight), 0.f), glm::vec2(0.f, 1.f));//lt
 						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y + h / 2, winWidth, winHeight), 0.f), glm::vec2(0.f, 0.f));//lb
 						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y - h / 2, winWidth, winHeight), 0.f), glm::vec2(1.f, 1.f));//rt
-						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y + h / 2, winWidth, winHeight), 0.f), glm::vec2(1.f, 0.f));//rb						
+						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y + h / 2, winWidth, winHeight), 0.f), glm::vec2(1.f, 0.f));//rb	
 						Renderer::SubmitTask([mesh]() mutable
 						{
 							mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));
@@ -282,6 +288,49 @@ namespace pio
 		Camera &camera = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
 		camera.setViewport(x, y, width, height);
 		camera.setAspect(float(width) / float(height));
+	}
+
+	bool Scene::onMouseButtonPressed(Event &event)
+	{
+		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
+		auto view = s_registry->view<SpriteComponent>();
+		auto it = view.begin();
+		if (it != view.end())
+		{
+			SpriteComponent &comp = it->second->getComponent<SpriteComponent>();
+			if (Math::Contains(cursor, comp.Rect))
+			{
+				m_spriteControl.Ent = it->second;
+				m_spriteControl.LastMotionPos = cursor;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Scene::onMouseMoved(Event &event)
+	{
+		if (m_spriteControl.inUse())
+		{			
+			if (m_spriteControl.Ent->hasComponent<DirectionalLightComponent>())
+			{				
+				SpriteComponent &spriteComp = m_spriteControl.Ent->getComponent<SpriteComponent>();
+				auto *move = event.as<MouseMovedEvent>();
+				/*glm::vec2 cursor = glm::vec2(move->getX(), move->getY());
+				comp.Position.x += (cursor.x - m_spriteControl.LastMotionPos.x);
+				comp.Position.y += (cursor.y - m_spriteControl.LastMotionPos.y);
+				m_spriteControl.LastMotionPos = cursor;*/
+			}			
+			return true;
+		}
+		return false;
+	}
+
+	bool Scene::onMouseButtonReleased(Event &event)
+	{
+		bool inUse = m_spriteControl.inUse();
+		m_spriteControl.release();
+		return inUse;
 	}
 
 	void Scene::createData()

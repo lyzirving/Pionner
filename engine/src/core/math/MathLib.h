@@ -11,11 +11,13 @@ namespace pio
 	#define PIO_PI (3.141592654f)
 
 	struct Viewport;
+	struct Rect2d;
 
 	namespace Math
 	{
+		bool Contains(const glm::vec2 &cursor, const Rect2d &rect);
 		bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale);
-		glm::uvec2 ToScreenPos(const glm::vec3 &worldPos, const glm::mat4 &mvpMat, const glm::mat4 &vpMat, const glm::uvec2 &windowSize);
+		glm::vec2 ToScreenPos(const glm::vec3 &worldPos, const glm::mat4 &mvpMat, const glm::mat4 &vpMat, const glm::uvec2 &windowSize);		
 
 		inline glm::vec3 Scale(const glm::vec3 &v, float desiredLength) { return v * desiredLength / glm::length(v); }
 

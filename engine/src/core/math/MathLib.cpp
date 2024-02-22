@@ -2,12 +2,19 @@
 
 #include "MathLib.h"
 
+#include "core/CoreType.h"
 #include "gfx/struct/Camera.h"
 
 namespace pio
 {
 	namespace Math
 	{
+		bool Contains(const glm::vec2 &cursor, const Rect2d &rect)
+		{
+			return cursor.x >= rect.LeftTop.x && cursor.x <= rect.RightBottom.x &&
+				   cursor.y >= rect.LeftTop.y && cursor.y <= rect.RightBottom.y;
+		}
+
 		bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale)
 		{
 			glm::mat4 localMatrix(transform);
@@ -68,14 +75,14 @@ namespace pio
 			return true;
 		}
 
-		glm::uvec2 ToScreenPos(const glm::vec3 &worldPos, const glm::mat4 &mvpMat, const glm::mat4 &vpMat, const glm::uvec2 &windowSize)
+		glm::vec2 ToScreenPos(const glm::vec3 &worldPos, const glm::mat4 &mvpMat, const glm::mat4 &vpMat, const glm::uvec2 &windowSize)
 		{
 			glm::vec4 clipPos = mvpMat * glm::vec4(worldPos, 1.f);
 			glm::vec4 cvv = glm::vec4(clipPos.x / clipPos.w, clipPos.y / clipPos.w, clipPos.z / clipPos.w, 1.f);
 			glm::vec4 screen = vpMat * cvv;
 			// Window's origin is the left-top corner
 			screen.y = windowSize.y - screen.y;
-			return glm::uvec2(screen.x, screen.y);
+			return glm::vec2(screen.x, screen.y);
 		}
 	}
 }

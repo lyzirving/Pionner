@@ -5,12 +5,8 @@
 #include "SceneDef.h"
 
 #include "asset/Asset.h"
-
 #include "core/math/Transform.h"
-#include "core/math/SphereCoord.h"
-
 #include "gfx/struct/Camera.h"
-
 #include "physics/PhysicsDef.h"
 
 namespace pio
@@ -85,9 +81,10 @@ namespace pio
 		std::string_view Name;
 		AssetHandle QuadMesh{ NullAsset };
 		AssetHandle Texture{ NullAsset };
-		glm::uvec2 Position{ 0 };
+		glm::vec2 Position{ 0 };
 		uint32_t ScreenWidth{ 50 };
-		uint32_t ScreenHeight{ 50 };
+		uint32_t ScreenHeight{ 50 };	
+		Rect2d Rect;
 		glm::vec2 UVStart{ 0.0f, 0.0f };
 		glm::vec2 UVEnd{ 1.0f, 1.0f };	
 		RenderState State;

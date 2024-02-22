@@ -23,6 +23,7 @@
 #include <cmath>
 #include <bitset>
 
+#include "CoreType.h"
 #include "core/LogSystem.h"
 #include "core/math/MathLib.h"
 #include "core/math/QuatUtil.h"
