@@ -82,8 +82,8 @@ namespace pio
 		AssetHandle QuadMesh{ NullAsset };
 		AssetHandle Texture{ NullAsset };
 		glm::vec2 Position{ 0 };
-		uint32_t ScreenWidth{ 50 };
-		uint32_t ScreenHeight{ 50 };	
+		uint32_t ScreenWidth{ 35 };
+		uint32_t ScreenHeight{ 35 };	
 		Rect2d Rect;
 		glm::vec2 UVStart{ 0.0f, 0.0f };
 		glm::vec2 UVEnd{ 1.0f, 1.0f };	
