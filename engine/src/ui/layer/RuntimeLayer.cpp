@@ -43,22 +43,6 @@ namespace pio
 		m_scene.reset();
 	}
 
-	bool RuntimeLayer::onEvent(Event &event)
-	{
-		EventDispatcher dispatcher(event);
-
-		dispatcher.dispatch<MouseButtonPressedEvent>(PIO_BIND_EVT_FN(RuntimeLayer::onMouseButtonPressed));
-		if (event.Handled) return true;
-
-		dispatcher.dispatch<MouseMovedEvent>(PIO_BIND_EVT_FN(RuntimeLayer::onMouseMoved));
-		if (event.Handled) return true;
-
-		dispatcher.dispatch<MouseButtonReleasedEvent>(PIO_BIND_EVT_FN(RuntimeLayer::onMouseButtonReleased));
-		if (event.Handled) return true;
-
-		return false;
-	}
-
 	void RuntimeLayer::onRenderDestroy()
 	{
 		m_renderer->onRenderDestroy(*m_scene);
@@ -83,43 +67,5 @@ namespace pio
 			m_screenQuad = MeshFactory::CreateScreenQuad(rect.Left, rect.Top, rect.Right, rect.Bottom, width, height)->getHandle();
 			m_scene->setScreenQuad(m_screenQuad);
 		}
-	}
-
-	bool RuntimeLayer::onMouseButtonPressed(Event &event)
-	{
-		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
-		const LayoutRect &rect = m_layoutParam.Position;
-		if (rect.contain(cursor.x, cursor.y))
-		{
-			m_eventState.ButtonPressed = true;
-			m_eventState.PressedTime = TimeUtil::currentTimeMs();
-			m_scene->onMouseButtonPressed(event);
-		}
-		return m_eventState.ButtonPressed;
-	}
-
-	bool RuntimeLayer::onMouseMoved(Event &event)
-	{
-		m_scene->onMouseMoved(event);
-		return m_eventState.ButtonPressed;
-	}
-
-	bool RuntimeLayer::onMouseButtonReleased(Event &event)
-	{
-		if (m_eventState.ButtonPressed)
-		{
-			m_eventState.ButtonPressed = false;			
-			if (!m_scene->onMouseButtonReleased(event) && UIEventTracker::IsClick(TimeUtil::currentTimeMs(), m_eventState.PressedTime))
-			{
-				onHandleClick(Application::MainWindow()->getCursorPos());
-			}
-			return true;
-		}
-		return false;
-	}
-
-	bool RuntimeLayer::onHandleClick(const glm::vec2 &cursor)
-	{		
-		return m_scene->dispatchClick(UiDef::ScreenToViewport(cursor, m_layoutParam));
 	}
 }

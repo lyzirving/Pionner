@@ -35,7 +35,7 @@ namespace pio
 		float curTick{ 0.f };
 		uint32_t frameCnt{ 0 };
 
-		uint64_t start = TimeUtil::currentTimeMs();
+		uint64_t start = TimeUtil::CurrentTimeMs();
 
 		while (curTick < m_duration)
 		{
@@ -93,7 +93,7 @@ namespace pio
 		}
 		m_gpuSkinning.BufferTexture = BufferTexture::Create(data, byteSize, ImageInternalFormat::RGB32F);
 
-		uint64_t end = TimeUtil::currentTimeMs();
+		uint64_t end = TimeUtil::CurrentTimeMs();
 		LOGD("parse animation[%s]'s GPU skinning data, take time[%lu]ms", m_name.c_str(), (end - start));
 	}
 

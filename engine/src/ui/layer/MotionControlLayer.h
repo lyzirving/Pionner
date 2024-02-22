@@ -13,11 +13,11 @@ namespace pio
 	class UiCoordinate3D;
 	class PhysicsScene;
 
-	class C3DControlLayer : public Layer
+	class MotionControlLayer : public Layer
 	{
 	public:
-		C3DControlLayer(const LayoutParams &param);
-		virtual ~C3DControlLayer() = default;
+		MotionControlLayer(const LayoutParams &param);
+		virtual ~MotionControlLayer() = default;
 
 		virtual void onAttach() override;
 		virtual void onDetach() override;
@@ -34,8 +34,18 @@ namespace pio
 		void onDrawVisionCtl(const Timestep &ts);
 		void onDrawSelectionCtl(const Timestep &ts);
 
+		bool onClickEvent(const glm::vec2 &cursor);
 		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const LayoutParams &param);
-		void onIntersect(const HitResult &result);
+
+	private:
+		struct SpriteController
+		{
+			Ref<Entity> Ent;
+			glm::vec2 LastMotionPos{ 0.f };
+
+			bool inUse() { return Ent.use_count() != 0; }
+			void release() { Ent.reset(); }
+		};
 
 	private:
 		bool m_drawCircle{ false };
@@ -52,9 +62,14 @@ namespace pio
 		Ref<UiCoordinate3D> m_visionCoord;
 		Ref<UiCoordinate3D> m_selectCoord;
 
+		UIEventTracker m_visionCtlState{};
+		UIEventTracker m_objCtlState{};
+
+		// Physics world that store selector controller's axis
 		Ref<PhysicsScene> m_world;
-		bool m_objSelectd{ false };
 		PhysicsActor *m_hitCtlActor{ nullptr };
+
+		SpriteController m_spriteCtl;
 	};
 }
 

@@ -8,8 +8,8 @@ namespace pio
 	class TimeUtil
 	{
 	public:
-		static uint64_t currentTimeMicro();
-		static uint64_t currentTimeMs();
+		static uint64_t CurrentTimeMicro();
+		static uint64_t CurrentTimeMs();
 
 	private:
 		TimeUtil() {};
@@ -19,7 +19,7 @@ namespace pio
 	class Timestep
 	{
 	public:
-		Timestep(uint64_t timeMs = 0) : m_timeMs(timeMs), m_tick(TimeUtil::currentTimeMs())
+		Timestep(uint64_t timeMs = 0) : m_timeMs(timeMs), m_tick(TimeUtil::CurrentTimeMs())
 		{
 		}
 
@@ -39,7 +39,7 @@ namespace pio
 
 		void tick()
 		{
-			uint64_t cur = TimeUtil::currentTimeMs();
+			uint64_t cur = TimeUtil::CurrentTimeMs();
 			m_timeMs = cur - m_tick;
 			m_tick = cur;
 		}

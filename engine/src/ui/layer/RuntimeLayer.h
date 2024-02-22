@@ -17,17 +17,9 @@ namespace pio
 
 		virtual void onAttach() override;
 		virtual void onDetach() override;		
-		virtual bool onEvent(Event &event) override;
 		virtual void onRenderDestroy() override;
 		virtual void onUpdate(const Timestep &ts) override;
 		virtual void onWindowSizeChange(uint32_t width, uint32_t height) override;
-
-	private:
-		bool onMouseButtonPressed(Event &event);
-		bool onMouseMoved(Event &event);
-		bool onMouseButtonReleased(Event &event);
-
-		bool onHandleClick(const glm::vec2 &cursor);
 
 	private:
 		Ref<Scene> m_scene;

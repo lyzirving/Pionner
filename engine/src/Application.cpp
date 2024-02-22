@@ -15,7 +15,7 @@
 #include "ui/layer/SceneHierarchyLayer.h"
 #include "ui/layer/RuntimeLayer.h"
 #include "ui/layer/EditorLayer.h"
-#include "ui/layer/C3DControlLayer.h"
+#include "ui/layer/MotionControlLayer.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -157,7 +157,7 @@ namespace pio
 		auto sceneHierarchy = CreateRef<SceneHierarchyLayer>(LayoutParams(0.f, 0.f, 0.2f, 1.f));
 		m_layerManager.pushLayer(sceneHierarchy);
 
-		auto ctlLayer = CreateRef<C3DControlLayer>(runtimeLayer->getLayoutParam());
+		auto ctlLayer = CreateRef<MotionControlLayer>(runtimeLayer->getLayoutParam());
 		m_layerManager.pushOverlay(ctlLayer);
 
 		auto editorLayer = CreateRef<EditorLayer>(LayoutParams(0.8f, 0.f, 1.f, 1.f));

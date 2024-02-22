@@ -1,4 +1,4 @@
-#include "C3DControlLayer.h"
+#include "MotionControlLayer.h"
 
 #include "Application.h"
 
@@ -6,7 +6,6 @@
 #include "gfx/renderer/Renderer.h"
 #include "gfx/struct/MeshFactory.h"
 #include "gfx/struct/Geometry.h"
-#include "gfx/debug/GDebugger.h"
 
 #include "physics/PhysicsScene.h"
 #include "physics/PhysicsActor.h"
@@ -25,19 +24,19 @@
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "C3DControlLayer"
+#define LOCAL_TAG "MotionControlLayer"
 
 namespace pio
 {
 	#define CTL_CAM_RADIUS (2.f)
 	#define CTL_TRANSLATION_RATIO (7.f)
 
-	C3DControlLayer::C3DControlLayer(const LayoutParams &param)
-		: Layer(param, "C3DControlLayer")
+	MotionControlLayer::MotionControlLayer(const LayoutParams &param)
+		: Layer(param, "MotionControlLayer")
 	{
 	}
 
-	void C3DControlLayer::onAttach()
+	void MotionControlLayer::onAttach()
 	{
 		m_circleLayoutParam.Percentage = LayoutPercentage(m_layoutParam.Percentage.Right - 0.1f, 
 														  m_layoutParam.Percentage.Top + 0.015f,
@@ -79,7 +78,7 @@ namespace pio
 						   Application::MainWindow()->getHeight());
 	}
 
-	void C3DControlLayer::onDetach()
+	void MotionControlLayer::onDetach()
 	{
 		m_visionUBSet.reset();
 		m_selectionUBSet.reset();
@@ -89,26 +88,26 @@ namespace pio
 		m_world.reset();
 	}
 
-	bool C3DControlLayer::onEvent(Event &event)
+	bool MotionControlLayer::onEvent(Event &event)
 	{
 		EventDispatcher dispatcher(event);
 
-		dispatcher.dispatch<MouseButtonPressedEvent>(PIO_BIND_EVT_FN(C3DControlLayer::onMouseButtonPressed));
+		dispatcher.dispatch<MouseButtonPressedEvent>(PIO_BIND_EVT_FN(MotionControlLayer::onMouseButtonPressed));
 		if (event.Handled) return true;
 
-		dispatcher.dispatch<MouseMovedEvent>(PIO_BIND_EVT_FN(C3DControlLayer::onMouseMoved));
+		dispatcher.dispatch<MouseMovedEvent>(PIO_BIND_EVT_FN(MotionControlLayer::onMouseMoved));
 		if (event.Handled) return true;
 
-		dispatcher.dispatch<MouseButtonReleasedEvent>(PIO_BIND_EVT_FN(C3DControlLayer::onMouseButtonReleased));
+		dispatcher.dispatch<MouseButtonReleasedEvent>(PIO_BIND_EVT_FN(MotionControlLayer::onMouseButtonReleased));
 		if (event.Handled) return true;
 
-		dispatcher.dispatch<MouseScrolledEvent>(PIO_BIND_EVT_FN(C3DControlLayer::onMouseScrolled));
+		dispatcher.dispatch<MouseScrolledEvent>(PIO_BIND_EVT_FN(MotionControlLayer::onMouseScrolled));
 		if (event.Handled) return true;
 
 		return false;
 	}
 
-	void C3DControlLayer::onUpdate(const Timestep &ts)
+	void MotionControlLayer::onUpdate(const Timestep &ts)
 	{	
 		// Circle background
 		if (m_drawCircle)
@@ -125,7 +124,7 @@ namespace pio
 		onDrawSelectionCtl(ts);
 	}
 
-	void C3DControlLayer::onWindowSizeChange(uint32_t width, uint32_t height)
+	void MotionControlLayer::onWindowSizeChange(uint32_t width, uint32_t height)
 	{
 		m_layoutParam.calculate(width, height);
 		m_circleLayoutParam.calculate(width, height);
@@ -145,20 +144,21 @@ namespace pio
 		m_circleLayoutParam.Viewport.Y = height - m_circleLayoutParam.Position.Top - m_circleLayoutParam.Viewport.Height;
 	}
 
-	bool C3DControlLayer::onMouseButtonPressed(Event &event)
+	bool MotionControlLayer::onMouseButtonPressed(Event &event)
 	{
-		m_objSelectd = false;
+		m_eventState.PressedTime = TimeUtil::CurrentTimeMs();
 		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
+
 		// ------------------- Button pressed work flow --------------------
 		if (m_circleLayoutParam.Position.contain((uint32_t)cursor.x, (uint32_t)cursor.y))
 		{
-			m_eventState.ButtonPressed = true;
-			m_eventState.LastCursor = cursor;
+			m_visionCtlState.ButtonPressed = true;
+			m_visionCtlState.LastCursor = cursor;
 			Application::MainWindow()->setCursorMode(CursorMode::Disabled);
 			return true;
 		}
 		// ------------------------------------------------------------------
-		// Two mutually exclusive work flow
+		
 		// ------------------- Object selection work flow -------------------
 		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
 		if (sceneComp.Selected3D)
@@ -166,60 +166,69 @@ namespace pio
 			glm::uvec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
 			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 			HitResult result = m_world->intersect(r);
-			onIntersect(result);
-			if (m_objSelectd = result.Hit)
-			{
-				m_eventState.LastCursor = cursor;
-			}
-			GDebugger::Get()->drawLine(r, 10.f, glm::vec4(0.f, 0.f, 1.f, 1.f));
+			m_hitCtlActor = result.Hit ? result.Actor : nullptr;
+			if (m_objCtlState.ButtonPressed = result.Hit) { m_objCtlState.LastCursor = cursor; }
+			return m_objCtlState.ButtonPressed;
 		}
 		// ------------------------------------------------------------------
-		return m_objSelectd;
+		return false;
 	}
 
-	bool C3DControlLayer::onMouseMoved(Event &event)
+	bool MotionControlLayer::onMouseMoved(Event &event)
 	{
 		auto *p = event.as<MouseMovedEvent>();
 		// ------------------- Button pressed work flow --------------------
-		if (m_eventState.ButtonPressed)
+		if (m_visionCtlState.ButtonPressed)
 		{
-			m_eventState.Cursor = glm::vec2(p->getX(), p->getY());
+			m_visionCtlState.Cursor = glm::vec2(p->getX(), p->getY());
 			m_drawCircle = true;
-			glm::vec2 delta = m_eventState.Cursor - m_eventState.LastCursor;
+			glm::vec2 delta = m_visionCtlState.Cursor - m_visionCtlState.LastCursor;
 			delta.x = Math::Clamp(delta.x, -20.f, 20.f);
 			delta.y = Math::Clamp(delta.y, -20.f, 20.f);
-			m_eventState.LastCursor = m_eventState.Cursor;
+			m_visionCtlState.LastCursor = m_visionCtlState.Cursor;
 			auto &comp = m_mainCameraEnt->getComponent<CameraComponent>();
 			comp.Camera.addPosDiff(delta.x, delta.y);
 			return true;
 		}
 		m_drawCircle = m_circleLayoutParam.Position.contain(p->getX(), p->getY());
 		// ------------------------------------------------------------------
-		// ------------------- Object selection work flow -------------------
-		if (m_objSelectd)
+
+		// ------------------- Object controller work flow -------------------
+		if (m_objCtlState.ButtonPressed)
 		{
 			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-			m_eventState.Cursor = glm::vec2(p->getX(), p->getY());
-			onSelectionMoved(sceneComp.Selected3D, m_hitCtlActor, m_eventState.Cursor, m_eventState.LastCursor, m_layoutParam);
-			m_eventState.LastCursor = m_eventState.Cursor;
+			m_objCtlState.Cursor = glm::vec2(p->getX(), p->getY());
+			onSelectionMoved(sceneComp.Selected3D, m_hitCtlActor, m_objCtlState.Cursor, m_objCtlState.LastCursor, m_layoutParam);
+			m_objCtlState.LastCursor = m_objCtlState.Cursor;
 			return true;
 		}
 		// ------------------------------------------------------------------
 		return false;
 	}
 
-	bool C3DControlLayer::onMouseButtonReleased(Event &event)
+	bool MotionControlLayer::onMouseButtonReleased(Event &event)
 	{
-		bool pressed = m_eventState.ButtonPressed;
-		bool consume = pressed || m_objSelectd;
-		if (pressed) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
-		m_eventState.ButtonPressed = false;
-		m_eventState.LastCursor = m_eventState.Cursor = glm::vec2(-1.f);
-		m_objSelectd = false;
+		bool consume = m_visionCtlState.ButtonPressed || 
+			           m_objCtlState.ButtonPressed || 
+			           m_spriteCtl.inUse();
+
+		if (!consume && UIEventTracker::IsClick(TimeUtil::CurrentTimeMs(), m_eventState.PressedTime))
+		{
+			onClickEvent(Application::MainWindow()->getCursorPos());
+		}
+
+		if (m_visionCtlState.ButtonPressed) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
+		m_visionCtlState.ButtonPressed = false;
+		m_objCtlState.ButtonPressed = false;
+
+		m_visionCtlState.Cursor = m_visionCtlState.LastCursor = glm::vec2(-1.f);
+		m_objCtlState.LastCursor = m_objCtlState.Cursor = glm::vec2(-1.f);
+		
+		m_spriteCtl.release();
 		return consume;
 	}
 
-	bool C3DControlLayer::onMouseScrolled(Event &event)
+	bool MotionControlLayer::onMouseScrolled(Event &event)
 	{
 		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
 		bool inside = m_circleLayoutParam.Position.contain((uint32_t)cursor.x, (uint32_t)cursor.y);
@@ -232,7 +241,7 @@ namespace pio
 		return inside;
 	}
 
-	void C3DControlLayer::onDrawVisionCtl(const Timestep &ts)
+	void MotionControlLayer::onDrawVisionCtl(const Timestep &ts)
 	{
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		Camera &camera = camComp.Camera;
@@ -331,7 +340,7 @@ namespace pio
 		}
 	}
 
-	void C3DControlLayer::onDrawSelectionCtl(const Timestep &ts)
+	void MotionControlLayer::onDrawSelectionCtl(const Timestep &ts)
 	{
 		glm::vec3 slcPos(0.f);
 		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
@@ -449,7 +458,27 @@ namespace pio
 		}
 	}
 
-	void C3DControlLayer::onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const LayoutParams &param)
+	bool MotionControlLayer::onClickEvent(const glm::vec2 &cursor)
+	{
+		glm::uvec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
+		Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
+		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
+
+		if (sceneComp.Selected3D) { sceneComp.Selected3D->setSelection(false); }
+		bool consume = result.Hit && result.Actor->getEnt(sceneComp.Selected3D);
+		if (consume)
+		{
+			sceneComp.Selected3D->setSelection(true);
+		}
+		else
+		{
+			sceneComp.Selected3D.reset();
+		}
+		return consume;
+	}
+
+	void MotionControlLayer::onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const LayoutParams &param)
 	{
 		if (!ctlActor || !selection)
 			return;
@@ -495,10 +524,5 @@ namespace pio
 		{
 			selection->setGlobalPoseDiff(diff3d);
 		}		
-	}
-
-	void C3DControlLayer::onIntersect(const HitResult &result)
-	{
-		m_hitCtlActor = result.Hit ? result.Actor : nullptr;
 	}
 }

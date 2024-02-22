@@ -24,7 +24,7 @@ namespace pio
 		: Texture2D(), GLTexture()/*use GLTexture() to ignore invalod log print*/
 	{
 		m_spec = spec;
-		uint64_t start = TimeUtil::currentTimeMs();
+		uint64_t start = TimeUtil::CurrentTimeMs();
 		uint8_t *data = stbi_load(path.c_str(), &m_spec.Width, &m_spec.Height, &m_spec.Channel, 0);
 		if (data)
 		{
@@ -33,7 +33,7 @@ namespace pio
 			m_internalFmt = RhiDef::GetInternalFmt(m_spec.Channel);
 			m_textureFmt = RhiDef::GetTextureFmt(m_spec.Channel);
 			m_pixelType = PixelType::UNSIGNED_BYTE;
-			LOGD("load image[%s], cost time[%lu]ms", path.c_str(), (TimeUtil::currentTimeMs() - start));
+			LOGD("load image[%s], cost time[%lu]ms", path.c_str(), (TimeUtil::CurrentTimeMs() - start));
 		}
 		else
 		{

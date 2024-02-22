@@ -7,12 +7,9 @@
 #include "gfx/struct/MeshUtil.h" 
 #include "gfx/struct/MaterialLibrary.h"
 #include "gfx/rhi/Texture.h"
-#include "gfx/debug/GDebugger.h"
 
 #include "core/EventBus.h"
 #include "core/math/Ray.h"
-
-#include "window/event/MouseEvent.h"
 
 #include "ui/UiDef.h"
 
@@ -102,8 +99,6 @@ namespace pio
 		auto &comp = m_sceneRoot->getComponent<SceneComponent>();
 		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(comp.PhycisScene)->intersect(r);
 		onIntersect(result);
-
-		GDebugger::Get()->drawLine(r, 10.f, glm::vec4(1.f, 0.f, 0.f, 1.f));
 		return result.Hit;
 	}
 
@@ -288,49 +283,6 @@ namespace pio
 		Camera &camera = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
 		camera.setViewport(x, y, width, height);
 		camera.setAspect(float(width) / float(height));
-	}
-
-	bool Scene::onMouseButtonPressed(Event &event)
-	{
-		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
-		auto view = s_registry->view<SpriteComponent>();
-		auto it = view.begin();
-		if (it != view.end())
-		{
-			SpriteComponent &comp = it->second->getComponent<SpriteComponent>();
-			if (Math::Contains(cursor, comp.Rect))
-			{
-				m_spriteControl.Ent = it->second;
-				m_spriteControl.LastMotionPos = cursor;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool Scene::onMouseMoved(Event &event)
-	{
-		if (m_spriteControl.inUse())
-		{			
-			if (m_spriteControl.Ent->hasComponent<DirectionalLightComponent>())
-			{				
-				SpriteComponent &spriteComp = m_spriteControl.Ent->getComponent<SpriteComponent>();
-				auto *move = event.as<MouseMovedEvent>();
-				/*glm::vec2 cursor = glm::vec2(move->getX(), move->getY());
-				comp.Position.x += (cursor.x - m_spriteControl.LastMotionPos.x);
-				comp.Position.y += (cursor.y - m_spriteControl.LastMotionPos.y);
-				m_spriteControl.LastMotionPos = cursor;*/
-			}			
-			return true;
-		}
-		return false;
-	}
-
-	bool Scene::onMouseButtonReleased(Event &event)
-	{
-		bool inUse = m_spriteControl.inUse();
-		m_spriteControl.release();
-		return inUse;
 	}
 
 	void Scene::createData()
