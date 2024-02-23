@@ -34,7 +34,6 @@ namespace pio
 	protected:
 		std::string m_name{};
 		LayoutParams m_layoutParam;
-		UIEventTracker m_eventState{};
 	};
 
 }

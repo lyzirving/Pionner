@@ -17,16 +17,6 @@ namespace pio
 		Cylinder, Arrow, Num
 	};
 
-	struct UIEventTracker
-	{
-		bool ButtonPressed{ false };
-		uint64_t PressedTime{ 0 };// ms
-		glm::vec2 Cursor{ -1.f };
-		glm::vec2 LastCursor{ -1.f };
-
-		static bool IsClick(uint64_t now, uint64_t pre) { return (now - pre) <= CLICK_INTERVAL; }
-	};
-
 	struct LayoutPercentage
 	{
 		float Left{ 0.f };  // 0.f - 1.f
@@ -64,9 +54,9 @@ namespace pio
 
 	struct LayoutParams
 	{
-		LayoutPercentage Percentage;
-		LayoutRect Position;
-		LayoutViewport Viewport;
+		LayoutPercentage Percentage;//Layout ratio on entire window
+		LayoutRect Position;//Position on entire window
+		LayoutViewport Viewport;// Rendering panel on window
 
 		LayoutParams() : Percentage(), Position(), Viewport()
 		{
@@ -93,8 +83,9 @@ namespace pio
 
 	namespace UiDef
 	{
-		glm::uvec2 ScreenToViewport(const glm::vec2 &screenPt, const LayoutParams& param);
+		glm::ivec2 ScreenToViewport(const glm::vec2 &screenPt, const LayoutParams& param);
 		glm::vec2 ScreenToVertex(uint32_t x, uint32_t y, uint32_t screenWidth, uint32_t screenHeight);
+		glm::vec2 MoveToOrigin(const glm::vec2 &pt, const glm::vec2 &orign);
 	}
 }
 

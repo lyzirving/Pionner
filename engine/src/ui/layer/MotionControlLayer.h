@@ -38,13 +38,23 @@ namespace pio
 		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const LayoutParams &param);
 
 	private:
-		struct SpriteController
+		struct UIEventTracker
 		{
-			Ref<Entity> Ent;
-			glm::vec2 LastMotionPos{ 0.f };
+			bool Pressed{ false };
+			uint64_t PressedTime{ 0 };// ms
+			glm::vec2 LastCursor{ -1.f };
 
-			bool inUse() { return Ent.use_count() != 0; }
-			void release() { Ent.reset(); LastMotionPos.x = LastMotionPos.y = 0.f;  }
+			static bool IsClick(uint64_t now, uint64_t pre) { return (now - pre) <= CLICK_INTERVAL; }
+		};
+
+		struct SpriteController
+		{			
+			bool Pressed{ false };
+			glm::vec2 LastCursor{ -1.f };
+			Ref<Entity> Ent;
+
+			bool bSelected() { return Ent.use_count() != 0; }
+			void release() { Ent.reset(); LastCursor.x = LastCursor.y = -1.f; Pressed = false; }
 		};
 
 	private:
@@ -62,14 +72,14 @@ namespace pio
 		Ref<UiCoordinate3D> m_visionCoord;
 		Ref<UiCoordinate3D> m_selectCoord;
 
+		UIEventTracker m_eventCtlState{};
 		UIEventTracker m_visionCtlState{};
 		UIEventTracker m_objCtlState{};
+		SpriteController m_spriteCtl;
 
 		// Physics world that store selector controller's axis
 		Ref<PhysicsScene> m_world;
 		PhysicsActor *m_hitCtlActor{ nullptr };
-
-		SpriteController m_spriteCtl;
 	};
 }
 

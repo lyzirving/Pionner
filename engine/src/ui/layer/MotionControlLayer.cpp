@@ -28,8 +28,8 @@
 
 namespace pio
 {
-	#define CTL_CAM_RADIUS (2.f)
-	#define CTL_TRANSLATION_RATIO (7.f)
+#define CTL_CAM_RADIUS (2.f)
+#define CTL_TRANSLATION_RATIO (7.f)
 
 	MotionControlLayer::MotionControlLayer(const LayoutParams &param)
 		: Layer(param, "MotionControlLayer")
@@ -38,7 +38,7 @@ namespace pio
 
 	void MotionControlLayer::onAttach()
 	{
-		m_circleLayoutParam.Percentage = LayoutPercentage(m_layoutParam.Percentage.Right - 0.1f, 
+		m_circleLayoutParam.Percentage = LayoutPercentage(m_layoutParam.Percentage.Right - 0.1f,
 														  m_layoutParam.Percentage.Top + 0.015f,
 														  m_layoutParam.Percentage.Right,
 														  m_layoutParam.Percentage.Top + 0.125f);
@@ -108,7 +108,7 @@ namespace pio
 	}
 
 	void MotionControlLayer::onUpdate(const Timestep &ts)
-	{	
+	{
 		// Circle background
 		if (m_drawCircle)
 		{
@@ -130,8 +130,8 @@ namespace pio
 		m_circleLayoutParam.calculate(width, height);
 
 		LayoutRect lp = m_circleLayoutParam.Position;
-        float radius = (lp.Bottom - lp.Top) * 0.5f;
-        glm::vec2 center(lp.Right - radius - 3, (lp.Top + lp.Bottom) * 0.5f);
+		float radius = (lp.Bottom - lp.Top) * 0.5f;
+		glm::vec2 center(lp.Right - radius - 3, (lp.Top + lp.Bottom) * 0.5f);
 
 		m_circleLayoutParam.Position.Left = center.x - radius;
 		m_circleLayoutParam.Position.Right = center.x + radius;
@@ -146,67 +146,80 @@ namespace pio
 
 	bool MotionControlLayer::onMouseButtonPressed(Event &event)
 	{
-		m_eventState.PressedTime = TimeUtil::CurrentTimeMs();
-		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
+		m_eventCtlState.PressedTime = TimeUtil::CurrentTimeMs();
+		glm::vec2 cursor = Application::MainWindow()->getCursorPos();		
+		glm::ivec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
 
-		// ------------------- Button pressed work flow --------------------
+		// ------------------- Button pressed work flow ----------------------
 		if (m_circleLayoutParam.Position.contain((uint32_t)cursor.x, (uint32_t)cursor.y))
 		{
-			m_visionCtlState.ButtonPressed = true;
+			m_visionCtlState.Pressed = true;
 			m_visionCtlState.LastCursor = cursor;
 			Application::MainWindow()->setCursorMode(CursorMode::Disabled);
 			return true;
 		}
-		// ------------------------------------------------------------------
+		// -------------------------------------------------------------------
 
-		// ------------------- Sprite pressed work flow --------------------
-		if (m_spriteCtl.inUse())
-		{
-			//TODO
-		}
-		// -----------------------------------------------------------------
-		
-		// ------------------- Object selection work flow -------------------
-		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-		if (sceneComp.Selected3D)
-		{
-			glm::uvec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
+		// ------------------- Sprite pressed work flow ----------------------
+		if (m_spriteCtl.bSelected())
+		{			
 			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 			HitResult result = m_world->intersect(r);
 			m_hitCtlActor = result.Hit ? result.Actor : nullptr;
-			if (m_objCtlState.ButtonPressed = result.Hit) { m_objCtlState.LastCursor = cursor; }
-			return m_objCtlState.ButtonPressed;
+			if (m_spriteCtl.Pressed = result.Hit) { m_spriteCtl.LastCursor = cursor; }
+			return m_spriteCtl.Pressed;
 		}
-		// ------------------------------------------------------------------
+		// -------------------------------------------------------------------
+
+		// ------------------- Object selection work flow --------------------
+		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
+		if (sceneComp.Selected3D)
+		{			
+			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+			HitResult result = m_world->intersect(r);
+			m_hitCtlActor = result.Hit ? result.Actor : nullptr;
+			if (m_objCtlState.Pressed = result.Hit) { m_objCtlState.LastCursor = cursor; }
+			return m_objCtlState.Pressed;
+		}
+		// -------------------------------------------------------------------
 		return false;
 	}
 
 	bool MotionControlLayer::onMouseMoved(Event &event)
 	{
 		auto *p = event.as<MouseMovedEvent>();
-		// ------------------- Button pressed work flow --------------------
-		if (m_visionCtlState.ButtonPressed)
-		{
-			m_visionCtlState.Cursor = glm::vec2(p->getX(), p->getY());
+		glm::vec2 cursor(p->getX(), p->getY());		
+
+		// ------------------- Button pressed work flow ----------------------
+		if (m_visionCtlState.Pressed)
+		{		
 			m_drawCircle = true;
-			glm::vec2 delta = m_visionCtlState.Cursor - m_visionCtlState.LastCursor;
+			glm::vec2 delta = cursor - m_visionCtlState.LastCursor;
 			delta.x = Math::Clamp(delta.x, -20.f, 20.f);
 			delta.y = Math::Clamp(delta.y, -20.f, 20.f);
-			m_visionCtlState.LastCursor = m_visionCtlState.Cursor;
+			m_visionCtlState.LastCursor = cursor;
 			auto &comp = m_mainCameraEnt->getComponent<CameraComponent>();
 			comp.Camera.addPosDiff(delta.x, delta.y);
 			return true;
 		}
 		m_drawCircle = m_circleLayoutParam.Position.contain(p->getX(), p->getY());
-		// ------------------------------------------------------------------
+		// -------------------------------------------------------------------
+
+		// ------------------- Sprite pressed work flow ----------------------
+		if (m_spriteCtl.Pressed)
+		{			
+			onSelectionMoved(m_spriteCtl.Ent, m_hitCtlActor, cursor, m_spriteCtl.LastCursor, m_layoutParam);
+			m_spriteCtl.LastCursor = cursor;
+			return true;
+		}
+		// -------------------------------------------------------------------
 
 		// ------------------- Object controller work flow -------------------
-		if (m_objCtlState.ButtonPressed)
+		if (m_objCtlState.Pressed)
 		{
-			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-			m_objCtlState.Cursor = glm::vec2(p->getX(), p->getY());
-			onSelectionMoved(sceneComp.Selected3D, m_hitCtlActor, m_objCtlState.Cursor, m_objCtlState.LastCursor, m_layoutParam);
-			m_objCtlState.LastCursor = m_objCtlState.Cursor;
+			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();		
+			onSelectionMoved(sceneComp.Selected3D, m_hitCtlActor, cursor, m_objCtlState.LastCursor, m_layoutParam);
+			m_objCtlState.LastCursor = cursor;
 			return true;
 		}
 		// ------------------------------------------------------------------
@@ -215,19 +228,20 @@ namespace pio
 
 	bool MotionControlLayer::onMouseButtonReleased(Event &event)
 	{
-		bool consume = m_visionCtlState.ButtonPressed || m_objCtlState.ButtonPressed;
+		bool consume = m_visionCtlState.Pressed || m_objCtlState.Pressed || m_spriteCtl.Pressed;
 
-		if (!consume && UIEventTracker::IsClick(TimeUtil::CurrentTimeMs(), m_eventState.PressedTime))
+		if (!consume && UIEventTracker::IsClick(TimeUtil::CurrentTimeMs(), m_eventCtlState.PressedTime))
 		{
 			consume = onClickEvent(Application::MainWindow()->getCursorPos());
 		}
 
-		if (m_visionCtlState.ButtonPressed) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
-		m_visionCtlState.ButtonPressed = false;
-		m_objCtlState.ButtonPressed = false;
+		if (m_visionCtlState.Pressed) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
 
-		m_visionCtlState.Cursor = m_visionCtlState.LastCursor = glm::vec2(-1.f);
-		m_objCtlState.LastCursor = m_objCtlState.Cursor = glm::vec2(-1.f);		
+		m_visionCtlState.Pressed = false;
+		m_objCtlState.Pressed = false;
+		m_spriteCtl.Pressed = false;
+
+		m_spriteCtl.LastCursor = m_visionCtlState.LastCursor = m_objCtlState.LastCursor = glm::vec2(-1.f);
 
 		return consume;
 	}
@@ -351,7 +365,7 @@ namespace pio
 
 		// 2d pick up
 		{
-			if (m_spriteCtl.inUse())
+			if (m_spriteCtl.bSelected())
 			{
 				if (m_spriteCtl.Ent->hasComponent<DirectionalLightComponent>())
 				{
@@ -369,12 +383,12 @@ namespace pio
 				auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
 				Ref<Entity> selection = sceneComp.Selected3D;
 				bPick = (selection && selection->getGlobalPoseCenter(slcPos));
-			}			
+			}
 		}
 
 		if (!bPick)
 			return;
-		
+
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		Camera &camera = camComp.Camera;
 		const Viewport &vp = camera.getViewport();
@@ -485,15 +499,15 @@ namespace pio
 
 	bool MotionControlLayer::onClickEvent(const glm::vec2 &cursor)
 	{
-		bool consume{ false };
+		bool consume{ false };		
 		// 2d pick up
 		{
-			glm::vec2 vpCursor(cursor.x - m_layoutParam.Position.Left, cursor.y - m_layoutParam.Position.Top);
+			glm::vec2 vpCursor = UiDef::MoveToOrigin(cursor, glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top));
 			EntityView view = s_registry->view<SpriteComponent>();
 			auto it = view.begin();
 			while (it != view.end())
 			{
-				Ref<Entity> ent = it->second;				
+				Ref<Entity> ent = it->second;
 				SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
 				consume = Math::Contains(vpCursor, spriteComp.Rect);
 				if (consume)
@@ -508,7 +522,7 @@ namespace pio
 
 		// 3d pick up
 		{
-			glm::uvec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
+			glm::ivec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
 			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
 			HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
@@ -534,8 +548,8 @@ namespace pio
 		Ref<Entity> ctlEnt;
 		PIO_ASSERT_RETURN(ctlActor->getEnt(ctlEnt), "onSelectionMoved: entity is invalid");
 
-		glm::uvec2 curPt = UiDef::ScreenToViewport(cursor, param);
-		glm::uvec2 lastPt = UiDef::ScreenToViewport(last, param);
+		glm::ivec2 curPt = UiDef::ScreenToViewport(cursor, param);
+		glm::ivec2 lastPt = UiDef::ScreenToViewport(last, param);
 
 		Ray curRay = Ray::BuildFromScreen(curPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 		Ray lastRay = Ray::BuildFromScreen(lastPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
@@ -561,16 +575,21 @@ namespace pio
 			LOGE("invalid selection");
 			return;
 		}
-		diff3d *= CTL_TRANSLATION_RATIO;
+		diff3d *= CTL_TRANSLATION_RATIO;	
 
 		if (selection->hasComponent<ProxyComponent>())
 		{
 			auto &comp = selection->getComponent<ProxyComponent>();
 			comp.Proxy->setGlobalPoseDiff(diff3d);
 		}
+		else if (selection->hasComponent<DirectionalLightComponent>())
+		{
+			auto &comp = selection->getComponent<DirectionalLightComponent>();			
+			comp.Position += diff3d;
+		}
 		else
 		{
 			selection->setGlobalPoseDiff(diff3d);
-		}		
+		}
 	}
 }
