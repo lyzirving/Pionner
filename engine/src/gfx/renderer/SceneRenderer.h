@@ -83,7 +83,9 @@ namespace pio
 		Ref<RenderPass> m_GBufferPass;
 		Ref<RenderPass> m_lightPass;
 		// -------------------------------------------------
-		Ref<RenderPass> m_screenPass;// default pass, no frame buffer attached
+		// default pass, no frame buffer attached
+		Ref<RenderPass> m_screenPass;
+
 		glm::uvec2 m_shadowBufferSize{ 0 }, m_colorBufferSize{ 0 };
 	};
 }

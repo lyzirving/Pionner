@@ -44,7 +44,7 @@ namespace pio
 			glm::vec2 LastMotionPos{ 0.f };
 
 			bool inUse() { return Ent.use_count() != 0; }
-			void release() { Ent.reset(); }
+			void release() { Ent.reset(); LastMotionPos.x = LastMotionPos.y = 0.f;  }
 		};
 
 	private:

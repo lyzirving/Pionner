@@ -138,9 +138,9 @@ namespace pio
 		m_active = true;
 
 		LightEnvironment &lightEnv = const_cast<LightEnvironment &>(scene.m_lightEnv);
-		CameraUD &cameraUD = m_cameraUD;
-		Viewport &viewport = const_cast<Viewport &>(camera.getViewport());
+		CameraUD &cameraUD = m_cameraUD;		
 		Camera &distLightCam = m_distantLightShadowPass->getCamera();
+		const Viewport &vp = camera.getViewport();
 
 		distLightCam.setPosition(lightEnv.DirectionalLight.Position);
 		distLightCam.setLookAt(lightEnv.DirectionalLight.Dest);	
@@ -165,8 +165,7 @@ namespace pio
 
 		FillPointLightShadowData(camera, m_pointLightShadowPass->getFramebuffer(), lightEnv);
 		UpdateDistantLightSprite(scene.m_lightEnv.DirectionalLight, cameraUD.PrjMat * cameraUD.ViewMat, 
-								 Camera::GetViewportMat(Viewport(0, 0, m_colorBufferSize.x, m_colorBufferSize.y)), 
-								 m_colorBufferSize);
+								 Camera::GetViewportMat(Viewport(0, 0, vp.Width, vp.Height)), glm::uvec2(vp.Width, vp.Height));
 
 		cameraUD.serialize();
 		lightEnv.DirectionalLight.serialize();
@@ -174,7 +173,7 @@ namespace pio
 		lightEnv.PointLightData.serialize();
 		lightEnv.PtLightShadowData.serialize();		
 
-		Renderer::SubmitRC([cameraUB, dirLightUB, dirLightSdDataUB, ptLightDataUB, ptLightSdDataUB, cameraUD, lightEnv, viewport]() mutable
+		Renderer::SubmitRC([cameraUB, dirLightUB, dirLightSdDataUB, ptLightDataUB, ptLightSdDataUB, cameraUD, lightEnv]() mutable
 		{
 			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
 			dirLightUB->setData(lightEnv.DirectionalLight.Block.getBuffer()->as<void *>(), lightEnv.DirectionalLight.Block.getByteUsed());

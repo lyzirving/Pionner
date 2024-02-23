@@ -158,6 +158,13 @@ namespace pio
 			return true;
 		}
 		// ------------------------------------------------------------------
+
+		// ------------------- Sprite pressed work flow --------------------
+		if (m_spriteCtl.inUse())
+		{
+			//TODO
+		}
+		// -----------------------------------------------------------------
 		
 		// ------------------- Object selection work flow -------------------
 		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
@@ -208,13 +215,11 @@ namespace pio
 
 	bool MotionControlLayer::onMouseButtonReleased(Event &event)
 	{
-		bool consume = m_visionCtlState.ButtonPressed || 
-			           m_objCtlState.ButtonPressed || 
-			           m_spriteCtl.inUse();
+		bool consume = m_visionCtlState.ButtonPressed || m_objCtlState.ButtonPressed;
 
 		if (!consume && UIEventTracker::IsClick(TimeUtil::CurrentTimeMs(), m_eventState.PressedTime))
 		{
-			onClickEvent(Application::MainWindow()->getCursorPos());
+			consume = onClickEvent(Application::MainWindow()->getCursorPos());
 		}
 
 		if (m_visionCtlState.ButtonPressed) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
@@ -222,9 +227,8 @@ namespace pio
 		m_objCtlState.ButtonPressed = false;
 
 		m_visionCtlState.Cursor = m_visionCtlState.LastCursor = glm::vec2(-1.f);
-		m_objCtlState.LastCursor = m_objCtlState.Cursor = glm::vec2(-1.f);
-		
-		m_spriteCtl.release();
+		m_objCtlState.LastCursor = m_objCtlState.Cursor = glm::vec2(-1.f);		
+
 		return consume;
 	}
 
@@ -343,13 +347,34 @@ namespace pio
 	void MotionControlLayer::onDrawSelectionCtl(const Timestep &ts)
 	{
 		glm::vec3 slcPos(0.f);
-		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-		Ref<Entity> selection = sceneComp.Selected3D;
-		if (!(selection && selection->getGlobalPoseCenter(slcPos)))
+		bool bPick{ false };
+
+		// 2d pick up
 		{
-			return;
+			if (m_spriteCtl.inUse())
+			{
+				if (m_spriteCtl.Ent->hasComponent<DirectionalLightComponent>())
+				{
+					auto &lightComp = m_spriteCtl.Ent->getComponent<DirectionalLightComponent>();
+					slcPos = lightComp.Position;
+					bPick = true;
+				}
+			}
 		}
 
+		// 3d pick up
+		{
+			if (!bPick)
+			{
+				auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
+				Ref<Entity> selection = sceneComp.Selected3D;
+				bPick = (selection && selection->getGlobalPoseCenter(slcPos));
+			}			
+		}
+
+		if (!bPick)
+			return;
+		
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		Camera &camera = camComp.Camera;
 		const Viewport &vp = camera.getViewport();
@@ -463,16 +488,22 @@ namespace pio
 		bool consume{ false };
 		// 2d pick up
 		{
-			/*EntityView view = s_registry->view<SpriteComponent>();
+			glm::vec2 vpCursor(cursor.x - m_layoutParam.Position.Left, cursor.y - m_layoutParam.Position.Top);
+			EntityView view = s_registry->view<SpriteComponent>();
 			auto it = view.begin();
 			while (it != view.end())
 			{
-				Ref<Entity> ent = it->second;
+				Ref<Entity> ent = it->second;				
 				SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
-				consume = Math::Contains(cursor, spriteComp.Rect);
-				if (consume) return consume;
+				consume = Math::Contains(vpCursor, spriteComp.Rect);
+				if (consume)
+				{
+					m_spriteCtl.Ent = ent;
+					return consume;
+				}
 				it++;
-			}*/
+			}
+			m_spriteCtl.release();
 		}
 
 		// 3d pick up
