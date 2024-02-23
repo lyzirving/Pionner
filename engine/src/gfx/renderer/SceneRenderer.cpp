@@ -47,6 +47,40 @@ namespace pio
 		}
 	}
 
+	static void UpdateDistantLightSprite(const DirectionalLight &distantLight, const glm::mat4 &mvpMat, const glm::mat4 &vpMat, const glm::uvec2 &vpSize)
+	{
+		EntityView view = Registry::Get()->view<DirectionalLightComponent, SpriteComponent>();
+		if (view.size() != 1)
+		{
+			LOGE("Err! Mutiple distant light");
+			return;
+		}
+		Ref<Entity> ent = view.begin()->second;
+		auto &spriteComp = ent->getComponent<SpriteComponent>();
+
+		glm::vec2 p = Math::ToScreenPos(distantLight.Position, mvpMat, vpMat, vpSize);
+		if (p != spriteComp.Position)
+		{
+			spriteComp.Position = p;
+			const uint32_t w = spriteComp.ScreenWidth;
+			const uint32_t h = spriteComp.ScreenHeight;
+			spriteComp.Rect.LeftTop = glm::vec2(p.x - w / 2, p.y - h / 2);
+			spriteComp.Rect.LeftBottom = glm::vec2(p.x - w / 2, p.y + h / 2);
+			spriteComp.Rect.RightTop = glm::vec2(p.x + w / 2, p.y - h / 2);
+			spriteComp.Rect.RightBottom = glm::vec2(p.x + w / 2, p.y + h / 2);
+			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(spriteComp.QuadMesh);
+			mesh->Vertex.clear(); mesh->Vertex.reserve(4);
+			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 1.f));//lt
+			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 0.f));//lb
+			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 1.f));//rt
+			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 0.f));//rb	
+			Renderer::SubmitTask([mesh]() mutable
+			{
+				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));
+			});
+		}
+	}
+
 	SceneRenderer::SceneRenderer()
 	{
 	}
@@ -68,16 +102,16 @@ namespace pio
 		m_uniformBuffers->create(lightEnv.PointLightData.Block.getByteUsed(), PIO_UINT(UBBindings::PointLightData));
 		m_uniformBuffers->create(lightEnv.PtLightShadowData.Block.getByteUsed(), PIO_UINT(UBBindings::PointLightShadowData));
 
-		uint32_t shadowWidth, shadowHeight;
-		shadowWidth = shadowHeight = Tiering::GetShadowResolution(Tiering::ShadowResolutionSetting::Low);
+		m_shadowBufferSize.x = m_shadowBufferSize.y = Tiering::GetShadowResolution(Tiering::ShadowResolutionSetting::Low);
 
-		uint32_t colorWidth, colorHeight;
-		colorWidth = Tiering::GetColorResolution(Tiering::ColorResolutionSetting::Low);
-		colorHeight = colorWidth / Tiering::GetAspectRatio(Tiering::ColorAspectSetting::WH16_9);
+		float aspectRatio = float(scene.m_layoutParam.Viewport.Width) / float(scene.m_layoutParam.Viewport.Height);
+		m_colorBufferSize.x = Tiering::GetColorResolution(Tiering::ColorResolutionSetting::Low);		
+		m_colorBufferSize.y = float(m_colorBufferSize.x) / aspectRatio;
 
-		createShadowPass(shadowWidth, shadowHeight);
-		createForwardPass(colorWidth, colorHeight);
-		createDeferredPass(colorWidth, colorHeight);
+		createShadowPass(m_shadowBufferSize.x, m_shadowBufferSize.y);
+		createForwardPass(m_colorBufferSize.x, m_colorBufferSize.y);
+		createDeferredPass(m_colorBufferSize.x, m_colorBufferSize.y);
+		createScreenPass();
 
 		Renderer::SubmitTask([sk]() mutable
 		{
@@ -96,6 +130,7 @@ namespace pio
 		m_lightPass.reset();
 		m_distantLightShadowPass.reset();
 		m_pointLightShadowPass.reset();
+		m_screenPass.reset();
 	}
 
 	void SceneRenderer::beginScene(const Scene &scene, const Camera &camera)
@@ -129,6 +164,9 @@ namespace pio
 		lightEnv.DirectionalLightShadowData.PrjMat = distLightCam.getOrthoMat();
 
 		FillPointLightShadowData(camera, m_pointLightShadowPass->getFramebuffer(), lightEnv);
+		UpdateDistantLightSprite(scene.m_lightEnv.DirectionalLight, cameraUD.PrjMat * cameraUD.ViewMat, 
+								 Camera::GetViewportMat(Viewport(0, 0, m_colorBufferSize.x, m_colorBufferSize.y)), 
+								 m_colorBufferSize);
 
 		cameraUD.serialize();
 		lightEnv.DirectionalLight.serialize();
@@ -362,6 +400,21 @@ namespace pio
 	{
 		createGBufferPass(w, h);
 		createLightPass(w, h);
+	}
+
+	void SceneRenderer::createScreenPass()
+	{
+		RenderPassSpecification screenPassSpec;
+		screenPassSpec.Name = "ScreenPass";
+		m_screenPass = RenderPass::Create(screenPassSpec);
+
+		RenderState state;
+		state.Blend = Blend::Disable();
+		state.Cull = CullFace::Common();
+		state.DepthTest = DepthTest::Disable();
+		state.Clear = Clear::Common(Renderer::TRANSPARENT_COLOR);
+		state.Stencil.Enable = false;
+		m_screenPass->setState(state);
 	}
 
 	void SceneRenderer::createGBufferPass(uint32_t w, uint32_t h)
@@ -646,8 +699,9 @@ namespace pio
 		Ref<RenderPass> plsp = m_pointLightShadowPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
 		std::map<MeshKey, DrawCommand> &dCmd = m_delayedMeshDraws;
+		std::map<MeshKey, SpriteCommand> &spCmd = m_spriteDraws;
 
-		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, dCmd]() mutable
+		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, dCmd, spCmd]() mutable
 		{						
 			Renderer::BeginRenderPass(lp);
 			// Copy depth buffer from G-Buffer into Lighting pass
@@ -669,7 +723,9 @@ namespace pio
 			skState.Cull = CullFace::Common();
 			skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
 			skState.Stencil.Enable = false;
-			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);					
+			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);	
+
+			RenderPass::RenderSprites(spCmd);
 
 			Renderer::EndRenderPass(lp);	
 		});
@@ -677,15 +733,17 @@ namespace pio
 
 	void SceneRenderer::onScreenRendering(const Scene &scene)
 	{
-		const AssetHandle &handle = scene.m_screenQuad;
+		Ref<RenderPass> scpss = m_screenPass;
+		const LayoutViewport &vp = scene.m_layoutParam.Viewport;
+		const AssetHandle &handle = scene.m_screenQuad;		
 		Ref<Texture2D> composite = m_compositeTexture;
-		std::map<MeshKey, SpriteCommand> &spriteCmd = m_spriteDraws;
 
 		// No pass to bind, render on the default framebuffer
-		Renderer::SubmitRC([handle, composite, spriteCmd]() mutable
+		Renderer::SubmitRC([scpss, vp, handle, composite]() mutable
 		{
-			RenderPass::Postprocessing(handle, composite);
-			RenderPass::RenderSprites(spriteCmd);
+			Renderer::BeginScreenPass(scpss, Viewport(vp.X, vp.Y, vp.Width, vp.Height));
+			RenderPass::Postprocessing(handle, composite);	
+			Renderer::EndScreenPass(scpss);
 		});
 	}
 }

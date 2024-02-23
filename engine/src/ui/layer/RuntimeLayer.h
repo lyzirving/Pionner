@@ -24,7 +24,6 @@ namespace pio
 	private:
 		Ref<Scene> m_scene;
 		Ref<SceneRenderer> m_renderer;
-		AssetHandle m_screenQuad{ NullAsset };
 	};
 }
 

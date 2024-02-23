@@ -3,6 +3,7 @@
 
 #include "core/EventBus.h"
 #include "physics/PhysicsDef.h"
+#include "ui/UiDef.h"
 
 #include "Registry.h"
 #include "Components.h"
@@ -35,7 +36,7 @@ namespace pio
 
 		void moveCamera(float viewPosDiffX, float viewPosDiffY);
 		void setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
-		void setScreenQuad(const AssetHandle &h) { m_screenQuad = h; }
+		void setLayoutParam(const LayoutParams &p) { m_layoutParam = p; }
 
 	private:
 		void createData();
@@ -48,6 +49,8 @@ namespace pio
 		static Registry *s_registry;
 
 	private:
+		LayoutParams m_layoutParam;
+
 		LightEnvironment m_lightEnv;
 		Ref<Skybox> m_skybox;
 

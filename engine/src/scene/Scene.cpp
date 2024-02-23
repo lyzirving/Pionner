@@ -111,6 +111,10 @@ namespace pio
 		m_lightEnv.PointLightData.obtainBlock();
 		m_lightEnv.PtLightShadowData.obtainBlock();
 
+		uint32_t w = m_layoutParam.Viewport.Width;
+		uint32_t h = m_layoutParam.Viewport.Height;
+		m_screenQuad = MeshFactory::CreateScreenQuad(0, 0, w, h, w, h)->getHandle();
+
 		renderer->onAttach(*this);
 	}
 
@@ -162,43 +166,16 @@ namespace pio
 		// Only one directional light in scene
 		{
 			auto view = s_registry->view<DirectionalLightComponent>();
-			auto it = view.begin();
-			if (it != view.end())
+			if (view.size() == 1)
 			{
-				auto &lightComp = it->second->getComponent<DirectionalLightComponent>();
+				Ref<Entity> ent = view.begin()->second;
+				auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 				LightCompToSceneData(lightComp, m_lightEnv.DirectionalLight);
-				if (it->second->hasComponent<SpriteComponent>())
-				{
-					const uint32_t winWidth = Application::MainWindow()->getWidth();
-					const uint32_t winHeight = Application::MainWindow()->getHeight();
-
-					auto &spriteComp = it->second->getComponent<SpriteComponent>();
-					glm::vec2 p = Math::ToScreenPos(m_lightEnv.DirectionalLight.Position, 
-													sceneCam.getPrjMat() * sceneCam.getViewMat(),
-													Camera::GetViewportMat(sceneCam.getViewport()),
-													glm::uvec2(winWidth, winHeight));
-					if (p != spriteComp.Position)
-					{
-						spriteComp.Position = p;
-						const uint32_t w = spriteComp.ScreenWidth;
-						const uint32_t h = spriteComp.ScreenHeight;		
-						spriteComp.Rect.LeftTop = glm::vec2(p.x - w / 2, p.y - h / 2);
-						spriteComp.Rect.LeftBottom = glm::vec2(p.x - w / 2, p.y + h / 2);
-						spriteComp.Rect.RightTop = glm::vec2(p.x + w / 2, p.y - h / 2);
-						spriteComp.Rect.RightBottom = glm::vec2(p.x + w / 2, p.y + h / 2);
-						Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(spriteComp.QuadMesh);
-						mesh->Vertex.clear(); mesh->Vertex.reserve(4);						
-						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y - h / 2, winWidth, winHeight), 0.f), glm::vec2(0.f, 1.f));//lt
-						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y + h / 2, winWidth, winHeight), 0.f), glm::vec2(0.f, 0.f));//lb
-						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y - h / 2, winWidth, winHeight), 0.f), glm::vec2(1.f, 1.f));//rt
-						mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y + h / 2, winWidth, winHeight), 0.f), glm::vec2(1.f, 0.f));//rb	
-						Renderer::SubmitTask([mesh]() mutable
-						{
-							mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));
-						});
-					}					
-				}
 			}
+			else
+			{
+				LOGE("Err! Mutiple distant light");
+			}			
 		}
 	}
 

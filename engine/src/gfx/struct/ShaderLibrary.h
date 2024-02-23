@@ -8,7 +8,7 @@ namespace pio
 	enum class ShaderType : uint8_t
 	{
 		PBR_Mesh, DistantLight_ShadowData, PointLight_ShadowData, MaterialPreview, Wireframe, LightVolume,
-		Color_Line, Outline, TextureQuad,
+		Color_Line, Outline, TextureQuad, Sprite,
 		Mesh_Deferred, DistantLighting_Deferred, LightingEffect_Deferred, Outline_Deferred,
 		Equirectangular_To_Cube, Skybox, Postprocessing, Num
 	};

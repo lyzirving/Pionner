@@ -52,6 +52,9 @@ namespace pio
 	{
 		int32_t X{ 0 }, Y{ 0 };
 		int32_t Width{ 0 }, Height{ 0 };
+
+		Viewport() {}
+		Viewport(int32_t x, int32_t y, int32_t w, int32_t h) : X(x), Y(y), Width(w), Height(h) {}
 	};
 
 	struct Blend

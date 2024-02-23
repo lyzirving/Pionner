@@ -138,7 +138,10 @@ namespace pio
 		// ---------------------------------------------------------------------------
 
 		static void BeginRenderPass(Ref<RenderPass> &pass);
-		static void EndRenderPass(Ref<RenderPass> &pass);		
+		static void EndRenderPass(Ref<RenderPass> &pass);	
+
+		static void BeginScreenPass(Ref<RenderPass> &pass, const Viewport &vp);
+		static void EndScreenPass(Ref<RenderPass> &pass);
 
 		static bool UI_HasFocus(UiFocus focus);
 

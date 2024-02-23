@@ -56,6 +56,9 @@ namespace pio
 		virtual void beginRenderPass(Ref<RenderPass> &pass) override;
 		virtual void endRenderPass(Ref<RenderPass> &pass) override;
 
+		virtual void beginScreenPass(Ref<RenderPass> &pass, const Viewport &vp) override;
+		virtual void endScreenPass(Ref<RenderPass> &pass) override;
+
 		virtual bool UI_hasFocus(UiFocus focus) override;
 		
 	private:

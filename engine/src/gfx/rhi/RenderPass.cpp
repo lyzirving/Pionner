@@ -77,7 +77,8 @@ namespace pio
 	{
 		for (auto &it : cmd)
 		{			
-			SpriteCommand &d = it.second;
+			SpriteCommand &d = it.second;	
+			d.State.Blend = Blend(BlendFactor::One, BlendFactor::One, BlendEquation::Add);
 			Renderer::RenderSprite(d.QuadMesh, d.Texture, d.State);
 		}
 	}

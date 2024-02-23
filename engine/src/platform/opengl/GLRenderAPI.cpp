@@ -600,7 +600,7 @@ namespace pio
 		Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(quadMesh);
 		PIO_ASSERT_RETURN(mesh.use_count() != 0, "renderSprite: Quad Mesh is invalid");
 
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::TextureQuad);
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Sprite);
 		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderSprite: Sprite shader is invalid");
 
 		Ref<Texture2D> sprite = AssetsManager::GetRuntimeAsset<Texture2D>(texture);
@@ -617,6 +617,7 @@ namespace pio
 		sprite->bind(); 
 
 		shader->setTextureSampler("u_quadTexture", TextureSampler::Slot0);
+		shader->setBool("u_bSRGB", sprite->SRGB());
 
 		mesh->VertexArray->bind();
 		mesh->IndexBuffer->bind();
@@ -777,6 +778,31 @@ namespace pio
 
 		pass->getSpecification().FrameBuffer->unbind();
 
+		Viewport vp = restoreViewport();
+		commitViewport(vp.X, vp.Y, vp.Width, vp.Height);
+	}
+
+	void GLRenderAPI::beginScreenPass(Ref<RenderPass> &pass, const Viewport &vp)
+	{
+		if (!pass)
+			return;
+
+		const RenderState &state = pass->getState();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		saveViewport(m_viewport);
+		commitViewport(vp.X, vp.Y, vp.Width, vp.Height);
+
+		GLState::SetClear(state.Clear);
+		GLState::SetBlendMode(state.Blend);
+		GLState::SetDepthTest(state.DepthTest);
+		GLState::SetCullFace(state.Cull);
+		GLState::SetStencilTest(state.Stencil);
+	}
+
+	void GLRenderAPI::endScreenPass(Ref<RenderPass> &pass)
+	{
 		Viewport vp = restoreViewport();
 		commitViewport(vp.X, vp.Y, vp.Width, vp.Height);
 	}

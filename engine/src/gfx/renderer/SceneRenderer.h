@@ -46,6 +46,7 @@ namespace pio
 		void createDeferredPass(uint32_t w, uint32_t h);
 		void createGBufferPass(uint32_t w, uint32_t h);
 		void createLightPass(uint32_t w, uint32_t h);
+		void createScreenPass();
 
 		void flushDrawList(const Scene &scene);
 
@@ -82,6 +83,8 @@ namespace pio
 		Ref<RenderPass> m_GBufferPass;
 		Ref<RenderPass> m_lightPass;
 		// -------------------------------------------------
+		Ref<RenderPass> m_screenPass;// default pass, no frame buffer attached
+		glm::uvec2 m_shadowBufferSize{ 0 }, m_colorBufferSize{ 0 };
 	};
 }
 

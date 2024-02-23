@@ -460,20 +460,37 @@ namespace pio
 
 	bool MotionControlLayer::onClickEvent(const glm::vec2 &cursor)
 	{
-		glm::uvec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
-		Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
-
-		if (sceneComp.Selected3D) { sceneComp.Selected3D->setSelection(false); }
-		bool consume = result.Hit && result.Actor->getEnt(sceneComp.Selected3D);
-		if (consume)
+		bool consume{ false };
+		// 2d pick up
 		{
-			sceneComp.Selected3D->setSelection(true);
+			/*EntityView view = s_registry->view<SpriteComponent>();
+			auto it = view.begin();
+			while (it != view.end())
+			{
+				Ref<Entity> ent = it->second;
+				SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
+				consume = Math::Contains(cursor, spriteComp.Rect);
+				if (consume) return consume;
+				it++;
+			}*/
 		}
-		else
+
+		// 3d pick up
 		{
-			sceneComp.Selected3D.reset();
+			glm::uvec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
+			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
+			HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
+			if (sceneComp.Selected3D) { sceneComp.Selected3D->setSelection(false); }
+			consume = result.Hit && result.Actor->getEnt(sceneComp.Selected3D);
+			if (consume)
+			{
+				sceneComp.Selected3D->setSelection(true);
+			}
+			else
+			{
+				sceneComp.Selected3D.reset();
+			}
 		}
 		return consume;
 	}

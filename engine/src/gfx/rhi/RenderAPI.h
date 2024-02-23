@@ -76,6 +76,9 @@ namespace pio
 		virtual void beginRenderPass(Ref<RenderPass> &pass) = 0;
 		virtual void endRenderPass(Ref<RenderPass> &pass) = 0;
 
+		virtual void beginScreenPass(Ref<RenderPass> &pass, const Viewport& vp) = 0;
+		virtual void endScreenPass(Ref<RenderPass> &pass) = 0;
+
 		virtual bool UI_hasFocus(UiFocus focus) = 0;
 
 	public:

@@ -27,12 +27,19 @@ namespace pio
 
 	void RuntimeLayer::onAttach()
 	{	
+		float aspectRatio = (m_layoutParam.Percentage.Right - m_layoutParam.Percentage.Left) / (m_layoutParam.Percentage.Bottom - m_layoutParam.Percentage.Top);
+		uint32_t w = Application::MainWindow()->getWidth();
+		uint32_t h = Application::MainWindow()->getHeight();
+		m_layoutParam.calculate(w, h);		
+
 		m_scene = CreateRef<Scene>();
-		m_renderer = CreateRef<SceneRenderer>();
+		m_renderer = CreateRef<SceneRenderer>();							
+
+		m_scene->setLayoutParam(m_layoutParam);
 		m_scene->onAttach(m_renderer);
 
-		onWindowSizeChange(Application::MainWindow()->getWidth(),
-						   Application::MainWindow()->getHeight());
+		const LayoutViewport &vp = m_layoutParam.Viewport;
+		m_scene->setCameraViewport(vp.X, vp.Y, vp.Width, vp.Height);	
 	}
 
 	void RuntimeLayer::onDetach()
@@ -60,12 +67,6 @@ namespace pio
 
 		const LayoutViewport &vp = m_layoutParam.Viewport;
 		m_scene->setCameraViewport(vp.X, vp.Y, vp.Width, vp.Height);
-
-		if (m_screenQuad == NullAsset)
-		{
-			LayoutRect &rect = m_layoutParam.Position;
-			m_screenQuad = MeshFactory::CreateScreenQuad(rect.Left, rect.Top, rect.Right, rect.Bottom, width, height)->getHandle();
-			m_scene->setScreenQuad(m_screenQuad);
-		}
+		m_scene->setLayoutParam(m_layoutParam);
 	}
 }

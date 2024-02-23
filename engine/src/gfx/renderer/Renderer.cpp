@@ -213,6 +213,16 @@ namespace pio
 		s_API->endRenderPass(pass);
 	}
 
+	void Renderer::BeginScreenPass(Ref<RenderPass> &pass, const Viewport &vp)
+	{
+		s_API->beginScreenPass(pass, vp);
+	}
+
+	void Renderer::EndScreenPass(Ref<RenderPass> &pass)
+	{
+		s_API->endScreenPass(pass);
+	}
+
 	bool Renderer::UI_HasFocus(UiFocus focus)
 	{
 		return s_API->UI_hasFocus(focus);

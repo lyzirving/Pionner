@@ -145,6 +145,7 @@ namespace pio
 		void add(const Ref<Entity> &entity) { if (entity) { m_entities[entity->getUid()] = entity; } }
 		bool empty() { return m_entities.empty(); }
 		void remove(const UUID32 &id) { m_entities.erase(id); }
+		uint32_t size() const { return m_entities.size(); }
 
 		std::unordered_map<UUID32, Ref<Entity>>::iterator begin() { return m_entities.begin(); }
 		std::unordered_map<UUID32, Ref<Entity>>::iterator end() { return m_entities.end(); }
