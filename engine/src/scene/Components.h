@@ -102,7 +102,6 @@ namespace pio
 
 	struct DirectionalLightComponent
 	{
-		glm::vec3 Position{ 0.f };
 		glm::vec3 Dest{ 0.f };
 		glm::vec3 Radiance{ 0.0f, 0.0f, 0.0f };	
 		float Intensity{ 0.0f };

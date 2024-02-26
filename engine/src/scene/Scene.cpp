@@ -22,15 +22,15 @@ namespace pio
 {
 	Registry *Scene::s_registry = Registry::Get();
 
-	static void LightCompToSceneData(DirectionalLightComponent &comp, DirectionalLight &sceneData)
+	static void LightCompToSceneData(DirectionalLightComponent &lightComp, TransformComponent &transComp, DirectionalLight &sceneData)
 	{		
-		sceneData.Position = comp.Position;
-		sceneData.Dest = comp.Dest;
-		sceneData.Radiance = comp.Radiance;
-		sceneData.Intensity = comp.Intensity;
-		sceneData.Bias = comp.Bias;
-		sceneData.SdMode = comp.SdMode;
-		sceneData.CastShadow = comp.CastShadow;
+		sceneData.Position = transComp.Transform.Position;
+		sceneData.Dest = lightComp.Dest;
+		sceneData.Radiance = lightComp.Radiance;
+		sceneData.Intensity = lightComp.Intensity;
+		sceneData.Bias = lightComp.Bias;
+		sceneData.SdMode = lightComp.SdMode;
+		sceneData.CastShadow = lightComp.CastShadow;
 		sceneData.calc();
 	}
 
@@ -170,7 +170,8 @@ namespace pio
 			{
 				Ref<Entity> ent = view.begin()->second;
 				auto &lightComp = ent->getComponent<DirectionalLightComponent>();
-				LightCompToSceneData(lightComp, m_lightEnv.DirectionalLight);
+				auto &transComp = ent->getComponent<TransformComponent>();
+				LightCompToSceneData(lightComp, transComp, m_lightEnv.DirectionalLight);
 			}
 			else
 			{
@@ -283,13 +284,14 @@ namespace pio
 		cameraComp.Camera.setLookAt(glm::vec3(0.f));
 		cameraComp.Primary = true;
 
-		// Directional Light
+		// Distant Light
 		{
 			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-4.5f, 3.8f, -1.f), glm::vec3(0.f), glm::vec3(3.f), 0.12f);
 
-			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent>(NodeType::DistantLight);
+			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent, TransformComponent>(NodeType::DistantLight);
+			auto &transComp = ent->getComponent<TransformComponent>();
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
-			lightComp.Position = m_lightEnv.DirectionalLight.Position;
+			transComp.Transform.Position = m_lightEnv.DirectionalLight.Position;
 			lightComp.Dest = m_lightEnv.DirectionalLight.Dest;
 			lightComp.Radiance = m_lightEnv.DirectionalLight.Radiance;
 			lightComp.Intensity = m_lightEnv.DirectionalLight.Intensity;

@@ -19,11 +19,23 @@ namespace pio
 		virtual void onWindowSizeChange(uint32_t width, uint32_t height) override;
 
 	private:
+		struct UiQuat
+		{
+			float w{ 1.f };
+			float x{ 0.f };
+			float y{ 0.f };
+			float z{ 0.f };
+
+			UiQuat() {}
+			UiQuat(float _w, float _x, float _y, float _z) : w(_w), x(_x), y(_y), z(_z) {}
+
+			float *value_ptr() { return &w; }
+		};
+
 		struct UiValue
-		{			
+		{
 			bool MeshSrcVisible{ true };
 			SphereCoord DistantLightDir{};
-			glm::vec4 MeshRot{ 1.f, 0.f, 0.f, 0.f };//wxyz
 		};
 
 	private:

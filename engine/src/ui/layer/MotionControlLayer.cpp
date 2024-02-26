@@ -369,8 +369,8 @@ namespace pio
 			{
 				if (m_spriteCtl.Ent->hasComponent<DirectionalLightComponent>())
 				{
-					auto &lightComp = m_spriteCtl.Ent->getComponent<DirectionalLightComponent>();
-					slcPos = lightComp.Position;
+					auto &transComp = m_spriteCtl.Ent->getComponent<TransformComponent>();
+					slcPos = transComp.Transform.Position;
 					bPick = true;
 				}
 			}
@@ -584,8 +584,8 @@ namespace pio
 		}
 		else if (selection->hasComponent<DirectionalLightComponent>())
 		{
-			auto &comp = selection->getComponent<DirectionalLightComponent>();			
-			comp.Position += diff3d;
+			auto &comp = selection->getComponent<TransformComponent>();			
+			comp.Transform.Position += diff3d;
 		}
 		else
 		{

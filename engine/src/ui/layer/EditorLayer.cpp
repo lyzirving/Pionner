@@ -151,6 +151,7 @@ namespace pio
 		{
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 			auto &rlComp = ent->getComponent<RelationshipComponent>();
+			auto &transComp = ent->getComponent<TransformComponent>();
 
 			const float rowWidth = m_layoutParam.Viewport.Width;
 			ImGui::PushItemWidth(rowWidth);
@@ -164,10 +165,15 @@ namespace pio
 				ImGui::Combo("PCF", &lightComp.SdMode, ShadowModeNames, ShadowMode_Num, 3);
 				ImGui::DragFloat("Bias##DistantLight", &lightComp.Bias, 0.00001f, 0.0001f, 0.1f, "%.5f");
 
-				ImGui::DragFloat3("Position##DirectionalLight", glm::value_ptr(lightComp.Position), 0.1f, -1000.f, 1000.f, "%.1f");
+				ImGui::DragFloat3("Position##DirectionalLight", glm::value_ptr(transComp.Transform.Position), 0.1f, -1000.f, 1000.f, "%.1f");
+				glm::quat lightRot = transComp.Transform.Rotate.quat();
+				UiQuat uiQuat = UiQuat(lightRot.w, lightRot.x, lightRot.y, lightRot.z);							
+				ImGui::DragFloat4("Rotation##DirectionalLight", uiQuat.value_ptr(), 0.001f, -1.f, 1.f, "%.2f");
+				transComp.Transform.Rotate = glm::quat(uiQuat.w, uiQuat.x, uiQuat.y, uiQuat.z);
+
 				ImGui::DragFloat3("LookAt##DirectionalLight", glm::value_ptr(lightComp.Dest), 0.1f, -1000.f, 1000.f, "%.1f");
 
-				m_UiVal.DistantLightDir = SphereCoord::ToSCS(-glm::normalize(lightComp.Dest - lightComp.Position));
+				m_UiVal.DistantLightDir = SphereCoord::ToSCS(-glm::normalize(lightComp.Dest - transComp.Transform.Position));
 				std::stringstream ss;
 				ss.setf(std::ios::fixed); ss.precision(1);
 				ss << "Theta[" << m_UiVal.DistantLightDir.getTheta() << "] Phi[" << m_UiVal.DistantLightDir.getPhi() << "]";
@@ -228,15 +234,16 @@ namespace pio
 				}
 
 				// Global Pose
-				{
-					glm::quat realQuat = meshSrc->GlobalPose.Rotate.quat();
-					this->m_UiVal.MeshRot = glm::vec4(realQuat.w, realQuat.x, realQuat.y, realQuat.z);					
+				{									
 					if (ImGui::CollapsingHeader("GlobalPose##MeshSource", ImGuiUtils::Flag_Collapse_Header))
 					{
+						glm::quat meshRot = meshSrc->GlobalPose.Rotate.quat();
+						UiQuat uiQuat = UiQuat(meshRot.w, meshRot.x, meshRot.y, meshRot.z);
+
 						ImGui::DragFloat3("Position##meshSource", glm::value_ptr(meshSrc->GlobalPose.Position), 0.05f, -100.f, 100.f, "%.1f");
-						ImGui::DragFloat4("Rotation##meshSource", glm::value_ptr(this->m_UiVal.MeshRot), 0.001f, -1.f, 1.f, "%.2f");
+						ImGui::DragFloat4("Rotation##meshSource", uiQuat.value_ptr(), 0.001f, -1.f, 1.f, "%.2f");
 						ImGui::DragFloat3("Scale##meshSource", glm::value_ptr(meshSrc->GlobalPose.Scale), 0.1f, 0.f, 10.f, "%.1f");
-						meshSrc->GlobalPose.Rotate = glm::quat(this->m_UiVal.MeshRot.x, this->m_UiVal.MeshRot.y, this->m_UiVal.MeshRot.z, this->m_UiVal.MeshRot.w);
+						meshSrc->GlobalPose.Rotate = glm::quat(uiQuat.w, uiQuat.x, uiQuat.y, uiQuat.z);
 					}
 				}
 
@@ -290,14 +297,15 @@ namespace pio
 				if (ent->hasComponent<TransformComponent>())
 				{			
 					TransformComponent &comp = ent->getComponent<TransformComponent>();					
-					glm::quat realQuat = comp.Transform.Rotate.quat();					
-					this->m_UiVal.MeshRot = glm::vec4(realQuat.w, realQuat.x, realQuat.y, realQuat.z);					
 					if (ImGui::CollapsingHeader("Transform##Mesh", ImGuiUtils::Flag_Collapse_Header))
 					{
+						glm::quat meshRot = comp.Transform.Rotate.quat();
+						UiQuat uiQuat = UiQuat(meshRot.w, meshRot.x, meshRot.y, meshRot.z);
+
 						ImGui::DragFloat3("Position##mesh", glm::value_ptr(comp.Transform.Position), 0.05f, -100.f, 100.f, "%.1f");
-						ImGui::DragFloat4("Rotation##mesh", glm::value_ptr(this->m_UiVal.MeshRot), 0.001f, -1.f, 1.f, "%.2f");
+						ImGui::DragFloat4("Rotation##mesh", uiQuat.value_ptr(), 0.001f, -1.f, 1.f, "%.2f");
 						ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");								
-						comp.Transform.Rotate = glm::quat(this->m_UiVal.MeshRot.x, this->m_UiVal.MeshRot.y, this->m_UiVal.MeshRot.z, this->m_UiVal.MeshRot.w);
+						comp.Transform.Rotate = glm::quat(uiQuat.w, uiQuat.x, uiQuat.y, uiQuat.z);
 					}
 				}
 			}
