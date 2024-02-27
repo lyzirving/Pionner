@@ -16,6 +16,32 @@ namespace pio
 		return m_materials[0];
 	}
 
+	void Geometry::flush()
+	{
+		if (!needUpdate())
+			return;
+
+		if (m_submeshes.empty() || m_vertices.empty() || m_indices.empty())
+		{
+			LOGE("[%s] invalid state", m_name.c_str());
+			return;
+		}
+
+		for (uint32_t i = 0; i < m_submeshes.size(); i++)
+		{
+			Submesh &submesh = m_submeshes[i];
+			if (submesh.VertexBuffer.use_count() == 0 || submesh.IndexBuffer.use_count() == 0)
+			{
+				LOGE("[%s] invalid buffer", m_name.c_str());
+				continue;
+			}
+			submesh.VertexBuffer->setData(&(m_vertices[submesh.VertexOffset]), submesh.VertexCount * sizeof(Vertex));
+			submesh.IndexBuffer->setData(&(m_indices[submesh.IndexOffset]), submesh.IndexCount * sizeof(Index), submesh.IndexCount * 3);
+		}
+
+		m_invalidate = false;
+	}
+
 	void Sphere::setRadius(float radius)
 	{
 		if (!Math::Equal(m_radius, radius))
@@ -31,7 +57,7 @@ namespace pio
 		m_vertices.clear();
 		m_indices.clear();
 
-		// Only one mesh for a sphere
+		// Only one mesh for a Sphere
 		// Should not clear submesh, for there might be synchronous issue
 		if (m_submeshes.empty()) 
 		{ 
@@ -136,30 +162,101 @@ namespace pio
 		invalidate();
 	}
 
-	void Sphere::flush()
+	void Circle::setRadius(float radius)
 	{
-		if (!needUpdate())
-			return;
-
-		if (m_submeshes.empty() || m_vertices.empty() || m_indices.empty())
+		if (!Math::Equal(m_radius, radius))
 		{
-			LOGE("Sphere: invalid state");
-			return;
+			m_radius = radius;
+			build();
+		}
+	}
+
+	void Circle::build()
+	{
+		m_triangleCache.clear();
+		m_vertices.clear();
+		m_indices.clear();
+
+		// Only one mesh for a Circle
+		// Should not clear submesh, for there might be synchronous issue
+		if (m_submeshes.empty())
+		{
+			m_submeshes.emplace_back();
+			m_submeshes[0].MeshName = m_name + "@mesh";
 		}
 
-		for (uint32_t i = 0; i < m_submeshes.size(); i++)
+		Submesh &submesh = m_submeshes.back();
+		submesh.VertexOffset = 0;
+		submesh.IndexOffset = 0;
+		submesh.MaterialIndex = 0;// one mesh has one material
+		submesh.BoundingBox = AABB(glm::vec3(-m_radius, -m_radius, 0.f), glm::vec3(m_radius, m_radius, 0.f));
+		m_boundingBox = submesh.BoundingBox;
+
+		const float span = 360.f / float(m_itrCnt);		
+		uint32_t index{ 0 };
+
+		auto __makeGeo = [&](float _angle0, float _angle1, uint32_t j) 
 		{
-			Submesh &submesh = m_submeshes[i];
-			if (submesh.VertexBuffer.use_count() == 0 || submesh.IndexBuffer.use_count() == 0)
-			{
-				LOGE("Sphere: invalid buffer");
-				continue;
-			}
-			submesh.VertexBuffer->setData(&(m_vertices[submesh.VertexOffset]), submesh.VertexCount * sizeof(Vertex));
-			submesh.IndexBuffer->setData(&(m_indices[submesh.IndexOffset]), submesh.IndexCount * sizeof(Index), submesh.IndexCount * 3);
+			glm::vec3 anchor0 = { m_radius * std::cosf(glm::radians(_angle0)), m_radius * std::sinf(glm::radians(_angle0)), 0.f };
+			glm::vec3 anchor1 = { m_radius * std::cosf(glm::radians(_angle1)), m_radius * std::sinf(glm::radians(_angle1)), 0.f };
+
+			glm::vec3 dir0 = glm::normalize(anchor0 - glm::vec3(0.f));
+			glm::vec3 dir1 = glm::normalize(anchor1 - glm::vec3(0.f));
+
+			Vertex v0;
+			v0.Position = anchor0 - dir0 * m_ringWidth;
+			v0.Normal = dir0;
+			v0.Texcoord = glm::vec2(float(j) / float(m_itrCnt), 0.f);
+
+			Vertex v1;
+			v1.Position = anchor0 + dir0 * m_ringWidth;
+			v1.Normal = dir0;
+			v1.Texcoord = glm::vec2(float(j) / float(m_itrCnt), 1.f);
+
+			Vertex v2;
+			v2.Position = anchor1 - dir1 * m_ringWidth;
+			v2.Normal = dir1;
+			v2.Texcoord = glm::vec2(float(j + 1) / float(m_itrCnt), 0.f);
+
+			Vertex v3;
+			v3.Position = anchor1 + dir1 * m_ringWidth;
+			v3.Normal = dir1;
+			v3.Texcoord = glm::vec2(float(j + 1) / float(m_itrCnt), 1.f);
+
+			m_vertices.push_back(std::move(v0));
+			m_vertices.push_back(std::move(v1));
+			m_vertices.push_back(std::move(v2));
+			m_vertices.push_back(std::move(v3));
+
+			m_indices.emplace_back(index, index + 1, index + 2);
+			m_indices.emplace_back(index + 2, index + 1, index + 3);
+		};
+
+
+		// Vertex are organized on XY plane in counter-clockwise order
+		for (uint32_t i = 0; i < (m_itrCnt - 1); i++)
+		{
+			float angle0 = i * span;
+			float angle1 = (i + 1) * span;
+			__makeGeo(angle0, angle1, i);
+			index += 4;
 		}
 
-		m_invalidate = false;
+		float angle0 = (m_itrCnt - 1) * span;
+		float angle1 = 360.f;
+		__makeGeo(angle0, angle1, m_itrCnt - 1);
+
+		submesh.VertexCount = m_vertices.size();
+		uint32_t faceNum = submesh.IndexCount = m_indices.size();
+
+		for (uint32_t i = 0; i < faceNum; i++)
+		{
+			m_triangleCache[i].emplace_back(m_vertices[m_indices[i].V0 + submesh.VertexOffset],
+											m_vertices[m_indices[i].V1 + submesh.VertexOffset],
+											m_vertices[m_indices[i].V2 + submesh.VertexOffset]);
+		}
+
+		invalidate();
 	}
 
 	template<>
@@ -176,4 +273,7 @@ namespace pio
 
 	template<>
 	bool Asset::is<Sphere>() const { return getAssetType() == AssetType::Sphere; }
+
+	template<>
+	bool Asset::is<Circle>() const { return getAssetType() == AssetType::Circle; }	
 }

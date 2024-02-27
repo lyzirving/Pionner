@@ -21,6 +21,7 @@ namespace pio
 	static uint32_t s_arrowNum{ 0 };
 	static uint32_t s_fullScreenQuadNum{ 0 };
 	static uint32_t s_sphereNum{ 0 };
+	static uint32_t s_circleNum{ 0 };
 
 	Ref<MeshSource> MeshFactory::CreateCube(float len)
 	{
@@ -687,6 +688,11 @@ namespace pio
 		sphere->invalidate(false);
 
 		return sphere;
+	}
+
+	Ref<MeshSource> MeshFactory::CreateCircle(float radius, float ringWidth, const glm::vec3 &color, uint32_t itrCnt)
+	{
+		return Ref<MeshSource>();
 	}
 
 	Ref<Geometry2D> MeshFactory::CreateFullScreenQuad()

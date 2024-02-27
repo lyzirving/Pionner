@@ -11,19 +11,19 @@ namespace pio
 	{
 		Vertex.clear();
 		Indices.clear();
-		Capacity = 0;
+		Geometry2D::clear();
 	}
 
 	void QuadMesh::clear()
 	{
 		Vertex.clear();
 		Indices.clear();
-		Capacity = 0;
+		Geometry2D::clear();
 	}
 
 	template<>
 	bool Asset::is<LineMesh>() const { return this->getAssetType() == AssetType::LineMesh; }
 
 	template<>
-	bool Asset::is<QuadMesh>() const { return this->getAssetType() == AssetType::QuadMesh; }
+	bool Asset::is<QuadMesh>() const { return this->getAssetType() == AssetType::QuadMesh; }	
 }

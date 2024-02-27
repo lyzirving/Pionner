@@ -19,7 +19,8 @@ namespace pio
 		static Ref<MeshSource> CreateCylinder(float radius, float height, uint32_t itrCnt = 36);
 		static Ref<MeshSource> CreateCone(float radius, float height, uint32_t itrCnt = 36);
 		static Ref<MeshSource> CreateArrow3D(float cylinderRadius, float cylinderHeight, float coneRadius, float coneHeight, uint32_t itrCnt = 36);
-		static Ref<MeshSource> CreateSphere(float radius, const glm::vec3 &color = glm::vec3(1.f, 0.f, 0.f), uint32_t horItrCnt = 36, uint32_t verItrCnt = 36);
+		static Ref<MeshSource> CreateSphere(float radius, const glm::vec3 &color = glm::vec3(1.f, 0.f, 0.f), uint32_t horItrCnt = 36, uint32_t verItrCnt = 36);		
+		static Ref<MeshSource> CreateCircle(float radius, float ringWidth, const glm::vec3 &color = glm::vec3(1.f, 0.f, 0.f), uint32_t itrCnt = 36);
 		static Ref<Geometry2D> CreateFullScreenQuad();
 		static Ref<Geometry2D> CreateScreenQuad(uint32_t l, uint32_t t, uint32_t r, uint32_t b, uint32_t screenWidth, uint32_t screenHeight);
 

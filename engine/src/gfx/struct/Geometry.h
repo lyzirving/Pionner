@@ -16,7 +16,7 @@ namespace pio
 		Ref<Material> getMaterial() const;
 
 		void invalidate(bool val = true) { m_invalidate = val; }
-		virtual void flush() {}
+		virtual void flush();
 
 	protected:
 		virtual void build() {}
@@ -94,8 +94,6 @@ namespace pio
 
 		void setRadius(float radius);
 
-		virtual void flush() override;
-
 	protected:
 		virtual void build() override;
 
@@ -103,6 +101,28 @@ namespace pio
 		float m_radius{ 0.f };
 		uint32_t m_horItrCnt{ 0 }, m_verItrCnt{ 0 };
 
+	private:
+		friend class MeshFactory;
+	};
+
+	/* Triangle segments organized as a circle on XY plane in counter-clockwise order */
+	class Circle : public Geometry
+	{
+		OVERRIDE_ASSET_TYPE(AssetType::Circle)
+
+	public:
+		Circle(const std::string &name) : Geometry(name) {}
+		virtual ~Circle() = default;
+
+		void setRadius(float radius);
+
+	protected:
+		virtual void build() override;
+
+	private:
+		float m_radius{ 0.f };
+		float m_ringWidth{ 0.f };
+		uint32_t m_itrCnt{ 0 };
 	private:
 		friend class MeshFactory;
 	};
@@ -121,6 +141,9 @@ namespace pio
 
 	template<>
 	bool Asset::is<Sphere>() const;
+
+	template<>
+	bool Asset::is<Circle>() const;
 }
 
 #endif

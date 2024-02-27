@@ -10,8 +10,8 @@ namespace pio
 	enum class AssetType : uint8_t
 	{
 		None = 0, 
-		Mesh, StaticMesh, LineMesh, QuadMesh, MeshSource,
-		GeoBegin, Geometry, Cylinder, Cone, Arrow, Sphere, GeoEnd,
+		Mesh, StaticMesh, LineMesh, QuadMesh, CircleMesh, MeshSource,
+		GeoBegin, Geometry, Cylinder, Cone, Arrow, Sphere, Circle, GeoEnd,
 		Animation, Skeleton, Material, 
 		Texture, Texture2D, CubeTexture, CubeArrayTexture, BufferTexture, RenderBuffer,
 		PhysicsMat, PhysicsScene
