@@ -106,23 +106,27 @@ namespace pio
 	};
 
 	/* Triangle segments organized as a circle on XY plane in counter-clockwise order */
-	class Circle : public Geometry
+	class Torus : public Geometry
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::Circle)
+		OVERRIDE_ASSET_TYPE(AssetType::Torus)
 
 	public:
-		Circle(const std::string &name) : Geometry(name) {}
-		virtual ~Circle() = default;
+		Torus(const std::string &name) : Geometry(name) {}
+		virtual ~Torus() = default;
 
 		void setRadius(float radius);
 
 	protected:
 		virtual void build() override;
 
+		static void MakeRingVertex(const glm::vec2 &posXY, float radius, uint32_t itr, std::vector<Vertex> &out);
+
 	private:
 		float m_radius{ 0.f };
-		float m_ringWidth{ 0.f };
+		float m_ringRadius{ 0.f };
 		uint32_t m_itrCnt{ 0 };
+		uint32_t m_ringItrCnt{ 0 };
+
 	private:
 		friend class MeshFactory;
 	};
@@ -143,7 +147,7 @@ namespace pio
 	bool Asset::is<Sphere>() const;
 
 	template<>
-	bool Asset::is<Circle>() const;
+	bool Asset::is<Torus>() const;
 }
 
 #endif

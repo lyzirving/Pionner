@@ -11,6 +11,7 @@ namespace pio
 	class MeshSource;
 	class UniformBufferSet;
 	class UiCoordinate3D;
+	class UiRotationCtl;
 	class PhysicsScene;
 
 	class MotionControlLayer : public Layer
@@ -33,6 +34,8 @@ namespace pio
 
 		void onDrawVisionCtl(const Timestep &ts);
 		void onDrawSelectionCtl(const Timestep &ts);
+
+		void onDrawRotationCtl(const glm::vec3 pos);
 
 		bool onClickEvent(const glm::vec2 &cursor);
 		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const LayoutParams &param);
@@ -71,6 +74,7 @@ namespace pio
 
 		Ref<UiCoordinate3D> m_visionCoord;
 		Ref<UiCoordinate3D> m_selectCoord;
+		Ref<UiRotationCtl> m_rotateCtl;
 
 		UIEventTracker m_eventCtlState{};
 		UIEventTracker m_visionCtlState{};

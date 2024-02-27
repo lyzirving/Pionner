@@ -47,6 +47,19 @@ namespace pio
 		UiCoordinate3DBuilder Builder;
 		Ref<Entity> XAxisEnt, YAxisEnt, ZAxisEnt;
 	};
+
+	class UiRotationCtl
+	{
+	public:
+		UiRotationCtl();
+		~UiRotationCtl();
+
+	private:
+		void build();
+
+	public:
+		Ref<Entity> XTorus, YTorus, ZTorus;
+	};
 }
 
 #endif

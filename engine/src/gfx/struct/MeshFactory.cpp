@@ -690,9 +690,25 @@ namespace pio
 		return sphere;
 	}
 
-	Ref<MeshSource> MeshFactory::CreateCircle(float radius, float ringWidth, const glm::vec3 &color, uint32_t itrCnt)
+	Ref<MeshSource> MeshFactory::CreateTorus(float radius, float ringWidth, const glm::vec3 &color, uint32_t itrCnt, uint32_t ringItrCnt)
 	{
-		return Ref<MeshSource>();
+		std::string name = std::string("Torus") + std::to_string(s_circleNum++);
+		Ref<Torus> circle = RefCast<Asset, Torus>(AssetsManager::CreateRuntimeAssets<Torus>(name));
+		circle->m_radius = radius;
+		circle->m_ringRadius = ringWidth;
+		circle->m_itrCnt = itrCnt;
+		circle->m_ringItrCnt = ringItrCnt;
+
+		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Color);
+		circle->m_materials.push_back(ma->getMaterial());
+		circle->setColor(color);
+
+		circle->build();
+
+		CreateBuffer<Vertex, Index>(circle);
+
+		circle->invalidate(false);
+		return circle;
 	}
 
 	Ref<Geometry2D> MeshFactory::CreateFullScreenQuad()

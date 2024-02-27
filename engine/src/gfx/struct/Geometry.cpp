@@ -162,7 +162,7 @@ namespace pio
 		invalidate();
 	}
 
-	void Circle::setRadius(float radius)
+	void Torus::setRadius(float radius)
 	{
 		if (!Math::Equal(m_radius, radius))
 		{
@@ -171,13 +171,13 @@ namespace pio
 		}
 	}
 
-	void Circle::build()
+	void Torus::build()
 	{
 		m_triangleCache.clear();
 		m_vertices.clear();
 		m_indices.clear();
 
-		// Only one mesh for a Circle
+		// Only one mesh for a Torus
 		// Should not clear submesh, for there might be synchronous issue
 		if (m_submeshes.empty())
 		{
@@ -197,39 +197,35 @@ namespace pio
 
 		auto __makeGeo = [&](float _angle0, float _angle1, uint32_t j) 
 		{
-			glm::vec3 anchor0 = { m_radius * std::cosf(glm::radians(_angle0)), m_radius * std::sinf(glm::radians(_angle0)), 0.f };
-			glm::vec3 anchor1 = { m_radius * std::cosf(glm::radians(_angle1)), m_radius * std::sinf(glm::radians(_angle1)), 0.f };
+			glm::vec3 center0 = { m_radius * std::cosf(glm::radians(_angle0)), m_radius * std::sinf(glm::radians(_angle0)), 0.f };
+			glm::vec3 center1 = { m_radius * std::cosf(glm::radians(_angle1)), m_radius * std::sinf(glm::radians(_angle1)), 0.f };
 
-			glm::vec3 dir0 = glm::normalize(anchor0 - glm::vec3(0.f));
-			glm::vec3 dir1 = glm::normalize(anchor1 - glm::vec3(0.f));
+			std::vector<Vertex> topFace, bottomFace;
+			MakeRingVertex(glm::vec2(center0.x, center0.y), m_ringRadius, m_ringItrCnt, topFace);
+			MakeRingVertex(glm::vec2(center1.x, center1.y), m_ringRadius, m_ringItrCnt, bottomFace);
 
-			Vertex v0;
-			v0.Position = anchor0 - dir0 * m_ringWidth;
-			v0.Normal = dir0;
-			v0.Texcoord = glm::vec2(float(j) / float(m_itrCnt), 0.f);
+			for (uint32_t i = 0; i < m_ringItrCnt - 1; i++)
+			{
+				m_vertices.push_back(topFace[i]);
+				m_vertices.push_back(bottomFace[i]);
+				m_vertices.push_back(bottomFace[i + 1]);
+				m_vertices.push_back(topFace[i + 1]);
 
-			Vertex v1;
-			v1.Position = anchor0 + dir0 * m_ringWidth;
-			v1.Normal = dir0;
-			v1.Texcoord = glm::vec2(float(j) / float(m_itrCnt), 1.f);
+				m_indices.emplace_back(index, index + 1, index + 2);
+				m_indices.emplace_back(index, index + 2, index + 3);
 
-			Vertex v2;
-			v2.Position = anchor1 - dir1 * m_ringWidth;
-			v2.Normal = dir1;
-			v2.Texcoord = glm::vec2(float(j + 1) / float(m_itrCnt), 0.f);
+				index += 4;
+			}
 
-			Vertex v3;
-			v3.Position = anchor1 + dir1 * m_ringWidth;
-			v3.Normal = dir1;
-			v3.Texcoord = glm::vec2(float(j + 1) / float(m_itrCnt), 1.f);
-
-			m_vertices.push_back(std::move(v0));
-			m_vertices.push_back(std::move(v1));
-			m_vertices.push_back(std::move(v2));
-			m_vertices.push_back(std::move(v3));
+			m_vertices.push_back(topFace[m_ringItrCnt - 1]);
+			m_vertices.push_back(bottomFace[m_ringItrCnt - 1]);
+			m_vertices.push_back(bottomFace[0]);
+			m_vertices.push_back(topFace[0]);
 
 			m_indices.emplace_back(index, index + 1, index + 2);
-			m_indices.emplace_back(index + 2, index + 1, index + 3);
+			m_indices.emplace_back(index, index + 2, index + 3);
+
+			index += 4;
 		};
 
 
@@ -238,8 +234,7 @@ namespace pio
 		{
 			float angle0 = i * span;
 			float angle1 = (i + 1) * span;
-			__makeGeo(angle0, angle1, i);
-			index += 4;
+			__makeGeo(angle0, angle1, i);			
 		}
 
 		float angle0 = (m_itrCnt - 1) * span;
@@ -259,6 +254,24 @@ namespace pio
 		invalidate();
 	}
 
+	// pos is on XY plane
+	void Torus::MakeRingVertex(const glm::vec2 &posXY, float radius, uint32_t itr, std::vector<Vertex> &out)
+	{	
+		out.clear();
+		out.reserve(itr);
+		float span = 2.f * PIO_PI / float(itr);
+		glm::vec2 dir = glm::normalize(posXY);
+		for (uint32_t i = 0; i < itr; i++)
+		{
+			float z = radius * std::sinf(span * i);
+			glm::vec2 xy = posXY + radius * std::cosf(span * i) * dir;
+			Vertex v;
+			v.Position = glm::vec3(xy.x, xy.y, z);
+			v.Normal = glm::normalize(v.Position);
+			out.push_back(v);
+		}
+	}
+
 	template<>
 	bool Asset::is<Geometry>() const { return getAssetType() > AssetType::GeoBegin && getAssetType() < AssetType::GeoEnd; }
 
@@ -275,5 +288,5 @@ namespace pio
 	bool Asset::is<Sphere>() const { return getAssetType() == AssetType::Sphere; }
 
 	template<>
-	bool Asset::is<Circle>() const { return getAssetType() == AssetType::Circle; }	
+	bool Asset::is<Torus>() const { return getAssetType() == AssetType::Torus; }	
 }

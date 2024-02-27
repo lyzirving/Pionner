@@ -12,6 +12,10 @@ namespace pio
 	constexpr static const char *STR_AXIS_Y = "AxisY";
 	constexpr static const char *STR_AXIS_Z = "AxisZ";
 
+	constexpr static const char *STR_TORUS_X = "TorusX";
+	constexpr static const char *STR_TORUS_Y = "TorusY";
+	constexpr static const char *STR_TORUS_Z = "TorusZ";
+
 	enum class CoordinateShape : uint8_t
 	{
 		Cylinder, Arrow, Num

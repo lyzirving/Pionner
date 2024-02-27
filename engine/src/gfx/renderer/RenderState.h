@@ -45,7 +45,7 @@ namespace pio
 
 	enum class RenderMode : uint8_t
 	{
-		Blinn_Phong, PBR, MaterialPreview, Wireframe, Empty, Num
+		PBR, MaterialPreview, Wireframe, Empty, Num
 	};
 
 	struct Viewport

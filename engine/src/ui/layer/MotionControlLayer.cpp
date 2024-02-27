@@ -63,6 +63,8 @@ namespace pio
 		selectBuilder.Shape = CoordinateShape::Arrow;
 		m_selectCoord = CreateRef<UiCoordinate3D>(selectBuilder);
 
+		m_rotateCtl = CreateRef<UiRotationCtl>();
+
 		Ref<PhysicsActor> xActor = m_world->createActor<C3dUIComponent>(m_selectCoord->XAxisEnt, RigidBodyComponent::Type::Dynamic);
 		Ref<PhysicsActor> yActor = m_world->createActor<C3dUIComponent>(m_selectCoord->YAxisEnt, RigidBodyComponent::Type::Dynamic);
 		Ref<PhysicsActor> zActor = m_world->createActor<C3dUIComponent>(m_selectCoord->ZAxisEnt, RigidBodyComponent::Type::Dynamic);
@@ -147,7 +149,7 @@ namespace pio
 	bool MotionControlLayer::onMouseButtonPressed(Event &event)
 	{
 		m_eventCtlState.PressedTime = TimeUtil::CurrentTimeMs();
-		glm::vec2 cursor = Application::MainWindow()->getCursorPos();		
+		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
 		glm::ivec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
 
 		// ------------------- Button pressed work flow ----------------------
@@ -162,7 +164,7 @@ namespace pio
 
 		// ------------------- Sprite pressed work flow ----------------------
 		if (m_spriteCtl.bSelected())
-		{			
+		{
 			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 			HitResult result = m_world->intersect(r);
 			m_hitCtlActor = result.Hit ? result.Actor : nullptr;
@@ -174,7 +176,7 @@ namespace pio
 		// ------------------- Object selection work flow --------------------
 		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
 		if (sceneComp.Selected3D)
-		{			
+		{
 			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 			HitResult result = m_world->intersect(r);
 			m_hitCtlActor = result.Hit ? result.Actor : nullptr;
@@ -188,11 +190,11 @@ namespace pio
 	bool MotionControlLayer::onMouseMoved(Event &event)
 	{
 		auto *p = event.as<MouseMovedEvent>();
-		glm::vec2 cursor(p->getX(), p->getY());		
+		glm::vec2 cursor(p->getX(), p->getY());
 
 		// ------------------- Button pressed work flow ----------------------
 		if (m_visionCtlState.Pressed)
-		{		
+		{
 			m_drawCircle = true;
 			glm::vec2 delta = cursor - m_visionCtlState.LastCursor;
 			delta.x = Math::Clamp(delta.x, -20.f, 20.f);
@@ -207,7 +209,7 @@ namespace pio
 
 		// ------------------- Sprite pressed work flow ----------------------
 		if (m_spriteCtl.Pressed)
-		{			
+		{
 			onSelectionMoved(m_spriteCtl.Ent, m_hitCtlActor, cursor, m_spriteCtl.LastCursor, m_layoutParam);
 			m_spriteCtl.LastCursor = cursor;
 			return true;
@@ -217,7 +219,7 @@ namespace pio
 		// ------------------- Object controller work flow -------------------
 		if (m_objCtlState.Pressed)
 		{
-			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();		
+			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
 			onSelectionMoved(sceneComp.Selected3D, m_hitCtlActor, cursor, m_objCtlState.LastCursor, m_layoutParam);
 			m_objCtlState.LastCursor = cursor;
 			return true;
@@ -497,9 +499,55 @@ namespace pio
 		}
 	}
 
+	void MotionControlLayer::onDrawRotationCtl(const glm::vec3 pos)
+	{
+		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
+		Camera &camera = camComp.Camera;
+		const Viewport &vp = camera.getViewport();
+
+		CameraUD &cameraUD = m_selectionCamUD;
+		Ref<UniformBufferSet> ubSet = m_selectionUBSet;
+		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
+
+		cameraUD.ViewMat = camera.getViewMat();
+		cameraUD.PrjMat = camera.getPrjMat();
+		cameraUD.OrthoMat = camera.getOrthoMat();
+		cameraUD.CameraPosition = camera.getCameraPos();
+		cameraUD.FrustumFar = camera.far();
+		cameraUD.serialize();
+
+		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
+		{
+			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
+			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
+		});
+
+		auto drawFunc = [pos, ubSet](C3dUIComponent &meshComp)
+		{
+			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
+			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
+			uint32_t ind = meshComp.SubmeshIndex;
+			RenderState state = meshComp.State;
+
+			Ref<MaterialTable> mt = axis->getMaterialTable();
+			glm::mat4 transform = glm::translate(glm::mat4(1.f), pos);
+			transform = transform * meshSrc->getSubmeshes()[ind].Transform;
+
+			Renderer::SubmitRC([ubSet, axis, ind, transform, mt, state]() mutable
+			{
+				AssetHandle h = axis->getHandle();
+				Renderer::RenderSubmesh(h, ind, mt, Ref<RenderPass>(), ubSet, transform, state);
+			});
+		};
+
+		drawFunc(m_rotateCtl->XTorus->getComponent<C3dUIComponent>());
+		drawFunc(m_rotateCtl->YTorus->getComponent<C3dUIComponent>());
+		drawFunc(m_rotateCtl->ZTorus->getComponent<C3dUIComponent>());
+	}
+
 	bool MotionControlLayer::onClickEvent(const glm::vec2 &cursor)
 	{
-		bool consume{ false };		
+		bool consume{ false };
 		// 2d pick up
 		{
 			glm::vec2 vpCursor = UiDef::MoveToOrigin(cursor, glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top));
@@ -575,7 +623,7 @@ namespace pio
 			LOGE("invalid selection");
 			return;
 		}
-		diff3d *= CTL_TRANSLATION_RATIO;	
+		diff3d *= CTL_TRANSLATION_RATIO;
 
 		if (selection->hasComponent<ProxyComponent>())
 		{
@@ -584,7 +632,7 @@ namespace pio
 		}
 		else if (selection->hasComponent<DirectionalLightComponent>())
 		{
-			auto &comp = selection->getComponent<TransformComponent>();			
+			auto &comp = selection->getComponent<TransformComponent>();
 			comp.Transform.Position += diff3d;
 		}
 		else

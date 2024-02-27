@@ -224,4 +224,81 @@ namespace pio
 			boxComp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
 		}
 	}
+
+	UiRotationCtl::UiRotationCtl()
+	{
+		XTorus = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+		YTorus = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+		ZTorus = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+		build();
+	}
+
+	UiRotationCtl::~UiRotationCtl()
+	{
+	}
+
+	void UiRotationCtl::build()
+	{	
+		const float radius = 0.8f;
+		const float ringWidth = 0.03f;
+		const uint32_t itr = 36;
+		const uint32_t ringItr = 16;
+
+		// Torus around x axis
+		{
+			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(1.f, 0.f, 0.f), itr, ringItr);
+			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+
+			std::vector<Submesh> &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());			
+			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
+
+			C3dUIComponent &uiComp = XTorus->getComponent<C3dUIComponent>();
+			uiComp.Name = STR_TORUS_X;
+			uiComp.Handle = meshAsset->getHandle();
+			uiComp.SourceHandle = meshSrc->getHandle();
+			uiComp.SubmeshIndex = 0; 
+			uiComp.Visible = true;
+			uiComp.State.Blend = Blend::Common();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Common();
+			uiComp.State.Cull = CullFace::Common();
+		}
+
+		// Torus around y axis
+		{
+			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(0.f, 1.f, 0.f), itr, ringItr);
+			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);			
+
+			std::vector<Submesh> &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());
+			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+
+			C3dUIComponent &uiComp = YTorus->getComponent<C3dUIComponent>();
+			uiComp.Name = STR_TORUS_Y;
+			uiComp.Handle = meshAsset->getHandle();
+			uiComp.SourceHandle = meshSrc->getHandle();
+			uiComp.SubmeshIndex = 0;
+			uiComp.Visible = true;
+			uiComp.State.Blend = Blend::Common();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Common();
+			uiComp.State.Cull = CullFace::Common();
+		}
+
+		// Torus around z axis
+		{
+			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(0.f, 0.f, 1.f), itr, ringItr);
+			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+
+			C3dUIComponent &uiComp = ZTorus->getComponent<C3dUIComponent>();
+			uiComp.Name = STR_TORUS_Z;
+			uiComp.Handle = meshAsset->getHandle();
+			uiComp.SourceHandle = meshSrc->getHandle();
+			uiComp.SubmeshIndex = 0;
+			uiComp.Visible = true;
+			uiComp.State.Blend = Blend::Common();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Common();
+			uiComp.State.Cull = CullFace::Common();
+		}
+	}
 }

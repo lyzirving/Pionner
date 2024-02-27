@@ -152,7 +152,6 @@ namespace pio
 				drawWireframe(meshHandle, submeshIndex, materialTable, uniformBufferSet, modelMat, state);
 				break;
 			}
-			case RenderMode::Blinn_Phong:
 			default:
 				LOGE("render mode[%u] has not been implemented", state.Mode);
 				break;
@@ -343,7 +342,6 @@ namespace pio
 				break;
 			}
 			case RenderMode::Wireframe:
-			case RenderMode::Blinn_Phong:
 			default:
 				LOGE("render mode[%u] has not been implemented", state.Mode);
 				break;
