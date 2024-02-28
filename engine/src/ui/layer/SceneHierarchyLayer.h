@@ -8,7 +8,7 @@ namespace pio
 	class SceneHierarchyLayer : public Layer
 	{
 	public:
-		SceneHierarchyLayer(const LayoutParams &param);
+		SceneHierarchyLayer(const WindowLayoutParams &param);
 		virtual ~SceneHierarchyLayer() = default;
 
 		virtual void onAttach() override;

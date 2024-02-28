@@ -12,7 +12,7 @@ namespace pio
 	class RuntimeLayer : public Layer
 	{
 	public:
-		RuntimeLayer(const LayoutParams &param);
+		RuntimeLayer(const WindowLayoutParams &param);
 		virtual ~RuntimeLayer();
 
 		virtual void onAttach() override;

@@ -15,7 +15,7 @@
 
 #include "asset/AssetsManager.h"
 #include "window/event/MouseEvent.h"
-#include "ui/struct/Ui3D.h"
+#include "ui/Ui3D.h"
 
 #include "core/math/Ray.h"
 
@@ -31,7 +31,7 @@ namespace pio
 #define CTL_CAM_RADIUS (2.f)
 #define CTL_TRANSLATION_RATIO (7.f)
 
-	MotionControlLayer::MotionControlLayer(const LayoutParams &param)
+	MotionControlLayer::MotionControlLayer(const WindowLayoutParams &param)
 		: Layer(param, "MotionControlLayer")
 	{
 	}
@@ -567,7 +567,7 @@ namespace pio
 		return consume;
 	}
 
-	void MotionControlLayer::onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const LayoutParams &param)
+	void MotionControlLayer::onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param)
 	{
 		if (!ctlActor || !selection)
 			return;

@@ -40,7 +40,7 @@ namespace pio
 		}
 	}
 
-	SceneHierarchyLayer::SceneHierarchyLayer(const LayoutParams &param)
+	SceneHierarchyLayer::SceneHierarchyLayer(const WindowLayoutParams &param)
 		: Layer(param, "Scene Hierarchy Layer")
 	{
 	}
@@ -64,7 +64,7 @@ namespace pio
 
 		Registry *regi = s_registry;
 		Ref<Entity> rt = m_sceneRoot;
-		LayoutParams &param = m_layoutParam;
+		WindowLayoutParams &param = m_layoutParam;
 		uint32_t &selected = m_selectedNode;
 		s_registry->getSingleton<EditorComponent>().SelectedEntIndex = m_selectedNode;
 

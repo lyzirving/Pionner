@@ -151,17 +151,17 @@ namespace pio
 		MaterialLibrary::Init();
 
 		// RuntimeLayer should be added at the first place
-		auto runtimeLayer = CreateRef<RuntimeLayer>(LayoutParams(0.2f, 0.f, 0.8f, 1.f));
+		auto runtimeLayer = CreateRef<RuntimeLayer>(WindowLayoutParams(0.2f, 0.f, 0.8f, 1.f));
 		m_layerManager.pushLayer(runtimeLayer);
 
-		auto sceneHierarchy = CreateRef<SceneHierarchyLayer>(LayoutParams(0.f, 0.f, 0.2f, 1.f));
+		auto sceneHierarchy = CreateRef<SceneHierarchyLayer>(WindowLayoutParams(0.f, 0.f, 0.2f, 1.f));
 		m_layerManager.pushLayer(sceneHierarchy);
 
 		// MotionControlLayer's layout param should be the same as RuntimeLayer to make event processing correct
 		auto ctlLayer = CreateRef<MotionControlLayer>(runtimeLayer->getLayoutParam());
 		m_layerManager.pushOverlay(ctlLayer);
 
-		auto editorLayer = CreateRef<EditorLayer>(LayoutParams(0.8f, 0.f, 1.f, 1.f));
+		auto editorLayer = CreateRef<EditorLayer>(WindowLayoutParams(0.8f, 0.f, 1.f, 1.f));
 		m_layerManager.pushOverlay(editorLayer);
 	}
 

@@ -36,7 +36,7 @@ namespace pio
 
 		void moveCamera(float viewPosDiffX, float viewPosDiffY);
 		void setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
-		void setLayoutParam(const LayoutParams &p) { m_layoutParam = p; }
+		void setLayoutParam(const WindowLayoutParams &p) { m_layoutParam = p; }
 
 	private:
 		void createData();
@@ -49,7 +49,7 @@ namespace pio
 		static Registry *s_registry;
 
 	private:
-		LayoutParams m_layoutParam;
+		WindowLayoutParams m_layoutParam;
 
 		LightEnvironment m_lightEnv;
 		Ref<Skybox> m_skybox;

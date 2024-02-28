@@ -37,7 +37,7 @@ namespace pio
 		}
 	}
 
-	EditorLayer::EditorLayer(const LayoutParams &param)
+	EditorLayer::EditorLayer(const WindowLayoutParams &param)
 		: Layer(param, "EditorLayer")
 	{
 	}
@@ -60,7 +60,7 @@ namespace pio
 	void EditorLayer::onUpdate(const Timestep &ts)
 	{
 		const std::string &name = m_name;
-		LayoutParams &param = m_layoutParam;
+		WindowLayoutParams &param = m_layoutParam;
 		Registry *registry = s_registry;
 		Ref<Entity> &lastSelect = m_selectedEnt;
 

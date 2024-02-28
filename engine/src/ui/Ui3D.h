@@ -1,7 +1,7 @@
-#ifndef __PIONNER_UI_STRUCT_UI3D_H__
-#define __PIONNER_UI_STRUCT_UI3D_H__
+#ifndef __PIONNER_UI_UI3D_H__
+#define __PIONNER_UI_UI3D_H__
 
-#include "ui/UiDef.h"
+#include "UiDef.h"
 
 namespace pio
 {

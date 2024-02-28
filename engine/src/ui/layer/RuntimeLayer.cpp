@@ -19,7 +19,7 @@
 
 namespace pio
 {
-	RuntimeLayer::RuntimeLayer(const LayoutParams &param) : Layer(param, "Runtime Layer")
+	RuntimeLayer::RuntimeLayer(const WindowLayoutParams &param) : Layer(param, "Runtime Layer")
 	{
 	}
 

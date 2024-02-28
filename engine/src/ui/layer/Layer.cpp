@@ -11,7 +11,7 @@ namespace pio
 {
 	Registry *Layer::s_registry = Registry::Get();
 
-	Layer::Layer(const LayoutParams &param, const std::string &name)
+	Layer::Layer(const WindowLayoutParams &param, const std::string &name)
 		: m_layoutParam(param), m_name(name)
 	{
 	}

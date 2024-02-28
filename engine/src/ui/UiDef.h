@@ -36,6 +36,9 @@ namespace pio
 		}
 	};
 
+	/*
+	* @brief: Layout of a panel in window coordinate whose origin is left-top
+	*/
 	struct LayoutRect
 	{
 		uint32_t Left{ 0 };
@@ -43,11 +46,28 @@ namespace pio
 		uint32_t Right{ 0 };
 		uint32_t Bottom{ 0 };
 
-		inline uint32_t width() const { return Right - Left; }
-		inline uint32_t height() const { return Bottom - Top; }
-		inline bool contain(uint32_t x, uint32_t y) const { return x >= Left && x <= Right && y >= Top && y <= Bottom; }
+		LayoutRect() {}
+		LayoutRect(uint32_t l, uint32_t t, uint32_t r, uint32_t b)
+			: Left(l), Top(t), Right(r), Bottom(b) {}
+		LayoutRect(const glm::ivec2 lt, uint32_t width, uint32_t height) 
+			: Left(lt.x), Top(lt.y), Right(lt.x + width), Bottom(lt.y + height) {}
+
+		uint32_t width() const { return Right - Left; }
+		uint32_t height() const { return Bottom - Top; }
+		bool contain(uint32_t x, uint32_t y) const { return x >= Left && x <= Right && y >= Top && y <= Bottom; }
+
+		bool operator==(const LayoutRect &rhs) 
+		{
+			if (this == &rhs) return true;
+			return this->Left == rhs.Left && this->Top == rhs.Top && this->Right == rhs.Right && this->Bottom == rhs.Bottom;
+		}
+
+		bool operator!=(const LayoutRect &rhs) { return !((*this) == rhs); }
 	};
 
+	/*
+	* @brief: Layout of a viewport in coordinate whose origin is left-bottom
+	*/
 	struct LayoutViewport
 	{
 		uint32_t X{ 0 };
@@ -56,17 +76,23 @@ namespace pio
 		uint32_t Height{ 0 };
 	};
 
-	struct LayoutParams
+	/*
+	* @brief: WindowLayoutParams is mainly used for layout on the entire window.
+	*		  WindowLayoutParams.Percentage defines the rect of panel on window by ratio in [0, 1].
+	*		  WindowLayoutParams.Position is the pixel result of Percentage.
+	*		  WindowLayoutParams.Viewport is the rendering viewport setup by this panel, whose origin is the left-bottom of panel.
+	*/
+	struct WindowLayoutParams
 	{
 		LayoutPercentage Percentage;//Layout ratio on entire window
 		LayoutRect Position;//Position on entire window
 		LayoutViewport Viewport;// Rendering panel on window
 
-		LayoutParams() : Percentage(), Position(), Viewport()
+		WindowLayoutParams() : Percentage(), Position(), Viewport()
 		{
 		}
 
-		LayoutParams(float l, float t, float r, float b) 
+		WindowLayoutParams(float l, float t, float r, float b) 
 			: Percentage(l, t, r, b), Position(), Viewport()
 		{
 		}
@@ -87,7 +113,8 @@ namespace pio
 
 	namespace UiDef
 	{
-		glm::ivec2 ScreenToViewport(const glm::vec2 &screenPt, const LayoutParams& param);
+		glm::ivec2 ScreenToViewport(const glm::vec2 &screenPt, const WindowLayoutParams& param);
+		// TODO: make a vertex in a specified viewport
 		glm::vec2 ScreenToVertex(uint32_t x, uint32_t y, uint32_t screenWidth, uint32_t screenHeight);
 		glm::vec2 MoveToOrigin(const glm::vec2 &pt, const glm::vec2 &orign);
 	}

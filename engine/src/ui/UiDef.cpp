@@ -5,7 +5,7 @@ namespace pio
 {
 	namespace UiDef
 	{
-		glm::ivec2 ScreenToViewport(const glm::vec2 &screenPt, const LayoutParams &param)
+		glm::ivec2 ScreenToViewport(const glm::vec2 &screenPt, const WindowLayoutParams &param)
 		{
 			return glm::ivec2(screenPt.x - param.Viewport.X, param.Viewport.Height - (screenPt.y - param.Position.Top));
 		}

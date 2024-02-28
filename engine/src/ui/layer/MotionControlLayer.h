@@ -14,10 +14,25 @@ namespace pio
 	class UiRotationCtl;
 	class PhysicsScene;
 
+	enum MotionCtlMode : uint8_t
+	{
+		MotionCtlMode_Idle = 0, MotionCtlMode_Move, MotionCtlMode_Rotation, MotionCtlMode_Scale
+	};
+
+	class MotionController
+	{
+	public:
+		MotionController() {}
+		~MotionController() = default;
+
+	public:
+		MotionCtlMode Mode{ MotionCtlMode_Idle };
+	};
+
 	class MotionControlLayer : public Layer
 	{
 	public:
-		MotionControlLayer(const LayoutParams &param);
+		MotionControlLayer(const WindowLayoutParams &param);
 		virtual ~MotionControlLayer() = default;
 
 		virtual void onAttach() override;
@@ -39,7 +54,7 @@ namespace pio
 		void onDrawRotationCtl(const glm::vec3 pos);
 
 		bool onClickEvent(const glm::vec2 &cursor);
-		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const LayoutParams &param);
+		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param);
 
 	private:
 		struct UIEventTracker
@@ -63,7 +78,7 @@ namespace pio
 
 	private:
 		bool m_drawCircle{ false };
-		LayoutParams m_circleLayoutParam;
+		WindowLayoutParams m_circleLayoutParam;
 
 		Ref<Entity> m_mainCameraEnt, m_sceneEnt;
 
