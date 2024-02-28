@@ -13,6 +13,7 @@ namespace pio
 		virtual ~Geometry() = default;
 
 		void setColor(const glm::vec3 &color);
+		void setAlpha (float alpha);
 		Ref<Material> getMaterial() const;
 
 		void invalidate(bool val = true) { m_invalidate = val; }

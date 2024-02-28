@@ -33,8 +33,9 @@ namespace pio
 		bool onMouseScrolled(Event &event);
 
 		void onDrawVisionCtl(const Timestep &ts);
-		void onDrawSelectionCtl(const Timestep &ts);
+		void onDrawMotionCtl(const Timestep &ts);
 
+		void onDrawMoveCtl(const glm::vec3 pos);
 		void onDrawRotationCtl(const glm::vec3 pos);
 
 		bool onClickEvent(const glm::vec2 &cursor);
@@ -69,8 +70,8 @@ namespace pio
 		Ref<UniformBufferSet> m_visionUBSet;
 		CameraUD m_visionCamUD;
 
-		Ref<UniformBufferSet> m_selectionUBSet;
-		CameraUD m_selectionCamUD;
+		Ref<UniformBufferSet> m_motionUBSet;
+		CameraUD m_motionCamUD;
 
 		Ref<UiCoordinate3D> m_visionCoord;
 		Ref<UiCoordinate3D> m_selectCoord;

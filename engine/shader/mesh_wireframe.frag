@@ -17,6 +17,7 @@ struct MaterialAttributes
     float Roughness;
     float Metalness;
     float AO;
+    float Alpha;
     bool UseNormalMap;
 
     sampler2D AlbedoTexture;

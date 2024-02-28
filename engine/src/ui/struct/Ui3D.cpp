@@ -74,6 +74,8 @@ namespace pio
 			uiComp.SubmeshIndex = 0;
 			uiComp.Visible = true;
 			uiComp.State.Blend = Blend::Disable();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Always();
 
 			auto &boxComp = XAxisEnt->getComponent<BoxColliderComponent>();
 			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f,
@@ -100,6 +102,8 @@ namespace pio
 			uiComp.SubmeshIndex = 0;
 			uiComp.Visible = true;
 			uiComp.State.Blend = Blend::Disable();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Always();
 
 			auto &boxComp = YAxisEnt->getComponent<BoxColliderComponent>();
 			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f,
@@ -127,6 +131,8 @@ namespace pio
 			uiComp.SubmeshIndex = 0;
 			uiComp.Visible = true;
 			uiComp.State.Blend = Blend::Disable();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Always();
 
 			auto &boxComp = ZAxisEnt->getComponent<BoxColliderComponent>();
 			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f,
@@ -159,6 +165,8 @@ namespace pio
 			uiComp.SubmeshIndex = 0;
 			uiComp.Visible = true;
 			uiComp.State.Blend = Blend::Disable();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Always();
 
 			auto &boxComp = XAxisEnt->getComponent<BoxColliderComponent>();
 			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f * UI3D_TOUCH_EXT,
@@ -187,6 +195,8 @@ namespace pio
 			uiComp.SubmeshIndex = 0;
 			uiComp.Visible = true;
 			uiComp.State.Blend = Blend::Disable();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Always();
 
 			auto &boxComp = YAxisEnt->getComponent<BoxColliderComponent>();
 			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f * UI3D_TOUCH_EXT,
@@ -216,6 +226,8 @@ namespace pio
 			uiComp.SubmeshIndex = 0;
 			uiComp.Visible = true;
 			uiComp.State.Blend = Blend::Disable();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Always();
 
 			auto &boxComp = ZAxisEnt->getComponent<BoxColliderComponent>();
 			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f * UI3D_TOUCH_EXT,
@@ -227,9 +239,9 @@ namespace pio
 
 	UiRotationCtl::UiRotationCtl()
 	{
-		XTorus = Registry::Get()->create<C3dUIComponent, TransformComponent>();
-		YTorus = Registry::Get()->create<C3dUIComponent, TransformComponent>();
-		ZTorus = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+		XTorus = Registry::Get()->create<C3dUIComponent, TransformComponent, BoxColliderComponent>();
+		YTorus = Registry::Get()->create<C3dUIComponent, TransformComponent, BoxColliderComponent>();
+		ZTorus = Registry::Get()->create<C3dUIComponent, TransformComponent, BoxColliderComponent>();
 		build();
 	}
 
@@ -243,14 +255,16 @@ namespace pio
 		const float ringWidth = 0.03f;
 		const uint32_t itr = 36;
 		const uint32_t ringItr = 16;
+		const float alpha = 0.6f;
 
 		// Torus around x axis
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(1.f, 0.f, 0.f), itr, ringItr);
+			meshSrc->as<Geometry>()->setAlpha(alpha);
 			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			std::vector<Submesh> &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());			
-			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(0.f, 1.f, 0.f));
+			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(90.f), AXIS_Y);				
 
 			C3dUIComponent &uiComp = XTorus->getComponent<C3dUIComponent>();
 			uiComp.Name = STR_TORUS_X;
@@ -262,15 +276,23 @@ namespace pio
 			uiComp.State.Mode = RenderMode::MaterialPreview;
 			uiComp.State.DepthTest = DepthTest::Common();
 			uiComp.State.Cull = CullFace::Common();
+
+			const AABB &aabb = submeshes[0].BoundingBox;
+			auto &boxComp = XTorus->getComponent<BoxColliderComponent>();
+			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f,
+										 Math::IsZero(aabb.lenY() * 0.5f) ? 1e-3 : aabb.lenY() * 0.5f,
+										 Math::IsZero(aabb.lenZ() * 0.5f) ? 1e-3 : aabb.lenZ() * 0.5f);
+			boxComp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
 		}
 
 		// Torus around y axis
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(0.f, 1.f, 0.f), itr, ringItr);
+			meshSrc->as<Geometry>()->setAlpha(alpha);
 			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);			
 
 			std::vector<Submesh> &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());
-			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(-90.f), glm::vec3(1.f, 0.f, 0.f));
+			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(-90.f), AXIS_X);
 
 			C3dUIComponent &uiComp = YTorus->getComponent<C3dUIComponent>();
 			uiComp.Name = STR_TORUS_Y;
@@ -282,11 +304,19 @@ namespace pio
 			uiComp.State.Mode = RenderMode::MaterialPreview;
 			uiComp.State.DepthTest = DepthTest::Common();
 			uiComp.State.Cull = CullFace::Common();
+
+			const AABB &aabb = submeshes[0].BoundingBox;
+			auto &boxComp = YTorus->getComponent<BoxColliderComponent>();
+			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f,
+										 Math::IsZero(aabb.lenY() * 0.5f) ? 1e-3 : aabb.lenY() * 0.5f,
+										 Math::IsZero(aabb.lenZ() * 0.5f) ? 1e-3 : aabb.lenZ() * 0.5f);
+			boxComp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
 		}
 
 		// Torus around z axis
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(0.f, 0.f, 1.f), itr, ringItr);
+			meshSrc->as<Geometry>()->setAlpha(alpha);
 			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			C3dUIComponent &uiComp = ZTorus->getComponent<C3dUIComponent>();
@@ -299,6 +329,14 @@ namespace pio
 			uiComp.State.Mode = RenderMode::MaterialPreview;
 			uiComp.State.DepthTest = DepthTest::Common();
 			uiComp.State.Cull = CullFace::Common();
+
+			std::vector<Submesh> &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());
+			const AABB &aabb = submeshes[0].BoundingBox;
+			auto &boxComp = ZTorus->getComponent<BoxColliderComponent>();
+			boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f,
+										 Math::IsZero(aabb.lenY() * 0.5f) ? 1e-3 : aabb.lenY() * 0.5f,
+										 Math::IsZero(aabb.lenZ() * 0.5f) ? 1e-3 : aabb.lenZ() * 0.5f);
+			boxComp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
 		}
 	}
 }

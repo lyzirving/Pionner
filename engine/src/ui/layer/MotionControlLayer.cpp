@@ -51,9 +51,9 @@ namespace pio
 		m_visionUBSet = UniformBufferSet::Create();
 		m_visionUBSet->create(m_visionCamUD.Block.getByteUsed(), (uint32_t)UBBindings::Camera);
 
-		m_selectionCamUD.obtainBlock();
-		m_selectionUBSet = UniformBufferSet::Create();
-		m_selectionUBSet->create(m_selectionCamUD.Block.getByteUsed(), (uint32_t)UBBindings::Camera);
+		m_motionCamUD.obtainBlock();
+		m_motionUBSet = UniformBufferSet::Create();
+		m_motionUBSet->create(m_motionCamUD.Block.getByteUsed(), (uint32_t)UBBindings::Camera);
 
 		UiCoordinate3DBuilder visionBuilder;
 		visionBuilder.Shape = CoordinateShape::Cylinder;
@@ -61,20 +61,26 @@ namespace pio
 
 		UiCoordinate3DBuilder selectBuilder;
 		selectBuilder.Shape = CoordinateShape::Arrow;
-		m_selectCoord = CreateRef<UiCoordinate3D>(selectBuilder);
+		m_selectCoord = CreateRef<UiCoordinate3D>(selectBuilder);		
+
+		Ref<PhysicsActor> scActorX = m_world->createActor<C3dUIComponent>(m_selectCoord->XAxisEnt, RigidBodyComponent::Type::Dynamic);
+		Ref<PhysicsActor> scActorY = m_world->createActor<C3dUIComponent>(m_selectCoord->YAxisEnt, RigidBodyComponent::Type::Dynamic);
+		Ref<PhysicsActor> scActorZ = m_world->createActor<C3dUIComponent>(m_selectCoord->ZAxisEnt, RigidBodyComponent::Type::Dynamic);
+
+		scActorX->setActorTransform(glm::vec3(m_selectCoord->Builder.ArrowInfo.Offset, 0.f, 0.f),
+								    glm::angleAxis(glm::radians(-90.f), AXIS_Z));
+		scActorY->setActorTransform(glm::vec3(0.f, m_selectCoord->Builder.ArrowInfo.Offset, 0.f),
+								    quaternion::IDENTITY);
+		scActorZ->setActorTransform(glm::vec3(0.f, 0.f, m_selectCoord->Builder.ArrowInfo.Offset),
+								    glm::angleAxis(glm::radians(90.f), AXIS_X));
 
 		m_rotateCtl = CreateRef<UiRotationCtl>();
-
-		Ref<PhysicsActor> xActor = m_world->createActor<C3dUIComponent>(m_selectCoord->XAxisEnt, RigidBodyComponent::Type::Dynamic);
-		Ref<PhysicsActor> yActor = m_world->createActor<C3dUIComponent>(m_selectCoord->YAxisEnt, RigidBodyComponent::Type::Dynamic);
-		Ref<PhysicsActor> zActor = m_world->createActor<C3dUIComponent>(m_selectCoord->ZAxisEnt, RigidBodyComponent::Type::Dynamic);
-
-		xActor->setActorTransform(glm::vec3(m_selectCoord->Builder.ArrowInfo.Offset, 0.f, 0.f),
-								  glm::angleAxis(glm::radians(-90.f), AXIS_Z));
-		yActor->setActorTransform(glm::vec3(0.f, m_selectCoord->Builder.ArrowInfo.Offset, 0.f),
-								  quaternion::IDENTITY);
-		zActor->setActorTransform(glm::vec3(0.f, 0.f, m_selectCoord->Builder.ArrowInfo.Offset),
-								  glm::angleAxis(glm::radians(90.f), AXIS_X));
+		Ref<PhysicsActor> torusActorX = m_world->createActor<C3dUIComponent>(m_rotateCtl->XTorus, RigidBodyComponent::Type::Dynamic);
+		Ref<PhysicsActor> torusActorY = m_world->createActor<C3dUIComponent>(m_rotateCtl->YTorus, RigidBodyComponent::Type::Dynamic);
+		Ref<PhysicsActor> torusActorZ = m_world->createActor<C3dUIComponent>(m_rotateCtl->ZTorus, RigidBodyComponent::Type::Dynamic);
+		torusActorX->setActorTransform(glm::vec3(0.f), glm::angleAxis(glm::radians(90.f), AXIS_Y));
+		torusActorY->setActorTransform(glm::vec3(0.f), glm::angleAxis(glm::radians(-90.f), AXIS_X));
+		torusActorZ->setActorTransform(glm::vec3(0.f), quaternion::IDENTITY);
 
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
 						   Application::MainWindow()->getHeight());
@@ -83,7 +89,7 @@ namespace pio
 	void MotionControlLayer::onDetach()
 	{
 		m_visionUBSet.reset();
-		m_selectionUBSet.reset();
+		m_motionUBSet.reset();
 		m_visionCoord.reset();
 		m_selectCoord.reset();
 
@@ -123,7 +129,7 @@ namespace pio
 		}
 
 		onDrawVisionCtl(ts);
-		onDrawSelectionCtl(ts);
+		onDrawMotionCtl(ts);
 	}
 
 	void MotionControlLayer::onWindowSizeChange(uint32_t width, uint32_t height)
@@ -282,13 +288,11 @@ namespace pio
 		cameraUD.FrustumFar = camera.far();
 		cameraUD.serialize();
 
+		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
 		{
-			Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
-			{
-				Renderer::CommitViewport(Viewport{ (int32_t)vp.X, (int32_t)vp.Y, (int32_t)vp.Width, (int32_t)vp.Height });
-				cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
-			});
-		}
+			Renderer::CommitViewport(Viewport{ (int32_t)vp.X, (int32_t)vp.Y, (int32_t)vp.Width, (int32_t)vp.Height });
+			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
+		});
 
 		// X Axis
 		{
@@ -360,10 +364,9 @@ namespace pio
 		}
 	}
 
-	void MotionControlLayer::onDrawSelectionCtl(const Timestep &ts)
+	void MotionControlLayer::onDrawMotionCtl(const Timestep &ts)
 	{
 		glm::vec3 slcPos(0.f);
-		bool bPick{ false };
 
 		// 2d pick up
 		{
@@ -373,30 +376,33 @@ namespace pio
 				{
 					auto &transComp = m_spriteCtl.Ent->getComponent<TransformComponent>();
 					slcPos = transComp.Transform.Position;
-					bPick = true;
+					//onDrawRotationCtl(slcPos);
+					onDrawMoveCtl(slcPos);
+					return;
 				}
 			}
 		}
 
 		// 3d pick up
 		{
-			if (!bPick)
+			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
+			Ref<Entity> selection = sceneComp.Selected3D;
+			if (selection && selection->getGlobalPoseCenter(slcPos))
 			{
-				auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-				Ref<Entity> selection = sceneComp.Selected3D;
-				bPick = (selection && selection->getGlobalPoseCenter(slcPos));
+				onDrawMoveCtl(slcPos);
+				return;
 			}
 		}
+	}
 
-		if (!bPick)
-			return;
-
+	void MotionControlLayer::onDrawMoveCtl(const glm::vec3 pos)
+	{
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		Camera &camera = camComp.Camera;
 		const Viewport &vp = camera.getViewport();
 
-		CameraUD &cameraUD = m_selectionCamUD;
-		Ref<UniformBufferSet> ubSet = m_selectionUBSet;
+		CameraUD &cameraUD = m_motionCamUD;
+		Ref<UniformBufferSet> ubSet = m_motionUBSet;
 		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
 
 		cameraUD.ViewMat = camera.getViewMat();
@@ -406,96 +412,52 @@ namespace pio
 		cameraUD.FrustumFar = camera.far();
 		cameraUD.serialize();
 
+		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
 		{
-			Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
-			{
-				Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
-				cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
-			});
-		}
+			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
+			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
+		});
 
-		// X Axis
+		auto drawFunc = [ubSet](C3dUIComponent &_meshComp, const glm::vec3 _pos) mutable
 		{
-			Ref<PhysicsActor> actor;
-			PIO_ASSERT_RETURN(m_selectCoord->XAxisEnt->getActor(actor), "onDrawSelectionCtl: fail to get X axis's actor");
-			actor->setGlobalPose(slcPos);
-
-			auto &meshComp = m_selectCoord->XAxisEnt->getComponent<C3dUIComponent>();
-
-			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
-			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
-			uint32_t ind = meshComp.SubmeshIndex;
+			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(_meshComp.Handle);
+			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(_meshComp.SourceHandle);
+			uint32_t ind = _meshComp.SubmeshIndex;
+			RenderState state = _meshComp.State;
 
 			Ref<MaterialTable> mt = axis->getMaterialTable();
-			glm::mat4 transform = glm::translate(glm::mat4(1.f), slcPos);
+			glm::mat4 transform = glm::translate(glm::mat4(1.f), _pos);
 			transform = transform * meshSrc->getSubmeshes()[ind].Transform;
-
-			RenderState state;
-			state.Blend = Blend::Disable();
-			state.Mode = RenderMode::MaterialPreview;
-			state.DepthTest = DepthTest::Always();
 
 			Renderer::SubmitRC([ubSet, axis, ind, transform, mt, state]() mutable
 			{
 				AssetHandle h = axis->getHandle();
 				Renderer::RenderSubmesh(h, ind, mt, Ref<RenderPass>(), ubSet, transform, state);
 			});
+		};
+
+		// X Axis
+		{
+			Ref<PhysicsActor> actor;
+			PIO_ASSERT_RETURN(m_selectCoord->XAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get X axis's actor");
+			actor->setGlobalPose(pos);
+			drawFunc(m_selectCoord->XAxisEnt->getComponent<C3dUIComponent>(), pos);
 		}
 
 		// Y Axis
 		{
 			Ref<PhysicsActor> actor;
-			PIO_ASSERT_RETURN(m_selectCoord->YAxisEnt->getActor(actor), "onDrawSelectionCtl: fail to get Y axis's actor");
-			actor->setGlobalPose(slcPos);
-
-			auto &meshComp = m_selectCoord->YAxisEnt->getComponent<C3dUIComponent>();
-
-			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
-			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
-			uint32_t ind = meshComp.SubmeshIndex;
-
-			Ref<MaterialTable> mt = axis->getMaterialTable();
-			glm::mat4 transform = glm::translate(glm::mat4(1.f), slcPos);
-			transform = transform * meshSrc->getSubmeshes()[ind].Transform;
-
-			RenderState state;
-			state.Blend = Blend::Disable();
-			state.Mode = RenderMode::MaterialPreview;
-			state.DepthTest = DepthTest::Always();
-
-			Renderer::SubmitRC([ubSet, axis, ind, transform, mt, state]() mutable
-			{
-				AssetHandle h = axis->getHandle();
-				Renderer::RenderSubmesh(h, ind, mt, Ref<RenderPass>(), ubSet, transform, state);
-			});
+			PIO_ASSERT_RETURN(m_selectCoord->YAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get Y axis's actor");
+			actor->setGlobalPose(pos);
+			drawFunc(m_selectCoord->YAxisEnt->getComponent<C3dUIComponent>(), pos);
 		}
 
 		// Z Axis
 		{
 			Ref<PhysicsActor> actor;
-			PIO_ASSERT_RETURN(m_selectCoord->ZAxisEnt->getActor(actor), "onDrawSelectionCtl: fail to get Z axis's actor");
-			actor->setGlobalPose(slcPos);
-
-			auto &meshComp = m_selectCoord->ZAxisEnt->getComponent<C3dUIComponent>();
-
-			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
-			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
-			uint32_t ind = meshComp.SubmeshIndex;
-
-			Ref<MaterialTable> mt = axis->getMaterialTable();
-			glm::mat4 transform = glm::translate(glm::mat4(1.f), slcPos);
-			transform = transform * meshSrc->getSubmeshes()[ind].Transform;
-
-			RenderState state;
-			state.Blend = Blend::Disable();
-			state.Mode = RenderMode::MaterialPreview;
-			state.DepthTest = DepthTest::Always();
-
-			Renderer::SubmitRC([ubSet, axis, ind, transform, mt, state]() mutable
-			{
-				AssetHandle h = axis->getHandle();
-				Renderer::RenderSubmesh(h, ind, mt, Ref<RenderPass>(), ubSet, transform, state);
-			});
+			PIO_ASSERT_RETURN(m_selectCoord->ZAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get Z axis's actor");
+			actor->setGlobalPose(pos);
+			drawFunc(m_selectCoord->ZAxisEnt->getComponent<C3dUIComponent>(), pos);
 		}
 	}
 
@@ -505,8 +467,8 @@ namespace pio
 		Camera &camera = camComp.Camera;
 		const Viewport &vp = camera.getViewport();
 
-		CameraUD &cameraUD = m_selectionCamUD;
-		Ref<UniformBufferSet> ubSet = m_selectionUBSet;
+		CameraUD &cameraUD = m_motionCamUD;
+		Ref<UniformBufferSet> ubSet = m_motionUBSet;
 		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
 
 		cameraUD.ViewMat = camera.getViewMat();
@@ -540,9 +502,26 @@ namespace pio
 			});
 		};
 
-		drawFunc(m_rotateCtl->XTorus->getComponent<C3dUIComponent>());
-		drawFunc(m_rotateCtl->YTorus->getComponent<C3dUIComponent>());
-		drawFunc(m_rotateCtl->ZTorus->getComponent<C3dUIComponent>());
+		{
+			Ref<PhysicsActor> actor;
+			PIO_ASSERT_RETURN(m_rotateCtl->XTorus->getActor(actor), "onDrawRotationCtl: fail to get X torus's actor");
+			actor->setGlobalPose(pos);
+			drawFunc(m_rotateCtl->XTorus->getComponent<C3dUIComponent>());
+		}
+		
+		{
+			Ref<PhysicsActor> actor;
+			PIO_ASSERT_RETURN(m_rotateCtl->YTorus->getActor(actor), "onDrawRotationCtl: fail to get Y torus's actor");
+			actor->setGlobalPose(pos);
+			drawFunc(m_rotateCtl->YTorus->getComponent<C3dUIComponent>());
+		}
+		
+		{
+			Ref<PhysicsActor> actor;
+			PIO_ASSERT_RETURN(m_rotateCtl->ZTorus->getActor(actor), "onDrawRotationCtl: fail to get Z torus's actor");
+			actor->setGlobalPose(pos);
+			drawFunc(m_rotateCtl->ZTorus->getComponent<C3dUIComponent>());
+		}
 	}
 
 	bool MotionControlLayer::onClickEvent(const glm::vec2 &cursor)

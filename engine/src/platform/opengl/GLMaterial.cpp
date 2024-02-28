@@ -26,6 +26,7 @@ namespace pio
 	{
 		m_dataBuffer.allocate(0, DEFAULT_UNIFORM_BUFFER);
 		setFlag(MaterialFlag::ShadowCasting, true);
+		set(MaterialAttrs::MU_Alpha, 1.f);
 	}
 
 	GLMaterial::~GLMaterial()

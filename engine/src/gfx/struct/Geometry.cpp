@@ -11,6 +11,11 @@ namespace pio
 		m_materials[0]->set(MaterialAttrs::MU_AlbedoColor, color);
 	}
 
+	void Geometry::setAlpha(float alpha)
+	{
+		m_materials[0]->set(MaterialAttrs::MU_Alpha, alpha);
+	}
+
 	Ref<Material> Geometry::getMaterial() const
 	{
 		return m_materials[0];
@@ -189,7 +194,8 @@ namespace pio
 		submesh.VertexOffset = 0;
 		submesh.IndexOffset = 0;
 		submesh.MaterialIndex = 0;// one mesh has one material
-		submesh.BoundingBox = AABB(glm::vec3(-m_radius, -m_radius, 0.f), glm::vec3(m_radius, m_radius, 0.f));
+		submesh.BoundingBox = AABB(glm::vec3(-m_radius - m_ringRadius, -m_radius - m_ringRadius, -m_ringRadius),
+								   glm::vec3(m_radius + m_ringRadius, m_radius + m_ringRadius, m_ringRadius));
 		m_boundingBox = submesh.BoundingBox;
 
 		const float span = 360.f / float(m_itrCnt);		

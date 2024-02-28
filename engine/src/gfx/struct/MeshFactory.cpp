@@ -21,7 +21,7 @@ namespace pio
 	static uint32_t s_arrowNum{ 0 };
 	static uint32_t s_fullScreenQuadNum{ 0 };
 	static uint32_t s_sphereNum{ 0 };
-	static uint32_t s_circleNum{ 0 };
+	static uint32_t s_torusNum{ 0 };
 
 	Ref<MeshSource> MeshFactory::CreateCube(float len)
 	{
@@ -692,23 +692,23 @@ namespace pio
 
 	Ref<MeshSource> MeshFactory::CreateTorus(float radius, float ringWidth, const glm::vec3 &color, uint32_t itrCnt, uint32_t ringItrCnt)
 	{
-		std::string name = std::string("Torus") + std::to_string(s_circleNum++);
-		Ref<Torus> circle = RefCast<Asset, Torus>(AssetsManager::CreateRuntimeAssets<Torus>(name));
-		circle->m_radius = radius;
-		circle->m_ringRadius = ringWidth;
-		circle->m_itrCnt = itrCnt;
-		circle->m_ringItrCnt = ringItrCnt;
+		std::string name = std::string("Torus") + std::to_string(s_torusNum++);
+		Ref<Torus> torus = RefCast<Asset, Torus>(AssetsManager::CreateRuntimeAssets<Torus>(name));
+		torus->m_radius = radius;
+		torus->m_ringRadius = ringWidth;
+		torus->m_itrCnt = itrCnt;
+		torus->m_ringItrCnt = ringItrCnt;
 
 		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Color);
-		circle->m_materials.push_back(ma->getMaterial());
-		circle->setColor(color);
+		torus->m_materials.push_back(ma->getMaterial());
+		torus->setColor(color);
 
-		circle->build();
+		torus->build();
 
-		CreateBuffer<Vertex, Index>(circle);
+		CreateBuffer<Vertex, Index>(torus);
 
-		circle->invalidate(false);
-		return circle;
+		torus->invalidate(false);
+		return torus;
 	}
 
 	Ref<Geometry2D> MeshFactory::CreateFullScreenQuad()

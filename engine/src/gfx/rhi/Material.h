@@ -12,6 +12,7 @@ namespace pio
 		static const char *MU_Roughness = "u_material.Roughness";
 		static const char *MU_Metalness = "u_material.Metalness";
 		static const char *MU_AO = "u_material.AO";
+		static const char *MU_Alpha = "u_material.Alpha";
 		static const char *MU_UseNormalMap = "u_material.UseNormalMap";
 
 		static const char *MU_AlbedoTexture = "u_material.AlbedoTexture";

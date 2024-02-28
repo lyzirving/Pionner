@@ -17,6 +17,7 @@ struct MaterialAttributes
     float Roughness;
     float Metalness;
     float AO;
+    float Alpha;
     bool UseNormalMap;
 
     sampler2D AlbedoTexture;
@@ -40,5 +41,5 @@ out vec4 o_color;
 
 void main() {
     vec4 albedoColor = texture(u_material.AlbedoTexture, v_texCoord);
-    o_color = vec4(albedoColor.rgb * u_material.AlbedoColor.rgb, albedoColor.a);
+    o_color = vec4(albedoColor.rgb * u_material.AlbedoColor.rgb, albedoColor.a * u_material.Alpha);
 }
