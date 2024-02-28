@@ -74,6 +74,18 @@ namespace pio
 		uint32_t Y{ 0 };
 		uint32_t Width{ 0 };
 		uint32_t Height{ 0 };
+
+		LayoutViewport() {}
+		LayoutViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+			: X(x), Y(y), Width(width), Height(height) {}
+
+		bool operator==(const LayoutViewport &rhs)
+		{
+			if (this == &rhs) return true;
+			return this->X == rhs.X && this->Y == rhs.Y && this->Width == rhs.Width && this->Height == rhs.Height;
+		}
+
+		bool operator!=(const LayoutViewport &rhs) { return !((*this) == rhs); }
 	};
 
 	/*

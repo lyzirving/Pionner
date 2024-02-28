@@ -71,4 +71,13 @@ namespace pio
 		VertexBufferLayout layout{ pos, texcoord };
 		return layout;
 	}
+
+	template<>
+	VertexBufferLayout VertexBuffer::To<ViewVertex>()
+	{
+		VertexBufferElement pos{ "Position", ShaderDataType::Float3, false };
+		VertexBufferElement texcoord{ "Texcoord", ShaderDataType::Float2, false };
+		VertexBufferLayout layout{ pos, texcoord };
+		return layout;
+	}
 }

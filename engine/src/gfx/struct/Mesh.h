@@ -10,6 +10,7 @@
 #include "core/math/Transform.h"
 
 #include "gfx/rhi/Uniform.h"
+#include "scene/SceneDef.h"
 
 namespace pio
 {
@@ -29,30 +30,6 @@ namespace pio
 	// ------------------------------------------------------------------------------
 
 	// ----------------------- structures related with Mesh -------------------------
-	struct Vertex
-	{
-		glm::vec3 Position{ 0.f };
-		glm::vec3 Normal{ 0.f };
-		glm::vec3 Tangent{ 0.f };
-		glm::vec3 Binormal{ 0.f };
-		glm::vec2 Texcoord{ 0.f };
-	};
-
-	struct Index
-	{
-		uint32_t V0{ 0 }, V1{ 0 }, V2{ 0 };
-
-		Index() {}
-		Index(uint32_t v0, uint32_t v1, uint32_t v2) : V0(v0), V1(v1), V2(v2) {}
-	};
-
-	struct Triangle
-	{
-		Vertex V0, V1, V2;
-
-		Triangle(const Vertex &v0, const Vertex &v1, const Vertex &v2)
-			: V0(v0), V1(v1), V2(v2) {}
-	};
 
 	struct MeshNode
 	{

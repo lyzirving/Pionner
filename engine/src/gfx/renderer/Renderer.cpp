@@ -13,6 +13,7 @@
 #include "gfx/struct/ShaderLibrary.h"
 #include "gfx/struct/MeshFactory.h"
 #include "gfx/struct/Camera.h"
+#include "gfx/struct/Geometry2D.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

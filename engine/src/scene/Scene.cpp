@@ -6,6 +6,7 @@
 #include "gfx/renderer/Renderer.h"
 #include "gfx/struct/MeshUtil.h" 
 #include "gfx/struct/MaterialLibrary.h"
+#include "gfx/struct/Geometry2D.h"
 #include "gfx/rhi/Texture.h"
 
 #include "core/EventBus.h"

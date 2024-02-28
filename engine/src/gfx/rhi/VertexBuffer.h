@@ -3,7 +3,6 @@
 
 #include "RhiDef.h"
 #include "gfx/struct/Mesh.h"
-#include "gfx/struct/Geometry2D.h"
 
 namespace pio
 {
@@ -103,6 +102,9 @@ namespace pio
 
 	template<>
 	VertexBufferLayout VertexBuffer::To<QuadVertex>();
+
+	template<>
+	VertexBufferLayout VertexBuffer::To<ViewVertex>();
 }
 
 #endif

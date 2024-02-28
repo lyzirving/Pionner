@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_STRUCT_GEOMETRY2D_H__
 #define __PIONNER_GFX_STRUCT_GEOMETRY2D_H__
 
-#include "asset/Asset.h"
+#include "scene/SceneDef.h"
 
 namespace pio
 {
@@ -10,24 +10,6 @@ namespace pio
 	class IndexBuffer;
 
 	constexpr static const uint32_t LINE_MESH_LIMIT = 65535u;
-
-	struct LineVertex
-	{
-		glm::vec3 Position{ 0.f };
-		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
-
-		LineVertex() {}
-		LineVertex(const glm::vec3 &pos, const glm::vec4 &color) : Position(pos), Color(color) {}
-	};
-
-	struct QuadVertex
-	{
-		glm::vec3 Position{ 0.f };
-		glm::vec2 Texcoord{ 0.f, 0.f};
-
-		QuadVertex() {}
-		QuadVertex(const glm::vec3 &pos, const glm::vec2 &texcoord) : Position(pos), Texcoord(texcoord) {}
-	};
 
 	class Geometry2D : public Asset
 	{
