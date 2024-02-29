@@ -13,10 +13,11 @@ namespace pio
 	class UiCoordinate3D;
 	class UiRotationCtl;
 	class PhysicsScene;
+	class View;
 
 	enum MotionCtlMode : uint8_t
 	{
-		MotionCtlMode_Idle = 0, MotionCtlMode_Move, MotionCtlMode_Rotation, MotionCtlMode_Scale
+		MotionCtl_Idle = 0, MotionCtl_Move, MotionCtl_Rotation, MotionCtl_Scale, MotionCtl_Num
 	};
 
 	class MotionController
@@ -26,7 +27,7 @@ namespace pio
 		~MotionController() = default;
 
 	public:
-		MotionCtlMode Mode{ MotionCtlMode_Idle };
+		MotionCtlMode Mode{ MotionCtl_Idle };
 	};
 
 	class MotionControlLayer : public Layer
@@ -100,6 +101,8 @@ namespace pio
 		// Physics world that store selector controller's axis
 		Ref<PhysicsScene> m_world;
 		PhysicsActor *m_hitCtlActor{ nullptr };
+
+		Ref<View> m_views[MotionCtl_Num];
 	};
 }
 

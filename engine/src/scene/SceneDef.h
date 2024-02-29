@@ -59,16 +59,8 @@ namespace pio
 		glm::vec2 Texcoord{ 0.f, 0.f };
 
 		QuadVertex() {}
+		QuadVertex(const glm::vec2 &pos, const glm::vec2 &texcoord) : Position(glm::vec3(pos.x, pos.y, 0.f)), Texcoord(texcoord) {}
 		QuadVertex(const glm::vec3 &pos, const glm::vec2 &texcoord) : Position(pos), Texcoord(texcoord) {}
-	};
-
-	struct ViewVertex
-	{
-		glm::vec3 Position{ 0.f };
-		glm::vec2 Texcoord{ 0.f };
-
-		ViewVertex() {}
-		ViewVertex(const glm::vec3 &pos, const glm::vec2 &tex) : Position(pos), Texcoord(tex) {}
 	};
 }
 

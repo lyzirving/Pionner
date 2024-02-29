@@ -7,6 +7,11 @@ namespace pio
 {
 	using AssetHandle = UUID32;
 
+	static const char *ICON_MOVE_NORMAL     = "move_normal";
+	static const char *ICON_MOVE_SELECTED   = "move_selected";
+	static const char *ICON_ROTATE_NORMAL   = "rotate_normal";
+	static const char *ICON_ROTATE_SELECTED = "rotate_selected";
+
 	enum class AssetType : uint8_t
 	{
 		None = 0, 

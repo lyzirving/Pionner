@@ -6,15 +6,13 @@
 
 namespace pio
 {
-	class VertexArray;
-	class VertexBuffer;
-	class IndexBuffer;
-	class Texture2D;
+	class Geometry2D;
 	struct TextureSpecification;
 
 	enum ViewCtlStatus : uint8_t
 	{
-		ViewCtlStatus_Normal = 0, ViewCtlStatus_Disnabled, ViewCtlStatus_Pressed, ViewCtlStatus_Selected
+		ViewCtlStatus_Normal = 0, ViewCtlStatus_Disnabled, ViewCtlStatus_Pressed, ViewCtlStatus_Selected,
+		ViewCtlStatus_Num
 	};
 
 	class View
@@ -23,14 +21,15 @@ namespace pio
 		View(const std::string &name) : m_name(name) {}
 		virtual ~View() = default;
 
-		virtual void upload() {}
+		virtual void upload();
 
 		void invalidate(bool val = true) { m_invalidate = val; }
 
+		void setTexture(const AssetHandle &h) { m_texture = h; }
 		void setStatus(ViewCtlStatus s) { m_ctlStatus = s; }
-		void setPosition(uint32_t l, uint32_t t, uint32_t r, uint32_t b) 
+		void setPosition(uint32_t l, uint32_t t, uint32_t width, uint32_t height) 
 		{ 
-			LayoutRect rect(l, t, r, b); 
+			LayoutRect rect(l, t, l + width, t + height); 
 			if (m_rect != rect)
 			{
 				m_rect = rect;
@@ -53,6 +52,9 @@ namespace pio
 		bool isPressed() const { return m_ctlStatus == ViewCtlStatus_Pressed; }
 		bool isDisnabled() const { return m_ctlStatus == ViewCtlStatus_Disnabled; }
 
+		AssetHandle getMesh() const;
+		AssetHandle getTexture() const { return m_texture; }		
+
 	protected:
 		std::string m_name;
 		LayoutRect m_rect{};
@@ -61,22 +63,8 @@ namespace pio
 		ViewCtlStatus m_ctlStatus{ ViewCtlStatus_Normal };
 		bool m_invalidate{ false };
 
-		Ref<VertexArray> m_vertexArray{};
-		Ref<VertexBuffer> m_vertexBuffer{};
-		Ref<IndexBuffer> m_indexBuffer{};
-	};
-
-	class IconView : public View
-	{
-	public:
-		IconView(const std::string &name) : View(name) {}
-		virtual ~IconView() = default;
-
-		virtual void upload() override;
-
-	protected:
-		AssetHandle m_quadMesh{ NullAsset };
-		Ref<Texture2D> m_texture;
+		AssetHandle m_texture{ NullAsset };
+		Ref<Geometry2D> m_quad;
 	};
 }
 

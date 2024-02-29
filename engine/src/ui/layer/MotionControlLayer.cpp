@@ -13,9 +13,11 @@
 #include "scene/Registry.h"
 #include "scene/Components.h"
 
+#include "ui/Ui3D.h"
+#include "ui/View.h"
+
 #include "asset/AssetsManager.h"
 #include "window/event/MouseEvent.h"
-#include "ui/Ui3D.h"
 
 #include "core/math/Ray.h"
 
@@ -46,6 +48,9 @@ namespace pio
 		m_mainCameraEnt = s_registry->mainCameraEnt();
 		m_sceneEnt = s_registry->mainSceneEnt();
 		m_world = CreateRef<PhysicsScene>("Control Panel");
+
+		m_views[MotionCtl_Move] = CreateRef<View>("Move Ctl View");
+		m_views[MotionCtl_Rotation] = CreateRef<View>("Rotate Ctl View");
 
 		m_visionCamUD.obtainBlock();
 		m_visionUBSet = UniformBufferSet::Create();
@@ -150,6 +155,14 @@ namespace pio
 		m_circleLayoutParam.Viewport.Height = m_circleLayoutParam.Position.Bottom - m_circleLayoutParam.Position.Top;
 		m_circleLayoutParam.Viewport.X = m_circleLayoutParam.Position.Left;
 		m_circleLayoutParam.Viewport.Y = height - m_circleLayoutParam.Position.Top - m_circleLayoutParam.Viewport.Height;
+
+
+		uint32_t l{ 2 }, t{ 2 }, viewWid{ 25 }, viewHeight{ 25 };
+		m_views[MotionCtl_Move]->setPosition(l, t, viewWid, viewHeight);
+		m_views[MotionCtl_Rotation]->setPosition(l + viewWid, t, viewWid, viewHeight);
+
+		m_views[MotionCtl_Move]->setViewport(0, 0, m_layoutParam.Viewport.Width, m_layoutParam.Viewport.Height);
+		m_views[MotionCtl_Rotation]->setViewport(0, 0, m_layoutParam.Viewport.Width, m_layoutParam.Viewport.Height);
 	}
 
 	bool MotionControlLayer::onMouseButtonPressed(Event &event)

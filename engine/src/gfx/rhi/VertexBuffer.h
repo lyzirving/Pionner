@@ -102,9 +102,6 @@ namespace pio
 
 	template<>
 	VertexBufferLayout VertexBuffer::To<QuadVertex>();
-
-	template<>
-	VertexBufferLayout VertexBuffer::To<ViewVertex>();
 }
 
 #endif
