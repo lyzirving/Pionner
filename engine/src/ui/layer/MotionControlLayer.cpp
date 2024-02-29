@@ -3,6 +3,7 @@
 #include "Application.h"
 
 #include "gfx/rhi/UniformBufferSet.h"
+#include "gfx/rhi/Texture.h"
 #include "gfx/renderer/Renderer.h"
 #include "gfx/struct/MeshFactory.h"
 #include "gfx/struct/Geometry.h"
@@ -33,6 +34,14 @@ namespace pio
 #define CTL_CAM_RADIUS (2.f)
 #define CTL_TRANSLATION_RATIO (7.f)
 
+	const std::string MotionControlLayer::ICON_ID_NORMAL[MotionCtl_Num] = { AssetsManager::IconAbsPath("move_normal", AssetFmt::PNG),
+																		     AssetsManager::IconAbsPath("rotate_normal", AssetFmt::PNG),
+																		     AssetsManager::IconAbsPath("scale_normal", AssetFmt::PNG) };
+
+	const std::string MotionControlLayer::ICON_ID_SELECT[MotionCtl_Num] = { AssetsManager::IconAbsPath("move_selected", AssetFmt::PNG),
+																			AssetsManager::IconAbsPath("rotate_selected", AssetFmt::PNG),
+																			AssetsManager::IconAbsPath("scale_selected", AssetFmt::PNG) };
+
 	MotionControlLayer::MotionControlLayer(const WindowLayoutParams &param)
 		: Layer(param, "MotionControlLayer")
 	{
@@ -49,8 +58,15 @@ namespace pio
 		m_sceneEnt = s_registry->mainSceneEnt();
 		m_world = CreateRef<PhysicsScene>("Control Panel");
 
-		m_views[MotionCtl_Move] = CreateRef<View>("Move Ctl View");
+		m_views[MotionCtl_Move] = CreateRef<View>("Move Ctl View");		
+		m_views[MotionCtl_Move]->setStatus(ViewCtlStatus_Selected);
+		m_views[MotionCtl_Move]->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_SELECT[MotionCtl_Move]));
+
 		m_views[MotionCtl_Rotation] = CreateRef<View>("Rotate Ctl View");
+		m_views[MotionCtl_Rotation]->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_NORMAL[MotionCtl_Rotation]));
+
+		m_controller.SelectedView = m_views[MotionCtl_Move];
+		m_controller.SelectedViewMode = MotionCtl_Move;
 
 		m_visionCamUD.obtainBlock();
 		m_visionUBSet = UniformBufferSet::Create();
@@ -135,6 +151,7 @@ namespace pio
 
 		onDrawVisionCtl(ts);
 		onDrawMotionCtl(ts);
+		onDrawMotionView(ts);
 	}
 
 	void MotionControlLayer::onWindowSizeChange(uint32_t width, uint32_t height)
@@ -157,18 +174,30 @@ namespace pio
 		m_circleLayoutParam.Viewport.Y = height - m_circleLayoutParam.Position.Top - m_circleLayoutParam.Viewport.Height;
 
 
-		uint32_t l{ 2 }, t{ 2 }, viewWid{ 25 }, viewHeight{ 25 };
+		uint32_t l{ 10 }, t{ 5 }, viewWid{ 30 }, viewHeight{ 30 };
 		m_views[MotionCtl_Move]->setPosition(l, t, viewWid, viewHeight);
 		m_views[MotionCtl_Rotation]->setPosition(l + viewWid, t, viewWid, viewHeight);
 
 		m_views[MotionCtl_Move]->setViewport(0, 0, m_layoutParam.Viewport.Width, m_layoutParam.Viewport.Height);
 		m_views[MotionCtl_Rotation]->setViewport(0, 0, m_layoutParam.Viewport.Width, m_layoutParam.Viewport.Height);
+
+		m_iconRect = m_views[MotionCtl_Move]->getRect();
+		for (uint8_t i = MotionCtl_Rotation; i < MotionCtl_Num; i++)
+		{
+			if(m_views[i])
+				m_iconRect.doUnion(m_views[i]->getRect());
+		}		
 	}
 
 	bool MotionControlLayer::onMouseButtonPressed(Event &event)
 	{
-		m_eventCtlState.PressedTime = TimeUtil::CurrentTimeMs();
 		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
+		m_controller.DownTime = TimeUtil::CurrentTimeMs();
+		m_controller.LastWinCursor = cursor;
+
+		return false;
+
+		m_eventCtlState.PressedTime = TimeUtil::CurrentTimeMs();
 		glm::ivec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
 
 		// ------------------- Button pressed work flow ----------------------
@@ -208,6 +237,8 @@ namespace pio
 
 	bool MotionControlLayer::onMouseMoved(Event &event)
 	{
+		return false;
+
 		auto *p = event.as<MouseMovedEvent>();
 		glm::vec2 cursor(p->getX(), p->getY());
 
@@ -249,11 +280,18 @@ namespace pio
 
 	bool MotionControlLayer::onMouseButtonReleased(Event &event)
 	{
-		bool consume = m_visionCtlState.Pressed || m_objCtlState.Pressed || m_spriteCtl.Pressed;
+		if (MotionController::IsClick(TimeUtil::CurrentTimeMs(), m_controller.DownTime))
+		{			
+			glm::vec2 cursor = Application::MainWindow()->getCursorPos();
+			cursor -= glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top);
+			onHandleClick(cursor);
+		}
+		m_controller.LastWinCursor = glm::vec2(-1.f);
+		/*bool consume = m_visionCtlState.Pressed || m_objCtlState.Pressed || m_spriteCtl.Pressed;
 
 		if (!consume && UIEventTracker::IsClick(TimeUtil::CurrentTimeMs(), m_eventCtlState.PressedTime))
 		{
-			consume = onClickEvent(Application::MainWindow()->getCursorPos());
+			consume = onHandleClick(Application::MainWindow()->getCursorPos());
 		}
 
 		if (m_visionCtlState.Pressed) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
@@ -264,7 +302,8 @@ namespace pio
 
 		m_spriteCtl.LastCursor = m_visionCtlState.LastCursor = m_objCtlState.LastCursor = glm::vec2(-1.f);
 
-		return consume;
+		return consume;*/
+		return false;
 	}
 
 	bool MotionControlLayer::onMouseScrolled(Event &event)
@@ -408,6 +447,38 @@ namespace pio
 		}
 	}
 
+	void MotionControlLayer::onDrawMotionView(const Timestep &ts)
+	{	
+		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
+		Camera &camera = camComp.Camera;
+		const Viewport &vp = camera.getViewport();
+
+		Renderer::SubmitRC([vp]() mutable
+		{
+			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
+		});
+
+		RenderState s;
+		s.Blend = Blend::Disable();
+		s.DepthTest = DepthTest::Always();
+		s.Cull = CullFace::Common();
+		s.Stencil.Enable = false;
+
+		for (uint8_t i = 0; i < MotionCtl_Num; i++)
+		{
+			if (!m_views[i]) continue;
+
+			Ref<View> v = m_views[i];
+			if (v->needUpdate())
+				Renderer::SubmitTask([v]() mutable { v->upload(); });
+
+			Renderer::SubmitRC([v, s]() mutable
+			{
+				Renderer::RenderTextureQuad2D(v->getMesh(), v->getTexture(), s);
+			});
+		}
+	}
+
 	void MotionControlLayer::onDrawMoveCtl(const glm::vec3 pos)
 	{
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
@@ -537,49 +608,6 @@ namespace pio
 		}
 	}
 
-	bool MotionControlLayer::onClickEvent(const glm::vec2 &cursor)
-	{
-		bool consume{ false };
-		// 2d pick up
-		{
-			glm::vec2 vpCursor = UiDef::MoveToOrigin(cursor, glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top));
-			EntityView view = s_registry->view<SpriteComponent>();
-			auto it = view.begin();
-			while (it != view.end())
-			{
-				Ref<Entity> ent = it->second;
-				SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
-				consume = Math::Contains(vpCursor, spriteComp.Rect);
-				if (consume)
-				{
-					m_spriteCtl.Ent = ent;
-					return consume;
-				}
-				it++;
-			}
-			m_spriteCtl.release();
-		}
-
-		// 3d pick up
-		{
-			glm::ivec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
-			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-			HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
-			if (sceneComp.Selected3D) { sceneComp.Selected3D->setSelection(false); }
-			consume = result.Hit && result.Actor->getEnt(sceneComp.Selected3D);
-			if (consume)
-			{
-				sceneComp.Selected3D->setSelection(true);
-			}
-			else
-			{
-				sceneComp.Selected3D.reset();
-			}
-		}
-		return consume;
-	}
-
 	void MotionControlLayer::onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param)
 	{
 		if (!ctlActor || !selection)
@@ -630,6 +658,77 @@ namespace pio
 		else
 		{
 			selection->setGlobalPoseDiff(diff3d);
+		}
+	}
+
+	bool MotionControlLayer::onHandleClick(const glm::vec2 &cursor)
+	{
+		if (m_iconRect.contain(cursor.x, cursor.y))
+		{
+			onHandleIconClick(cursor);
+			return true;
+		}
+
+		return false;
+		//bool consume{ false };
+		//// 2d pick up
+		//{
+		//	glm::vec2 vpCursor = UiDef::MoveToOrigin(cursor, glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top));
+		//	EntityView view = s_registry->view<SpriteComponent>();
+		//	auto it = view.begin();
+		//	while (it != view.end())
+		//	{
+		//		Ref<Entity> ent = it->second;
+		//		SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
+		//		consume = Math::Contains(vpCursor, spriteComp.Rect);
+		//		if (consume)
+		//		{
+		//			m_spriteCtl.Ent = ent;
+		//			return consume;
+		//		}
+		//		it++;
+		//	}
+		//	m_spriteCtl.release();
+		//}
+
+		//// 3d pick up
+		//{
+		//	glm::ivec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
+		//	Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+		//	auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
+		//	HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
+		//	if (sceneComp.Selected3D) { sceneComp.Selected3D->setSelection(false); }
+		//	consume = result.Hit && result.Actor->getEnt(sceneComp.Selected3D);
+		//	if (consume)
+		//	{
+		//		sceneComp.Selected3D->setSelection(true);
+		//	}
+		//	else
+		//	{
+		//		sceneComp.Selected3D.reset();
+		//	}
+		//}
+		//return consume;
+	}
+
+	void MotionControlLayer::onHandleIconClick(const glm::vec2 &cursor)
+	{
+		for (uint8_t i = 0; i < MotionCtl_Num; i++)
+		{
+			if (m_views[i] && m_views[i]->contains(cursor) && m_controller.SelectedView != m_views[i])
+			{
+				if (m_controller.SelectedView)
+				{
+					m_controller.SelectedView->setStatus(ViewCtlStatus_Normal);
+					m_controller.SelectedView->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_NORMAL[m_controller.SelectedViewMode]));
+				}
+				m_views[i]->setStatus(ViewCtlStatus_Selected);
+				m_views[i]->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_SELECT[i]));
+
+				m_controller.SelectedView = m_views[i];
+				m_controller.SelectedViewMode = MotionCtlMode(i);
+				return;
+			}
 		}
 	}
 }

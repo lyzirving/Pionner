@@ -7,7 +7,7 @@
 namespace pio
 {
 	class Geometry2D;
-	struct TextureSpecification;
+	class Texture2D;
 
 	enum ViewCtlStatus : uint8_t
 	{
@@ -23,9 +23,10 @@ namespace pio
 
 		virtual void upload();
 
+		bool contains(const glm::vec2 &cursor) { return m_rect.contain(cursor.x, cursor.y); }
 		void invalidate(bool val = true) { m_invalidate = val; }
 
-		void setTexture(const AssetHandle &h) { m_texture = h; }
+		void setTexture(const Ref<Texture2D> &t) { m_texture = t; }
 		void setStatus(ViewCtlStatus s) { m_ctlStatus = s; }
 		void setPosition(uint32_t l, uint32_t t, uint32_t width, uint32_t height) 
 		{ 
@@ -53,7 +54,8 @@ namespace pio
 		bool isDisnabled() const { return m_ctlStatus == ViewCtlStatus_Disnabled; }
 
 		AssetHandle getMesh() const;
-		AssetHandle getTexture() const { return m_texture; }		
+		Ref<Texture2D> getTexture() const { return m_texture; }
+		const LayoutRect &getRect() const { return m_rect; }
 
 	protected:
 		std::string m_name;
@@ -63,7 +65,7 @@ namespace pio
 		ViewCtlStatus m_ctlStatus{ ViewCtlStatus_Normal };
 		bool m_invalidate{ false };
 
-		AssetHandle m_texture{ NullAsset };
+		Ref<Texture2D> m_texture;
 		Ref<Geometry2D> m_quad;
 	};
 }

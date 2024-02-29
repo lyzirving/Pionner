@@ -17,7 +17,7 @@ namespace pio
 
 	enum MotionCtlMode : uint8_t
 	{
-		MotionCtl_Idle = 0, MotionCtl_Move, MotionCtl_Rotation, MotionCtl_Scale, MotionCtl_Num
+		MotionCtl_Move = 0, MotionCtl_Rotation, MotionCtl_Scale, MotionCtl_Num
 	};
 
 	class MotionController
@@ -26,8 +26,20 @@ namespace pio
 		MotionController() {}
 		~MotionController() = default;
 
-	public:
-		MotionCtlMode Mode{ MotionCtl_Idle };
+	private:
+		static bool IsClick(uint64_t now, uint64_t pre) { return (now - pre) <= CLICK_INTERVAL; }
+
+	private:
+		MotionCtlMode Mode{ MotionCtl_Move };
+
+		Ref<View> SelectedView;
+		MotionCtlMode SelectedViewMode{ MotionCtl_Move };
+
+		uint64_t DownTime{ 0 };// ms
+		glm::vec2 LastWinCursor{ -1.f };
+
+	private:
+		friend class MotionControlLayer;
 	};
 
 	class MotionControlLayer : public Layer
@@ -50,12 +62,15 @@ namespace pio
 
 		void onDrawVisionCtl(const Timestep &ts);
 		void onDrawMotionCtl(const Timestep &ts);
+		void onDrawMotionView(const Timestep &ts);
 
 		void onDrawMoveCtl(const glm::vec3 pos);
 		void onDrawRotationCtl(const glm::vec3 pos);
 
-		bool onClickEvent(const glm::vec2 &cursor);
 		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param);
+
+		bool onHandleClick(const glm::vec2 &cursor);
+		void onHandleIconClick(const glm::vec2 &cursor);
 
 	private:
 		struct UIEventTracker
@@ -76,6 +91,10 @@ namespace pio
 			bool bSelected() { return Ent.use_count() != 0; }
 			void release() { Ent.reset(); LastCursor.x = LastCursor.y = -1.f; Pressed = false; }
 		};
+
+	private:
+		static const std::string ICON_ID_NORMAL[MotionCtl_Num];
+		static const std::string ICON_ID_SELECT[MotionCtl_Num];
 
 	private:
 		bool m_drawCircle{ false };
@@ -102,7 +121,9 @@ namespace pio
 		Ref<PhysicsScene> m_world;
 		PhysicsActor *m_hitCtlActor{ nullptr };
 
+		MotionController m_controller;
 		Ref<View> m_views[MotionCtl_Num];
+		LayoutRect m_iconRect;
 	};
 }
 

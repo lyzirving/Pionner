@@ -61,11 +61,26 @@ namespace pio
 			}
 			return ret;
 		}
+
+		template<typename T>
+		static Ref<T> GetPackedAsset(const std::string &path)
+		{
+			if (!std::is_base_of<Asset, T>())
+				return Ref<T>();
+			Ref<Asset> cache = AssetsManager::Get()->getPackedAsset(path);
+			if (cache)
+			{
+				Ref<T> ret = RefCast<Asset, T>(cache);
+				return ret;
+			}
+			return Ref<T>();
+		}
 		
 		static std::string AssetsRootDirectory(AssetFmt fmt);
 		static bool FindAssetAbsPath(const std::string &parentDir, AssetFmt fmt, std::string &out);
 		static const char *GetFmtPostfix(AssetFmt fmt);
 		static std::string SpriteAbsPath(const std::string &name, AssetFmt fmt);
+		static std::string IconAbsPath(const std::string &name, AssetFmt fmt);
 
 	private:
 		Ref<Asset> getPackedAsset(const std::string &path);

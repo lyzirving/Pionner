@@ -19,11 +19,6 @@ namespace pio
 			ret.y = (halfHeight - float(y)) / halfHeight;
 			return ret;
 		}
-
-		glm::vec2 UiDef::MoveToOrigin(const glm::vec2 &pt, const glm::vec2 &orign)
-		{
-			return glm::vec2(pt.x - orign.x, pt.y - orign.y);
-		}
 	}
 }
 

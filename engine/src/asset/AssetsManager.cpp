@@ -5,6 +5,8 @@
 #include "AssimpMeshImporter.h"
 
 #include "core/EventBus.h"
+
+#include "gfx/rhi/Texture.h"
 #include "gfx/struct/Mesh.h"
 
 #ifdef LOCAL_TAG
@@ -16,7 +18,7 @@ namespace pio
 {
 	PIO_SINGLETON_IMPL(AssetsManager)
 
-	static const std::string ASSETS_ROOT = "assets";
+		static const std::string ASSETS_ROOT = "assets";
 
 	AssetsManager::AssetsManager()
 	{
@@ -27,6 +29,24 @@ namespace pio
 	void AssetsManager::Init()
 	{
 		AssetsManager::Get();
+
+		TextureSpecification spec;
+		spec.Name = "move_normal";
+		spec.Format = ImageInternalFormat::FROM_FILE;
+		std::string path = IconAbsPath("move_normal", AssetFmt::PNG);
+		AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
+
+		spec.Name = "move_selected";
+		path = IconAbsPath("move_selected", AssetFmt::PNG);
+		AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
+
+		spec.Name = "rotate_normal";
+		path = IconAbsPath("rotate_normal", AssetFmt::PNG);
+		AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
+
+		spec.Name = "rotate_selected";
+		path = IconAbsPath("rotate_selected", AssetFmt::PNG);
+		AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
 	}
 
 	void AssetsManager::Shutdown()
@@ -180,5 +200,10 @@ namespace pio
 	std::string AssetsManager::SpriteAbsPath(const std::string &name, AssetFmt fmt)
 	{
 		return AssetsRootDirectory(fmt) + "/sprite/" + name + GetFmtPostfix(fmt);
+	}
+
+	std::string AssetsManager::IconAbsPath(const std::string &name, AssetFmt fmt)
+	{
+		return AssetsRootDirectory(fmt) + "/icon/" + name + GetFmtPostfix(fmt);
 	}
 }

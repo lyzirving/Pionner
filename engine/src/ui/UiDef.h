@@ -63,6 +63,24 @@ namespace pio
 		}
 
 		bool operator!=(const LayoutRect &rhs) { return !((*this) == rhs); }
+
+		bool bIntersect(const LayoutRect &rhs)
+		{
+			glm::uvec2 lt = glm::uvec2(std::max(Left, rhs.Left), std::max(Top, rhs.Top));
+			glm::uvec2 rb = glm::uvec2(std::min(Right, rhs.Right), std::min(Bottom, rhs.Bottom));
+			return lt.x <= rb.x && lt.y <= rb.y;
+		}
+
+		void doUnion(const LayoutRect &rhs)
+		{
+			if (this != &rhs && bIntersect(rhs))
+			{
+				Left = std::min(Left, rhs.Left);
+				Top = std::min(Top, rhs.Top);
+				Right = std::max(Right, rhs.Right);
+				Bottom = std::max(Bottom, rhs.Bottom);
+			}
+		}
 	};
 
 	/*
@@ -127,8 +145,7 @@ namespace pio
 	{
 		glm::ivec2 ScreenToViewport(const glm::vec2 &screenPt, const WindowLayoutParams& param);
 		// TODO: make a vertex in a specified viewport
-		glm::vec2 ScreenToVertex(uint32_t x, uint32_t y, uint32_t screenWidth, uint32_t screenHeight);
-		glm::vec2 MoveToOrigin(const glm::vec2 &pt, const glm::vec2 &orign);
+		glm::vec2 ScreenToVertex(uint32_t x, uint32_t y, uint32_t screenWidth, uint32_t screenHeight);	
 	}
 }
 
