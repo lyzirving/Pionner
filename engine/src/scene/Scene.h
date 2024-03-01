@@ -24,8 +24,6 @@ namespace pio
 		Scene();
 		virtual ~Scene();
 
-		virtual bool dispatchClick(const glm::uvec2 &viewportPt);
-
 		virtual void onAttach(Ref<SceneRenderer> &renderer);
 		virtual void onDetach(Ref<SceneRenderer> &renderer);
 
@@ -43,7 +41,6 @@ namespace pio
 		void simulate(const Timestep &ts);
 
 		void onAssetUnzip(const EventBusArg &arg);
-		void onIntersect(const HitResult &result);
 
 	private:
 		static Registry *s_registry;

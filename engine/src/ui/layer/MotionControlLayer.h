@@ -20,6 +20,11 @@ namespace pio
 		MotionCtl_Move = 0, MotionCtl_Rotation, MotionCtl_Scale, MotionCtl_Num
 	};
 
+	enum MotionTarget : uint8_t
+	{
+		MotionTarget_None = 0, MotionTarget_Icon, MotionTarget_Vision, MotionTarget_Object3D, MotionTarget_Sprite
+	};
+
 	class MotionController
 	{
 	public:
@@ -27,13 +32,20 @@ namespace pio
 		~MotionController() = default;
 
 	private:
+		bool bTarget(MotionTarget t) { return Target == t; }
+		void setTarget(MotionTarget t) { Target = t; }
+
+	private:
 		static bool IsClick(uint64_t now, uint64_t pre) { return (now - pre) <= CLICK_INTERVAL; }
 
 	private:
-		MotionCtlMode Mode{ MotionCtl_Move };
-
 		Ref<View> SelectedView;
-		MotionCtlMode SelectedViewMode{ MotionCtl_Move };
+		Ref<Entity> SelectedObj3D;
+		Ref<Entity> SelectedSprite;
+		MotionCtlMode Mode{ MotionCtl_Move };
+		MotionTarget Target{ MotionTarget_None };
+		PhysicsActor *CtlActor{ nullptr };
+		bool CtlActorPressed{ false };
 
 		uint64_t DownTime{ 0 };// ms
 		glm::vec2 LastWinCursor{ -1.f };
@@ -64,33 +76,18 @@ namespace pio
 		void onDrawMotionCtl(const Timestep &ts);
 		void onDrawMotionView(const Timestep &ts);
 
+		void onDrawMoveMode(const Timestep &ts);
+		void onDrawRotationMode(const Timestep &ts);
+
 		void onDrawMoveCtl(const glm::vec3 pos);
 		void onDrawRotationCtl(const glm::vec3 pos);
 
 		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param);
 
-		bool onHandleClick(const glm::vec2 &cursor);
-		void onHandleIconClick(const glm::vec2 &cursor);
-
-	private:
-		struct UIEventTracker
-		{
-			bool Pressed{ false };
-			uint64_t PressedTime{ 0 };// ms
-			glm::vec2 LastCursor{ -1.f };
-
-			static bool IsClick(uint64_t now, uint64_t pre) { return (now - pre) <= CLICK_INTERVAL; }
-		};
-
-		struct SpriteController
-		{			
-			bool Pressed{ false };
-			glm::vec2 LastCursor{ -1.f };
-			Ref<Entity> Ent;
-
-			bool bSelected() { return Ent.use_count() != 0; }
-			void release() { Ent.reset(); LastCursor.x = LastCursor.y = -1.f; Pressed = false; }
-		};
+		bool onHandleClick(const glm::vec2 &winCursor);
+		bool onHandleIconClick(const glm::vec2 &cursor);
+		bool onHandleObject3dClick(const glm::vec2 &winCursor);
+		bool onHandleSpriteClick(const glm::vec2 &winCursor);
 
 	private:
 		static const std::string ICON_ID_NORMAL[MotionCtl_Num];
@@ -112,18 +109,12 @@ namespace pio
 		Ref<UiCoordinate3D> m_selectCoord;
 		Ref<UiRotationCtl> m_rotateCtl;
 
-		UIEventTracker m_eventCtlState{};
-		UIEventTracker m_visionCtlState{};
-		UIEventTracker m_objCtlState{};
-		SpriteController m_spriteCtl;
-
 		// Physics world that store selector controller's axis
 		Ref<PhysicsScene> m_world;
-		PhysicsActor *m_hitCtlActor{ nullptr };
 
 		MotionController m_controller;
 		Ref<View> m_views[MotionCtl_Num];
-		LayoutRect m_iconRect;
+		LayoutRect m_viewIconsRect;
 	};
 }
 

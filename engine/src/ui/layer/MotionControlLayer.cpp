@@ -66,7 +66,7 @@ namespace pio
 		m_views[MotionCtl_Rotation]->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_NORMAL[MotionCtl_Rotation]));
 
 		m_controller.SelectedView = m_views[MotionCtl_Move];
-		m_controller.SelectedViewMode = MotionCtl_Move;
+		m_controller.Mode = MotionCtl_Move;
 
 		m_visionCamUD.obtainBlock();
 		m_visionUBSet = UniformBufferSet::Create();
@@ -181,75 +181,75 @@ namespace pio
 		m_views[MotionCtl_Move]->setViewport(0, 0, m_layoutParam.Viewport.Width, m_layoutParam.Viewport.Height);
 		m_views[MotionCtl_Rotation]->setViewport(0, 0, m_layoutParam.Viewport.Width, m_layoutParam.Viewport.Height);
 
-		m_iconRect = m_views[MotionCtl_Move]->getRect();
+		m_viewIconsRect = m_views[MotionCtl_Move]->getRect();
 		for (uint8_t i = MotionCtl_Rotation; i < MotionCtl_Num; i++)
 		{
 			if(m_views[i])
-				m_iconRect.doUnion(m_views[i]->getRect());
+				m_viewIconsRect.doUnion(m_views[i]->getRect());
 		}		
 	}
 
 	bool MotionControlLayer::onMouseButtonPressed(Event &event)
 	{
-		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
+		glm::vec2 winCursor = Application::MainWindow()->getCursorPos();
+		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
 		m_controller.DownTime = TimeUtil::CurrentTimeMs();
-		m_controller.LastWinCursor = cursor;
+		m_controller.LastWinCursor = winCursor;
 
-		return false;
-
-		m_eventCtlState.PressedTime = TimeUtil::CurrentTimeMs();
-		glm::ivec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
-
-		// ------------------- Button pressed work flow ----------------------
-		if (m_circleLayoutParam.Position.contain((uint32_t)cursor.x, (uint32_t)cursor.y))
+		// ------------------- Vision control pressing work flow ----------------------
+		if (m_circleLayoutParam.Position.contain((uint32_t)winCursor.x, (uint32_t)winCursor.y))
 		{
-			m_visionCtlState.Pressed = true;
-			m_visionCtlState.LastCursor = cursor;
+			m_controller.setTarget(MotionTarget_Vision);
 			Application::MainWindow()->setCursorMode(CursorMode::Disabled);
 			return true;
 		}
 		// -------------------------------------------------------------------
 
-		// ------------------- Sprite pressed work flow ----------------------
-		if (m_spriteCtl.bSelected())
+		// ------------------- Object3d pressing work flow --------------------
+		// An entity is selected, check whether the it is interacting with the controller
+		if (m_controller.SelectedObj3D)
 		{
 			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 			HitResult result = m_world->intersect(r);
-			m_hitCtlActor = result.Hit ? result.Actor : nullptr;
-			if (m_spriteCtl.Pressed = result.Hit) { m_spriteCtl.LastCursor = cursor; }
-			return m_spriteCtl.Pressed;
+			m_controller.CtlActor = result.Hit ? result.Actor : nullptr;
+			if (m_controller.CtlActorPressed = result.Hit) 
+			{ 
+				m_controller.setTarget(MotionTarget_Object3D);
+			}
+			return m_controller.CtlActorPressed;
 		}
-		// -------------------------------------------------------------------
+		// -------------------------------------------------------------------	
+		
+		// ------------------- Sprite pressing work flow ----------------------
+		if (m_controller.SelectedSprite)
+		{
+			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+			HitResult result = m_world->intersect(r);
+			m_controller.CtlActor = result.Hit ? result.Actor : nullptr;
+			if (m_controller.CtlActorPressed = result.Hit) 
+			{ 
+				m_controller.setTarget(MotionTarget_Sprite);
+			}
+			return m_controller.CtlActorPressed;
+		}
+		// -------------------------------------------------------------------	
 
-		// ------------------- Object selection work flow --------------------
-		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-		if (sceneComp.Selected3D)
-		{
-			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-			HitResult result = m_world->intersect(r);
-			m_hitCtlActor = result.Hit ? result.Actor : nullptr;
-			if (m_objCtlState.Pressed = result.Hit) { m_objCtlState.LastCursor = cursor; }
-			return m_objCtlState.Pressed;
-		}
-		// -------------------------------------------------------------------
 		return false;
 	}
 
 	bool MotionControlLayer::onMouseMoved(Event &event)
 	{
-		return false;
-
 		auto *p = event.as<MouseMovedEvent>();
-		glm::vec2 cursor(p->getX(), p->getY());
+		glm::vec2 windowCursor(p->getX(), p->getY());
 
-		// ------------------- Button pressed work flow ----------------------
-		if (m_visionCtlState.Pressed)
+		// ------------------- Vision control pressing work flow ----------------------		
+		if (m_controller.bTarget(MotionTarget_Vision))
 		{
 			m_drawCircle = true;
-			glm::vec2 delta = cursor - m_visionCtlState.LastCursor;
+			glm::vec2 delta = windowCursor - m_controller.LastWinCursor;
 			delta.x = Math::Clamp(delta.x, -20.f, 20.f);
 			delta.y = Math::Clamp(delta.y, -20.f, 20.f);
-			m_visionCtlState.LastCursor = cursor;
+			m_controller.LastWinCursor = windowCursor;
 			auto &comp = m_mainCameraEnt->getComponent<CameraComponent>();
 			comp.Camera.addPosDiff(delta.x, delta.y);
 			return true;
@@ -257,53 +257,44 @@ namespace pio
 		m_drawCircle = m_circleLayoutParam.Position.contain(p->getX(), p->getY());
 		// -------------------------------------------------------------------
 
-		// ------------------- Sprite pressed work flow ----------------------
-		if (m_spriteCtl.Pressed)
-		{
-			onSelectionMoved(m_spriteCtl.Ent, m_hitCtlActor, cursor, m_spriteCtl.LastCursor, m_layoutParam);
-			m_spriteCtl.LastCursor = cursor;
+		// ------------------- Object3d pressing work flow -------------------
+		if (m_controller.bTarget(MotionTarget_Object3D))
+		{			
+			onSelectionMoved(m_controller.SelectedObj3D, m_controller.CtlActor, windowCursor, m_controller.LastWinCursor, m_layoutParam);
+			m_controller.LastWinCursor = windowCursor;
 			return true;
 		}
-		// -------------------------------------------------------------------
 
-		// ------------------- Object controller work flow -------------------
-		if (m_objCtlState.Pressed)
+		// ------------------- Sprite pressing work flow ----------------------
+		if (m_controller.bTarget(MotionTarget_Sprite))
 		{
-			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-			onSelectionMoved(sceneComp.Selected3D, m_hitCtlActor, cursor, m_objCtlState.LastCursor, m_layoutParam);
-			m_objCtlState.LastCursor = cursor;
+			onSelectionMoved(m_controller.SelectedSprite, m_controller.CtlActor, windowCursor, m_controller.LastWinCursor, m_layoutParam);
+			m_controller.LastWinCursor = windowCursor;
 			return true;
-		}
-		// ------------------------------------------------------------------
+		}		
+		// ------------------------------------------------------------------	
 		return false;
 	}
 
 	bool MotionControlLayer::onMouseButtonReleased(Event &event)
 	{
-		if (MotionController::IsClick(TimeUtil::CurrentTimeMs(), m_controller.DownTime))
-		{			
-			glm::vec2 cursor = Application::MainWindow()->getCursorPos();
-			cursor -= glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top);
-			onHandleClick(cursor);
-		}
-		m_controller.LastWinCursor = glm::vec2(-1.f);
-		/*bool consume = m_visionCtlState.Pressed || m_objCtlState.Pressed || m_spriteCtl.Pressed;
-
-		if (!consume && UIEventTracker::IsClick(TimeUtil::CurrentTimeMs(), m_eventCtlState.PressedTime))
-		{
-			consume = onHandleClick(Application::MainWindow()->getCursorPos());
+		bool bUsing = !m_controller.bTarget(MotionTarget_None);
+		if (!bUsing && MotionController::IsClick(TimeUtil::CurrentTimeMs(), m_controller.DownTime))
+		{						
+			bUsing = onHandleClick(Application::MainWindow()->getCursorPos());
 		}
 
-		if (m_visionCtlState.Pressed) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
+		if (m_controller.bTarget(MotionTarget_Vision))
+		{ 
+			Application::MainWindow()->setCursorMode(CursorMode::Normal); 		
+		}
 
-		m_visionCtlState.Pressed = false;
-		m_objCtlState.Pressed = false;
-		m_spriteCtl.Pressed = false;
+		m_controller.LastWinCursor = glm::vec2(-1.f);		
+		m_controller.CtlActor = nullptr;
+		m_controller.CtlActorPressed = false;
+		m_controller.setTarget(MotionTarget_None);
 
-		m_spriteCtl.LastCursor = m_visionCtlState.LastCursor = m_objCtlState.LastCursor = glm::vec2(-1.f);
-
-		return consume;*/
-		return false;
+		return bUsing;
 	}
 
 	bool MotionControlLayer::onMouseScrolled(Event &event)
@@ -417,34 +408,22 @@ namespace pio
 	}
 
 	void MotionControlLayer::onDrawMotionCtl(const Timestep &ts)
-	{
-		glm::vec3 slcPos(0.f);
-
-		// 2d pick up
+	{		
+		switch (m_controller.Mode)
 		{
-			if (m_spriteCtl.bSelected())
+			case MotionCtl_Move:
 			{
-				if (m_spriteCtl.Ent->hasComponent<DirectionalLightComponent>())
-				{
-					auto &transComp = m_spriteCtl.Ent->getComponent<TransformComponent>();
-					slcPos = transComp.Transform.Position;
-					//onDrawRotationCtl(slcPos);
-					onDrawMoveCtl(slcPos);
-					return;
-				}
+				onDrawMoveMode(ts);
+				break;
 			}
-		}
-
-		// 3d pick up
-		{
-			auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-			Ref<Entity> selection = sceneComp.Selected3D;
-			if (selection && selection->getGlobalPoseCenter(slcPos))
+			case MotionCtl_Rotation:
 			{
-				onDrawMoveCtl(slcPos);
-				return;
+				onDrawRotationMode(ts);
+				break;
 			}
-		}
+			default:
+				break;
+		}		
 	}
 
 	void MotionControlLayer::onDrawMotionView(const Timestep &ts)
@@ -477,6 +456,31 @@ namespace pio
 				Renderer::RenderTextureQuad2D(v->getMesh(), v->getTexture(), s);
 			});
 		}
+	}
+
+	void MotionControlLayer::onDrawMoveMode(const Timestep &ts)
+	{
+		glm::vec3 slcPos(0.f);	
+		if (m_controller.SelectedSprite)
+		{
+			if (m_controller.SelectedSprite->hasComponent<DirectionalLightComponent>())
+			{
+				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();
+				slcPos = transComp.Transform.Position;				
+				onDrawMoveCtl(slcPos);
+				return;
+			}
+		}
+
+		if (m_controller.SelectedObj3D && m_controller.SelectedObj3D->getGlobalPoseCenter(slcPos))
+		{
+			onDrawMoveCtl(slcPos);
+			return;
+		}
+	}
+
+	void MotionControlLayer::onDrawRotationMode(const Timestep &ts)
+	{
 	}
 
 	void MotionControlLayer::onDrawMoveCtl(const glm::vec3 pos)
@@ -661,58 +665,31 @@ namespace pio
 		}
 	}
 
-	bool MotionControlLayer::onHandleClick(const glm::vec2 &cursor)
+	bool MotionControlLayer::onHandleClick(const glm::vec2 &winCursor)
 	{
-		if (m_iconRect.contain(cursor.x, cursor.y))
+		glm::vec2 screenCursor = winCursor - glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top);
+		if (m_viewIconsRect.contain(screenCursor.x, screenCursor.y))
 		{
-			onHandleIconClick(cursor);
+			if (onHandleIconClick(screenCursor)) { return true; }
+		}
+
+		if (onHandleObject3dClick(winCursor)) 
+		{ 
+			m_controller.SelectedSprite.reset();
 			return true;
 		}
 
-		return false;
-		//bool consume{ false };
-		//// 2d pick up
-		//{
-		//	glm::vec2 vpCursor = UiDef::MoveToOrigin(cursor, glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top));
-		//	EntityView view = s_registry->view<SpriteComponent>();
-		//	auto it = view.begin();
-		//	while (it != view.end())
-		//	{
-		//		Ref<Entity> ent = it->second;
-		//		SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
-		//		consume = Math::Contains(vpCursor, spriteComp.Rect);
-		//		if (consume)
-		//		{
-		//			m_spriteCtl.Ent = ent;
-		//			return consume;
-		//		}
-		//		it++;
-		//	}
-		//	m_spriteCtl.release();
-		//}
+		if (onHandleSpriteClick(winCursor)) 
+		{ 
+			m_controller.SelectedObj3D.reset();
+			return true; 
+		}
 
-		//// 3d pick up
-		//{
-		//	glm::ivec2 viewportPt = UiDef::ScreenToViewport(cursor, m_layoutParam);
-		//	Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-		//	auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-		//	HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
-		//	if (sceneComp.Selected3D) { sceneComp.Selected3D->setSelection(false); }
-		//	consume = result.Hit && result.Actor->getEnt(sceneComp.Selected3D);
-		//	if (consume)
-		//	{
-		//		sceneComp.Selected3D->setSelection(true);
-		//	}
-		//	else
-		//	{
-		//		sceneComp.Selected3D.reset();
-		//	}
-		//}
-		//return consume;
+		return false;
 	}
 
-	void MotionControlLayer::onHandleIconClick(const glm::vec2 &cursor)
-	{
+	bool MotionControlLayer::onHandleIconClick(const glm::vec2 &cursor)
+	{		
 		for (uint8_t i = 0; i < MotionCtl_Num; i++)
 		{
 			if (m_views[i] && m_views[i]->contains(cursor) && m_controller.SelectedView != m_views[i])
@@ -720,15 +697,57 @@ namespace pio
 				if (m_controller.SelectedView)
 				{
 					m_controller.SelectedView->setStatus(ViewCtlStatus_Normal);
-					m_controller.SelectedView->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_NORMAL[m_controller.SelectedViewMode]));
+					m_controller.SelectedView->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_NORMAL[m_controller.Mode]));
 				}
 				m_views[i]->setStatus(ViewCtlStatus_Selected);
 				m_views[i]->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_SELECT[i]));
 
 				m_controller.SelectedView = m_views[i];
-				m_controller.SelectedViewMode = MotionCtlMode(i);
-				return;
+				m_controller.Mode = MotionCtlMode(i);
+				return true;
 			}
 		}
+		return false;
+	}	
+
+	bool MotionControlLayer::onHandleObject3dClick(const glm::vec2 &winCursor)
+	{
+		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
+		Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
+		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
+		if (m_controller.SelectedObj3D) { m_controller.SelectedObj3D->setSelection(false); }
+		bool consume = result.Hit && result.Actor->getEnt(m_controller.SelectedObj3D);
+		if (consume)
+		{
+			LOGD("hit entity in scene");
+			m_controller.SelectedObj3D->setSelection(true);
+		}
+		else
+		{
+			m_controller.SelectedObj3D.reset();
+		}
+		return consume;
+	}
+
+	bool MotionControlLayer::onHandleSpriteClick(const glm::vec2 &winCursor)
+	{
+		glm::vec2 vpCursor = winCursor - glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top);
+		EntityView view = s_registry->view<SpriteComponent>();
+		auto it = view.begin();
+		while (it != view.end())
+		{
+			Ref<Entity> ent = it->second;
+			SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
+			bool consume = Math::Contains(vpCursor, spriteComp.Rect);
+			if (consume)
+			{
+				m_controller.SelectedSprite = ent;
+				return consume;
+			}
+			it++;
+		}
+		m_controller.SelectedSprite.reset();
+		return false;
 	}
 }

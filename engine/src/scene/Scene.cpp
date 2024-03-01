@@ -94,15 +94,6 @@ namespace pio
 		EventBus::Get()->removeRegister(PioEvent::UnzipAsset, EventBusCb(this, (EventBusCbFunc)&Scene::onAssetUnzip));
 	}
 
-	bool Scene::dispatchClick(const glm::uvec2 &viewportPt)
-	{
-		Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-		auto &comp = m_sceneRoot->getComponent<SceneComponent>();
-		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(comp.PhycisScene)->intersect(r);
-		onIntersect(result);
-		return result.Hit;
-	}
-
 	void Scene::onAttach(Ref<SceneRenderer> &renderer)
 	{
 		createData();
@@ -406,21 +397,6 @@ namespace pio
 			{
 				LOGE("parsed asset is invalid");
 			}
-		}
-	}
-
-	void Scene::onIntersect(const HitResult &result)
-	{
-		SceneComponent &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
-		if (sceneComp.Selected3D) { sceneComp.Selected3D->setSelection(false); }
-		if (result.Hit)
-		{
-			PIO_ASSERT_RETURN(result.Actor->getEnt(sceneComp.Selected3D), "onIntersect: entity is invalid");
-			sceneComp.Selected3D->setSelection(true);
-		}
-		else
-		{
-			sceneComp.Selected3D.reset();
 		}
 	}
 }

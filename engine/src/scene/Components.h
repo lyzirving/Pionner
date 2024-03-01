@@ -181,9 +181,6 @@ namespace pio
 
 	struct SceneComponent
 	{
-		// Scene Control Related
-		Ref<Entity> Selected3D{};
-
 		// Physics Related
 		AssetHandle PhycisScene;
 		bool Simulate{ true };
