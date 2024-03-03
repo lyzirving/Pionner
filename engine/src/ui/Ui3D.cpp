@@ -251,8 +251,8 @@ namespace pio
 
 	void UiRotationCtl::build()
 	{	
-		const float radius = 0.8f;
-		const float ringWidth = 0.03f;
+		const float radius = 0.5f;
+		const float ringWidth = 0.02f;
 		const uint32_t itr = 36;
 		const uint32_t ringItr = 16;
 		const float alpha = 0.6f;

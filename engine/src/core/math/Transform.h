@@ -9,12 +9,12 @@ namespace pio
 	{
 	public:
 		Rotation() {}
-		Rotation(float angle, const glm::vec3 &axis) : m_axis(axis), m_angle(angle) {}
-		Rotation(const glm::quat &quat) : m_dirty(true), m_quat(quat) {}
 		~Rotation() = default;
 
 		Rotation operator*(const Rotation &rhs);
 		Rotation &operator=(const glm::quat &val);
+		Rotation operator+(const glm::vec3 &euler);
+		Rotation &operator+=(const glm::vec3 &euler);
 			
 		glm::quat quat() const { return m_quat; }
 		glm::mat4 getMat();
@@ -25,15 +25,19 @@ namespace pio
 		static glm::quat ToQuat(const Rotation &rot);
 
 	private:
+		Rotation(float angle, const glm::vec3 &axis) : m_axis(axis), m_angle(angle), m_quat(ToQuat(angle, axis)), m_dirty(false) {}
+		Rotation(const glm::quat &quat) : m_quat(quat) {}
+
 		void flush();
 
 	private:
-		bool m_dirty{ false };
-		// ---------- For matrix ------------
+		// pitch(rot around X), yaw(rot around Y), roll(rot around Z) in degree
+		mutable glm::quat m_quat{ quaternion::IDENTITY };
+		mutable bool m_dirty{ true };
+
+		// Angle, axis are used for matrix calculation
 		glm::vec3 m_axis{ 1.f, 0.f, 0.f };
 		float m_angle{ 0.f };
-		// ------------ Real Impl------------
-		glm::quat m_quat{ quaternion::IDENTITY };	
 	};
 
 	class Transform

@@ -1,3 +1,4 @@
+#include "MathLib.h"
 #include <math.h>
 
 #include "MathLib.h"
@@ -83,6 +84,28 @@ namespace pio
 			// Window's origin is the left-top corner
 			screen.y = windowSize.y - screen.y;
 			return glm::vec2(screen.x, screen.y);
+		}
+
+		glm::vec3 Math::Reminder(const glm::vec3 input, float reminder)
+		{
+			if (reminder < 0.f) { reminder = -reminder; }
+
+			glm::vec3 result = input;	
+			glm::vec3 sign = glm::sign(result);
+
+			auto calcReminder = [](float input, float sign, float reminder) 
+			{
+				float val = input;
+				if (std::abs(val) > reminder)
+					val = val * sign - reminder * int(val * sign / reminder);
+				return val * sign;
+			};
+			
+			result.x = calcReminder(result.x, sign.x, reminder);
+			result.y = calcReminder(result.y, sign.y, reminder);
+			result.z = calcReminder(result.z, sign.z, reminder);
+
+			return result;
 		}
 	}
 }

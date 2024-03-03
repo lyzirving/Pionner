@@ -129,18 +129,21 @@ namespace pio
 		return false;
 	}
 
-	bool Entity::setGlobalPoseDiff(const glm::vec3 &diff)
+	bool Entity::setGlobalPoseDiff(const glm::vec3 &diff, const glm::vec3 &eulerDiff)
 	{
 		if (m_nodeType == NodeType::MeshSource && hasComponent<MeshSourceComponent>())
 		{
 			auto &comp = getComponent<MeshSourceComponent>();
 			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
 			meshSrc->GlobalPose.Position += diff;
+			meshSrc->GlobalPose.Rotate += eulerDiff;
+			return true;
 		}
 		else if (m_nodeType == NodeType::Mesh && hasComponent<TransformComponent>())
 		{
 			auto &comp = getComponent<TransformComponent>();
 			comp.Transform.Position += diff;
+			comp.Transform.Rotate += eulerDiff;
 			return true;
 		}
 		else if (hasComponent<PointLightComponent>())
@@ -149,6 +152,7 @@ namespace pio
 			glm::vec3 pos = comp.Position.toCartesian();
 			pos += diff;
 			comp.Position = SphereCoord::ToSCS(pos);
+			return true;
 		}
 		return false;
 	}

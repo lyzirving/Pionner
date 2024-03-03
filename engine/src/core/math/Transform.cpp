@@ -1,11 +1,17 @@
 #include "Transform.h"
 
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Transform"
+
 namespace pio
 {
 	void Rotation::flush()
 	{
 		if (!m_dirty)
 			return;
+
 		Rotation r = FromQuat(m_quat);
 		m_axis = r.m_axis;
 		m_angle = r.m_angle;
@@ -13,11 +19,11 @@ namespace pio
 	}
 
 	Rotation Rotation::operator*(const Rotation &rhs)
-	{		
-		glm::quat first = this->m_dirty ? this->m_quat : ToQuat(this->m_angle, this->m_axis);
-		glm::quat second = rhs.m_dirty ? rhs.m_quat : ToQuat(rhs.m_angle, rhs.m_axis);
-		Rotation ret = first * second;
-		return ret;
+	{				
+		glm::quat self = this->m_dirty ? this->m_quat : ToQuat(this->m_angle, this->m_axis);
+		glm::quat __rhs = rhs.m_dirty ? rhs.m_quat : ToQuat(rhs.m_angle, rhs.m_axis);
+		Rotation r = self * __rhs;
+		return r;
 	}
 
 	Rotation &Rotation::operator=(const glm::quat &val)
@@ -27,6 +33,26 @@ namespace pio
 			m_quat = val;
 			m_dirty = true;
 		}
+		return *this;
+	}
+
+	Rotation Rotation::operator+(const glm::vec3 &euler)
+	{
+		Rotation r(this->m_quat);
+		// pitch(rot around X), yaw(rot around Y), roll(rot around Z) in radian
+		glm::quat __quat(glm::vec3(glm::radians(euler)));
+		
+		r.m_quat = __quat * r.m_quat;
+		r.m_dirty = true;
+		return r;
+	}
+
+	Rotation &Rotation::operator+=(const glm::vec3 &euler)
+	{
+		// pitch(rot around X), yaw(rot around Y), roll(rot around Z) in radian
+		glm::quat __quat(glm::vec3(glm::radians(euler)));
+		this->m_quat = __quat * this->m_quat;
+		this->m_dirty = true;
 		return *this;
 	}
 

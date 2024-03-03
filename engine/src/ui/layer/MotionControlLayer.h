@@ -25,6 +25,11 @@ namespace pio
 		MotionTarget_None = 0, MotionTarget_Icon, MotionTarget_Vision, MotionTarget_Object3D, MotionTarget_Sprite
 	};
 
+	enum MotionCtlAxis : uint8_t
+	{
+		MotionCtlAxis_X, MotionCtlAxis_Y, MotionCtlAxis_Z, MotionCtlAxis_Num
+	};
+
 	class MotionController
 	{
 	public:
@@ -35,6 +40,8 @@ namespace pio
 		bool bTarget(MotionTarget t) { return Target == t; }
 		void setTarget(MotionTarget t) { Target = t; }
 
+		bool bMode(MotionCtlMode m) { return Mode == m; }
+
 	private:
 		static bool IsClick(uint64_t now, uint64_t pre) { return (now - pre) <= CLICK_INTERVAL; }
 
@@ -42,8 +49,9 @@ namespace pio
 		Ref<View> SelectedView;
 		Ref<Entity> SelectedObj3D;
 		Ref<Entity> SelectedSprite;
+		MotionCtlAxis SelectedAxis{ MotionCtlAxis_Num };
 		MotionCtlMode Mode{ MotionCtl_Move };
-		MotionTarget Target{ MotionTarget_None };
+		MotionTarget Target{ MotionTarget_None };		
 		PhysicsActor *CtlActor{ nullptr };
 		bool CtlActorPressed{ false };
 
@@ -83,6 +91,8 @@ namespace pio
 		void onDrawRotationCtl(const glm::vec3 pos);
 
 		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param);
+		void onMoveMode(Ref<Entity> &ent, const glm::vec3 &diff, const std::string_view &ctlName);
+		void onRotateMode(Ref<Entity> &ent, const glm::vec3 &eulerDiff, const std::string_view &ctlName);
 
 		bool onHandleClick(const glm::vec2 &winCursor);
 		bool onHandleIconClick(const glm::vec2 &cursor);
@@ -109,8 +119,7 @@ namespace pio
 		Ref<UiCoordinate3D> m_selectCoord;
 		Ref<UiRotationCtl> m_rotateCtl;
 
-		// Physics world that store selector controller's axis
-		Ref<PhysicsScene> m_world;
+		Ref<PhysicsScene> m_motionCtlPhysx[MotionCtl_Num];
 
 		MotionController m_controller;
 		Ref<View> m_views[MotionCtl_Num];
