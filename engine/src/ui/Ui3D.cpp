@@ -6,7 +6,9 @@
 #include "scene/Components.h"
 
 #include "gfx/struct/Geometry.h"
+#include "gfx/struct/Geometry2D.h"
 #include "gfx/struct/MeshFactory.h"
+#include "gfx/struct/MaterialLibrary.h"
 
 #include "physics/PhysicsSystem.h"
 
@@ -68,7 +70,7 @@ namespace pio
 			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(-90.f), glm::vec3(0.f, 0.f, 1.f));
 
 			C3dUIComponent &uiComp = XAxisEnt->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_AXIS_X;
+			uiComp.Name = UI_AXIS_X;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0;
@@ -96,7 +98,7 @@ namespace pio
 			const AABB &aabb = submeshes[0].BoundingBox;
 
 			C3dUIComponent &uiComp = YAxisEnt->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_AXIS_Y;
+			uiComp.Name = UI_AXIS_Y;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0;
@@ -125,7 +127,7 @@ namespace pio
 			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
 
 			C3dUIComponent &uiComp = ZAxisEnt->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_AXIS_Z;
+			uiComp.Name = UI_AXIS_Z;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0;
@@ -159,7 +161,7 @@ namespace pio
 			submeshes[0].Transform = glm::rotate(transform, glm::radians(-90.f), glm::vec3(0.f, 0.f, 1.f));
 
 			C3dUIComponent &uiComp = XAxisEnt->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_AXIS_X;
+			uiComp.Name = UI_AXIS_X;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0;
@@ -189,7 +191,7 @@ namespace pio
 			submeshes[0].Transform = glm::translate(glm::mat4(1.f), glm::vec3(0.f, config.Offset, 0.f));
 
 			C3dUIComponent &uiComp = YAxisEnt->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_AXIS_Y;
+			uiComp.Name = UI_AXIS_Y;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0;
@@ -220,7 +222,7 @@ namespace pio
 			submeshes[0].Transform = glm::rotate(transform, glm::radians(90.f), glm::vec3(1.f, 0.f, 0.f));
 
 			C3dUIComponent &uiComp = ZAxisEnt->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_AXIS_Z;
+			uiComp.Name = UI_AXIS_Z;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0;
@@ -267,7 +269,7 @@ namespace pio
 			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(90.f), AXIS_Y);				
 
 			C3dUIComponent &uiComp = XTorus->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_TORUS_X;
+			uiComp.Name = UI_TORUS_X;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0; 
@@ -295,7 +297,7 @@ namespace pio
 			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(-90.f), AXIS_X);
 
 			C3dUIComponent &uiComp = YTorus->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_TORUS_Y;
+			uiComp.Name = UI_TORUS_Y;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0;
@@ -320,7 +322,7 @@ namespace pio
 			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			C3dUIComponent &uiComp = ZTorus->getComponent<C3dUIComponent>();
-			uiComp.Name = STR_TORUS_Z;
+			uiComp.Name = UI_TORUS_Z;
 			uiComp.Handle = meshAsset->getHandle();
 			uiComp.SourceHandle = meshSrc->getHandle();
 			uiComp.SubmeshIndex = 0;
@@ -338,5 +340,74 @@ namespace pio
 										 Math::IsZero(aabb.lenZ() * 0.5f) ? 1e-3 : aabb.lenZ() * 0.5f);
 			boxComp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
 		}
+	}
+
+	UiDistantLight::UiDistantLight(float radius, float lightLen, const glm::vec4 &color)
+	{
+		Ref<LineMesh> lineMesh = CreateMesh(radius, lightLen, color);
+
+		Mesh = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+		C3dUIComponent &uiComp = Mesh->getComponent<C3dUIComponent>();
+
+		uiComp.Name = UI_DIST_LIGHT;
+		uiComp.Handle = lineMesh->getHandle();
+		uiComp.Visible = true;
+		uiComp.State.Blend = Blend::Disable();
+		uiComp.State.Mode = RenderMode::MaterialPreview;
+		uiComp.State.DepthTest = DepthTest::Always();
+	}
+
+	Ref<LineMesh> UiDistantLight::CreateMesh(float radius, float lightLen, const glm::vec4 &color)
+	{
+		auto lineMesh = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>("DistantLight"));
+		std::vector<LineVertex> &vertexArray = lineMesh->Vertex;
+		std::vector<uint32_t> &indice = lineMesh->Indices;
+
+		const uint32_t itr = 8;
+		const float span = 360.f / float(itr);
+		float angle{ 0.f };
+
+		vertexArray.reserve(17);
+		vertexArray.emplace_back(glm::vec3(0.f), color);
+
+		for (uint32_t i = 0; i < itr; i++)
+		{
+			angle = glm::radians(i * span);
+			vertexArray.emplace_back(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), 0.f), color);
+			vertexArray.emplace_back(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), lightLen), color);
+		}
+
+		for (uint32_t i = 0; i < itr; i++)
+		{
+			// radial edge
+			indice.push_back(0);
+			indice.push_back(2 * i + 1);
+
+			// subtense
+			if (i == itr - 1)
+			{
+				indice.push_back(2 * i + 1);
+				indice.push_back(1);
+			}
+			else
+			{
+				indice.push_back(2 * i + 1);
+				indice.push_back(2 * i + 3);
+			}
+
+			// light edge
+			indice.push_back(2 * i + 1);
+			indice.push_back(2 * i + 2);
+		}
+
+		lineMesh->VertexBuffer = VertexBuffer::Create(vertexArray.data(), vertexArray.size() * sizeof(LineVertex));
+		lineMesh->VertexBuffer->setLayout(VertexBuffer::To<LineVertex>());
+
+		lineMesh->IndexBuffer = IndexBuffer::Create(indice.data(), indice.size() * sizeof(uint32_t), indice.size());
+
+		lineMesh->VertexArray = VertexArray::Create();
+		lineMesh->VertexArray->addVertexBuffer(lineMesh->VertexBuffer);
+
+		return lineMesh;
 	}
 }

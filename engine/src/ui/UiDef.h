@@ -8,13 +8,15 @@ namespace pio
 
 	#define CLICK_INTERVAL (300)
 
-	constexpr static const char *STR_AXIS_X = "AxisX";
-	constexpr static const char *STR_AXIS_Y = "AxisY";
-	constexpr static const char *STR_AXIS_Z = "AxisZ";
+	constexpr static const char *UI_AXIS_X = "UI_AxisX";
+	constexpr static const char *UI_AXIS_Y = "UI_AxisY";
+	constexpr static const char *UI_AXIS_Z = "UI_AxisZ";
 
-	constexpr static const char *STR_TORUS_X = "TorusX";
-	constexpr static const char *STR_TORUS_Y = "TorusY";
-	constexpr static const char *STR_TORUS_Z = "TorusZ";
+	constexpr static const char *UI_TORUS_X = "UI_TorusX";
+	constexpr static const char *UI_TORUS_Y = "UI_TorusY";
+	constexpr static const char *UI_TORUS_Z = "UI_TorusZ";
+
+	constexpr static const char *UI_DIST_LIGHT = "UI_DistantLight";
 
 	enum class CoordinateShape : uint8_t
 	{

@@ -62,7 +62,7 @@ namespace pio
 		// ---------------------------------------------------------------------------
 
 		// ------------------------------ 2D Rendering -------------------------------
-		virtual void renderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const RenderState &state) = 0;
+		virtual void renderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state) = 0;
 		virtual void renderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state) = 0;
 		virtual void renderSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state) = 0;
 		// ---------------------------------------------------------------------------

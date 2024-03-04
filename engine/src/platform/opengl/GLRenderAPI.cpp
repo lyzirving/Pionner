@@ -524,7 +524,7 @@ namespace pio
 		shader->bind(false);
 	}
 
-	void GLRenderAPI::renderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const RenderState &state)
+	void GLRenderAPI::renderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
 	{
 		Ref<LineMesh> lineMesh = AssetsManager::GetRuntimeAsset<LineMesh>(meshHandle);
 		PIO_ASSERT_RETURN(lineMesh.use_count() != 0, "Line Mesh is invalid");
@@ -539,9 +539,10 @@ namespace pio
 		GLState::SetCullFace(state.Cull);
 
 		shader->bind(true);
-
+	
 		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
 		cameraUB->bind();
+		shader->setMat4("u_modelMat", trans);
 
 		lineMesh->VertexArray->bind();
 		lineMesh->IndexBuffer->bind();

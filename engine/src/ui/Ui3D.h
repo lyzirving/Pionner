@@ -6,6 +6,7 @@
 namespace pio
 {
 	class Entity;
+	class LineMesh;
 
 	struct CylinderConfig
 	{
@@ -59,6 +60,19 @@ namespace pio
 
 	public:
 		Ref<Entity> XTorus, YTorus, ZTorus;
+	};
+
+	class UiDistantLight
+	{
+	public:
+		UiDistantLight(float radius, float lightLen, const glm::vec4 &color);
+		~UiDistantLight() = default;
+
+	private:
+		static Ref<LineMesh> CreateMesh(float radius, float lightLen, const glm::vec4 &color);
+
+	public:
+		Ref<Entity> Mesh;
 	};
 }
 

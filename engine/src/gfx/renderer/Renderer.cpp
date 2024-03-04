@@ -174,9 +174,9 @@ namespace pio
 		s_API->renderDistantLightingQuad_Deferred(meshHandle, uniformBufferSet, GBufferPass, shadowPass, state);
 	}
 
-	void Renderer::RenderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const RenderState &state)
+	void Renderer::RenderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
 	{
-		s_API->renderLine(meshHandle, uniformBufferSet, state);
+		s_API->renderLine(meshHandle, uniformBufferSet, trans, state);
 	}
 
 	void Renderer::RenderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state)

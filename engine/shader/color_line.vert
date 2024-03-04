@@ -13,9 +13,11 @@ layout (std140) uniform Matrices
     float FrustumFar;
 } u_matrices;
 
+uniform mat4 u_modelMat;
+
 flat out vec4 v_color; 
 
 void main() {
 	v_color = a_color;
-	gl_Position = u_matrices.PrjMat * u_matrices.ViewMat * vec4(a_pos, 1.f);
+	gl_Position = u_matrices.PrjMat * u_matrices.ViewMat * u_modelMat * vec4(a_pos, 1.f);
 }

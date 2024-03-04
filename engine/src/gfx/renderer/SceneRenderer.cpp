@@ -623,7 +623,7 @@ namespace pio
 			if (GDebugger::Get()->any(GDebugType::Line))
 			{
 				AssetHandle h = GDebugger::Get()->getLineMesh()->getHandle();
-				Renderer::RenderLine(h, ubs, RenderState());
+				Renderer::RenderLine(h, ubs, glm::mat4(1.f), RenderState());
 			}
 			// ----------------------------------------
 

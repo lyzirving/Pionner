@@ -103,6 +103,8 @@ namespace pio
 		torusActorY->setActorTransform(glm::vec3(0.f), glm::angleAxis(glm::radians(-90.f), AXIS_X));
 		torusActorZ->setActorTransform(glm::vec3(0.f), quaternion::IDENTITY);
 
+		m_uiDistantLight = CreateRef<UiDistantLight>(0.5f, 2.f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
+
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
 						   Application::MainWindow()->getHeight());
 	}
@@ -113,6 +115,8 @@ namespace pio
 		m_motionUBSet.reset();
 		m_visionCoord.reset();
 		m_selectCoord.reset();
+		m_rotateCtl.reset();
+		m_uiDistantLight.reset();
 
 		for (uint32_t i = 0; i < MotionCtl_Num; i++)
 			m_motionCtlPhysx[i].reset();
@@ -470,6 +474,7 @@ namespace pio
 				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();
 				slcPos = transComp.Transform.Position;
 				onDrawMoveCtl(slcPos);
+				onDrawUIDistantLight(slcPos);
 				return;
 			}
 		}
@@ -491,6 +496,7 @@ namespace pio
 				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();
 				slcPos = transComp.Transform.Position;		
 				onDrawRotationCtl(slcPos);
+				onDrawUIDistantLight(slcPos);
 				return;
 			}
 		}
@@ -633,6 +639,22 @@ namespace pio
 		}
 	}
 
+	void MotionControlLayer::onDrawUIDistantLight(const glm::vec3 &pos)
+	{
+		Ref<UniformBufferSet> ubSet = m_motionUBSet;
+		auto &uiComp = m_uiDistantLight->Mesh->getComponent<C3dUIComponent>();
+		auto &transComp = m_uiDistantLight->Mesh->getComponent<TransformComponent>();
+
+		AssetHandle h = uiComp.Handle;
+		RenderState &state = uiComp.State;
+		glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * transComp.getMat();
+
+		Renderer::SubmitRC([ubSet, h, state, trans]() mutable
+		{
+			Renderer::RenderLine(h, ubSet, trans, state);
+		});
+	}
+
 	void MotionControlLayer::onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param)
 	{
 		if (!ctlActor || !selection)
@@ -652,40 +674,40 @@ namespace pio
 		auto &uiComp = ctlEnt->getComponent<C3dUIComponent>();
 		glm::vec3 diff3d(0.f);
 		std::string_view ctlName;
-		if (std::strcmp(uiComp.Name.data(), STR_AXIS_X) == 0)
+		if (std::strcmp(uiComp.Name.data(), UI_AXIS_X) == 0)
 		{
 			diff3d.x = dirDiff.x;
-			ctlName = STR_AXIS_X;
+			ctlName = UI_AXIS_X;
 			m_controller.SelectedAxis = MotionCtlAxis_X;
 		}
-		else if (std::strcmp(uiComp.Name.data(), STR_AXIS_Y) == 0)
+		else if (std::strcmp(uiComp.Name.data(), UI_AXIS_Y) == 0)
 		{
 			diff3d.y = dirDiff.y;
-			ctlName = STR_AXIS_Y;
+			ctlName = UI_AXIS_Y;
 			m_controller.SelectedAxis = MotionCtlAxis_Y;
 		}
-		else if (std::strcmp(uiComp.Name.data(), STR_AXIS_Z) == 0)
+		else if (std::strcmp(uiComp.Name.data(), UI_AXIS_Z) == 0)
 		{
 			diff3d.z = dirDiff.z;
-			ctlName = STR_AXIS_Z;
+			ctlName = UI_AXIS_Z;
 			m_controller.SelectedAxis = MotionCtlAxis_Z;
 		}
-		else if (std::strcmp(uiComp.Name.data(), STR_TORUS_X) == 0)
+		else if (std::strcmp(uiComp.Name.data(), UI_TORUS_X) == 0)
 		{
 			diff3d.x = -dirDiff.y;
-			ctlName = STR_TORUS_X;
+			ctlName = UI_TORUS_X;
 			m_controller.SelectedAxis = MotionCtlAxis_X;
 		}
-		else if (std::strcmp(uiComp.Name.data(), STR_TORUS_Y) == 0)
+		else if (std::strcmp(uiComp.Name.data(), UI_TORUS_Y) == 0)
 		{
 			diff3d.y = dirDiff.x;
-			ctlName = STR_TORUS_Y;
+			ctlName = UI_TORUS_Y;
 			m_controller.SelectedAxis = MotionCtlAxis_Y;
 		}
-		else if (std::strcmp(uiComp.Name.data(), STR_TORUS_Z) == 0)
+		else if (std::strcmp(uiComp.Name.data(), UI_TORUS_Z) == 0)
 		{
 			diff3d.z = -dirDiff.x;
-			ctlName = STR_TORUS_Z;
+			ctlName = UI_TORUS_Z;
 			m_controller.SelectedAxis = MotionCtlAxis_Z;
 		}
 		else
