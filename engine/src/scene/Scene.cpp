@@ -194,7 +194,7 @@ namespace pio
 
 				auto &transComp = entity->getComponent<TransformComponent>();
 				Transform transform = meshSrc->GlobalPose * transComp.Transform;
-				entity->setActorGlobalPose(transform.Position, transform.Rotate.quat());
+				entity->setActorGlobalPose(transform.Position, transform.Euler.quat());
 				if (meshComp.Delay)
 					renderer->submitDelayedMesh(Ref<MeshBase>(mesh), meshComp.SubmeshIndex, transform, meshComp.State);
 				else
@@ -217,7 +217,7 @@ namespace pio
 
 				auto &transComp = entity->getComponent<TransformComponent>();
 				Transform transform = meshSrc->GlobalPose * transComp.Transform;
-				entity->setActorGlobalPose(transform.Position, transform.Rotate.quat());
+				entity->setActorGlobalPose(transform.Position, transform.Euler.quat());
 				if (staticMeshComp.Delay)
 					renderer->submitDelayedMesh(Ref<MeshBase>(staticMesh), staticMeshComp.SubmeshIndex, transform, staticMeshComp.State);
 				else

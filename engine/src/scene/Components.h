@@ -27,7 +27,7 @@ namespace pio
 	struct TransformComponent
 	{
 		Transform Transform{};		
-		glm::mat4 getMat() { return Transform.getMat(); }
+		glm::mat4 mat() { return Transform.mat(); }
 	};
 
 	struct CameraComponent

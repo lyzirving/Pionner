@@ -647,7 +647,7 @@ namespace pio
 
 		AssetHandle h = uiComp.Handle;
 		RenderState &state = uiComp.State;
-		glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * transComp.getMat();
+		glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * transComp.mat();
 
 		Renderer::SubmitRC([ubSet, h, state, trans]() mutable
 		{
@@ -802,7 +802,7 @@ namespace pio
 		else if (ent->hasComponent<DirectionalLightComponent>())
 		{
 			auto &comp = ent->getComponent<TransformComponent>();
-			comp.Transform.Rotate += eulerDiff;
+			comp.Transform.Euler += eulerDiff;
 		}
 		else
 		{

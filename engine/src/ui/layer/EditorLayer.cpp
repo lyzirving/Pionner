@@ -166,10 +166,10 @@ namespace pio
 				ImGui::DragFloat("Bias##DistantLight", &lightComp.Bias, 0.00001f, 0.0001f, 0.1f, "%.5f");
 
 				ImGui::DragFloat3("Position##DirectionalLight", glm::value_ptr(transComp.Transform.Position), 0.1f, -1000.f, 1000.f, "%.1f");
-				glm::quat lightRot = transComp.Transform.Rotate.quat();
-				UiQuat uiQuat = UiQuat(lightRot.w, lightRot.x, lightRot.y, lightRot.z);							
-				ImGui::DragFloat4("Rotation##DirectionalLight", uiQuat.value_ptr(), 0.001f, -1.f, 1.f, "%.2f");
-				transComp.Transform.Rotate = glm::quat(uiQuat.w, uiQuat.x, uiQuat.y, uiQuat.z);
+				
+				glm::vec3 angle = transComp.Transform.Euler.angle();						
+				ImGui::DragFloat3("Rotation##DirectionalLight", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
+				transComp.Transform.Euler = angle;
 
 				ImGui::DragFloat3("LookAt##DirectionalLight", glm::value_ptr(lightComp.Dest), 0.1f, -1000.f, 1000.f, "%.1f");
 
@@ -236,14 +236,12 @@ namespace pio
 				// Global Pose
 				{									
 					if (ImGui::CollapsingHeader("GlobalPose##MeshSource", ImGuiUtils::Flag_Collapse_Header))
-					{
-						glm::quat meshRot = meshSrc->GlobalPose.Rotate.quat();
-						UiQuat uiQuat = UiQuat(meshRot.w, meshRot.x, meshRot.y, meshRot.z);
-
+					{					
+						glm::vec3 angle = meshSrc->GlobalPose.Euler.angle();						
 						ImGui::DragFloat3("Position##meshSource", glm::value_ptr(meshSrc->GlobalPose.Position), 0.05f, -100.f, 100.f, "%.1f");
-						ImGui::DragFloat4("Rotation##meshSource", uiQuat.value_ptr(), 0.001f, -1.f, 1.f, "%.2f");
-						ImGui::DragFloat3("Scale##meshSource", glm::value_ptr(meshSrc->GlobalPose.Scale), 0.1f, 0.f, 10.f, "%.1f");
-						meshSrc->GlobalPose.Rotate = glm::quat(uiQuat.w, uiQuat.x, uiQuat.y, uiQuat.z);
+						ImGui::DragFloat3("Rotation##meshSource", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
+						ImGui::DragFloat3("Scale##meshSource", glm::value_ptr(meshSrc->GlobalPose.Scale), 0.1f, 0.f, 10.f, "%.1f");							
+						meshSrc->GlobalPose.Euler = angle;
 					}
 				}
 
@@ -298,14 +296,12 @@ namespace pio
 				{			
 					TransformComponent &comp = ent->getComponent<TransformComponent>();					
 					if (ImGui::CollapsingHeader("Transform##Mesh", ImGuiUtils::Flag_Collapse_Header))
-					{
-						glm::quat meshRot = comp.Transform.Rotate.quat();
-						UiQuat uiQuat = UiQuat(meshRot.w, meshRot.x, meshRot.y, meshRot.z);
-
+					{						
+						glm::vec3 angle = comp.Transform.Euler.angle();						
 						ImGui::DragFloat3("Position##mesh", glm::value_ptr(comp.Transform.Position), 0.05f, -100.f, 100.f, "%.1f");
-						ImGui::DragFloat4("Rotation##mesh", uiQuat.value_ptr(), 0.001f, -1.f, 1.f, "%.2f");
-						ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");								
-						comp.Transform.Rotate = glm::quat(uiQuat.w, uiQuat.x, uiQuat.y, uiQuat.z);
+						ImGui::DragFloat3("Rotation##mesh", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
+						ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");	
+						comp.Transform.Euler = angle;
 					}
 				}
 			}

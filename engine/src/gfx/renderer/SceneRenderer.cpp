@@ -213,7 +213,7 @@ namespace pio
 			dc.SubmeshIndex = submeshIndex;
 			dc.MaterialTb = mt;
 			// TODO: is the IsRigged correctly used?
-			dc.ModelMat = isRigged ? transform.getMat() : transform.getMat() * submeshes[submeshIndex].Transform;
+			dc.ModelMat = isRigged ? transform.mat() : transform.mat() * submeshes[submeshIndex].Transform;
 			dc.IsRigged = isRigged;
 			dc.State = state;
 		}
@@ -230,7 +230,7 @@ namespace pio
 					dc.Mesh = mesh->getHandle();
 					dc.SubmeshIndex = submeshIndex;
 					// TODO: is the IsRigged correctly used?
-					dc.ModelMat = isRigged ? transform.getMat() : transform.getMat() * submeshes[submeshIndex].Transform;
+					dc.ModelMat = isRigged ? transform.mat() : transform.mat() * submeshes[submeshIndex].Transform;
 					dc.IsRigged = isRigged;
 					dc.State.DepthTest = DepthTest::Common();
 					dc.State.Cull = CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front);
@@ -264,7 +264,7 @@ namespace pio
 			dc.Mesh = mesh->getHandle();
 			dc.SubmeshIndex = submeshIndex;
 			dc.MaterialTb = mt;
-			dc.ModelMat = transform.getMat() * submeshes[submeshIndex].Transform;
+			dc.ModelMat = transform.mat() * submeshes[submeshIndex].Transform;
 			dc.IsRigged = false;
 			dc.State = state;
 		}

@@ -17,18 +17,20 @@ namespace pio
 		EulerAngle &operator+=(const glm::vec3 &euler);
 		EulerAngle &operator=(const glm::vec3 &euler);
 
-		glm::mat4 getMat() const;
+		glm::mat4 mat() const;
+		glm::quat quat() const;
+		glm::vec3 angle() const { return m_euler; }
 
 		float pitch() const { return m_euler.x; }
 		float yaw() const { return m_euler.y; }
 		float roll() const { return m_euler.z; }
 
-		float *ptrPitch() { return &m_euler.x; }
-		float *ptrYaw() { return &m_euler.y; }
-		float *ptrRoll() { return &m_euler.z; }
-
 	private:
 		void flush() const;
+
+	private:
+		//[TODO] Fix out why we need to correct euler angle??
+		static glm::vec3 FixAngleLimit(const glm::vec3 &angle);
 
 	private:
 		// Pitch, Yaw, Roll in degree which represent rotation respectively around x,y,z axis

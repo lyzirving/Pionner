@@ -38,7 +38,7 @@ namespace pio
 		bool getGlobalPoseCenter(glm::vec3 &out);
 
 		bool setSelection(bool select);
-		bool setGlobalPose(const glm::vec3 &translation, const glm::quat &rotation = quaternion::IDENTITY);
+		bool setGlobalPose(const glm::vec3 &translation, const glm::vec3 &euler);
 		bool setGlobalPoseDiff(const glm::vec3 &diff = glm::vec3(0.f), const glm::vec3 &eulerDiff = glm::vec3(0.f));
 
 		bool setActorGlobalPose(const glm::vec3 &translation, const glm::quat &rotation = quaternion::IDENTITY);
