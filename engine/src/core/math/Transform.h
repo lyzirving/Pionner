@@ -2,6 +2,7 @@
 #define __PIONNER_CORE_MATH_TRANSFORM_H__
 
 #include "core/Base.h"
+#include "core/math/EulerAngle.h"
 
 namespace pio
 {
@@ -54,7 +55,8 @@ namespace pio
 	public:
 		glm::vec3 Position{ 0.f };
 		glm::vec3 Scale{ 1.f };
-		Rotation Rotate{};
+		Rotation Rotate{};	
+		EulerAngle Euler;
 	};
 }
 

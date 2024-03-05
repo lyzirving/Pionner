@@ -86,7 +86,7 @@ namespace pio
 			return glm::vec2(screen.x, screen.y);
 		}
 
-		glm::vec3 Math::Reminder(const glm::vec3 input, float reminder)
+		glm::vec3 Math::Reminder(const glm::vec3 &input, float reminder)
 		{
 			if (reminder < 0.f) { reminder = -reminder; }
 
@@ -95,9 +95,9 @@ namespace pio
 
 			auto calcReminder = [](float input, float sign, float reminder) 
 			{
-				float val = input;
-				if (std::abs(val) > reminder)
-					val = val * sign - reminder * int(val * sign / reminder);
+				float val = input * sign;// val is >= 0.f
+				if (val > reminder)
+					val = val - reminder * int(val / reminder);
 				return val * sign;
 			};
 			
