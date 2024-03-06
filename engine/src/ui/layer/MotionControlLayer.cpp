@@ -7,6 +7,7 @@
 #include "gfx/renderer/Renderer.h"
 #include "gfx/struct/MeshFactory.h"
 #include "gfx/struct/Geometry.h"
+#include "gfx/struct/Geometry2D.h"
 
 #include "physics/PhysicsScene.h"
 #include "physics/PhysicsActor.h"
@@ -471,10 +472,11 @@ namespace pio
 		{
 			if (m_controller.SelectedSprite->hasComponent<DirectionalLightComponent>())
 			{
+				auto &lightComp = m_controller.SelectedSprite->getComponent<DirectionalLightComponent>();
 				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();
 				slcPos = transComp.Transform.Position;
 				onDrawMoveCtl(slcPos);
-				onDrawUIDistantLight(slcPos);
+				onDrawUIDistantLight(lightComp, slcPos);
 				return;
 			}
 		}
@@ -493,10 +495,11 @@ namespace pio
 		{
 			if (m_controller.SelectedSprite->hasComponent<DirectionalLightComponent>())
 			{
+				auto &lightComp = m_controller.SelectedSprite->getComponent<DirectionalLightComponent>();
 				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();
 				slcPos = transComp.Transform.Position;		
 				onDrawRotationCtl(slcPos);
-				onDrawUIDistantLight(slcPos);
+				onDrawUIDistantLight(lightComp, slcPos);
 				return;
 			}
 		}
@@ -639,20 +642,48 @@ namespace pio
 		}
 	}
 
-	void MotionControlLayer::onDrawUIDistantLight(const glm::vec3 &pos)
+	void MotionControlLayer::onDrawUIDistantLight(const DirectionalLightComponent &lightComp, const glm::vec3 &pos)
 	{
 		Ref<UniformBufferSet> ubSet = m_motionUBSet;
-		auto &uiComp = m_uiDistantLight->Mesh->getComponent<C3dUIComponent>();
-		auto &transComp = m_uiDistantLight->Mesh->getComponent<TransformComponent>();
-
-		AssetHandle h = uiComp.Handle;
-		RenderState &state = uiComp.State;
-		glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * transComp.mat();
-
-		Renderer::SubmitRC([ubSet, h, state, trans]() mutable
+		
 		{
-			Renderer::RenderLine(h, ubSet, trans, state);
-		});
+			auto &uiComp = m_uiDistantLight->LightMesh->getComponent<C3dUIComponent>();
+			auto &transComp = m_uiDistantLight->LightMesh->getComponent<TransformComponent>();
+
+			AssetHandle h = uiComp.Handle;
+			RenderState &state = uiComp.State;
+			glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * transComp.mat();
+
+			Renderer::SubmitRC([ubSet, h, state, trans]() mutable
+			{
+				Renderer::RenderLine(h, ubSet, trans, state);
+			});
+		}
+
+		{			
+			auto &uiComp = m_uiDistantLight->DirectionMesh->getComponent<C3dUIComponent>();
+			auto &transComp = m_uiDistantLight->DirectionMesh->getComponent<TransformComponent>();
+
+			AssetHandle h = uiComp.Handle;
+			Ref<LineMesh> mesh = AssetsManager::GetRuntimeAsset<LineMesh>(h);
+			mesh->clear();
+			mesh->Vertex.reserve(2);
+			mesh->Vertex.emplace_back(pos, m_uiDistantLight->Color);
+			mesh->Vertex.emplace_back(pos + glm::normalize(lightComp.Direction) * m_uiDistantLight->DirectionLen, m_uiDistantLight->Color);
+
+			Renderer::SubmitTask([mesh]() 
+			{ 
+				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(LineVertex));
+			});
+
+			RenderState &state = uiComp.State;
+			glm::mat4 trans = transComp.mat();	
+
+			Renderer::SubmitRC([ubSet, h, state, trans]() mutable
+			{
+				Renderer::RenderLine(h, ubSet, trans, state);
+			});
+		}
 	}
 
 	void MotionControlLayer::onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param)

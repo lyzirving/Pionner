@@ -18,18 +18,14 @@ namespace pio
 		bool CastShadow{ true };
 
 		// ----------- Non Uniform data -----------
-		glm::vec3 Position{ 0.f };
-		glm::vec3 Dest{ 0.f };		
+		glm::vec3 Position{ 0.f };		
 		// ----------------------------------------
 
 		DirectionalLight() {}
 		DirectionalLight(const glm::vec3 &in_position, const glm::vec3 &in_dest, const glm::vec3 &in_radiance, float in_intensity) 
-			: Position(in_position), Dest(in_dest), Radiance(in_radiance), Intensity(in_intensity) 
-		{
-			calc();
+			: Position(in_position), Direction(glm::normalize(in_dest - in_position)), Radiance(in_radiance), Intensity(in_intensity)
+		{			
 		}
-
-		void calc() { Direction = glm::normalize(Dest - Position); }
 	};
 
 	struct DirectionalLightShadowData

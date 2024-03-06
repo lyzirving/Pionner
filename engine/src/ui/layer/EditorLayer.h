@@ -3,7 +3,6 @@
 
 #include "Layer.h"
 #include "core/math/Transform.h"
-#include "core/math/SphereCoord.h"
 
 namespace pio
 {
@@ -35,7 +34,6 @@ namespace pio
 		struct UiValue
 		{
 			bool MeshSrcVisible{ true };
-			SphereCoord DistantLightDir{};
 		};
 
 	private:

@@ -20,6 +20,7 @@ namespace pio
 		glm::mat4 mat() const;
 		glm::quat quat() const;
 		glm::vec3 angle() const { return m_euler; }
+		bool bDirty() const { return m_dirty; }
 
 		float pitch() const { return m_euler.x; }
 		float yaw() const { return m_euler.y; }

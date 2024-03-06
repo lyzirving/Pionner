@@ -26,13 +26,15 @@ namespace pio
 	static void LightCompToSceneData(DirectionalLightComponent &lightComp, TransformComponent &transComp, DirectionalLight &sceneData)
 	{		
 		sceneData.Position = transComp.Transform.Position;
-		sceneData.Dest = lightComp.Dest;
+		if (transComp.Transform.Euler.bDirty())
+		{
+			sceneData.Direction = lightComp.Direction = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(sceneData.Direction, 0.f));
+		}		
 		sceneData.Radiance = lightComp.Radiance;
 		sceneData.Intensity = lightComp.Intensity;
 		sceneData.Bias = lightComp.Bias;
 		sceneData.SdMode = lightComp.SdMode;
 		sceneData.CastShadow = lightComp.CastShadow;
-		sceneData.calc();
 	}
 
 	static void LightCompToSceneData(PointLightComponent &comp, PointLight &sceneData)
@@ -284,7 +286,7 @@ namespace pio
 			auto &transComp = ent->getComponent<TransformComponent>();
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 			transComp.Transform.Position = m_lightEnv.DirectionalLight.Position;
-			lightComp.Dest = m_lightEnv.DirectionalLight.Dest;
+			lightComp.Direction = m_lightEnv.DirectionalLight.Direction;
 			lightComp.Radiance = m_lightEnv.DirectionalLight.Radiance;
 			lightComp.Intensity = m_lightEnv.DirectionalLight.Intensity;
 

@@ -17,6 +17,7 @@ namespace pio
 	constexpr static const char *UI_TORUS_Z = "UI_TorusZ";
 
 	constexpr static const char *UI_DIST_LIGHT = "UI_DistantLight";
+	constexpr static const char *UI_DIST_LIGHT_DIR = "UI_DistantLight_Direction";
 
 	enum class CoordinateShape : uint8_t
 	{

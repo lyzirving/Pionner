@@ -15,6 +15,8 @@
 
 #include "ui/ImGuiUtils.h"
 
+#include "core/math/SphereCoord.h"
+
 #include <imgui.h>
 
 #ifdef LOCAL_TAG
@@ -167,21 +169,9 @@ namespace pio
 
 				ImGui::DragFloat3("Position##DirectionalLight", glm::value_ptr(transComp.Transform.Position), 0.1f, -1000.f, 1000.f, "%.1f");
 				
-				glm::vec3 angle = transComp.Transform.Euler.angle();						
-				ImGui::DragFloat3("Rotation##DirectionalLight", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
+				glm::vec3 angle = transComp.Transform.Euler.angle();
+				ImGui::DragFloat3("Rotation##DirectionalLight", &angle.x, 0.005f, -360.f, 360.f, "%.2f");
 				transComp.Transform.Euler = angle;
-
-				ImGui::DragFloat3("LookAt##DirectionalLight", glm::value_ptr(lightComp.Dest), 0.1f, -1000.f, 1000.f, "%.1f");
-
-				m_UiVal.DistantLightDir = SphereCoord::ToSCS(-glm::normalize(lightComp.Dest - transComp.Transform.Position));
-				std::stringstream ss;
-				ss.setf(std::ios::fixed); ss.precision(1);
-				ss << "Theta[" << m_UiVal.DistantLightDir.getTheta() << "] Phi[" << m_UiVal.DistantLightDir.getPhi() << "]";
-				std::string msg = ss.str();				
-				ImGui::InputText("##Spherical_Direction", const_cast<char *>(msg.c_str()),
-								 msg.size(), ImGuiInputTextFlags_ReadOnly);			
-				ImGui::SameLine();
-				ImGuiUtils::HelpMaker("Sphere coordinate of light direction");
 
 				ImGui::DragFloat3("Radiance##DirectionalLight", glm::value_ptr(lightComp.Radiance), 0.1f, 0.f, 1000.f, "%.1f");			
 				ImGui::SliderFloat("Intensity##DirectionalLight", &lightComp.Intensity, 0.01f, 2.f, "%.2f", 0);				

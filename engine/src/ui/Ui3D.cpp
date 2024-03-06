@@ -342,22 +342,38 @@ namespace pio
 		}
 	}
 
-	UiDistantLight::UiDistantLight(float radius, float lightLen, const glm::vec4 &color)
+	UiDistantLight::UiDistantLight(float radius, float lightLen, const glm::vec4 &color) : Color(color)
 	{
-		Ref<LineMesh> lineMesh = CreateMesh(radius, lightLen, color);
+		{
+			Ref<LineMesh> lightMesh = CreateLightMesh(radius, lightLen, color);
 
-		Mesh = Registry::Get()->create<C3dUIComponent, TransformComponent>();
-		C3dUIComponent &uiComp = Mesh->getComponent<C3dUIComponent>();
+			LightMesh = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+			C3dUIComponent &uiComp = LightMesh->getComponent<C3dUIComponent>();
 
-		uiComp.Name = UI_DIST_LIGHT;
-		uiComp.Handle = lineMesh->getHandle();
-		uiComp.Visible = true;
-		uiComp.State.Blend = Blend::Disable();
-		uiComp.State.Mode = RenderMode::MaterialPreview;
-		uiComp.State.DepthTest = DepthTest::Always();
+			uiComp.Name = UI_DIST_LIGHT;
+			uiComp.Handle = lightMesh->getHandle();
+			uiComp.Visible = true;
+			uiComp.State.Blend = Blend::Disable();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Always();
+		}
+
+		{
+			Ref<LineMesh> dirMesh = CreateDirectonMesh(color);
+
+			DirectionMesh = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+			C3dUIComponent &uiComp = DirectionMesh->getComponent<C3dUIComponent>();
+
+			uiComp.Name = UI_DIST_LIGHT_DIR;
+			uiComp.Handle = dirMesh->getHandle();
+			uiComp.Visible = true;
+			uiComp.State.Blend = Blend::Disable();
+			uiComp.State.Mode = RenderMode::MaterialPreview;
+			uiComp.State.DepthTest = DepthTest::Always();
+		}
 	}
 
-	Ref<LineMesh> UiDistantLight::CreateMesh(float radius, float lightLen, const glm::vec4 &color)
+	Ref<LineMesh> UiDistantLight::CreateLightMesh(float radius, float lightLen, const glm::vec4 &color)
 	{
 		auto lineMesh = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>("DistantLight"));
 		std::vector<LineVertex> &vertexArray = lineMesh->Vertex;
@@ -399,6 +415,28 @@ namespace pio
 			indice.push_back(2 * i + 1);
 			indice.push_back(2 * i + 2);
 		}
+
+		lineMesh->VertexBuffer = VertexBuffer::Create(vertexArray.data(), vertexArray.size() * sizeof(LineVertex));
+		lineMesh->VertexBuffer->setLayout(VertexBuffer::To<LineVertex>());
+
+		lineMesh->IndexBuffer = IndexBuffer::Create(indice.data(), indice.size() * sizeof(uint32_t), indice.size());
+
+		lineMesh->VertexArray = VertexArray::Create();
+		lineMesh->VertexArray->addVertexBuffer(lineMesh->VertexBuffer);
+
+		return lineMesh;
+	}
+
+	Ref<LineMesh> UiDistantLight::CreateDirectonMesh(const glm::vec4 &color)
+	{
+		auto lineMesh = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>("DistantLightDirection"));
+		std::vector<LineVertex> &vertexArray = lineMesh->Vertex;
+		std::vector<uint32_t> &indice = lineMesh->Indices;
+
+		vertexArray.emplace_back(glm::vec3(0.f), color);
+		vertexArray.emplace_back(glm::vec3(1.f, 0.f, 0.f), color);
+		indice.push_back(0);
+		indice.push_back(1);
 
 		lineMesh->VertexBuffer = VertexBuffer::Create(vertexArray.data(), vertexArray.size() * sizeof(LineVertex));
 		lineMesh->VertexBuffer->setLayout(VertexBuffer::To<LineVertex>());

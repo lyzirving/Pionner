@@ -1,7 +1,6 @@
 #ifndef __PIONNER_CORE_MATH_TRANSFORM_H__
 #define __PIONNER_CORE_MATH_TRANSFORM_H__
 
-#include "core/Base.h"
 #include "core/math/EulerAngle.h"
 
 namespace pio

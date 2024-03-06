@@ -142,8 +142,8 @@ namespace pio
 		Camera &distLightCam = m_distantLightShadowPass->getCamera();
 		const Viewport &vp = camera.getViewport();
 
-		distLightCam.setPosition(lightEnv.DirectionalLight.Position);
-		distLightCam.setLookAt(lightEnv.DirectionalLight.Dest);	
+		distLightCam.setPosition(lightEnv.DirectionalLight.Position);		
+		distLightCam.setLookAt(lightEnv.DirectionalLight.Position + lightEnv.DirectionalLight.Direction * 5.f);// 5 is a magic value
 		distLightCam.setOrtho(-10.f, 10.f, -10.f, 10.f);// TODO:
 		distLightCam.setNearFar(camera.near(), camera.far());
 		distLightCam.flush();

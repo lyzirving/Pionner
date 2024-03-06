@@ -69,10 +69,14 @@ namespace pio
 		~UiDistantLight() = default;
 
 	private:
-		static Ref<LineMesh> CreateMesh(float radius, float lightLen, const glm::vec4 &color);
+		static Ref<LineMesh> CreateLightMesh(float radius, float lightLen, const glm::vec4 &color);
+		static Ref<LineMesh> CreateDirectonMesh(const glm::vec4 &color);
 
 	public:
-		Ref<Entity> Mesh;
+		Ref<Entity> LightMesh;
+		Ref<Entity> DirectionMesh;
+		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
+		const float DirectionLen{ 20.f };
 	};
 }
 
