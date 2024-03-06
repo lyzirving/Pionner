@@ -170,8 +170,12 @@ namespace pio
 				ImGui::DragFloat3("Position##DirectionalLight", glm::value_ptr(transComp.Transform.Position), 0.1f, -1000.f, 1000.f, "%.1f");
 				
 				glm::vec3 angle = transComp.Transform.Euler.angle();
-				ImGui::DragFloat3("Rotation##DirectionalLight", &angle.x, 0.005f, -360.f, 360.f, "%.2f");
+				ImGui::DragFloat3("Rotation##DirectionalLight", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
 				transComp.Transform.Euler = angle;
+
+				glm::vec3 dir = lightComp.Direction;
+				ImGui::DragFloat3("Direction##DirectionalLight", &dir.x, 0.01f, -1.f, 1.f, "%.2f");
+				if (dir != lightComp.Direction) { lightComp.Direction = glm::normalize(dir); }
 
 				ImGui::DragFloat3("Radiance##DirectionalLight", glm::value_ptr(lightComp.Radiance), 0.1f, 0.f, 1000.f, "%.1f");			
 				ImGui::SliderFloat("Intensity##DirectionalLight", &lightComp.Intensity, 0.01f, 2.f, "%.2f", 0);				

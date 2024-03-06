@@ -8,14 +8,15 @@
 
 namespace pio
 {
+	class View;
 	class MeshSource;
 	class UniformBufferSet;
 	class UiCoordinate3D;
 	class UiRotationCtl;
 	class UiDistantLight;
 	class PhysicsScene;
-	class View;
 	struct DirectionalLightComponent;
+	struct TransformComponent;
 
 	enum MotionCtlMode : uint8_t
 	{
@@ -91,7 +92,7 @@ namespace pio
 
 		void onDrawMoveCtl(const glm::vec3 pos);
 		void onDrawRotationCtl(const glm::vec3 pos);
-		void onDrawUIDistantLight(const DirectionalLightComponent &lightComp, const glm::vec3 &pos);
+		void onDrawUIDistantLight(DirectionalLightComponent &lightComp, TransformComponent &transComp);
 
 		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param);
 		void onMoveMode(Ref<Entity> &ent, const glm::vec3 &diff, const std::string_view &ctlName);

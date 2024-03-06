@@ -474,9 +474,8 @@ namespace pio
 			{
 				auto &lightComp = m_controller.SelectedSprite->getComponent<DirectionalLightComponent>();
 				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();
-				slcPos = transComp.Transform.Position;
-				onDrawMoveCtl(slcPos);
-				onDrawUIDistantLight(lightComp, slcPos);
+				onDrawMoveCtl(transComp.Transform.Position);
+				onDrawUIDistantLight(lightComp, transComp);
 				return;
 			}
 		}
@@ -494,12 +493,11 @@ namespace pio
 		if (m_controller.SelectedSprite)
 		{
 			if (m_controller.SelectedSprite->hasComponent<DirectionalLightComponent>())
-			{
+			{				
 				auto &lightComp = m_controller.SelectedSprite->getComponent<DirectionalLightComponent>();
-				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();
-				slcPos = transComp.Transform.Position;		
-				onDrawRotationCtl(slcPos);
-				onDrawUIDistantLight(lightComp, slcPos);
+				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();					
+				onDrawRotationCtl(transComp.Transform.Position);
+				onDrawUIDistantLight(lightComp, transComp);
 				return;
 			}
 		}
@@ -642,17 +640,17 @@ namespace pio
 		}
 	}
 
-	void MotionControlLayer::onDrawUIDistantLight(const DirectionalLightComponent &lightComp, const glm::vec3 &pos)
+	void MotionControlLayer::onDrawUIDistantLight(DirectionalLightComponent &lightComp, TransformComponent &transComp)
 	{
+		const glm::vec3 &pos = transComp.Transform.Position;
 		Ref<UniformBufferSet> ubSet = m_motionUBSet;
 		
 		{
-			auto &uiComp = m_uiDistantLight->LightMesh->getComponent<C3dUIComponent>();
-			auto &transComp = m_uiDistantLight->LightMesh->getComponent<TransformComponent>();
+			auto &uiComp = m_uiDistantLight->LightMesh->getComponent<C3dUIComponent>();			
 
 			AssetHandle h = uiComp.Handle;
 			RenderState &state = uiComp.State;
-			glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * transComp.mat();
+			glm::mat4 trans = glm::translate(glm::mat4(1.f), pos);
 
 			Renderer::SubmitRC([ubSet, h, state, trans]() mutable
 			{
@@ -661,15 +659,15 @@ namespace pio
 		}
 
 		{			
-			auto &uiComp = m_uiDistantLight->DirectionMesh->getComponent<C3dUIComponent>();
-			auto &transComp = m_uiDistantLight->DirectionMesh->getComponent<TransformComponent>();
+			auto &uiComp = m_uiDistantLight->DirectionMesh->getComponent<C3dUIComponent>();			
 
 			AssetHandle h = uiComp.Handle;
 			Ref<LineMesh> mesh = AssetsManager::GetRuntimeAsset<LineMesh>(h);
 			mesh->clear();
 			mesh->Vertex.reserve(2);
 			mesh->Vertex.emplace_back(pos, m_uiDistantLight->Color);
-			mesh->Vertex.emplace_back(pos + glm::normalize(lightComp.Direction) * m_uiDistantLight->DirectionLen, m_uiDistantLight->Color);
+			glm::vec3 dest = pos + glm::vec3(glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f))) * m_uiDistantLight->DirectionLen;
+			mesh->Vertex.emplace_back(dest, m_uiDistantLight->Color);
 
 			Renderer::SubmitTask([mesh]() 
 			{ 
@@ -677,11 +675,10 @@ namespace pio
 			});
 
 			RenderState &state = uiComp.State;
-			glm::mat4 trans = transComp.mat();	
 
-			Renderer::SubmitRC([ubSet, h, state, trans]() mutable
+			Renderer::SubmitRC([ubSet, h, state]() mutable
 			{
-				Renderer::RenderLine(h, ubSet, trans, state);
+				Renderer::RenderLine(h, ubSet, glm::mat4(1.f), state);
 			});
 		}
 	}

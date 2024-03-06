@@ -28,7 +28,7 @@ namespace pio
 		sceneData.Position = transComp.Transform.Position;
 		if (transComp.Transform.Euler.bDirty())
 		{
-			sceneData.Direction = lightComp.Direction = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(sceneData.Direction, 0.f));
+			sceneData.Direction = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f));
 		}		
 		sceneData.Radiance = lightComp.Radiance;
 		sceneData.Intensity = lightComp.Intensity;

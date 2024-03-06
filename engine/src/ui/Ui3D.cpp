@@ -347,7 +347,7 @@ namespace pio
 		{
 			Ref<LineMesh> lightMesh = CreateLightMesh(radius, lightLen, color);
 
-			LightMesh = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+			LightMesh = Registry::Get()->create<C3dUIComponent>();
 			C3dUIComponent &uiComp = LightMesh->getComponent<C3dUIComponent>();
 
 			uiComp.Name = UI_DIST_LIGHT;
@@ -361,7 +361,7 @@ namespace pio
 		{
 			Ref<LineMesh> dirMesh = CreateDirectonMesh(color);
 
-			DirectionMesh = Registry::Get()->create<C3dUIComponent, TransformComponent>();
+			DirectionMesh = Registry::Get()->create<C3dUIComponent>();
 			C3dUIComponent &uiComp = DirectionMesh->getComponent<C3dUIComponent>();
 
 			uiComp.Name = UI_DIST_LIGHT_DIR;
