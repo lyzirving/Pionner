@@ -23,7 +23,7 @@ namespace pio
 {
 	Registry *Scene::s_registry = Registry::Get();
 
-	static void LightCompToSceneData(DirectionalLightComponent &lightComp, TransformComponent &transComp, DirectionalLight &sceneData)
+	static void LightCompToSceneData(DirectionalLightComponent &lightComp, TransformComponent &transComp, SpriteComponent &spriteComp, DirectionalLight &sceneData, Camera &cam)
 	{		
 		sceneData.Position = transComp.Transform.Position;
 		if (transComp.Transform.Euler.bDirty())
@@ -35,6 +35,32 @@ namespace pio
 		sceneData.Bias = lightComp.Bias;
 		sceneData.SdMode = lightComp.SdMode;
 		sceneData.CastShadow = lightComp.CastShadow;
+
+		const Viewport &vp = cam.getViewport();
+		glm::mat4 mvp = cam.getPrjMat() * cam.getViewMat();
+		glm::mat4 vpMat = Camera::GetViewportMat(Viewport(0, 0, vp.Width, vp.Height));
+		glm::uvec2 vpSize{ vp.Width, vp.Height };
+		glm::vec2 p = Math::ToScreenPos(sceneData.Position, mvp, vpMat, vpSize);
+		if (p != spriteComp.Position)
+		{
+			spriteComp.Position = p;
+			const uint32_t w = spriteComp.ScreenWidth;
+			const uint32_t h = spriteComp.ScreenHeight;
+			spriteComp.Rect.LeftTop = glm::vec2(p.x - w / 2, p.y - h / 2);
+			spriteComp.Rect.LeftBottom = glm::vec2(p.x - w / 2, p.y + h / 2);
+			spriteComp.Rect.RightTop = glm::vec2(p.x + w / 2, p.y - h / 2);
+			spriteComp.Rect.RightBottom = glm::vec2(p.x + w / 2, p.y + h / 2);
+			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(spriteComp.QuadMesh);
+			mesh->Vertex.clear(); mesh->Vertex.reserve(4);
+			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 1.f));//lt
+			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 0.f));//lb
+			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 1.f));//rt
+			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 0.f));//rb	
+			Renderer::SubmitTask([mesh]() mutable
+			{
+				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));
+			});
+		}
 	}
 
 	static void LightCompToSceneData(PointLightComponent &comp, PointLight &sceneData)
@@ -46,6 +72,7 @@ namespace pio
 		sceneData.Radius = comp.Radius;
 		sceneData.Falloff = comp.Falloff;
 		sceneData.SourceSize = comp.SourceSize;
+		sceneData.CastShadow = comp.CastShadow;
 
 		Ref<StaticMesh> mesh = AssetsManager::GetRuntimeAsset<StaticMesh>(sceneData.Volume);
 		if (mesh) { mesh->getMeshSource()->as<Sphere>()->setRadius(sceneData.Radius); }
@@ -63,6 +90,7 @@ namespace pio
 		ptComp.Radius = light.Radius;
 		ptComp.Falloff = light.Falloff;
 		ptComp.SourceSize = light.SourceSize;
+		ptComp.CastShadow = light.CastShadow;
 
 		auto &rlComp = ent->getComponent<RelationshipComponent>();
 		PIO_RELATION_SET_TAG(ent, light.Name);
@@ -171,7 +199,8 @@ namespace pio
 				Ref<Entity> ent = view.begin()->second;
 				auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 				auto &transComp = ent->getComponent<TransformComponent>();
-				LightCompToSceneData(lightComp, transComp, m_lightEnv.DirectionalLight);
+				auto &spriteComp = ent->getComponent<SpriteComponent>();
+				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.DirectionalLight, sceneCam);
 			}
 			else
 			{
@@ -302,14 +331,14 @@ namespace pio
 			PIO_RELATION_SET_PARENT_INDEX(ent, m_sceneRoot->getCacheIndex());
 			PIO_RELATION_SET_CHILD_INDEX(m_sceneRoot, ent->getCacheIndex());
 
+			TextureSpecification spec; spec.SRGB = true;
+			Ref<Texture2D> icon = Texture2D::Create(AssetsManager::SpriteAbsPath("distant_light", AssetFmt::PNG), spec);
+			AssetsManager::Get()->addRuntimeAsset(icon);
 			auto &spriteComp = ent->getComponent<SpriteComponent>();
 			spriteComp.Visible = true;
 			spriteComp.Name = rlComp.Tag;	
-			spriteComp.QuadMesh = MeshFactory::CreateScreenQuad(0, 0, 1, 1, 1, 1)->getHandle();
-			TextureSpecification spec; spec.SRGB = true; 
-			Ref<Texture2D> icon = Texture2D::Create(AssetsManager::SpriteAbsPath("distant_light", AssetFmt::PNG), spec);
+			spriteComp.QuadMesh = MeshFactory::CreateScreenQuad(0, 0, 1, 1, 1, 1)->getHandle(); 
 			spriteComp.Texture = icon->getHandle();
-			AssetsManager::Get()->addRuntimeAsset(icon);
 			spriteComp.State.DepthTest = DepthTest::Disable();
 			spriteComp.State.Blend = Blend::Common();
 			spriteComp.State.Cull = CullFace::Common();

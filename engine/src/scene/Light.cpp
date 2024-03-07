@@ -41,6 +41,7 @@ namespace pio
 		block.pushBack("Radius", UniformBlock::CreateData(UniformDataType::Float, "Radius"));
 		block.pushBack("Falloff", UniformBlock::CreateData(UniformDataType::Float, "Falloff"));
 		block.pushBack("SourceSize", UniformBlock::CreateData(UniformDataType::Float, "SourceSize"));
+		block.pushBack("CastShadow", UniformBlock::CreateData(UniformDataType::Bool, "CastShadow"));
 		block.calculate();
 		//LOGD("block PointLight byte used[%u]", block.getByteUsed());
 		return block;
@@ -63,6 +64,7 @@ namespace pio
 			l.put(4, UniformBlock::CreateData(UniformDataType::Float, "Radius"));
 			l.put(5, UniformBlock::CreateData(UniformDataType::Float, "Falloff"));
 			l.put(6, UniformBlock::CreateData(UniformDataType::Float, "SourceSize"));
+			l.put(7, UniformBlock::CreateData(UniformDataType::Bool, "CastShadow"));
 			lights->pushBack(l);
 		}
 		block.calculate();
@@ -159,6 +161,9 @@ namespace pio
 
 		auto sourceSizeUD = Block.m_blockItems.get("SourceSize");
 		Block.m_buffer->writeAt(&SourceSize, sizeof(float), sourceSizeUD->getAlignOffset());
+
+		auto castShadowUD = Block.m_blockItems.get("CastShadow");
+		Block.m_buffer->writeAt(&CastShadow, sizeof(bool), castShadowUD->getAlignOffset());
 	}
 
 	void PointLightData::serialize()
@@ -195,6 +200,9 @@ namespace pio
 
 			auto sourceSizeUD = s.getData(6);
 			Block.m_buffer->writeAt(&Lights[i].SourceSize, sizeof(float), sourceSizeUD->getAlignOffset());
+
+			auto castShadowUD = s.getData(7);
+			Block.m_buffer->writeAt(&Lights[i].CastShadow, sizeof(bool), castShadowUD->getAlignOffset());
 		}
 	}
 

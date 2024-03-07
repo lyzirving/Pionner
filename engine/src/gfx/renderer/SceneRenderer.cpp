@@ -47,40 +47,6 @@ namespace pio
 		}
 	}
 
-	static void UpdateDistantLightSprite(const DirectionalLight &distantLight, const glm::mat4 &mvpMat, const glm::mat4 &vpMat, const glm::uvec2 &vpSize)
-	{
-		EntityView view = Registry::Get()->view<DirectionalLightComponent, SpriteComponent>();
-		if (view.size() != 1)
-		{
-			LOGE("Err! Mutiple distant light");
-			return;
-		}
-		Ref<Entity> ent = view.begin()->second;
-		auto &spriteComp = ent->getComponent<SpriteComponent>();
-
-		glm::vec2 p = Math::ToScreenPos(distantLight.Position, mvpMat, vpMat, vpSize);
-		if (p != spriteComp.Position)
-		{
-			spriteComp.Position = p;
-			const uint32_t w = spriteComp.ScreenWidth;
-			const uint32_t h = spriteComp.ScreenHeight;
-			spriteComp.Rect.LeftTop = glm::vec2(p.x - w / 2, p.y - h / 2);
-			spriteComp.Rect.LeftBottom = glm::vec2(p.x - w / 2, p.y + h / 2);
-			spriteComp.Rect.RightTop = glm::vec2(p.x + w / 2, p.y - h / 2);
-			spriteComp.Rect.RightBottom = glm::vec2(p.x + w / 2, p.y + h / 2);
-			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(spriteComp.QuadMesh);
-			mesh->Vertex.clear(); mesh->Vertex.reserve(4);
-			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 1.f));//lt
-			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 0.f));//lb
-			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 1.f));//rt
-			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 0.f));//rb	
-			Renderer::SubmitTask([mesh]() mutable
-			{
-				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));
-			});
-		}
-	}
-
 	SceneRenderer::SceneRenderer()
 	{
 	}
@@ -164,8 +130,6 @@ namespace pio
 		lightEnv.DirectionalLightShadowData.PrjMat = distLightCam.getOrthoMat();
 
 		FillPointLightShadowData(camera, m_pointLightShadowPass->getFramebuffer(), lightEnv);
-		UpdateDistantLightSprite(scene.m_lightEnv.DirectionalLight, cameraUD.PrjMat * cameraUD.ViewMat, 
-								 Camera::GetViewportMat(Viewport(0, 0, vp.Width, vp.Height)), glm::uvec2(vp.Width, vp.Height));
 
 		cameraUD.serialize();
 		lightEnv.DirectionalLight.serialize();

@@ -33,6 +33,7 @@ struct PointLight
 	float Radius;
 	float Falloff;
 	float SourceSize;
+    bool CastShadow;
 };
 
 struct PBRParameters
@@ -232,9 +233,9 @@ vec4 meshColor()
     for(int i = 0; i < u_pointLightData.LightCount; i++)
     {
         vec3 cur = calcPointLightOut(u_pointLightData.Lights[i]);
-        cur = (1.f - softShadow(i, u_pointLightData.Lights[i])) * cur;
+        vec3 affect = u_pointLightData.Lights[i].CastShadow ? (1.f - softShadow(i, u_pointLightData.Lights[i])) * cur : cur;
 
-        Lo += cur;
+        Lo += affect;
     }
 
     // TODO: IBL

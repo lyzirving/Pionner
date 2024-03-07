@@ -119,7 +119,7 @@ namespace pio
 		float MinRadius{ 1.f };
 		float Radius{ 10.f };
 		float SourceSize{ 0.5f }; // For PCSS
-		bool CastsShadows{ true };
+		bool CastShadow{ true };
 		float Falloff{ 1.0f };
 		AssetHandle MeshHandle{ NullAsset };
 	};
@@ -131,7 +131,7 @@ namespace pio
 		float Range = 10.0f;
 		float Angle = 60.0f;
 		float AngleAttenuation = 5.0f;
-		bool CastsShadows = false;
+		bool CastShadow{ true };
 		float Falloff = 1.0f;
 	};
 

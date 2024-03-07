@@ -49,6 +49,7 @@ namespace pio
 		float Radius{ 0.f };
 		float Falloff{ 0.f };
 		float SourceSize{ 0.f };
+		bool CastShadow{ true };
 
 		// ----------- Non Uniform data -----------
 		AssetHandle Volume{ NullAsset };
