@@ -39,7 +39,7 @@ namespace pio
 
 	static void LightCompToSceneData(PointLightComponent &comp, PointLight &sceneData)
 	{
-		sceneData.Position = SphereCoord::ToCCS(comp.Position);
+		sceneData.Position = comp.Position;
 		sceneData.Radiance = comp.Radiance;
 		sceneData.Intensity = comp.Intensity;
 		sceneData.MinRadius = comp.MinRadius;
@@ -51,12 +51,12 @@ namespace pio
 		if (mesh) { mesh->getMeshSource()->as<Sphere>()->setRadius(sceneData.Radius); }
 	}
 
-	static void CreatePointLightComponent(uint32_t index, PointLight &light, Ref<PhysicsScene> physicsScene)
+	static void CreatePointLightComponent(uint32_t index, PointLight &light, Ref<PhysicsScene> physicsScene, Ref<Entity> sceneRoot)
 	{
-		Ref<Entity> ent = Registry::Get()->create<PointLightComponent>();
+		Ref<Entity> ent = Registry::Get()->create<PointLightComponent, RelationshipComponent>(NodeType::PointLight);
 		auto &ptComp = ent->getComponent<PointLightComponent>();
 		ptComp.Index = index;
-		ptComp.Position = SphereCoord::ToSCS(light.Position);
+		ptComp.Position = light.Position;
 		ptComp.Radiance = light.Radiance;
 		ptComp.Intensity = light.Intensity;
 		ptComp.MinRadius = light.MinRadius;
@@ -64,10 +64,16 @@ namespace pio
 		ptComp.Falloff = light.Falloff;
 		ptComp.SourceSize = light.SourceSize;
 
+		auto &rlComp = ent->getComponent<RelationshipComponent>();
+		PIO_RELATION_SET_TAG(ent, light.Name);
+		PIO_RELATION_SET_SELF_INDEX(ent, ent->getCacheIndex());
+		PIO_RELATION_SET_PARENT_INDEX(ent, sceneRoot->getCacheIndex());
+		PIO_RELATION_SET_CHILD_INDEX(sceneRoot, ent->getCacheIndex());
+
 		//TODO: use cache for model
 		AssimpMeshImporter importer("bulb", AssetFmt::Obj);
 		Ref<MeshSource> meshSrc = RefCast<Asset, MeshSource>(importer.importToMeshSource());
-		meshSrc->GlobalPose.Position = ptComp.Position.toCartesian();
+		meshSrc->GlobalPose.Position = ptComp.Position;
 		MeshUtilParam param;
 		param.State.Blend = Blend::Disable();
 		param.State.Mode = RenderMode::MaterialPreview;
@@ -152,7 +158,7 @@ namespace pio
 				LightCompToSceneData(comp, m_lightEnv.PointLightData.Lights[comp.Index]);
 				Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(comp.MeshHandle);
 				Ref<MeshSource> meshSrc = mesh->getMeshSource();
-				meshSrc->GlobalPose.Position = comp.Position.toCartesian();
+				meshSrc->GlobalPose.Position = comp.Position;
 				it++;
 			}
 		}
@@ -318,13 +324,13 @@ namespace pio
 			m_lightEnv.PtLightShadowData.LightCount = m_lightEnv.PointLightData.LightCount;
 
 			m_lightEnv.PointLightData.Lights[0] = PointLight(SphereCoord::ToCCS(43.f, 63.f, 3.7f),
-															 glm::vec3(3.f), 1.f, 0.001f, 5.f, 0.5f, 0.1f);
+															 glm::vec3(3.f), 1.f, 0.001f, 5.f, 0.5f, 0.1f, "PointLight0");
 			m_lightEnv.PointLightData.Lights[0].Volume = AssetsManager::CreateRuntimeAssets<StaticMesh>(MeshFactory::CreateSphere(m_lightEnv.PointLightData.Lights[0].Radius))->getHandle();
 			m_lightEnv.PointLightData.Lights[1] = PointLight(SphereCoord::ToCCS(40.f, 290.f, 3.2f),
-															 glm::vec3(3.f), 1.f, 0.001f, 5.f, 0.5f, 0.1f);			
+															 glm::vec3(3.f), 1.f, 0.001f, 5.f, 0.5f, 0.1f, "PointLight1");
 			m_lightEnv.PointLightData.Lights[1].Volume = AssetsManager::CreateRuntimeAssets<StaticMesh>(MeshFactory::CreateSphere(m_lightEnv.PointLightData.Lights[1].Radius))->getHandle();
 			for (uint32_t i = 0; i < m_lightEnv.PointLightData.LightCount; i++)
-				CreatePointLightComponent(i, m_lightEnv.PointLightData.Lights[i], physicsScene);
+				CreatePointLightComponent(i, m_lightEnv.PointLightData.Lights[i], physicsScene, m_sceneRoot);
 		}
 
 		// Plane

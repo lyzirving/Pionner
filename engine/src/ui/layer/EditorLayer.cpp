@@ -107,6 +107,9 @@ namespace pio
 					case NodeType::DistantLight:
 						onDrawDistantLightPanel(select);
 						break;
+					case NodeType::PointLight:
+						onDrawPointLightPanel(select);
+						break;
 					case NodeType::MeshSource:
 						onDrawMeshSourcePanel(select);
 						break;
@@ -184,6 +187,27 @@ namespace pio
 				ImGui::DragFloat3("Radiance##DirectionalLight", glm::value_ptr(lightComp.Radiance), 0.1f, 0.f, 1000.f, "%.1f");			
 				ImGui::SliderFloat("Intensity##DirectionalLight", &lightComp.Intensity, 0.01f, 2.f, "%.2f", 0);				
 			}
+		}
+	}
+
+	void EditorLayer::onDrawPointLightPanel(Ref<Entity> &ent)
+	{
+		if (ent && ent->hasComponent<PointLightComponent>())
+		{
+			auto &lightComp = ent->getComponent<PointLightComponent>();
+			auto &rlComp = ent->getComponent<RelationshipComponent>();
+
+			std::string name = std::string("PointLight") + std::to_string(lightComp.Index);
+			std::string panelName = std::string("##PointLight") + std::to_string(lightComp.Index) + "_Name";
+
+			const float rowWidth = m_layoutParam.Viewport.Width;
+			ImGui::PushItemWidth(rowWidth);			
+			ImGui::InputText(panelName.c_str(), const_cast<char *>(rlComp.Tag.data()),
+							 rlComp.Tag.size(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::PopItemWidth();
+
+			SphereCoord pos0, pos1 = SphereCoord::ToSCS(lightComp.Position);
+			pos0 = pos1;
 		}
 	}
 

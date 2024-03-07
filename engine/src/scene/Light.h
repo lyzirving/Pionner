@@ -52,13 +52,14 @@ namespace pio
 
 		// ----------- Non Uniform data -----------
 		AssetHandle Volume{ NullAsset };
+		std::string Name;
 		// ----------------------------------------
 
 		PointLight() {}
 		PointLight(const glm::vec3 &pos, const glm::vec3 &radiance, float intensity,
-				   float minRadius, float radius, float falloff, float srcSize)
+				   float minRadius, float radius, float falloff, float srcSize, const std::string &name)
 			: Position(pos), Radiance(radiance), Intensity(intensity), MinRadius(minRadius),
-			  Radius(radius), Falloff(falloff), SourceSize(srcSize)
+			  Radius(radius), Falloff(falloff), SourceSize(srcSize), Name(name)
 		{
 		}
 	};

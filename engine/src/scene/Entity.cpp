@@ -124,7 +124,7 @@ namespace pio
 		else if (hasComponent<PointLightComponent>())
 		{
 			auto &comp = getComponent<PointLightComponent>();
-			comp.Position = SphereCoord::ToSCS(translation);
+			comp.Position = translation;
 		}
 		return false;
 	}
@@ -149,9 +149,7 @@ namespace pio
 		else if (hasComponent<PointLightComponent>())
 		{
 			auto &comp = getComponent<PointLightComponent>();
-			glm::vec3 pos = comp.Position.toCartesian();
-			pos += diff;
-			comp.Position = SphereCoord::ToSCS(pos);
+			comp.Position += diff;
 			return true;
 		}
 		return false;
