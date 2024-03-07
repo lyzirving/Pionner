@@ -344,33 +344,17 @@ namespace pio
 
 	UiDistantLight::UiDistantLight(float radius, float lightLen, const glm::vec4 &color) : Color(color)
 	{
-		{
-			Ref<LineMesh> lightMesh = CreateLightMesh(radius, lightLen, color);
+		Ref<LineMesh> lightMesh = CreateLightMesh(radius, lightLen, color);
 
-			LightMesh = Registry::Get()->create<C3dUIComponent>();
-			C3dUIComponent &uiComp = LightMesh->getComponent<C3dUIComponent>();
+		LightMesh = Registry::Get()->create<C3dUIComponent>();
+		C3dUIComponent &uiComp = LightMesh->getComponent<C3dUIComponent>();
 
-			uiComp.Name = UI_DIST_LIGHT;
-			uiComp.Handle = lightMesh->getHandle();
-			uiComp.Visible = true;
-			uiComp.State.Blend = Blend::Disable();
-			uiComp.State.Mode = RenderMode::MaterialPreview;
-			uiComp.State.DepthTest = DepthTest::Always();
-		}
-
-		{
-			Ref<LineMesh> dirMesh = CreateDirectonMesh(color);
-
-			DirectionMesh = Registry::Get()->create<C3dUIComponent>();
-			C3dUIComponent &uiComp = DirectionMesh->getComponent<C3dUIComponent>();
-
-			uiComp.Name = UI_DIST_LIGHT_DIR;
-			uiComp.Handle = dirMesh->getHandle();
-			uiComp.Visible = true;
-			uiComp.State.Blend = Blend::Disable();
-			uiComp.State.Mode = RenderMode::MaterialPreview;
-			uiComp.State.DepthTest = DepthTest::Always();
-		}
+		uiComp.Name = UI_DIST_LIGHT;
+		uiComp.Handle = lightMesh->getHandle();
+		uiComp.Visible = true;
+		uiComp.State.Blend = Blend::Disable();
+		uiComp.State.Mode = RenderMode::MaterialPreview;
+		uiComp.State.DepthTest = DepthTest::Always();
 	}
 
 	Ref<LineMesh> UiDistantLight::CreateLightMesh(float radius, float lightLen, const glm::vec4 &color)

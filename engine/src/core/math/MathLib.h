@@ -50,6 +50,9 @@ namespace pio
 
 		template<typename T>
 		T Clamp(T val, T min, T max) { return (val < min) ? min : ((val > max) ? max : val); }
+
+		template<typename T>
+		T Length(T lhs, T rhs) { return std::sqrt(lhs * lhs + rhs * rhs); }
 	}
 }
 

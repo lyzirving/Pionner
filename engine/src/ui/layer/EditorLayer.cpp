@@ -175,7 +175,11 @@ namespace pio
 
 				glm::vec3 dir = lightComp.Direction;
 				ImGui::DragFloat3("Direction##DirectionalLight", &dir.x, 0.01f, -1.f, 1.f, "%.2f");
-				if (dir != lightComp.Direction) { lightComp.Direction = glm::normalize(dir); }
+				if (dir != lightComp.Direction) 
+				{ 
+					transComp.Transform.Euler.invalidate();
+					lightComp.Direction = glm::normalize(dir); 
+				}
 
 				ImGui::DragFloat3("Radiance##DirectionalLight", glm::value_ptr(lightComp.Radiance), 0.1f, 0.f, 1000.f, "%.1f");			
 				ImGui::SliderFloat("Intensity##DirectionalLight", &lightComp.Intensity, 0.01f, 2.f, "%.2f", 0);				
@@ -230,12 +234,12 @@ namespace pio
 				// Global Pose
 				{									
 					if (ImGui::CollapsingHeader("GlobalPose##MeshSource", ImGuiUtils::Flag_Collapse_Header))
-					{					
-						glm::vec3 angle = meshSrc->GlobalPose.Euler.angle();						
+					{														
 						ImGui::DragFloat3("Position##meshSource", glm::value_ptr(meshSrc->GlobalPose.Position), 0.05f, -100.f, 100.f, "%.1f");
+						glm::vec3 angle = meshSrc->GlobalPose.Euler.angle();
 						ImGui::DragFloat3("Rotation##meshSource", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
-						ImGui::DragFloat3("Scale##meshSource", glm::value_ptr(meshSrc->GlobalPose.Scale), 0.1f, 0.f, 10.f, "%.1f");							
 						meshSrc->GlobalPose.Euler = angle;
+						ImGui::DragFloat3("Scale##meshSource", glm::value_ptr(meshSrc->GlobalPose.Scale), 0.1f, 0.f, 10.f, "%.1f");													
 					}
 				}
 
@@ -290,12 +294,12 @@ namespace pio
 				{			
 					TransformComponent &comp = ent->getComponent<TransformComponent>();					
 					if (ImGui::CollapsingHeader("Transform##Mesh", ImGuiUtils::Flag_Collapse_Header))
-					{						
-						glm::vec3 angle = comp.Transform.Euler.angle();						
+					{																		
 						ImGui::DragFloat3("Position##mesh", glm::value_ptr(comp.Transform.Position), 0.05f, -100.f, 100.f, "%.1f");
+						glm::vec3 angle = comp.Transform.Euler.angle();
 						ImGui::DragFloat3("Rotation##mesh", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
-						ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");	
 						comp.Transform.Euler = angle;
+						ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");							
 					}
 				}
 			}

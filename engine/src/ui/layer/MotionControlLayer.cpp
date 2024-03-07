@@ -649,36 +649,14 @@ namespace pio
 			auto &uiComp = m_uiDistantLight->LightMesh->getComponent<C3dUIComponent>();			
 
 			AssetHandle h = uiComp.Handle;
-			RenderState &state = uiComp.State;
-			glm::mat4 trans = glm::translate(glm::mat4(1.f), pos);
+			RenderState &state = uiComp.State;			
+			glm::vec3 dest = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f));
+			glm::quat rot = quaternion::RotationToQuat(AXIS_Z, dest);
+			glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * glm::toMat4(rot);
 
 			Renderer::SubmitRC([ubSet, h, state, trans]() mutable
 			{
 				Renderer::RenderLine(h, ubSet, trans, state);
-			});
-		}
-
-		{			
-			auto &uiComp = m_uiDistantLight->DirectionMesh->getComponent<C3dUIComponent>();			
-
-			AssetHandle h = uiComp.Handle;
-			Ref<LineMesh> mesh = AssetsManager::GetRuntimeAsset<LineMesh>(h);
-			mesh->clear();
-			mesh->Vertex.reserve(2);
-			mesh->Vertex.emplace_back(pos, m_uiDistantLight->Color);
-			glm::vec3 dest = pos + glm::vec3(glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f))) * m_uiDistantLight->DirectionLen;
-			mesh->Vertex.emplace_back(dest, m_uiDistantLight->Color);
-
-			Renderer::SubmitTask([mesh]() 
-			{ 
-				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(LineVertex));
-			});
-
-			RenderState &state = uiComp.State;
-
-			Renderer::SubmitRC([ubSet, h, state]() mutable
-			{
-				Renderer::RenderLine(h, ubSet, glm::mat4(1.f), state);
 			});
 		}
 	}
@@ -733,10 +711,22 @@ namespace pio
 			m_controller.SelectedAxis = MotionCtlAxis_Y;
 		}
 		else if (std::strcmp(uiComp.Name.data(), UI_TORUS_Z) == 0)
-		{
-			diff3d.z = -dirDiff.x;
+		{			
 			ctlName = UI_TORUS_Z;
 			m_controller.SelectedAxis = MotionCtlAxis_Z;
+			if (Math::IsZero(dirDiff.x))
+			{
+				diff3d.z = dirDiff.y;
+			}
+			else if (Math::IsZero(dirDiff.y))
+			{
+				diff3d.z = -dirDiff.x;
+			}
+			else
+			{
+				float dist = Math::Length(dirDiff.x, dirDiff.y);
+				diff3d.z = (dirDiff.x > 0.f) ? -dist : dist;
+			}
 		}
 		else
 		{

@@ -17,6 +17,7 @@ namespace pio
 		EulerAngle &operator+=(const glm::vec3 &euler);
 		EulerAngle &operator=(const glm::vec3 &euler);
 
+		void invalidate(bool val = true) { m_dirty = val; }
 		glm::mat4 mat() const;
 		glm::quat quat() const;
 		glm::vec3 angle() const { return m_euler; }
