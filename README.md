@@ -15,9 +15,8 @@ If you have any questions about the engine or find some bugs and problems in it,
   - GPU accelerated animation
 - Camera control && Target control
 
-# Screenshots
-
-[![demon_screenshoots](https://github.com/lyzirving/Pionner/blob/main/screenshots/pionner_screenshots_0.png)](https://github.com/lyzirving/Pionner/blob/main/screenshots/screenshots_demon_0.png)<br>
+# Showcase
+You can go to the directory "video" to watch the showcase video.
 
 # Possible TODO list
 
