@@ -4,7 +4,7 @@
 
 #include "gfx/renderer/SceneRenderer.h"
 #include "gfx/renderer/Renderer.h"
-#include "gfx/struct/MeshUtil.h" 
+#include "gfx/struct/MeshBuilder.h" 
 #include "gfx/struct/MaterialLibrary.h"
 #include "gfx/struct/Geometry2D.h"
 #include "gfx/rhi/Texture.h"
@@ -232,10 +232,7 @@ namespace pio
 				auto &transComp = entity->getComponent<TransformComponent>();
 				Transform transform = meshSrc->GlobalPose * transComp.Transform;
 				entity->setActorGlobalPose(transform.Position, transform.Euler.quat());
-				if (meshComp.Delay)
-					renderer->submitDelayedMesh(Ref<MeshBase>(mesh), meshComp.SubmeshIndex, transform, meshComp.State);
-				else
-					renderer->submitMesh(Ref<MeshBase>(mesh), meshComp.SubmeshIndex, transform, meshComp.State);
+				renderer->submitMesh(Ref<MeshBase>(mesh), meshComp.SubmeshIndex, transform, meshComp.State);					
 			}
 		}
 
@@ -255,10 +252,7 @@ namespace pio
 				auto &transComp = entity->getComponent<TransformComponent>();
 				Transform transform = meshSrc->GlobalPose * transComp.Transform;
 				entity->setActorGlobalPose(transform.Position, transform.Euler.quat());
-				if (staticMeshComp.Delay)
-					renderer->submitDelayedMesh(Ref<MeshBase>(staticMesh), staticMeshComp.SubmeshIndex, transform, staticMeshComp.State);
-				else
-					renderer->submitMesh(Ref<MeshBase>(staticMesh), staticMeshComp.SubmeshIndex, transform, staticMeshComp.State);
+				renderer->submitMesh(Ref<MeshBase>(staticMesh), staticMeshComp.SubmeshIndex, transform, staticMeshComp.State);					
 			}
 		}
 		
@@ -356,7 +350,7 @@ namespace pio
 			AssetsManager::Get()->addRuntimeAsset(icon);
 			Renderer::SubmitTask([icon]() mutable { icon->init(); });
 
-			m_lightEnv.PointLightData.LightCount = 2;
+			m_lightEnv.PointLightData.LightCount = 1;
 			m_lightEnv.PtLightShadowData.LightCount = m_lightEnv.PointLightData.LightCount;
 
 			m_lightEnv.PointLightData.Lights[0] = PointLight(SphereCoord::ToCCS(52.f, 45.f, 2.f),
@@ -427,9 +421,11 @@ namespace pio
 						Ref<MeshSource> meshSrc = RefCast<Asset, MeshSource>(arg.Assets);
 						auto &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
 						Ref<PhysicsScene> world = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene);
-						MeshUtilParam param; 
+						MeshBuildParam param; 
 						param.State.Blend = Blend::Disable();
-						CreateMesh<BoxColliderComponent>(meshSrc, world, RigidBodyComponent::Type::Dynamic, param, m_sceneRoot);
+						param.RigidType = RigidBodyComponent::Type::Dynamic;
+						param.Parent = m_sceneRoot;
+						CreateMesh<BoxColliderComponent>(meshSrc, world, param);
 						LOGD("mesh source[%s] is parsed", meshSrc->getName().c_str());
 						break;
 					}

@@ -822,12 +822,7 @@ namespace pio
 
 	void MotionControlLayer::onMoveMode(Ref<Entity> &ent, const glm::vec3 &diff, const std::string_view &ctlName)
 	{
-		if (ent->hasComponent<ProxyComponent>())
-		{
-			auto &comp = ent->getComponent<ProxyComponent>();
-			comp.Proxy->setGlobalPoseDiff(diff);
-		}
-		else if (ent->hasComponent<DirectionalLightComponent>())
+		if (ent->hasComponent<DirectionalLightComponent>())
 		{
 			auto &comp = ent->getComponent<TransformComponent>();
 			comp.Transform.Position += diff;
@@ -840,12 +835,7 @@ namespace pio
 
 	void MotionControlLayer::onRotateMode(Ref<Entity> &ent, const glm::vec3 &eulerDiff, const std::string_view &ctlName)
 	{
-		if (ent->hasComponent<ProxyComponent>())
-		{
-			auto &comp = ent->getComponent<ProxyComponent>();
-			comp.Proxy->setGlobalPoseDiff(glm::vec3(0.f), eulerDiff);
-		}
-		else if (ent->hasComponent<DirectionalLightComponent>())
+		if (ent->hasComponent<DirectionalLightComponent>())
 		{
 			auto &comp = ent->getComponent<TransformComponent>();
 			comp.Transform.Euler += eulerDiff;

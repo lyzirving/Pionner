@@ -15,7 +15,7 @@
 #include "gfx/struct/MaterialAsset.h"
 #include "gfx/struct/ShaderLibrary.h"
 #include "gfx/struct/Geometry2D.h"
-#include "gfx/struct/MeshUtil.h"
+#include "gfx/struct/MeshBuilder.h"
 #include "gfx/struct/Camera.h"
 
 #include "gfx/rhi/VertexArray.h"

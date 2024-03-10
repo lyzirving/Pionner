@@ -34,8 +34,6 @@ namespace pio
 
 		virtual void submitMesh(Ref<MeshBase> &mesh, uint32_t submeshIndex, Transform &transform, const RenderState &state);
 		virtual void submitSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state);
-		// Delayed mesh is drawn in the way of forward rendering at the final pass
-		virtual void submitDelayedMesh(Ref<MeshBase> &mesh, uint32_t submeshIndex, Transform &transform, const RenderState &state);		
 
 	public:
 		inline Ref<Texture2D> getCompositeTexture() { return m_compositeTexture; }
@@ -67,7 +65,6 @@ namespace pio
 	private:
 		bool m_active{ false };
 		std::map<MeshKey, DrawCommand> m_meshDraws{};
-		std::map<MeshKey, DrawCommand> m_delayedMeshDraws{};
 		std::map<MeshKey, DrawCommand> m_shadowPassDraws{};
 		std::map<MeshKey, SpriteCommand> m_spriteDraws{};
 

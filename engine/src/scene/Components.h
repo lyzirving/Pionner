@@ -52,7 +52,6 @@ namespace pio
 		AssetHandle SourceHandle{ NullAsset };
 		uint32_t SubmeshIndex{ NullIndex };
 		RenderState State;
-		bool Delay{ false };// Only for deferred shading
 	};
 
 	struct StaticMeshComponent
@@ -62,7 +61,6 @@ namespace pio
 		AssetHandle SourceHandle{ NullAsset };
 		uint32_t SubmeshIndex{ NullIndex };
 		RenderState State;
-		bool Delay{ false };// Only for deferred shading
 	};
 
 	struct C3dUIComponent
@@ -171,11 +169,6 @@ namespace pio
 
 	struct MeshColliderComponent
 	{
-	};
-
-	struct ProxyComponent
-	{
-		Ref<Entity> Proxy{};
 	};
 
 	struct SceneComponent

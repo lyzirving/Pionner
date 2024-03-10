@@ -8,7 +8,7 @@
 #include "scene/TierSetting.h"
 #include "scene/Skybox.h"
 
-#include "gfx/struct/MeshUtil.h"
+#include "gfx/struct/MeshBuilder.h"
 #include "gfx/struct/MaterialAsset.h"
 
 #include "gfx/rhi/UniformBufferSet.h"
@@ -158,7 +158,6 @@ namespace pio
 		flushDrawList(scene);
 
 		m_meshDraws.clear();
-		m_delayedMeshDraws.clear();
 		m_shadowPassDraws.clear();
 		m_spriteDraws.clear();
 
@@ -216,25 +215,6 @@ namespace pio
 			auto &dc = m_spriteDraws[meshKey];
 			dc.QuadMesh = quadMesh;
 			dc.Texture = texture;
-			dc.State = state;
-		}
-	}
-
-	void SceneRenderer::submitDelayedMesh(Ref<MeshBase> &mesh, uint32_t submeshIndex, Transform &transform, const RenderState &state)
-	{
-		const auto &meshSource = mesh->getMeshSource();
-		const auto &submeshes = meshSource->getSubmeshes();
-		Ref<MaterialTable> mt = mesh->getMaterialTable();
-
-		MeshKey meshKey{ mesh->getHandle(), submeshIndex };
-
-		{
-			auto &dc = m_delayedMeshDraws[meshKey];
-			dc.Mesh = mesh->getHandle();
-			dc.SubmeshIndex = submeshIndex;
-			dc.MaterialTb = mt;
-			dc.ModelMat = transform.mat() * submeshes[submeshIndex].Transform;
-			dc.IsRigged = false;
 			dc.State = state;
 		}
 	}
@@ -668,10 +648,9 @@ namespace pio
 		Ref<RenderPass> dlsp = m_distantLightShadowPass;
 		Ref<RenderPass> plsp = m_pointLightShadowPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
-		std::map<MeshKey, DrawCommand> &dCmd = m_delayedMeshDraws;
 		std::map<MeshKey, SpriteCommand> &spCmd = m_spriteDraws;
 
-		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, dCmd, spCmd]() mutable
+		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, spCmd]() mutable
 		{				
 			uint64_t start{ PROFILER_TIME };
 			Renderer::BeginRenderPass(lp);
@@ -681,13 +660,6 @@ namespace pio
 											   glm::ivec2(0), glm::ivec2(lp->getFramebuffer()->getWidth(), lp->getFramebuffer()->getHeight()),
 											   FB_DepthBuffer_Bit, TextureFilterMag::Nearest);
 			RenderPass::RenderLightingEffect_Deferred(env, gp, dlsp, plsp, ubs);
-
-			// deferred mesh that should be drawn in forward shading at last
-			for (auto &it : dCmd)
-			{
-				auto &dc = it.second;
-				Renderer::RenderSubmesh(dc.Mesh, dc.SubmeshIndex, dc.MaterialTb, Ref<RenderPass>(), ubs, dc.ModelMat, dc.State);
-			}
 
 			RenderState skState;
 			skState.Blend = Blend::Disable();

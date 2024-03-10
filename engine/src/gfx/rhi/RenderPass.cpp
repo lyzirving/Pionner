@@ -4,7 +4,7 @@
 #include "UniformBufferSet.h"
 
 #include "gfx/renderer/Renderer.h"
-#include "gfx/struct/MeshUtil.h"
+#include "gfx/struct/MeshBuilder.h"
 
 #include "platform/opengl/GLRenderPass.h"
 #include "asset/AssetsManager.h"
@@ -77,8 +77,7 @@ namespace pio
 	{
 		for (auto &it : cmd)
 		{			
-			SpriteCommand &d = it.second;	
-			d.State.Blend = Blend(BlendFactor::One, BlendFactor::One, BlendEquation::Add);
+			SpriteCommand &d = it.second;			
 			Renderer::RenderSprite(d.QuadMesh, d.Texture, d.State);
 		}
 	}
