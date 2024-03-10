@@ -25,6 +25,7 @@ namespace pio
 		bool GenerateMips{ false };		
 		bool SRGB{ true };// if false, linear rgb
 		bool Storage{ false };
+		bool FlipVerticalWhenLoad{ false };
 	};
 
 	class Texture : public Asset

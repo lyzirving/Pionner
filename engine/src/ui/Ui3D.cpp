@@ -346,8 +346,8 @@ namespace pio
 	{
 		Ref<LineMesh> lightMesh = CreateLightMesh(radius, lightLen, color);
 
-		LightMesh = Registry::Get()->create<C3dUIComponent>();
-		C3dUIComponent &uiComp = LightMesh->getComponent<C3dUIComponent>();
+		Mesh = Registry::Get()->create<C3dUIComponent>();
+		C3dUIComponent &uiComp = Mesh->getComponent<C3dUIComponent>();
 
 		uiComp.Name = UI_DIST_LIGHT;
 		uiComp.Handle = lightMesh->getHandle();
@@ -411,16 +411,49 @@ namespace pio
 		return lineMesh;
 	}
 
-	Ref<LineMesh> UiDistantLight::CreateDirectonMesh(const glm::vec4 &color)
+	const uint32_t UiPointLight::s_PointLightItr = 56;
+
+	UiPointLight::UiPointLight(float radius, const glm::vec4 &color) : Radius(radius), Color(color)
 	{
-		auto lineMesh = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>("DistantLightDirection"));
+		Ref<LineMesh> lightMesh = CreatePointLightMesh(radius, color);
+
+		Mesh = Registry::Get()->create<C3dUIComponent>();
+		C3dUIComponent &uiComp = Mesh->getComponent<C3dUIComponent>();
+
+		uiComp.Name = UI_POINT_LIGHT;
+		uiComp.Handle = lightMesh->getHandle();
+		uiComp.Visible = true;
+		uiComp.State.Blend = Blend::Disable();
+		uiComp.State.Mode = RenderMode::MaterialPreview;
+		uiComp.State.DepthTest = DepthTest::Always();
+	}
+
+	bool UiPointLight::setRadius(float r)
+	{
+		if (!Math::Equal(r, Radius))
+		{
+			Radius = r;
+			auto lineMesh = AssetsManager::GetRuntimeAsset<LineMesh>(Mesh->getComponent<C3dUIComponent>().Handle);
+			MakeGeometry(lineMesh->Vertex, lineMesh->Indices, s_PointLightItr, Radius, Color);
+			return true;
+		}
+		return false;
+	}
+
+	void UiPointLight::upload()
+	{
+		auto lineMesh = AssetsManager::GetRuntimeAsset<LineMesh>(Mesh->getComponent<C3dUIComponent>().Handle);
+		lineMesh->VertexBuffer->setData(lineMesh->Vertex.data(), lineMesh->Vertex.size() * sizeof(LineVertex));
+		lineMesh->IndexBuffer->setData(lineMesh->Indices.data(), lineMesh->Indices.size() * sizeof(uint32_t), lineMesh->Indices.size());
+	}
+
+	Ref<LineMesh> UiPointLight::CreatePointLightMesh(float radius, const glm::vec4 &color)
+	{
+		auto lineMesh = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>("PointLight"));
 		std::vector<LineVertex> &vertexArray = lineMesh->Vertex;
 		std::vector<uint32_t> &indice = lineMesh->Indices;
-
-		vertexArray.emplace_back(glm::vec3(0.f), color);
-		vertexArray.emplace_back(glm::vec3(1.f, 0.f, 0.f), color);
-		indice.push_back(0);
-		indice.push_back(1);
+		
+		MakeGeometry(vertexArray, indice, s_PointLightItr, radius, color);
 
 		lineMesh->VertexBuffer = VertexBuffer::Create(vertexArray.data(), vertexArray.size() * sizeof(LineVertex));
 		lineMesh->VertexBuffer->setLayout(VertexBuffer::To<LineVertex>());
@@ -431,5 +464,46 @@ namespace pio
 		lineMesh->VertexArray->addVertexBuffer(lineMesh->VertexBuffer);
 
 		return lineMesh;
+	}
+
+	void UiPointLight::MakeGeometry(std::vector<LineVertex> &vertexArray, std::vector<uint32_t> &indice, uint32_t itr, float radius, const glm::vec4 &color)
+	{
+		const float span = 360.f / float(itr);
+		float angle{ 0.f };
+
+		vertexArray.clear();
+		indice.clear();
+
+		std::vector<uint32_t> indice1;
+
+		vertexArray.resize(2 * itr);
+		indice.reserve(2 * itr);
+		indice1.reserve(2 * itr);
+
+		for (uint32_t i = 0; i < itr; i++)
+		{
+			angle = glm::radians(i * span);
+			vertexArray[i] = LineVertex(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), 0.f), color);
+			vertexArray[i + itr] = LineVertex(glm::vec3(radius * std::cos(angle), 0.f, radius * std::sin(angle)), color);
+
+			if (i == itr - 1)
+			{
+				indice.emplace_back(i);
+				indice.emplace_back(0);
+
+				indice1.emplace_back(i + itr);
+				indice1.emplace_back(itr);
+			}
+			else
+			{
+				indice.emplace_back(i);
+				indice.emplace_back(i + 1);
+
+				indice1.emplace_back(i + itr);
+				indice1.emplace_back(i + itr + 1);
+			}
+		}
+
+		indice.insert(indice.end(), indice1.begin(), indice1.end());
 	}
 }

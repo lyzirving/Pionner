@@ -11,8 +11,9 @@
 
 #include "core/EventBus.h"
 #include "core/math/Ray.h"
+#include "core/utils/Profiler.h"
 
-#include "ui/UiDef.h"
+#include "ui/MotionController.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -23,24 +24,14 @@ namespace pio
 {
 	Registry *Scene::s_registry = Registry::Get();
 
-	static void LightCompToSceneData(DirectionalLightComponent &lightComp, TransformComponent &transComp, SpriteComponent &spriteComp, DirectionalLight &sceneData, Camera &cam)
-	{		
-		sceneData.Position = transComp.Transform.Position;
-		if (transComp.Transform.Euler.bDirty())
-		{
-			sceneData.Direction = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f));
-		}		
-		sceneData.Radiance = lightComp.Radiance;
-		sceneData.Intensity = lightComp.Intensity;
-		sceneData.Bias = lightComp.Bias;
-		sceneData.SdMode = lightComp.SdMode;
-		sceneData.CastShadow = lightComp.CastShadow;
-
+	static void UpdateSpritePosition(const glm::vec3 &worldPos, SpriteComponent &spriteComp, Camera &cam)
+	{
 		const Viewport &vp = cam.getViewport();
 		glm::mat4 mvp = cam.getPrjMat() * cam.getViewMat();
 		glm::mat4 vpMat = Camera::GetViewportMat(Viewport(0, 0, vp.Width, vp.Height));
 		glm::uvec2 vpSize{ vp.Width, vp.Height };
-		glm::vec2 p = Math::ToScreenPos(sceneData.Position, mvp, vpMat, vpSize);
+
+		glm::vec2 p = Math::ToScreenPos(worldPos, mvp, vpMat, vpSize);
 		if (p != spriteComp.Position)
 		{
 			spriteComp.Position = p;
@@ -63,7 +54,23 @@ namespace pio
 		}
 	}
 
-	static void LightCompToSceneData(PointLightComponent &comp, PointLight &sceneData)
+	static void LightCompToSceneData(DirectionalLightComponent &lightComp, TransformComponent &transComp, SpriteComponent &spriteComp, DirectionalLight &sceneData, Camera &cam)
+	{		
+		sceneData.Position = transComp.Transform.Position;
+		if (transComp.Transform.Euler.bDirty())
+		{
+			sceneData.Direction = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f));
+		}		
+		sceneData.Radiance = lightComp.Radiance;
+		sceneData.Intensity = lightComp.Intensity;
+		sceneData.Bias = lightComp.Bias;
+		sceneData.SdMode = lightComp.SdMode;
+		sceneData.CastShadow = lightComp.CastShadow;
+
+		UpdateSpritePosition(sceneData.Position, spriteComp, cam);
+	}
+
+	static void LightCompToSceneData(PointLightComponent &comp, SpriteComponent &spriteComp, PointLight &sceneData, Camera &cam)
 	{
 		sceneData.Position = comp.Position;
 		sceneData.Radiance = comp.Radiance;
@@ -74,13 +81,15 @@ namespace pio
 		sceneData.SourceSize = comp.SourceSize;
 		sceneData.CastShadow = comp.CastShadow;
 
-		Ref<StaticMesh> mesh = AssetsManager::GetRuntimeAsset<StaticMesh>(sceneData.Volume);
-		if (mesh) { mesh->getMeshSource()->as<Sphere>()->setRadius(sceneData.Radius); }
+		Ref<StaticMesh> volume = AssetsManager::GetRuntimeAsset<StaticMesh>(sceneData.Volume);
+		if (volume) { volume->getMeshSource()->as<Sphere>()->setRadius(sceneData.Radius); }
+
+		UpdateSpritePosition(sceneData.Position, spriteComp, cam);
 	}
 
-	static void CreatePointLightComponent(uint32_t index, PointLight &light, Ref<PhysicsScene> physicsScene, Ref<Entity> sceneRoot)
+	static void CreatePointLightComponent(uint32_t index, PointLight &light, Ref<PhysicsScene> physicsScene, Ref<Entity> sceneRoot, Ref<Texture2D> icon)
 	{
-		Ref<Entity> ent = Registry::Get()->create<PointLightComponent, RelationshipComponent>(NodeType::PointLight);
+		Ref<Entity> ent = Registry::Get()->create<PointLightComponent, RelationshipComponent, SpriteComponent>(NodeType::PointLight);
 		auto &ptComp = ent->getComponent<PointLightComponent>();
 		ptComp.Index = index;
 		ptComp.Position = light.Position;
@@ -98,26 +107,15 @@ namespace pio
 		PIO_RELATION_SET_PARENT_INDEX(ent, sceneRoot->getCacheIndex());
 		PIO_RELATION_SET_CHILD_INDEX(sceneRoot, ent->getCacheIndex());
 
-		//TODO: use cache for model
-		AssimpMeshImporter importer("bulb", AssetFmt::Obj);
-		Ref<MeshSource> meshSrc = RefCast<Asset, MeshSource>(importer.importToMeshSource());
-		meshSrc->GlobalPose.Position = ptComp.Position;
-		MeshUtilParam param;
-		param.State.Blend = Blend::Disable();
-		param.State.Mode = RenderMode::MaterialPreview;
-		param.Delay = true;
-		param.Proxy = ent;
-		Ref<MeshBase> mesh = RefCast<Asset, MeshBase>(CreateMesh<BoxColliderComponent>(meshSrc, physicsScene, RigidBodyComponent::Type::Dynamic, param));
-		Ref<MaterialTable> mt = mesh->getMaterialTable();
-		auto itr = mt->begin();
-		while (itr != mt->end())
-		{
-			Ref<MaterialAsset> ma =	AssetsManager::GetRuntimeAsset<MaterialAsset>(itr->second);
-			ma->setCastShadow(false);
-			itr++;
-		}
-
-		ptComp.MeshHandle = mesh->getHandle();
+		auto &spriteComp = ent->getComponent<SpriteComponent>();
+		spriteComp.Visible = true;
+		spriteComp.Name = rlComp.Tag;
+		spriteComp.QuadMesh = MeshFactory::CreateScreenQuad(0, 0, 1, 1, 1, 1)->getHandle();
+		spriteComp.Texture = icon->getHandle();
+		spriteComp.State.DepthTest = DepthTest::Disable();
+		spriteComp.State.Blend = Blend::Common();
+		spriteComp.State.Cull = CullFace::Common();
+		spriteComp.State.Stencil.Enable = false;
 	}
 
 	Scene::Scene() : EventBusObject()
@@ -153,6 +151,7 @@ namespace pio
 
 	void Scene::onUpdate(const Timestep &ts)
 	{
+		uint64_t start{ PROFILER_TIME };
 		Camera &sceneCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
 		sceneCam.flush();
 
@@ -182,11 +181,9 @@ namespace pio
 			auto it = view.begin();
 			while (it != view.end())
 			{
-				PointLightComponent &comp = it->second->getComponent<PointLightComponent>();
-				LightCompToSceneData(comp, m_lightEnv.PointLightData.Lights[comp.Index]);
-				Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(comp.MeshHandle);
-				Ref<MeshSource> meshSrc = mesh->getMeshSource();
-				meshSrc->GlobalPose.Position = comp.Position;
+				PointLightComponent &lightComp = it->second->getComponent<PointLightComponent>();
+				auto &spriteComp = it->second->getComponent<SpriteComponent>();
+				LightCompToSceneData(lightComp, spriteComp, m_lightEnv.PointLightData.Lights[lightComp.Index], sceneCam);
 				it++;
 			}
 		}
@@ -207,10 +204,13 @@ namespace pio
 				LOGE("Err! Mutiple distant light");
 			}			
 		}
+
+		PROFILERD_DURATION(start, "Scene:Update");
 	}
 
 	void Scene::onRender(Ref<SceneRenderer> &renderer, const Timestep &ts)
 	{
+		uint64_t start{ PROFILER_TIME };
 		// -------------------- Render 3D scene ----------------------------
 		// -----------------------------------------------------------------
 		Camera &sceneCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
@@ -269,13 +269,13 @@ namespace pio
 			{
 				auto &entity = v.second;
 				auto &comp = entity->getComponent<SpriteComponent>();
-				if (comp.QuadMesh == NullIndex || !comp.Visible)
+				if (comp.QuadMesh == NullIndex || !comp.Visible || MotionController::bSpriteSelectd(entity))
 					continue;
 
 				renderer->submitSprite(comp.QuadMesh, comp.Texture, comp.State);
 			}
 		}
-
+		PROFILERD_DURATION(start, "Scene:onRender");
 		renderer->endScene(*this);
 	}
 
@@ -331,9 +331,12 @@ namespace pio
 			PIO_RELATION_SET_PARENT_INDEX(ent, m_sceneRoot->getCacheIndex());
 			PIO_RELATION_SET_CHILD_INDEX(m_sceneRoot, ent->getCacheIndex());
 
-			TextureSpecification spec; spec.SRGB = true;
+			TextureSpecification spec; 
+			spec.FlipVerticalWhenLoad = true;
 			Ref<Texture2D> icon = Texture2D::Create(AssetsManager::SpriteAbsPath("distant_light", AssetFmt::PNG), spec);
 			AssetsManager::Get()->addRuntimeAsset(icon);
+			Renderer::SubmitTask([icon]() mutable { icon->init(); });
+
 			auto &spriteComp = ent->getComponent<SpriteComponent>();
 			spriteComp.Visible = true;
 			spriteComp.Name = rlComp.Tag;	
@@ -343,23 +346,27 @@ namespace pio
 			spriteComp.State.Blend = Blend::Common();
 			spriteComp.State.Cull = CullFace::Common();
 			spriteComp.State.Stencil.Enable = false;
-
-			Renderer::SubmitTask([icon]() mutable { icon->init(); });
 		}
 
 		//Point Light
-		{						
-			m_lightEnv.PointLightData.LightCount = 1;
+		{			
+			TextureSpecification spec;
+			spec.FlipVerticalWhenLoad = true;
+			Ref<Texture2D> icon = Texture2D::Create(AssetsManager::SpriteAbsPath("point_light", AssetFmt::PNG), spec);
+			AssetsManager::Get()->addRuntimeAsset(icon);
+			Renderer::SubmitTask([icon]() mutable { icon->init(); });
+
+			m_lightEnv.PointLightData.LightCount = 2;
 			m_lightEnv.PtLightShadowData.LightCount = m_lightEnv.PointLightData.LightCount;
 
-			m_lightEnv.PointLightData.Lights[0] = PointLight(SphereCoord::ToCCS(43.f, 63.f, 3.7f),
-															 glm::vec3(3.f), 1.f, 0.001f, 5.f, 0.5f, 0.1f, "PointLight0");
+			m_lightEnv.PointLightData.Lights[0] = PointLight(SphereCoord::ToCCS(52.f, 45.f, 2.f),
+															 glm::vec3(3.f), 1.f, 0.001f, 2.25f, 0.5f, 0.1f, "PointLight0");
 			m_lightEnv.PointLightData.Lights[0].Volume = AssetsManager::CreateRuntimeAssets<StaticMesh>(MeshFactory::CreateSphere(m_lightEnv.PointLightData.Lights[0].Radius))->getHandle();
 			m_lightEnv.PointLightData.Lights[1] = PointLight(SphereCoord::ToCCS(40.f, 290.f, 3.2f),
-															 glm::vec3(3.f), 1.f, 0.001f, 5.f, 0.5f, 0.1f, "PointLight1");
+															 glm::vec3(3.f), 1.f, 0.001f, 2.25f, 0.5f, 0.1f, "PointLight1");
 			m_lightEnv.PointLightData.Lights[1].Volume = AssetsManager::CreateRuntimeAssets<StaticMesh>(MeshFactory::CreateSphere(m_lightEnv.PointLightData.Lights[1].Radius))->getHandle();
 			for (uint32_t i = 0; i < m_lightEnv.PointLightData.LightCount; i++)
-				CreatePointLightComponent(i, m_lightEnv.PointLightData.Lights[i], physicsScene, m_sceneRoot);
+				CreatePointLightComponent(i, m_lightEnv.PointLightData.Lights[i], physicsScene, m_sceneRoot, icon);
 		}
 
 		// Plane

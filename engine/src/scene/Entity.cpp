@@ -121,7 +121,7 @@ namespace pio
 			comp.Transform.Euler = euler;
 			return true;
 		}
-		else if (hasComponent<PointLightComponent>())
+		else if (m_nodeType == NodeType::PointLight && hasComponent<PointLightComponent>())
 		{
 			auto &comp = getComponent<PointLightComponent>();
 			comp.Position = translation;
@@ -146,7 +146,7 @@ namespace pio
 			comp.Transform.Euler += eulerDiff;
 			return true;
 		}
-		else if (hasComponent<PointLightComponent>())
+		else if (m_nodeType == NodeType::PointLight && hasComponent<PointLightComponent>())
 		{
 			auto &comp = getComponent<PointLightComponent>();
 			comp.Position += diff;

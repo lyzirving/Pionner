@@ -18,6 +18,8 @@
 #include "gfx/debug/GDebugger.h"
 
 #include "core/math/Transform.h"
+#include "core/utils/Profiler.h"
+
 #include "asset/AssetsManager.h"
 
 #ifdef LOCAL_TAG
@@ -139,18 +141,20 @@ namespace pio
 
 		Renderer::SubmitRC([cameraUB, dirLightUB, dirLightSdDataUB, ptLightDataUB, ptLightSdDataUB, cameraUD, lightEnv]() mutable
 		{
+			uint64_t start{ PROFILER_TIME };
 			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
 			dirLightUB->setData(lightEnv.DirectionalLight.Block.getBuffer()->as<void *>(), lightEnv.DirectionalLight.Block.getByteUsed());
 			dirLightSdDataUB->setData(lightEnv.DirectionalLightShadowData.Block.getBuffer()->as<void *>(), lightEnv.DirectionalLightShadowData.Block.getByteUsed());
 			ptLightDataUB->setData(lightEnv.PointLightData.Block.getBuffer()->as<void *>(), lightEnv.PointLightData.Block.getByteUsed());
 			ptLightSdDataUB->setData(lightEnv.PtLightShadowData.Block.getBuffer()->as<void *>(), lightEnv.PtLightShadowData.Block.getByteUsed());
+			PROFILERD_DURATION(start, "UploadData");
 		});		
 	}
 
 	void SceneRenderer::endScene(const Scene &scene)
 	{
 		PIO_ASSERT_RETURN(m_active, "beginScene() has not been called!");
-
+		uint64_t start{ PROFILER_TIME };
 		flushDrawList(scene);
 
 		m_meshDraws.clear();
@@ -159,6 +163,7 @@ namespace pio
 		m_spriteDraws.clear();
 
 		m_active = false;
+		PROFILERD_DURATION(start, "EndScene");
 	}
 
 	void SceneRenderer::submitMesh(Ref<MeshBase> &mesh, uint32_t submeshIndex, Transform &transform, const RenderState &state)
@@ -642,6 +647,7 @@ namespace pio
 
 		Renderer::SubmitRC([gp, ubs, cmd]() mutable
 		{
+			uint64_t start{ PROFILER_TIME };
 			Renderer::BeginRenderPass(gp);
 			for (auto &it : cmd)
 			{
@@ -649,6 +655,7 @@ namespace pio
 				Renderer::RenderSubmesh_Deferred(dc.Mesh, dc.SubmeshIndex, dc.MaterialTb, ubs, dc.ModelMat, dc.State);
 			}
 			Renderer::EndRenderPass(gp);
+			PROFILERD_DURATION(start, "GeoPass");
 		});
 	}
 
@@ -665,7 +672,8 @@ namespace pio
 		std::map<MeshKey, SpriteCommand> &spCmd = m_spriteDraws;
 
 		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, dCmd, spCmd]() mutable
-		{						
+		{				
+			uint64_t start{ PROFILER_TIME };
 			Renderer::BeginRenderPass(lp);
 			// Copy depth buffer from G-Buffer into Lighting pass
 			Renderer::FramebufferBlockTransfer(gp->getFramebuffer()->getId(), lp->getFramebuffer()->getId(),
@@ -691,6 +699,7 @@ namespace pio
 			RenderPass::RenderSprites(spCmd);
 
 			Renderer::EndRenderPass(lp);	
+			PROFILERD_DURATION(start, "LightingPass");
 		});
 	}
 
@@ -704,9 +713,11 @@ namespace pio
 		// No pass to bind, render on the default framebuffer
 		Renderer::SubmitRC([scpss, vp, handle, composite]() mutable
 		{
+			uint64_t start{ PROFILER_TIME };
 			Renderer::BeginScreenPass(scpss, Viewport(vp.X, vp.Y, vp.Width, vp.Height));
 			RenderPass::Postprocessing(handle, composite);	
 			Renderer::EndScreenPass(scpss);
+			PROFILERD_DURATION(start, "Composite");
 		});
 	}
 }

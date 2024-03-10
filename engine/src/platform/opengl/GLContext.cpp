@@ -4,6 +4,8 @@
 
 #include "GLContext.h"
 
+#include "core/utils/Profiler.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -25,12 +27,13 @@ namespace pio
 	{
 		PIO_ASSERT_RETURN(m_winHandle != nullptr, "GLFW window handle is null, return");
 		glfwMakeContextCurrent(m_winHandle);
-		glfwSwapInterval(1); // Enable vsync
 	}
 
 	void GLContext::swapBuffer()
 	{
 		PIO_ASSERT_RETURN(m_winHandle != nullptr, "GLFW window handle is null, return");
+		uint64_t start{ PROFILER_TIME };
 		glfwSwapBuffers(m_winHandle);
+		PROFILERD_DURATION(start, "SwapBuffer");
 	}
 }

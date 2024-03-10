@@ -10,6 +10,7 @@
 
 #include "Application.h"
 #include "asset/AssetsManager.h"
+#include "core/utils/Profiler.h"
 
 #include "gfx/struct/MaterialAsset.h"
 #include "gfx/struct/ShaderLibrary.h"
@@ -55,6 +56,7 @@ namespace pio
 
 	void GLRenderAPI::beginFrame()
 	{
+		uint64_t start{ PROFILER_TIME };
 		commitViewport(0, 0, Application::MainWindow()->getWidth(), Application::MainWindow()->getHeight());
 		GLState::SetClear(m_globalState.Clear);
 		GLState::SetDepthTest(m_globalState.DepthTest);
@@ -71,10 +73,12 @@ namespace pio
 			std::lock_guard<std::mutex> lk{ Application::Get()->EventMutex };
 			ImGui::NewFrame();
 		}
+		PROFILERD_DURATION(start, "BeginFrame");
 	}
 
 	void GLRenderAPI::endFrame()
 	{
+		uint64_t start{ PROFILER_TIME };
 		// Rendering
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -87,6 +91,7 @@ namespace pio
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
+		PROFILERD_DURATION(start, "EndFrame");
 	}
 
 	void GLRenderAPI::commitViewport(const Viewport &viewport)

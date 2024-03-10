@@ -69,8 +69,8 @@ namespace pio
 		m_views[MotionCtl_Rotation] = CreateRef<View>("Rotate Ctl View");
 		m_views[MotionCtl_Rotation]->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_NORMAL[MotionCtl_Rotation]));
 
-		m_controller.SelectedView = m_views[MotionCtl_Move];
-		m_controller.Mode = MotionCtl_Move;
+		MotionController::SelectView(m_views[MotionCtl_Move]);
+		MotionController::Mode(MotionCtl_Move);
 
 		m_visionCamUD.obtainBlock();
 		m_visionUBSet = UniformBufferSet::Create();
@@ -105,6 +105,7 @@ namespace pio
 		torusActorZ->setActorTransform(glm::vec3(0.f), quaternion::IDENTITY);
 
 		m_uiDistantLight = CreateRef<UiDistantLight>(0.5f, 2.f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
+		m_uiPointLight = CreateRef<UiPointLight>(0.5f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
 
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
 						   Application::MainWindow()->getHeight());
@@ -118,6 +119,7 @@ namespace pio
 		m_selectCoord.reset();
 		m_rotateCtl.reset();
 		m_uiDistantLight.reset();
+		m_uiPointLight.reset();
 
 		for (uint32_t i = 0; i < MotionCtl_Num; i++)
 			m_motionCtlPhysx[i].reset();
@@ -199,13 +201,13 @@ namespace pio
 	{
 		glm::vec2 winCursor = Application::MainWindow()->getCursorPos();
 		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
-		m_controller.DownTime = TimeUtil::CurrentTimeMs();
-		m_controller.LastWinCursor = winCursor;
+		MotionController::DownTime(TimeUtil::CurrentTimeMs());
+		MotionController::WinCursor(winCursor);
 
 		// ------------------- Vision control pressing work flow ----------------------
 		if (m_circleLayoutParam.Position.contain((uint32_t)winCursor.x, (uint32_t)winCursor.y))
 		{
-			m_controller.setTarget(MotionTarget_Vision);
+			MotionController::Target(MotionTarget_Vision);
 			Application::MainWindow()->setCursorMode(CursorMode::Disabled);
 			return true;
 		}
@@ -213,30 +215,26 @@ namespace pio
 
 		// ------------------- Object3d pressing work flow --------------------
 		// An entity is selected, check whether the it is interacting with the controller
-		if (m_controller.SelectedObj3D)
+		if (MotionController::bObj3dSelectd())
 		{
 			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-			HitResult result = m_motionCtlPhysx[m_controller.Mode]->intersect(r);
-			m_controller.CtlActor = result.Hit ? result.Actor : nullptr;
-			if (m_controller.CtlActorPressed = result.Hit)
-			{
-				m_controller.setTarget(MotionTarget_Object3D);
-			}
-			return m_controller.CtlActorPressed;
+			HitResult result = m_motionCtlPhysx[MotionController::GetMode()]->intersect(r);
+			MotionController::CtlActor(result.Hit ? result.Actor : nullptr);
+			MotionController::PressCtlActor(result.Hit);
+			if (result.Hit) { MotionController::Target(MotionTarget_Object3D); }
+			return result.Hit;
 		}
 		// -------------------------------------------------------------------	
 
 		// ------------------- Sprite pressing work flow ----------------------
-		if (m_controller.SelectedSprite)
+		if (MotionController::bSpriteSelectd())
 		{
 			Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-			HitResult result = m_motionCtlPhysx[m_controller.Mode]->intersect(r);
-			m_controller.CtlActor = result.Hit ? result.Actor : nullptr;
-			if (m_controller.CtlActorPressed = result.Hit)
-			{
-				m_controller.setTarget(MotionTarget_Sprite);
-			}
-			return m_controller.CtlActorPressed;
+			HitResult result = m_motionCtlPhysx[MotionController::GetMode()]->intersect(r);
+			MotionController::CtlActor(result.Hit ? result.Actor : nullptr);
+			MotionController::PressCtlActor(result.Hit);
+			if (result.Hit) { MotionController::Target(MotionTarget_Sprite); }
+			return result.Hit;
 		}
 		// -------------------------------------------------------------------	
 
@@ -249,13 +247,13 @@ namespace pio
 		glm::vec2 windowCursor(p->getX(), p->getY());
 
 		// ------------------- Vision control pressing work flow ----------------------		
-		if (m_controller.bTarget(MotionTarget_Vision))
+		if (MotionController::bTarget(MotionTarget_Vision))
 		{
 			m_drawCircle = true;
-			glm::vec2 delta = windowCursor - m_controller.LastWinCursor;
+			glm::vec2 delta = windowCursor - MotionController::GetWinCursor();
 			delta.x = Math::Clamp(delta.x, -20.f, 20.f);
 			delta.y = Math::Clamp(delta.y, -20.f, 20.f);
-			m_controller.LastWinCursor = windowCursor;
+			MotionController::WinCursor(windowCursor);
 			auto &comp = m_mainCameraEnt->getComponent<CameraComponent>();
 			comp.Camera.addPosDiff(delta.x, delta.y);
 			return true;
@@ -264,18 +262,18 @@ namespace pio
 		// -------------------------------------------------------------------
 
 		// ------------------- Object3d pressing work flow -------------------
-		if (m_controller.bTarget(MotionTarget_Object3D))
+		if (MotionController::bTarget(MotionTarget_Object3D))
 		{
-			onSelectionMoved(m_controller.SelectedObj3D, m_controller.CtlActor, windowCursor, m_controller.LastWinCursor, m_layoutParam);
-			m_controller.LastWinCursor = windowCursor;
+			onSelectionMoved(MotionController::GetObj3D(), MotionController::GetCtlAc(), windowCursor, MotionController::GetWinCursor(), m_layoutParam);
+			MotionController::WinCursor(windowCursor);
 			return true;
 		}
 
 		// ------------------- Sprite pressing work flow ----------------------
-		if (m_controller.bTarget(MotionTarget_Sprite))
+		if (MotionController::bTarget(MotionTarget_Sprite))
 		{
-			onSelectionMoved(m_controller.SelectedSprite, m_controller.CtlActor, windowCursor, m_controller.LastWinCursor, m_layoutParam);
-			m_controller.LastWinCursor = windowCursor;
+			onSelectionMoved(MotionController::GetSprite(), MotionController::GetCtlAc(), windowCursor, MotionController::GetWinCursor(), m_layoutParam);
+			MotionController::WinCursor(windowCursor);
 			return true;
 		}
 		// ------------------------------------------------------------------	
@@ -284,22 +282,19 @@ namespace pio
 
 	bool MotionControlLayer::onMouseButtonReleased(Event &event)
 	{
-		bool bUsing = !m_controller.bTarget(MotionTarget_None);
-		if (!bUsing && MotionController::IsClick(TimeUtil::CurrentTimeMs(), m_controller.DownTime))
+		bool bUsing = !MotionController::bTarget(MotionTarget_None);
+		if (!bUsing && MotionController::bClick(TimeUtil::CurrentTimeMs(), MotionController::GetDownTime()))
 		{
 			bUsing = onHandleClick(Application::MainWindow()->getCursorPos());
 		}
 
-		if (m_controller.bTarget(MotionTarget_Vision))
-		{
-			Application::MainWindow()->setCursorMode(CursorMode::Normal);
-		}
+		if (MotionController::bTarget(MotionTarget_Vision)) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
 
-		m_controller.LastWinCursor = glm::vec2(-1.f);
-		m_controller.CtlActor = nullptr;
-		m_controller.CtlActorPressed = false;
-		m_controller.SelectedAxis = MotionCtlAxis_Num;
-		m_controller.setTarget(MotionTarget_None);
+		MotionController::WinCursor(glm::vec2(-1.f));
+		MotionController::CtlActor(nullptr);
+		MotionController::PressCtlActor(false);
+		MotionController::SelectAxis(MotionCtlAxis_Num);
+		MotionController::Target(MotionTarget_None);
 
 		return bUsing;
 	}
@@ -416,7 +411,7 @@ namespace pio
 
 	void MotionControlLayer::onDrawMotionCtl(const Timestep &ts)
 	{
-		switch (m_controller.Mode)
+		switch (MotionController::GetMode())
 		{
 			case MotionCtl_Move:
 			{
@@ -468,19 +463,26 @@ namespace pio
 	void MotionControlLayer::onDrawMoveMode(const Timestep &ts)
 	{
 		glm::vec3 slcPos(0.f);
-		if (m_controller.SelectedSprite)
+		if (MotionController::bSpriteSelectd())
 		{
-			if (m_controller.SelectedSprite->hasComponent<DirectionalLightComponent>())
+			if (MotionController::GetSprite()->hasComponent<DirectionalLightComponent>())
 			{
-				auto &lightComp = m_controller.SelectedSprite->getComponent<DirectionalLightComponent>();
-				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();
+				auto &lightComp = MotionController::GetSprite()->getComponent<DirectionalLightComponent>();
+				auto &transComp = MotionController::GetSprite()->getComponent<TransformComponent>();
 				onDrawMoveCtl(transComp.Transform.Position);
 				onDrawUIDistantLight(lightComp, transComp);
 				return;
 			}
+			else if (MotionController::GetSprite()->hasComponent<PointLightComponent>())
+			{
+				auto &lightComp = MotionController::GetSprite()->getComponent<PointLightComponent>();
+				onDrawMoveCtl(lightComp.Position);
+				onDrawUIPointLight(lightComp);
+				return;
+			}
 		}
 
-		if (m_controller.SelectedObj3D && m_controller.SelectedObj3D->getGlobalPoseCenter(slcPos))
+		if (MotionController::bObj3dSelectd() && MotionController::GetObj3D()->getGlobalPoseCenter(slcPos))
 		{
 			onDrawMoveCtl(slcPos);
 			return;
@@ -490,19 +492,26 @@ namespace pio
 	void MotionControlLayer::onDrawRotationMode(const Timestep &ts)
 	{
 		glm::vec3 slcPos(0.f);
-		if (m_controller.SelectedSprite)
+		if (MotionController::bSpriteSelectd())
 		{
-			if (m_controller.SelectedSprite->hasComponent<DirectionalLightComponent>())
+			if (MotionController::GetSprite()->hasComponent<DirectionalLightComponent>())
 			{				
-				auto &lightComp = m_controller.SelectedSprite->getComponent<DirectionalLightComponent>();
-				auto &transComp = m_controller.SelectedSprite->getComponent<TransformComponent>();					
+				auto &lightComp = MotionController::GetSprite()->getComponent<DirectionalLightComponent>();
+				auto &transComp = MotionController::GetSprite()->getComponent<TransformComponent>();					
 				onDrawRotationCtl(transComp.Transform.Position);
 				onDrawUIDistantLight(lightComp, transComp);
 				return;
 			}
+			else if (MotionController::GetSprite()->hasComponent<PointLightComponent>())
+			{
+				auto &lightComp = MotionController::GetSprite()->getComponent<PointLightComponent>();
+				onDrawRotationCtl(lightComp.Position);
+				onDrawUIPointLight(lightComp);
+				return;
+			}
 		}
 
-		if (m_controller.SelectedObj3D && m_controller.SelectedObj3D->getGlobalPoseCenter(slcPos))
+		if (MotionController::bObj3dSelectd() && MotionController::GetObj3D()->getGlobalPoseCenter(slcPos))
 		{
 			onDrawRotationCtl(slcPos);
 			return;
@@ -552,7 +561,7 @@ namespace pio
 
 		// X Axis
 		Ref<PhysicsActor> actor;
-		if (m_controller.SelectedAxis == MotionCtlAxis_X || m_controller.SelectedAxis == MotionCtlAxis_Num)
+		if (MotionController::GetAixs() == MotionCtlAxis_X || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_selectCoord->XAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get X axis's actor");
 			actor->setGlobalPose(pos);
@@ -560,7 +569,7 @@ namespace pio
 		}
 
 		// Y Axis
-		if (m_controller.SelectedAxis == MotionCtlAxis_Y || m_controller.SelectedAxis == MotionCtlAxis_Num)
+		if (MotionController::GetAixs() == MotionCtlAxis_Y || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_selectCoord->YAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get Y axis's actor");
 			actor->setGlobalPose(pos);
@@ -568,7 +577,7 @@ namespace pio
 		}	
 
 		// Z Axis
-		if (m_controller.SelectedAxis == MotionCtlAxis_Z || m_controller.SelectedAxis == MotionCtlAxis_Num)
+		if (MotionController::GetAixs() == MotionCtlAxis_Z || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_selectCoord->ZAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get Z axis's actor");
 			actor->setGlobalPose(pos);
@@ -618,21 +627,21 @@ namespace pio
 		};
 
 		Ref<PhysicsActor> actor;
-		if (m_controller.SelectedAxis == MotionCtlAxis_X || m_controller.SelectedAxis == MotionCtlAxis_Num)
+		if (MotionController::GetAixs() == MotionCtlAxis_X || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_rotateCtl->XTorus->getActor(actor), "onDrawRotationCtl: fail to get X torus's actor");
 			actor->setGlobalPose(pos);
 			drawFunc(m_rotateCtl->XTorus->getComponent<C3dUIComponent>());
 		}
 
-		if (m_controller.SelectedAxis == MotionCtlAxis_Y || m_controller.SelectedAxis == MotionCtlAxis_Num)
+		if (MotionController::GetAixs() == MotionCtlAxis_Y || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_rotateCtl->YTorus->getActor(actor), "onDrawRotationCtl: fail to get Y torus's actor");
 			actor->setGlobalPose(pos);
 			drawFunc(m_rotateCtl->YTorus->getComponent<C3dUIComponent>());
 		}
 
-		if (m_controller.SelectedAxis == MotionCtlAxis_Z || m_controller.SelectedAxis == MotionCtlAxis_Num)
+		if (MotionController::GetAixs() == MotionCtlAxis_Z || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_rotateCtl->ZTorus->getActor(actor), "onDrawRotationCtl: fail to get Z torus's actor");
 			actor->setGlobalPose(pos);
@@ -645,20 +654,39 @@ namespace pio
 		const glm::vec3 &pos = transComp.Transform.Position;
 		Ref<UniformBufferSet> ubSet = m_motionUBSet;
 		
+		auto &uiComp = m_uiDistantLight->Mesh->getComponent<C3dUIComponent>();
+
+		AssetHandle h = uiComp.Handle;
+		RenderState &state = uiComp.State;
+		glm::vec3 dest = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f));
+		glm::quat rot = quaternion::RotationToQuat(AXIS_Z, dest);
+		glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * glm::toMat4(rot);
+
+		Renderer::SubmitRC([ubSet, h, state, trans]() mutable
 		{
-			auto &uiComp = m_uiDistantLight->LightMesh->getComponent<C3dUIComponent>();			
+			Renderer::RenderLine(h, ubSet, trans, state);
+		});
+	}
 
-			AssetHandle h = uiComp.Handle;
-			RenderState &state = uiComp.State;			
-			glm::vec3 dest = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f));
-			glm::quat rot = quaternion::RotationToQuat(AXIS_Z, dest);
-			glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * glm::toMat4(rot);
+	void MotionControlLayer::onDrawUIPointLight(PointLightComponent &lightComp)
+	{
+		const glm::vec3 &pos = lightComp.Position;
+		Ref<UiPointLight> ui = m_uiPointLight;
+		Ref<UniformBufferSet> ubSet = m_motionUBSet;
 
-			Renderer::SubmitRC([ubSet, h, state, trans]() mutable
-			{
-				Renderer::RenderLine(h, ubSet, trans, state);
-			});
+		auto &uiComp = ui->Mesh->getComponent<C3dUIComponent>();
+		AssetHandle h = uiComp.Handle;
+		RenderState &state = uiComp.State;
+
+		if (ui->setRadius(lightComp.Radius))
+		{
+			Renderer::SubmitTask([ui]() { ui->upload(); });
 		}
+
+		Renderer::SubmitRC([ubSet, h, state, pos]() mutable
+		{
+			Renderer::RenderLine(h, ubSet, glm::translate(glm::mat4(1.f), pos), state);
+		});
 	}
 
 	void MotionControlLayer::onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param)
@@ -684,36 +712,36 @@ namespace pio
 		{
 			diff3d.x = dirDiff.x;
 			ctlName = UI_AXIS_X;
-			m_controller.SelectedAxis = MotionCtlAxis_X;
+			MotionController::SelectAxis(MotionCtlAxis_X);
 		}
 		else if (std::strcmp(uiComp.Name.data(), UI_AXIS_Y) == 0)
 		{
 			diff3d.y = dirDiff.y;
 			ctlName = UI_AXIS_Y;
-			m_controller.SelectedAxis = MotionCtlAxis_Y;
+			MotionController::SelectAxis(MotionCtlAxis_Y);
 		}
 		else if (std::strcmp(uiComp.Name.data(), UI_AXIS_Z) == 0)
 		{
 			diff3d.z = dirDiff.z;
 			ctlName = UI_AXIS_Z;
-			m_controller.SelectedAxis = MotionCtlAxis_Z;
+			MotionController::SelectAxis(MotionCtlAxis_Z);
 		}
 		else if (std::strcmp(uiComp.Name.data(), UI_TORUS_X) == 0)
 		{
 			diff3d.x = -dirDiff.y;
 			ctlName = UI_TORUS_X;
-			m_controller.SelectedAxis = MotionCtlAxis_X;
+			MotionController::SelectAxis(MotionCtlAxis_X);
 		}
 		else if (std::strcmp(uiComp.Name.data(), UI_TORUS_Y) == 0)
 		{
 			diff3d.y = dirDiff.x;
 			ctlName = UI_TORUS_Y;
-			m_controller.SelectedAxis = MotionCtlAxis_Y;
+			MotionController::SelectAxis(MotionCtlAxis_Y);
 		}
 		else if (std::strcmp(uiComp.Name.data(), UI_TORUS_Z) == 0)
 		{			
 			ctlName = UI_TORUS_Z;
-			m_controller.SelectedAxis = MotionCtlAxis_Z;
+			MotionController::SelectAxis(MotionCtlAxis_Z);
 			if (Math::IsZero(dirDiff.x))
 			{
 				diff3d.z = dirDiff.y;
@@ -734,11 +762,11 @@ namespace pio
 			return;
 		}
 
-		if (m_controller.bMode(MotionCtl_Move))
+		if (MotionController::bMode(MotionCtl_Move))
 		{
 			onMoveMode(selection, diff3d * CTL_TRANSLATION_RATIO, ctlName);
 		}
-		else if (m_controller.bMode(MotionCtl_Rotation))
+		else if (MotionController::bMode(MotionCtl_Rotation))
 		{			
 			onRotateMode(selection, diff3d * CTL_ROTATE_RATIO, ctlName);
 		}		
@@ -755,15 +783,15 @@ namespace pio
 			}
 		}
 
-		if (onHandleObject3dClick(winCursor))
-		{		
-			m_controller.SelectedSprite.reset();
+		if (onHandleSpriteClick(winCursor))
+		{
+			MotionController::SelectObj3D(nullptr);
 			return true;
 		}
 
-		if (onHandleSpriteClick(winCursor))
-		{
-			m_controller.SelectedObj3D.reset();
+		if (onHandleObject3dClick(winCursor))
+		{		
+			MotionController::SelectSprite(nullptr);
 			return true;
 		}
 
@@ -774,18 +802,18 @@ namespace pio
 	{
 		for (uint8_t i = 0; i < MotionCtl_Num; i++)
 		{
-			if (m_views[i] && m_views[i]->contains(cursor) && m_controller.SelectedView != m_views[i])
+			if (m_views[i] && m_views[i]->contains(cursor) && !MotionController::bSelectedView(m_views[i]))
 			{
-				if (m_controller.SelectedView)
+				if (MotionController::bSelectedView())
 				{
-					m_controller.SelectedView->setStatus(ViewCtlStatus_Normal);
-					m_controller.SelectedView->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_NORMAL[m_controller.Mode]));
+					MotionController::GetView()->setStatus(ViewCtlStatus_Normal);
+					MotionController::GetView()->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_NORMAL[MotionController::GetMode()]));
 				}
 				m_views[i]->setStatus(ViewCtlStatus_Selected);
 				m_views[i]->setTexture(AssetsManager::GetPackedAsset<Texture2D>(ICON_ID_SELECT[i]));
 
-				m_controller.SelectedView = m_views[i];
-				m_controller.Mode = MotionCtlMode(i);
+				MotionController::SelectView(m_views[i]);
+				MotionController::Mode(MotionCtlMode(i));
 				return true;
 			}
 		}
@@ -834,16 +862,18 @@ namespace pio
 		Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
 		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
-		if (m_controller.SelectedObj3D) { m_controller.SelectedObj3D->setSelection(false); }
-		bool consume = result.Hit && result.Actor->getEnt(m_controller.SelectedObj3D);
-		if (consume)
+		if (MotionController::bObj3dSelectd()) { MotionController::GetObj3D()->setSelection(false); }
+		Ref<Entity> select3d;
+		bool consume = result.Hit && result.Actor->getEnt(select3d);
+		if (consume && select3d)
 		{
 			LOGD("hit entity in scene");
-			m_controller.SelectedObj3D->setSelection(true);
+			MotionController::SelectObj3D(select3d);
+			MotionController::GetObj3D()->setSelection(true);
 		}
 		else
 		{
-			m_controller.SelectedObj3D.reset();
+			MotionController::SelectObj3D(nullptr);
 		}
 		return consume;
 	}
@@ -860,12 +890,12 @@ namespace pio
 			bool consume = Math::Contains(vpCursor, spriteComp.Rect);
 			if (consume)
 			{
-				m_controller.SelectedSprite = ent;
+				MotionController::SelectSprite(ent);
 				return consume;
 			}
 			it++;
 		}
-		m_controller.SelectedSprite.reset();
+		MotionController::SelectSprite(nullptr);
 		return false;
 	}
 }

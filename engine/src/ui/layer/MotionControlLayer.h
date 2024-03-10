@@ -3,6 +3,7 @@
 
 #include "Layer.h"
 
+#include "ui/MotionController.h"
 #include "gfx/struct/Camera.h"
 #include "physics/PhysicsDef.h"
 
@@ -14,56 +15,11 @@ namespace pio
 	class UiCoordinate3D;
 	class UiRotationCtl;
 	class UiDistantLight;
+	class UiPointLight;
 	class PhysicsScene;
 	struct DirectionalLightComponent;
+	struct PointLightComponent;
 	struct TransformComponent;
-
-	enum MotionCtlMode : uint8_t
-	{
-		MotionCtl_Move = 0, MotionCtl_Rotation, MotionCtl_Scale, MotionCtl_Num
-	};
-
-	enum MotionTarget : uint8_t
-	{
-		MotionTarget_None = 0, MotionTarget_Icon, MotionTarget_Vision, MotionTarget_Object3D, MotionTarget_Sprite
-	};
-
-	enum MotionCtlAxis : uint8_t
-	{
-		MotionCtlAxis_X, MotionCtlAxis_Y, MotionCtlAxis_Z, MotionCtlAxis_Num
-	};
-
-	class MotionController
-	{
-	public:
-		MotionController() {}
-		~MotionController() = default;
-
-	private:
-		bool bTarget(MotionTarget t) { return Target == t; }
-		void setTarget(MotionTarget t) { Target = t; }
-
-		bool bMode(MotionCtlMode m) { return Mode == m; }
-
-	private:
-		static bool IsClick(uint64_t now, uint64_t pre) { return (now - pre) <= CLICK_INTERVAL; }
-
-	private:
-		Ref<View> SelectedView;
-		Ref<Entity> SelectedObj3D;
-		Ref<Entity> SelectedSprite;
-		MotionCtlAxis SelectedAxis{ MotionCtlAxis_Num };
-		MotionCtlMode Mode{ MotionCtl_Move };
-		MotionTarget Target{ MotionTarget_None };		
-		PhysicsActor *CtlActor{ nullptr };
-		bool CtlActorPressed{ false };
-
-		uint64_t DownTime{ 0 };// ms
-		glm::vec2 LastWinCursor{ -1.f };
-
-	private:
-		friend class MotionControlLayer;
-	};
 
 	class MotionControlLayer : public Layer
 	{
@@ -93,6 +49,7 @@ namespace pio
 		void onDrawMoveCtl(const glm::vec3 pos);
 		void onDrawRotationCtl(const glm::vec3 pos);
 		void onDrawUIDistantLight(DirectionalLightComponent &lightComp, TransformComponent &transComp);
+		void onDrawUIPointLight(PointLightComponent &lightComp);
 
 		void onSelectionMoved(Ref<Entity> &selection, PhysicsActor *ctlActor, const glm::vec2 &cursor, const glm::vec2 &last, const WindowLayoutParams &param);
 		void onMoveMode(Ref<Entity> &ent, const glm::vec3 &diff, const std::string_view &ctlName);
@@ -123,10 +80,10 @@ namespace pio
 		Ref<UiCoordinate3D> m_selectCoord;
 		Ref<UiRotationCtl> m_rotateCtl;
 		Ref<UiDistantLight> m_uiDistantLight;
+		Ref<UiPointLight> m_uiPointLight;
 
 		Ref<PhysicsScene> m_motionCtlPhysx[MotionCtl_Num];
 
-		MotionController m_controller;
 		Ref<View> m_views[MotionCtl_Num];
 		LayoutRect m_viewIconsRect;
 	};

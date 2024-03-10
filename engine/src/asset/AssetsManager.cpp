@@ -18,7 +18,7 @@ namespace pio
 {
 	PIO_SINGLETON_IMPL(AssetsManager)
 
-		static const std::string ASSETS_ROOT = "assets";
+	static const std::string ASSETS_ROOT = "assets";
 
 	AssetsManager::AssetsManager()
 	{

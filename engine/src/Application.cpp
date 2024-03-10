@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "core/EventBus.h"
+#include "core/utils/Profiler.h"
 
 #include "gfx/struct/MaterialLibrary.h"
 
@@ -107,17 +108,19 @@ namespace pio
 			EventBus::Get()->dispatch();
 
 			{
+				uint64_t start{ PROFILER_TIME };
 				//BUG FIX: Guarantee event queue thread safety,
 				//         because render thread might use that queue.
 				std::lock_guard<std::mutex> lk{ EventMutex };
 				m_window->pollEvents();
+				PROFILERD_DURATION(start, "PollEvents");
 			}
 
 			//----------- Fill in the pending render command -----------
 			step.tick();
 
 			Renderer::SubmitRC([=]() mutable
-			{
+			{				
 				Renderer::BeginFrame();
 			});
 
@@ -173,6 +176,7 @@ namespace pio
 	{
 		// Initialize in render thread
 		m_graphics->init();
+		m_window->setVSync(true);
 	}
 
 	void Application::onRenderDestroy()

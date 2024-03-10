@@ -121,7 +121,6 @@ namespace pio
 		float SourceSize{ 0.5f }; // For PCSS
 		bool CastShadow{ true };
 		float Falloff{ 1.0f };
-		AssetHandle MeshHandle{ NullAsset };
 	};
 
 	struct SpotLightComponent

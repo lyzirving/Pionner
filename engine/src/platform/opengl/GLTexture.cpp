@@ -25,6 +25,8 @@ namespace pio
 	{
 		m_spec = spec;
 		uint64_t start = TimeUtil::CurrentTimeMs();
+		if(spec.FlipVerticalWhenLoad)
+			stbi_set_flip_vertically_on_load(true);
 		uint8_t *data = stbi_load(path.c_str(), &m_spec.Width, &m_spec.Height, &m_spec.Channel, 0);
 		if (data)
 		{
@@ -39,6 +41,8 @@ namespace pio
 		{
 			LOGE("fail to load image[%s]", path.c_str());
 		}
+		if (spec.FlipVerticalWhenLoad)
+			stbi_set_flip_vertically_on_load(false);
 	}
 
 	GLTexture2D::GLTexture2D(const TextureSpecification &spec, const Ref<Buffer> &buffer)

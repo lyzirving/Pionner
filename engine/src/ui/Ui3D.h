@@ -7,6 +7,7 @@ namespace pio
 {
 	class Entity;
 	class LineMesh;
+	struct LineVertex;
 
 	struct CylinderConfig
 	{
@@ -70,10 +71,29 @@ namespace pio
 
 	private:
 		static Ref<LineMesh> CreateLightMesh(float radius, float lightLen, const glm::vec4 &color);
-		static Ref<LineMesh> CreateDirectonMesh(const glm::vec4 &color);
 
 	public:
-		Ref<Entity> LightMesh;
+		Ref<Entity> Mesh;
+		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
+	};
+
+	class UiPointLight
+	{
+	public:
+		UiPointLight(float radius, const glm::vec4 &color);
+		~UiPointLight() = default;
+
+		bool setRadius(float r);
+		void upload();
+
+	private:
+		static const uint32_t s_PointLightItr;
+		static Ref<LineMesh> CreatePointLightMesh(float radius, const glm::vec4 &color);
+		static void MakeGeometry(std::vector<LineVertex> &vertexArray, std::vector<uint32_t> &indice, uint32_t itr, float radius, const glm::vec4 &color);
+
+	public:
+		Ref<Entity> Mesh;
+		float Radius{ 0.f };
 		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
 	};
 }
