@@ -787,6 +787,7 @@ namespace pio
 
 		if (onHandleSpriteClick(winCursor))
 		{
+			if (MotionController::GetObj3D()) { MotionController::GetObj3D()->setSelection(false); }
 			MotionController::SelectObj3D(nullptr);
 			return true;
 		}

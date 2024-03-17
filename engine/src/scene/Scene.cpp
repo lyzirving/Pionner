@@ -365,13 +365,15 @@ namespace pio
 
 		// Plane
 		{
+			Ref<Entity> ent = Registry::Get()->create<MeshSourceComponent, RelationshipComponent>(NodeType::MeshSource);
 			Ref<MeshSource> planeMs = MeshFactory::CreatePlane();
-			Ref<Asset> planeMsAst = AssetsManager::CreateRuntimeAssets<StaticMesh>(planeMs);
-			const std::vector<Submesh> &submeshes = planeMs->getSubmeshes();
+			Ref<Asset> planeMsAst = AssetsManager::CreateRuntimeAssets<StaticMesh>(planeMs);			
+			auto &submeshes = const_cast<std::vector<Submesh> &>(planeMs->getSubmeshes());
 			for (uint32_t i = 0; i < submeshes.size(); i++)
-			{
-				const AABB &aabb = submeshes[i].BoundingBox;
+			{				
 				auto ent = s_registry->create<StaticMeshComponent, TransformComponent, BoxColliderComponent>(NodeType::Mesh);
+				const AABB &aabb = submeshes[i].BoundingBox;
+				submeshes[i].Ent = ent;
 				auto &comp = ent->getComponent<StaticMeshComponent>();
 				comp.Handle = planeMsAst->getHandle();
 				comp.SourceHandle = planeMs->getHandle();
@@ -387,6 +389,13 @@ namespace pio
 				boxComp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
 				physicsScene->createActor<StaticMeshComponent>(ent, RigidBodyComponent::Type::Static);
 			}
+			auto &meshSrcComp = ent->getComponent<MeshSourceComponent>();
+			meshSrcComp.SourceHandle = planeMs->getHandle();
+			auto &rlComp = ent->getComponent<RelationshipComponent>();
+			PIO_RELATION_SET_TAG(ent, planeMs->getName());
+			PIO_RELATION_SET_SELF_INDEX(ent, ent->getCacheIndex());
+			PIO_RELATION_SET_PARENT_INDEX(ent, m_sceneRoot->getCacheIndex());
+			PIO_RELATION_SET_CHILD_INDEX(m_sceneRoot, ent->getCacheIndex());
 		}
 
 		m_skybox = CreateRef<Skybox>("default_skybox", AssetFmt::HDR);

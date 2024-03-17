@@ -27,29 +27,35 @@
 
 namespace pio
 {
-	static void DealSelectionChange(Ref<Entity> &cur, Ref<Entity> &old)
+	static void DealSelectionChange(Ref<Entity> &cur, Ref<Entity> &last)
 	{
-		bool ctlSet{ false };
 		NodeType type(NodeType::None);
+
+		if (last)
+		{
+			type = last->getNodeType();
+			if (type == NodeType::Mesh || type == NodeType::MeshSource)
+			{
+				MotionController::SelectObj3D(nullptr);
+				last->setSelection(false);
+			}
+			else if (last->hasComponent<SpriteComponent>())
+			{
+				MotionController::SelectSprite(nullptr);
+			}
+		}
 
 		if (cur)
 		{
 			type = cur->getNodeType();
 			if (type == NodeType::Mesh || type == NodeType::MeshSource)
 			{
-				ctlSet = true;
 				MotionController::SelectObj3D(cur);
-				if (type == NodeType::Mesh) { cur->setSelection(true); }
+				cur->setSelection(true);
 			}
-		}
-
-		if (old)
-		{
-			type = old->getNodeType();
-			if (type == NodeType::Mesh || type == NodeType::MeshSource)
+			else if (cur->hasComponent<SpriteComponent>())
 			{
-				if (!ctlSet) { MotionController::SelectObj3D(nullptr); }
-				if (type == NodeType::Mesh) { old->setSelection(false); }
+				MotionController::SelectSprite(cur);
 			}
 		}
 	}

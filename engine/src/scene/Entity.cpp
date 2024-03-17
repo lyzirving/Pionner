@@ -107,7 +107,24 @@ namespace pio
 
 	bool Entity::setSelection(bool select)
 	{
-		if (hasComponent<MeshComponent>())
+		if (hasComponent<MeshSourceComponent>())
+		{
+			auto meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(getComponent<MeshSourceComponent>().SourceHandle);
+			const std::vector<Submesh> &mesh = meshSrc->getSubmeshes();
+			for (uint32_t i = 0; i < mesh.size(); i++)
+			{
+				const Submesh &sub = mesh[i];
+				if (sub.Ent->hasComponent<MeshComponent>())
+				{
+					sub.Ent->getComponent<MeshComponent>().State.Selected = select;
+				}
+				else if (sub.Ent->hasComponent<StaticMeshComponent>())
+				{
+					sub.Ent->getComponent<StaticMeshComponent>().State.Selected = select;
+				}
+			}
+		}
+		else if (hasComponent<MeshComponent>())
 		{
 			getComponent<MeshComponent>().State.Selected = select;
 			return true;
