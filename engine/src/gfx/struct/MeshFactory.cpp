@@ -32,6 +32,10 @@ namespace pio
 		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Color);
 		cube->m_materials.push_back(ma->getMaterial());
 
+		cube->m_nodes.emplace_back();
+		MeshNode &rootNode = cube->m_nodes.back();
+		rootNode.Submeshes.push_back(0);
+
 		cube->m_submeshes.emplace_back();
 		Submesh &submesh = cube->m_submeshes.back();
 		submesh.VertexOffset = 0;
@@ -240,6 +244,10 @@ namespace pio
 		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Packed_SandyRock);
 		meshSource->m_materials.push_back(ma->getMaterial());
 
+		meshSource->m_nodes.emplace_back();
+		MeshNode &rootNode = meshSource->m_nodes.back();
+		rootNode.Submeshes.push_back(0);
+
 		meshSource->m_submeshes.emplace_back();
 		Submesh &submesh = meshSource->m_submeshes.back();
 		submesh.VertexOffset = 0;
@@ -320,6 +328,10 @@ namespace pio
 
 		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Color);
 		cylinder->m_materials.push_back(ma->getMaterial());
+
+		cylinder->m_nodes.emplace_back();
+		MeshNode &rootNode = cylinder->m_nodes.back();
+		rootNode.Submeshes.push_back(0);
 
 		cylinder->m_submeshes.emplace_back();
 		Submesh &submesh = cylinder->m_submeshes.back();
@@ -430,6 +442,10 @@ namespace pio
 		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Color);
 		cone->m_materials.push_back(ma->getMaterial());
 
+		cone->m_nodes.emplace_back();
+		MeshNode &rootNode = cone->m_nodes.back();
+		rootNode.Submeshes.push_back(0);
+
 		cone->m_submeshes.emplace_back();
 		Submesh &submesh = cone->m_submeshes.back();
 		submesh.VertexOffset = 0;
@@ -515,6 +531,10 @@ namespace pio
 
 		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Color);
 		arrow->m_materials.push_back(ma->getMaterial());
+
+		arrow->m_nodes.emplace_back();
+		MeshNode &rootNode = arrow->m_nodes.back();
+		rootNode.Submeshes.push_back(0);
 
 		arrow->m_submeshes.emplace_back();
 		Submesh &submesh = arrow->m_submeshes.back();

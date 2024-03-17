@@ -35,7 +35,10 @@ namespace pio
 
 		~Entity() = default;
 
-		bool getGlobalPoseCenter(glm::vec3 &out);
+		// Get global pose of a MeshSource
+		bool getGlobalPose(glm::vec3 &out);
+		// Get global pose of a Submesh
+		bool getGlobalPoseSubmesh(glm::vec3 &out);
 
 		bool setSelection(bool select);
 		bool setGlobalPose(const glm::vec3 &translation, const glm::vec3 &euler);

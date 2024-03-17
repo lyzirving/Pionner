@@ -462,7 +462,6 @@ namespace pio
 
 	void MotionControlLayer::onDrawMoveMode(const Timestep &ts)
 	{
-		glm::vec3 slcPos(0.f);
 		if (MotionController::bSpriteSelectd())
 		{
 			if (MotionController::GetSprite()->hasComponent<DirectionalLightComponent>())
@@ -482,16 +481,17 @@ namespace pio
 			}
 		}
 
-		if (MotionController::bObj3dSelectd() && MotionController::GetObj3D()->getGlobalPoseCenter(slcPos))
+		glm::vec3 ctlPos(0.f);
+		if (MotionController::bObj3dSelectd() && 
+		   (MotionController::GetObj3D()->getGlobalPoseSubmesh(ctlPos) || MotionController::GetObj3D()->getGlobalPose(ctlPos)))
 		{
-			onDrawMoveCtl(slcPos);
+			onDrawMoveCtl(ctlPos);
 			return;
 		}
 	}
 
 	void MotionControlLayer::onDrawRotationMode(const Timestep &ts)
-	{
-		glm::vec3 slcPos(0.f);
+	{		
 		if (MotionController::bSpriteSelectd())
 		{
 			if (MotionController::GetSprite()->hasComponent<DirectionalLightComponent>())
@@ -511,14 +511,16 @@ namespace pio
 			}
 		}
 
-		if (MotionController::bObj3dSelectd() && MotionController::GetObj3D()->getGlobalPoseCenter(slcPos))
+		glm::vec3 ctlPos(0.f);
+		if (MotionController::bObj3dSelectd() &&
+		   (MotionController::GetObj3D()->getGlobalPoseSubmesh(ctlPos) || MotionController::GetObj3D()->getGlobalPose(ctlPos)))
 		{
-			onDrawRotationCtl(slcPos);
+			onDrawRotationCtl(ctlPos);
 			return;
 		}
 	}
 
-	void MotionControlLayer::onDrawMoveCtl(const glm::vec3 pos)
+	void MotionControlLayer::onDrawMoveCtl(const glm::vec3 &ctlPos)
 	{
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		Camera &camera = camComp.Camera;
@@ -564,28 +566,28 @@ namespace pio
 		if (MotionController::GetAixs() == MotionCtlAxis_X || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_selectCoord->XAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get X axis's actor");
-			actor->setGlobalPose(pos);
-			drawFunc(m_selectCoord->XAxisEnt->getComponent<C3dUIComponent>(), pos);
+			actor->setGlobalPose(ctlPos);
+			drawFunc(m_selectCoord->XAxisEnt->getComponent<C3dUIComponent>(), ctlPos);
 		}
 
 		// Y Axis
 		if (MotionController::GetAixs() == MotionCtlAxis_Y || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_selectCoord->YAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get Y axis's actor");
-			actor->setGlobalPose(pos);
-			drawFunc(m_selectCoord->YAxisEnt->getComponent<C3dUIComponent>(), pos);
+			actor->setGlobalPose(ctlPos);
+			drawFunc(m_selectCoord->YAxisEnt->getComponent<C3dUIComponent>(), ctlPos);
 		}	
 
 		// Z Axis
 		if (MotionController::GetAixs() == MotionCtlAxis_Z || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_selectCoord->ZAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get Z axis's actor");
-			actor->setGlobalPose(pos);
-			drawFunc(m_selectCoord->ZAxisEnt->getComponent<C3dUIComponent>(), pos);
+			actor->setGlobalPose(ctlPos);
+			drawFunc(m_selectCoord->ZAxisEnt->getComponent<C3dUIComponent>(), ctlPos);
 		}
 	}
 
-	void MotionControlLayer::onDrawRotationCtl(const glm::vec3 pos)
+	void MotionControlLayer::onDrawRotationCtl(const glm::vec3 &ctlPos)
 	{
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		Camera &camera = camComp.Camera;
@@ -608,7 +610,7 @@ namespace pio
 			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
 		});
 
-		auto drawFunc = [pos, ubSet](C3dUIComponent &meshComp)
+		auto drawFunc = [ctlPos, ubSet](C3dUIComponent &meshComp)
 		{
 			Ref<StaticMesh> axis = AssetsManager::GetRuntimeAsset<StaticMesh>(meshComp.Handle);
 			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
@@ -616,7 +618,7 @@ namespace pio
 			RenderState state = meshComp.State;
 
 			Ref<MaterialTable> mt = axis->getMaterialTable();
-			glm::mat4 transform = glm::translate(glm::mat4(1.f), pos);
+			glm::mat4 transform = glm::translate(glm::mat4(1.f), ctlPos);
 			transform = transform * meshSrc->getSubmeshes()[ind].Transform;
 
 			Renderer::SubmitRC([ubSet, axis, ind, transform, mt, state]() mutable
@@ -630,21 +632,21 @@ namespace pio
 		if (MotionController::GetAixs() == MotionCtlAxis_X || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_rotateCtl->XTorus->getActor(actor), "onDrawRotationCtl: fail to get X torus's actor");
-			actor->setGlobalPose(pos);
+			actor->setGlobalPose(ctlPos);
 			drawFunc(m_rotateCtl->XTorus->getComponent<C3dUIComponent>());
 		}
 
 		if (MotionController::GetAixs() == MotionCtlAxis_Y || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_rotateCtl->YTorus->getActor(actor), "onDrawRotationCtl: fail to get Y torus's actor");
-			actor->setGlobalPose(pos);
+			actor->setGlobalPose(ctlPos);
 			drawFunc(m_rotateCtl->YTorus->getComponent<C3dUIComponent>());
 		}
 
 		if (MotionController::GetAixs() == MotionCtlAxis_Z || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
 			PIO_ASSERT_RETURN(m_rotateCtl->ZTorus->getActor(actor), "onDrawRotationCtl: fail to get Z torus's actor");
-			actor->setGlobalPose(pos);
+			actor->setGlobalPose(ctlPos);
 			drawFunc(m_rotateCtl->ZTorus->getComponent<C3dUIComponent>());
 		}
 	}

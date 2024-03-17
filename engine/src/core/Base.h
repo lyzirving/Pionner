@@ -71,6 +71,12 @@ namespace pio
 		return std::shared_ptr<Parent>(new Derived(std::forward<Args>(args)...));
 	}
 
+	template<typename Parent, typename Derived, typename ... Args>
+	constexpr Ref<Derived> CreateRefCast(Args&& ... args)
+	{
+		return std::dynamic_pointer_cast<Derived>(std::shared_ptr<Parent>(new Derived(std::forward<Args>(args)...)));
+	}
+
 	template<typename Parent, typename Derived>
 	constexpr Ref<Derived> RefCast(const Ref<Parent> &p)
 	{

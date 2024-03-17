@@ -46,8 +46,8 @@ namespace pio
 		void onDrawMoveMode(const Timestep &ts);
 		void onDrawRotationMode(const Timestep &ts);
 
-		void onDrawMoveCtl(const glm::vec3 pos);
-		void onDrawRotationCtl(const glm::vec3 pos);
+		void onDrawMoveCtl(const glm::vec3 &ctlPos);
+		void onDrawRotationCtl(const glm::vec3 &ctlPos);
 		void onDrawUIDistantLight(DirectionalLightComponent &lightComp, TransformComponent &transComp);
 		void onDrawUIPointLight(PointLightComponent &lightComp);
 

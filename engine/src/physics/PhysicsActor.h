@@ -19,8 +19,7 @@ namespace pio
 	public:
 		PhysicsActor(const Ref<Entity> &ent);
 		~PhysicsActor() = default;
-
-		void setActorTransform(const glm::mat4 &transform);
+		
 		void setActorTransform(const glm::vec3 &translation = glm::vec3(0.f), const glm::quat &rotate = quaternion::IDENTITY);
 		void setGlobalPose(const glm::vec3 &translation = glm::vec3(0.f), const glm::quat &rotate = quaternion::IDENTITY);
 		void setGlobalPoseDiff(const glm::vec3 &posDiff, const glm::quat &rotateDiff = glm::quat(0.f, 0.f, 0.f, 0.f));

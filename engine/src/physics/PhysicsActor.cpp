@@ -18,14 +18,6 @@ namespace pio
 		createData();
 	}
 
-	void PhysicsActor::setActorTransform(const glm::mat4 &transform)
-	{
-		Ref<Entity> ent = m_ent.lock();
-		PIO_ASSERT_RETURN(ent.get() != nullptr, "setActorTransform: Entity is destroied");
-		m_transform = transform *
-			          glm::translate(glm::mat4(1.f), ent->getComponent<RigidBodyComponent>().Center);
-	}
-
 	void PhysicsActor::setActorTransform(const glm::vec3 &translation, const glm::quat &rotate)
 	{
 		Ref<Entity> ent = m_ent.lock();

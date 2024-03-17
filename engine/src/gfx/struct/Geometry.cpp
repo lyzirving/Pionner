@@ -70,6 +70,13 @@ namespace pio
 			m_submeshes[0].MeshName = m_name + "@mesh";
 		}
 
+		if (m_nodes.empty())
+		{
+			m_nodes.emplace_back();
+			MeshNode &rootNode = m_nodes.back();
+			rootNode.Submeshes.push_back(0);
+		}
+		
 		Submesh &submesh = m_submeshes.back();
 		submesh.VertexOffset = 0;
 		submesh.IndexOffset = 0;
@@ -188,6 +195,13 @@ namespace pio
 		{
 			m_submeshes.emplace_back();
 			m_submeshes[0].MeshName = m_name + "@mesh";
+		}
+
+		if (m_nodes.empty())
+		{
+			m_nodes.emplace_back();
+			MeshNode &rootNode = m_nodes.back();
+			rootNode.Submeshes.push_back(0);
 		}
 
 		Submesh &submesh = m_submeshes.back();

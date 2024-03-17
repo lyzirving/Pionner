@@ -14,6 +14,7 @@
 #include "gfx/debug/GDebugger.h"
 
 #include "ui/ImGuiUtils.h"
+#include "ui/MotionController.h"
 
 #include "core/math/SphereCoord.h"
 
@@ -28,14 +29,28 @@ namespace pio
 {
 	static void DealSelectionChange(Ref<Entity> &cur, Ref<Entity> &old)
 	{
-		if (cur && cur->getNodeType() == NodeType::Mesh)
-		{
-			cur->setSelection(true);
-		} 
+		bool ctlSet{ false };
+		NodeType type(NodeType::None);
 
-		if (old && old->getNodeType() == NodeType::Mesh)
+		if (cur)
 		{
-			old->setSelection(false);
+			type = cur->getNodeType();
+			if (type == NodeType::Mesh || type == NodeType::MeshSource)
+			{
+				ctlSet = true;
+				MotionController::SelectObj3D(cur);
+				if (type == NodeType::Mesh) { cur->setSelection(true); }
+			}
+		}
+
+		if (old)
+		{
+			type = old->getNodeType();
+			if (type == NodeType::Mesh || type == NodeType::MeshSource)
+			{
+				if (!ctlSet) { MotionController::SelectObj3D(nullptr); }
+				if (type == NodeType::Mesh) { old->setSelection(false); }
+			}
 		}
 	}
 

@@ -66,8 +66,23 @@ namespace pio
 		return !((*this) == rhs);
 	}
 
-	bool Entity::getGlobalPoseCenter(glm::vec3 &out)
+	bool Entity::getGlobalPose(glm::vec3 &out)
 	{
+		if (m_nodeType == NodeType::MeshSource && hasComponent<MeshSourceComponent>())
+		{
+			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(getComponent<MeshSourceComponent>().SourceHandle);
+			// Root Node's position is always world origin
+			out = meshSrc->GlobalPose.mat() * glm::vec4(0.f, 0.f, 0.f, 1.f);
+			return true;
+		}
+		return false;
+	}
+
+	bool Entity::getGlobalPoseSubmesh(glm::vec3 &out)
+	{
+		if (m_nodeType != NodeType::Mesh)
+			return false;
+
 		if (hasComponent<MeshComponent>())
 		{
 			MeshComponent &meshComp = getComponent<MeshComponent>();
@@ -75,7 +90,7 @@ namespace pio
 			auto meshSource = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
 			const Submesh &submesh = meshSource->getSubmeshes()[meshComp.SubmeshIndex];
 			// The out position does not consider the effect of animation.
-			out = meshSource->GlobalPose.mat() * transComp.mat() * submesh.Transform * glm::vec4(submesh.BoundingBox.center(), 1.f);
+			out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);/*submesh.Transform * glm::vec4(submesh.BoundingBox.center(), 1.f);*/
 			return true;
 		}
 		else if (hasComponent<StaticMeshComponent>())
@@ -84,7 +99,7 @@ namespace pio
 			TransformComponent &transComp = getComponent<TransformComponent>();
 			auto meshSource = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
 			const Submesh &submesh = meshSource->getSubmeshes()[0];
-			out = meshSource->GlobalPose.mat() * transComp.mat() * submesh.Transform * glm::vec4(submesh.BoundingBox.center(), 1.f);
+			out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);/*submesh.Transform * glm::vec4(submesh.BoundingBox.center(), 1.f);*/
 			return true;
 		}
 		return false;

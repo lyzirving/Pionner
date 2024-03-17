@@ -37,8 +37,11 @@ namespace pio
 		std::vector<uint32_t> Children;     // child nodes
 		std::vector<uint32_t> Submeshes;    // index of submeshes
 
-		std::string Name{};
-		// transformation relative to the node's parent
+		std::string Name{"Root"};
+		/*
+		* LocalTransform is a transformation relative to the node's parent.
+		* If node is root, its parent is world's origin(0, 0, 0)
+		*/
 		glm::mat4 LocalTransform{1.f};
 		uint32_t Level{ 0 };
 

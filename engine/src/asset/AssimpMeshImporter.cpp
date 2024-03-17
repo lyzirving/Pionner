@@ -72,17 +72,16 @@ namespace pio
 			return nullptr;
 		}
 
-		auto ret = CreateRef<Asset, MeshSource>(m_name);
-		auto meshSource = RefCast<Asset, MeshSource>(ret);
+		auto meshSource = CreateRefCast<Asset, MeshSource>(m_name);
+		parseMeshes(scene, meshSource);
 		parseSkeleton(scene, meshSource);
 		parseAnimation(scene, meshSource);
-		parseMeshes(scene, meshSource);
 		parseBoneInfluence(scene, meshSource);
 		parseMaterial(scene, meshSource);
 		createBuffers(scene, meshSource);
 		createGPUSkinning(meshSource);
-		AssetsManager::Get()->addRuntimeAsset(ret);
-		return ret;
+		AssetsManager::Get()->addRuntimeAsset(meshSource);
+		return meshSource;
 	}
 
 	void AssimpMeshImporter::parseSkeleton(const aiScene *scene, Ref<MeshSource> &meshSource)
@@ -174,7 +173,7 @@ namespace pio
 			// ------------------ Building nodes hierarchy start ----------------------
 			meshSource->m_nodes.emplace_back();
 			MeshNode &rootNode = meshSource->m_nodes.back();
-			traverseNodes(meshSource, scene->mRootNode, 0);
+			traverseNodes(meshSource, scene->mRootNode, 0, glm::mat4(1.f), 0);
 			// ------------------ Building nodes hierarchy end ------------------------
 
 			// ---------- Updating the total bounding box of the meshes ---------------

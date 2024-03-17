@@ -160,12 +160,12 @@ namespace pio
 		auto sceneHierarchy = CreateRef<SceneHierarchyLayer>(WindowLayoutParams(0.f, 0.f, 0.2f, 1.f));
 		m_layerManager.pushLayer(sceneHierarchy);
 
+		auto editorLayer = CreateRef<EditorLayer>(WindowLayoutParams(0.8f, 0.f, 1.f, 1.f));
+		m_layerManager.pushOverlay(editorLayer);
+
 		// MotionControlLayer's layout param should be the same as RuntimeLayer to make event processing correct
 		auto ctlLayer = CreateRef<MotionControlLayer>(runtimeLayer->getLayoutParam());
 		m_layerManager.pushOverlay(ctlLayer);
-
-		auto editorLayer = CreateRef<EditorLayer>(WindowLayoutParams(0.8f, 0.f, 1.f, 1.f));
-		m_layerManager.pushOverlay(editorLayer);
 	}
 
 	void Application::onQuit()
