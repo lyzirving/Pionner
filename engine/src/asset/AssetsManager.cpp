@@ -123,7 +123,7 @@ namespace pio
 			case AssetFmt::Dae:
 			case AssetFmt::GLTF:
 			case AssetFmt::GLB:
-				return ASSETS_ROOT + "/mesh";
+				return ASSETS_ROOT + "/model";
 			case AssetFmt::PNG:
 			case AssetFmt::HDR:
 				return ASSETS_ROOT + "/pic";

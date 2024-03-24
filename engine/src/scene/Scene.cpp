@@ -432,6 +432,7 @@ namespace pio
 						Ref<PhysicsScene> world = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene);
 						MeshBuildParam param; 
 						param.State.Blend = Blend::Disable();
+						param.State.Cull = CullFace::Disable();
 						param.RigidType = RigidBodyComponent::Type::Dynamic;
 						param.Parent = m_sceneRoot;
 						CreateMesh<BoxColliderComponent>(meshSrc, world, param);

@@ -120,7 +120,7 @@ vec4 meshColor()
     vec3 color = u_distantLight.CastShadow ? ((1.f - calcShadow(u_distantLight.SdMode)) * lightEffect) : lightEffect;
     
     // TODO: IBL
-    color += ambient + m_params.Emission;
+    color += ambient + m_params.Emission;   
     return vec4(color.rgb, m_params.Alpha);
 }
 

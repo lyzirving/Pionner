@@ -48,6 +48,15 @@ namespace pio
 			} while (_findnext(fileHandle, &fileInfo) == 0);// if success, _findnext() return 0.
 		}
 
+		if (material)
+		{
+			auto emission = material->getTexture2D(MaterialAttrs::MU_EmissionTexture);
+			if (!emission)
+			{
+				material->set(MaterialAttrs::MU_EmissionTexture, Renderer::GetBlackTexture());
+			}
+		}
+
 		return material;
 	}
 
@@ -55,6 +64,7 @@ namespace pio
 	{
 		Ref<Material> material = Material::Create(m_name);
 		Ref<Texture2D> whiteTexture = Renderer::GetWhiteTexture();
+		Ref<Texture2D> backTexture = Renderer::GetBlackTexture();
 
 		material->set(MaterialAttrs::MU_AlbedoTexture, whiteTexture);
 		material->set(MaterialAttrs::MU_AlbedoColor, glm::vec3(1.f));
@@ -67,6 +77,9 @@ namespace pio
 
 		material->set(MaterialAttrs::MU_AOTexture, whiteTexture);
 		material->set(MaterialAttrs::MU_AO, 1.f);
+
+		material->set(MaterialAttrs::MU_EmissionTexture, backTexture);
+		material->set(MaterialAttrs::MU_Emission, 0.f);
 
 		return material;
 	}

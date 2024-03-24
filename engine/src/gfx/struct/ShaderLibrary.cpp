@@ -76,9 +76,9 @@ namespace pio
 				m_shaders[index] = Shader::Create("DistantLighting_Deferred", "quad2d", "lighting_distant_deferred");
 				return m_shaders[index];
 			}
-			case ShaderType::LightingEffect_Deferred:
+			case ShaderType::PointLightEffect_Deferred:
 			{
-				m_shaders[index] = Shader::Create("LightingEffect_Deferred", "quad2d", "lighting_deferred");
+				m_shaders[index] = Shader::Create("PointLightEffect_Deferred", "quad2d", "pointLight_effect_deferred");
 				return m_shaders[index];
 			}			
 			case ShaderType::Color_Line:

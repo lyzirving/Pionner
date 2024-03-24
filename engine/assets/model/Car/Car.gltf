@@ -23,7 +23,7 @@
 			"translation":[
 				0,
 				0,
-				-1.1444091796875e-05
+				-2.288818359375e-05
 			]
 		},
 		{
@@ -32,7 +32,7 @@
 			"translation":[
 				0,
 				0,
-				-1.1444091796875e-05
+				-2.288818359375e-05
 			]
 		},
 		{
@@ -41,7 +41,7 @@
 			"translation":[
 				0,
 				0,
-				-1.1444091796875e-05
+				-2.288818359375e-05
 			]
 		},
 		{
@@ -50,7 +50,7 @@
 			"translation":[
 				0,
 				0,
-				-1.1444091796875e-05
+				-2.288818359375e-05
 			]
 		},
 		{
@@ -94,7 +94,7 @@
 					"ior":1.4500000476837158
 				}
 			},
-			"name":"CAR",
+			"name":"CAR.002",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
 					0.591813862323761,
@@ -125,7 +125,7 @@
 					"ior":1.4500000476837158
 				}
 			},
-			"name":"Turn_signal",
+			"name":"Turn_signal.002",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
 					1,
@@ -155,7 +155,7 @@
 					"ior":1.4500000476837158
 				}
 			},
-			"name":"Brake_Lamp",
+			"name":"Brake_Lamp.002",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
 					1,
@@ -169,7 +169,7 @@
 	],
 	"meshes":[
 		{
-			"name":"\u7f51\u683c",
+			"name":"Car_body_mesh",
 			"primitives":[
 				{
 					"attributes":{
@@ -183,7 +183,7 @@
 			]
 		},
 		{
-			"name":"\u7f51\u683c.001",
+			"name":"Car_Vehicle_Lamp_LT_On_mesh.002",
 			"primitives":[
 				{
 					"attributes":{
@@ -197,7 +197,7 @@
 			]
 		},
 		{
-			"name":"\u7f51\u683c.002",
+			"name":"Car_Vehicle_Lamp_RT_On_mesh.002",
 			"primitives":[
 				{
 					"attributes":{
@@ -211,7 +211,7 @@
 			]
 		},
 		{
-			"name":"\u7f51\u683c.003",
+			"name":"Car_Vehicle_Lamp_Stop_On_mesh.002",
 			"primitives":[
 				{
 					"attributes":{
@@ -229,7 +229,7 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":3454,
+			"count":3455,
 			"max":[
 				105.12442779541016,
 				150.29969787597656,
@@ -245,13 +245,13 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":3454,
+			"count":3455,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":3454,
+			"count":3455,
 			"type":"VEC2"
 		},
 		{
@@ -366,104 +366,104 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":41448,
+			"byteLength":41460,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":41448,
-			"byteOffset":41448,
+			"byteLength":41460,
+			"byteOffset":41460,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":27632,
-			"byteOffset":82896,
+			"byteLength":27640,
+			"byteOffset":82920,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":28212,
-			"byteOffset":110528,
+			"byteOffset":110560,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":408,
-			"byteOffset":138740,
+			"byteOffset":138772,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":408,
-			"byteOffset":139148,
+			"byteOffset":139180,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":272,
-			"byteOffset":139556,
+			"byteOffset":139588,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":168,
-			"byteOffset":139828,
+			"byteOffset":139860,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":408,
-			"byteOffset":139996,
+			"byteOffset":140028,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":408,
-			"byteOffset":140404,
+			"byteOffset":140436,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":272,
-			"byteOffset":140812,
+			"byteOffset":140844,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":168,
-			"byteOffset":141084,
+			"byteOffset":141116,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":480,
-			"byteOffset":141252,
+			"byteOffset":141284,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":480,
-			"byteOffset":141732,
+			"byteOffset":141764,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":320,
-			"byteOffset":142212,
+			"byteOffset":142244,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":192,
-			"byteOffset":142532,
+			"byteOffset":142564,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":142724,
+			"byteLength":142756,
 			"uri":"Car.bin"
 		}
 	]

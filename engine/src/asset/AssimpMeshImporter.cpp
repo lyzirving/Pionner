@@ -266,6 +266,7 @@ namespace pio
 			return;
 
 		Ref<Texture2D> whiteTexture = Renderer::GetWhiteTexture();
+		Ref<Texture2D> blackTexture = Renderer::GetBlackTexture();
 		if (scene->HasMaterials())
 		{
 			meshSource->m_materials.reserve(scene->mNumMaterials);
@@ -352,7 +353,7 @@ namespace pio
 
 				if (fallback)
 				{
-					mi->set(MaterialAttrs::MU_EmissionTexture, whiteTexture);
+					mi->set(MaterialAttrs::MU_EmissionTexture, blackTexture);
 					mi->set(MaterialAttrs::MU_Emission, emission);
 				}
 

@@ -358,8 +358,8 @@ namespace pio
 		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
 		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderPointLightQuad_Deferred: Quad Mesh is invalid");
 
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::LightingEffect_Deferred);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "LightingEffect_Deferred shader is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::PointLightEffect_Deferred);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "PointLightEffect_Deferred shader is invalid");
 
 		PIO_ASSERT_RETURN(GBufferPass.use_count() != 0, "GBuffer pass is invalid");
 		Ref<FrameBuffer> gBuffer = GBufferPass->getSpecification().FrameBuffer;

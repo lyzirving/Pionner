@@ -283,9 +283,9 @@ namespace pio
 		auto it = m_textures.find(name);
 		if (it != m_textures.end())
 		{
-			if (it->second.Texture->getAssetType() == AssetType::Texture2D)
+			if (it->second.Texture)
 			{
-				ret = std::dynamic_pointer_cast<Texture2D>(it->second.Texture);
+				ret = RefCast<Texture, Texture2D>(it->second.Texture);
 			}
 		}
 		return ret;
