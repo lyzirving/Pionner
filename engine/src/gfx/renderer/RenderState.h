@@ -205,6 +205,9 @@ namespace pio
 			for (uint8_t i = 0; i < FaceMode_Num; i++) { m_mask[i] = 0xff; }
 			m_separateFlag.reset();
 		}
+
+	public:
+		static StencilTest Disable() { StencilTest t; t.Enable = false; return t; }
 		
 	private:
 		uint32_t m_mask[FaceMode_Num];

@@ -435,8 +435,8 @@ namespace pio
 						param.State.Cull = CullFace::Disable();
 						param.RigidType = RigidBodyComponent::Type::Dynamic;
 						param.Parent = m_sceneRoot;
-						CreateMesh<BoxColliderComponent>(meshSrc, world, param);
-						LOGD("mesh source[%s] is parsed", meshSrc->getName().c_str());
+						auto asset = CreateMesh<BoxColliderComponent>(meshSrc, world, param);
+						LOGD("mesh source[%s] is parsed, uid[%u]", meshSrc->getName().c_str(), (uint32_t)asset->getHandle());
 						break;
 					}
 					default:

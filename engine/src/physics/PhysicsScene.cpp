@@ -103,12 +103,12 @@ namespace pio
 	{
 		auto &msComp = ent->getComponent<MeshComponent>();
 		Ref<MeshSource> source = AssetsManager::GetRuntimeAsset<Mesh>(msComp.Handle)->getMeshSource();
-		const Submesh &subMs = source->getSubmeshes()[msComp.SubmeshIndex];
+		const Submesh &submesh = source->getSubmeshes()[msComp.SubmeshIndex];
 
 		auto &rbComp = ent->getComponent<RigidBodyComponent>();
 		rbComp.BodyType = type;
-		rbComp.Center = subMs.Transform * glm::vec4(glm::vec3(subMs.BoundingBox.center()), 1.f);
-		rbComp.Name = subMs.MeshName;
+		rbComp.Center = submesh.Transform * glm::vec4(glm::vec3(submesh.BoundingBox.center()), 1.f);
+		rbComp.Name = submesh.MeshName;
 	}
 
 	template<>

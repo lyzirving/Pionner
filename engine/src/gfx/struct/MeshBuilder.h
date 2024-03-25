@@ -60,9 +60,7 @@ namespace pio
 			PIO_RELATION_SET_TAG(ent, submeshes[i].MeshName);
 			PIO_RELATION_SET_SELF_INDEX(ent, ent->getCacheIndex());
 			PIO_RELATION_SET_CHILD_INDEX(hostEnt, ent->getCacheIndex());
-			PIO_RELATION_SET_PARENT_INDEX(ent, hostEnt->getCacheIndex());
-
-			const AABB &aabb = submeshes[i].BoundingBox;			
+			PIO_RELATION_SET_PARENT_INDEX(ent, hostEnt->getCacheIndex());			
 
 			if (ent->hasComponent<MeshComponent>())
 			{
@@ -85,8 +83,10 @@ namespace pio
 
 			if (ent->hasComponent<BoxColliderComponent>())
 			{
+				AABB aabb(submeshes[i].Transform * glm::vec4(submeshes[i].BoundingBox.Min, 1.f),
+						  submeshes[i].Transform * glm::vec4(submeshes[i].BoundingBox.Max, 1.f));				
 				BoxColliderComponent &comp = ent->getComponent<BoxColliderComponent>();
-				comp.HalfSize = submeshes[i].Transform * glm::vec4(glm::vec3(aabb.lenX() * 0.5f, aabb.lenY() * 0.5f, aabb.lenZ() * 0.5f), 1.f);
+				comp.HalfSize = 0.5f * glm::vec3(aabb.lenX(), aabb.lenY(), aabb.lenZ());
 				comp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
 				physicsScene->createActor<MeshCompT>(ent, param.RigidType);
 			}

@@ -179,9 +179,7 @@ namespace pio
 		Ref<UniformBuffer> boneTransformUB = meshSource->getBoneTransformUB();
 		Ref<UniformBuffer> sdUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLightShadowData));
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
+		submitRenderState(state);
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
@@ -246,9 +244,7 @@ namespace pio
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
 		Ref<UniformBuffer> boneTransformUB = meshSource->getBoneTransformUB();
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
+		submitRenderState(state);
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
@@ -310,10 +306,7 @@ namespace pio
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 
 		shader->bind(true);
 
@@ -367,10 +360,7 @@ namespace pio
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto pointLightDataUB = uniformBufferSet->get(PIO_UINT(UBBindings::PointLightData));
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 
 		shader->bind(true);
 
@@ -460,10 +450,7 @@ namespace pio
 		auto dirLightUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLight));
 		auto dirLightSdUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLightShadowData));
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 
 		shader->bind(true);
 
@@ -539,9 +526,7 @@ namespace pio
 
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
+		submitRenderState(state);
 
 		shader->bind(true);
 	
@@ -573,10 +558,7 @@ namespace pio
 
 		PIO_ASSERT_RETURN(texture.use_count() != 0, "renderTextureQuad2D: texture is invalid");
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 
 		shader->bind(true);
 
@@ -610,10 +592,7 @@ namespace pio
 		Ref<Texture2D> sprite = AssetsManager::GetRuntimeAsset<Texture2D>(texture);
 		PIO_ASSERT_RETURN(sprite.use_count() != 0, "renderSprite: texture is invalid");
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 
 		shader->bind(true);
 
@@ -651,10 +630,7 @@ namespace pio
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
 		Ref<UniformBuffer> cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 
 		shader->bind(true);
 
@@ -732,10 +708,7 @@ namespace pio
 		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Postprocessing);
 		PIO_ASSERT_RETURN(shader.use_count() != 0, "postprocessing: shader is invalid");
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 
 		shader->bind(true);
 
@@ -769,10 +742,7 @@ namespace pio
 		commitViewport(0, 0, frameBuffer->getWidth(), frameBuffer->getHeight());
 
 		GLState::SetClear(state.Clear);
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 	}
 
 	void GLRenderAPI::endRenderPass(Ref<RenderPass> &pass)
@@ -799,10 +769,7 @@ namespace pio
 		commitViewport(vp.X, vp.Y, vp.Width, vp.Height);
 
 		GLState::SetClear(state.Clear);
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 	}
 
 	void GLRenderAPI::endScreenPass(Ref<RenderPass> &pass)
@@ -914,13 +881,9 @@ namespace pio
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto pointLightDataUB = uniformBufferSet->get(PIO_UINT(UBBindings::PointLightData));
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
-
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
+		submitRenderState(state);
 		onPreOutlining(state);
 
 		shader->bind(true);
@@ -1018,13 +981,9 @@ namespace pio
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto boneTransformUB = meshSource->getBoneTransformUB();
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
-
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
+		submitRenderState(state);
 		onPreOutlining(state);
 
 		shader->bind(true);
@@ -1103,10 +1062,7 @@ namespace pio
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto boneTransformUB = meshSource->getBoneTransformUB();
 
-		GLState::SetBlendMode(state.Blend);
-		GLState::SetDepthTest(state.DepthTest);
-		GLState::SetCullFace(state.Cull);
-		GLState::SetStencilTest(state.Stencil);
+		submitRenderState(state);
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
@@ -1188,6 +1144,7 @@ namespace pio
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
+		submitRenderState(state);
 		onPreOutlining(state);
 
 		shader->bind(true);
@@ -1252,6 +1209,14 @@ namespace pio
 		shader->bind(false);
 
 		onOutlining_deferred(meshHandle, submeshIndex, uniformBufferSet, modelMat, state);
+	}
+
+	void GLRenderAPI::submitRenderState(const RenderState &state)
+	{
+		GLState::SetBlendMode(state.Blend);
+		GLState::SetDepthTest(state.DepthTest);
+		GLState::SetCullFace(state.Cull);
+		GLState::SetStencilTest(state.Stencil);
 	}
 
 	void GLRenderAPI::onPreOutlining(const RenderState &state)

@@ -90,7 +90,7 @@ namespace pio
 			auto meshSource = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
 			const Submesh &submesh = meshSource->getSubmeshes()[meshComp.SubmeshIndex];
 			// The out position does not consider the effect of animation.
-			out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);/*submesh.Transform * glm::vec4(submesh.BoundingBox.center(), 1.f);*/
+			out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);
 			return true;
 		}
 		else if (hasComponent<StaticMeshComponent>())
@@ -99,7 +99,7 @@ namespace pio
 			TransformComponent &transComp = getComponent<TransformComponent>();
 			auto meshSource = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
 			const Submesh &submesh = meshSource->getSubmeshes()[0];
-			out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);/*submesh.Transform * glm::vec4(submesh.BoundingBox.center(), 1.f);*/
+			out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);
 			return true;
 		}
 		return false;

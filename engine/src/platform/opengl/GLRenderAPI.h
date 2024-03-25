@@ -82,6 +82,8 @@ namespace pio
 								  Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state);
 		// -----------------------------------------------------------------------------
 
+		void submitRenderState(const RenderState &state);
+
 		void onPreOutlining(const RenderState &state);
 		void onOutlining(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state);
 		void onOutlining_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state);
