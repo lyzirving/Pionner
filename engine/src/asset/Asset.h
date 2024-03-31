@@ -18,7 +18,7 @@ namespace pio
 		Mesh, StaticMesh, LineMesh, QuadMesh, CircleMesh, MeshSource,
 		GeoBegin, Geometry, Cylinder, Cone, Arrow, Sphere, Torus, GeoEnd,
 		Animation, Skeleton, Material, 
-		Texture, Texture2D, CubeTexture, CubeArrayTexture, BufferTexture, RenderBuffer,
+		Texture, Texture2D, CubeTexture, CubeArrayTexture, BufferTexture, Skybox, RenderBuffer,
 		PhysicsMat, PhysicsScene
 	};
 

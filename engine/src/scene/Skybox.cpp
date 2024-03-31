@@ -41,7 +41,7 @@ namespace pio
 		PIO_ASSERT_RETURN(Renderer::IsRenderThread(), "Skybox::prepare() should be called in render thread");
 		if (m_image.AFmt == AssetFmt::HDR)
 		{
-			initHDR();
+			createEnvMap();
 		}
 		else
 		{
@@ -49,27 +49,31 @@ namespace pio
 		}
 	}
 
-	Ref<CubeTexture> Skybox::getSkyBg()
+	Ref<CubeTexture> Skybox::getEnvMap()
 	{
-		if (!m_corePass->getFramebuffer()->getColorBuffer(m_cubeTexAttach)->isInit())
+		if (!m_hdrPass->getFramebuffer()->getColorBuffer(m_envMapAttachment)->isInit())
 		{
-			LOGE("prepare has not been called");
+			LOGE("prepare() has not been called");
 			return Ref<CubeTexture>();
 		}
-		return RefCast<Texture2D, CubeTexture>(m_corePass->getFramebuffer()->getColorBuffer(m_cubeTexAttach));
+		return RefCast<Texture2D, CubeTexture>(m_hdrPass->getFramebuffer()->getColorBuffer(m_envMapAttachment));
 	}
 
 	void Skybox::createData(const std::string &name, AssetFmt fmt)
 	{
-		ImageImporter imgImporter(name, fmt);
-		bool ret = imgImporter.importToImage(m_image);
+		ImageImporter importer(name, fmt);
+		bool ret = importer.importToImage(m_image);
 		LOGD("succeed[%s] to import image[%s]", ret ? "true" : "false", name.c_str());
 
 		if (!ret)
 			return;
 
-		m_resolution.x = m_resolution.y = std::min(m_image.Width, m_image.Height);
+		createHDRPass();
+		createDiffuseConvPass();
+	}
 
+	void Skybox::createHDRPass()
+	{
 		TextureSpecification HDRSpec;
 		HDRSpec.Name = "HDRColorBuffer";
 		HDRSpec.Format = m_image.Channel == 4 ? ImageInternalFormat::RGBA16F : ImageInternalFormat::RGB16F;
@@ -84,41 +88,41 @@ namespace pio
 		m_image.invalidate();
 		m_HDRTexture = Texture2D::Create(HDRSpec, buffer);
 
-		TextureSpecification cubeTextureSpec;
-		cubeTextureSpec.Name = "SkyboxCubeTexture";
-		cubeTextureSpec.Format = m_image.Channel == 4 ? ImageInternalFormat::RGBA16F : ImageInternalFormat::RGB16F;
-		cubeTextureSpec.Width = m_resolution.x;
-		cubeTextureSpec.Height = m_resolution.y;
-		cubeTextureSpec.MinFilter = TextureFilterMin::Linear;
-		cubeTextureSpec.MaxFilter = TextureFilterMag::Linear;
-		cubeTextureSpec.WrapS = TextureWrap::ClampEdge;
-		cubeTextureSpec.WrapT = TextureWrap::ClampEdge;
-		cubeTextureSpec.WrapR = TextureWrap::ClampEdge;
-		cubeTextureSpec.AType = AssetType::CubeTexture;
+		FrameBufferSpecification skyboxFboSpec;
+		skyboxFboSpec.Name = "SkyboxFrameBuffer";
+		skyboxFboSpec.Width = m_envMapSize.x;
+		skyboxFboSpec.Height = m_envMapSize.y;
+
+		TextureSpecification envMapSpec;
+		envMapSpec.Name = "SkyboxEnvMap";
+		envMapSpec.Format = m_image.Channel == 4 ? ImageInternalFormat::RGBA16F : ImageInternalFormat::RGB16F;
+		envMapSpec.Width = m_envMapSize.x;
+		envMapSpec.Height = m_envMapSize.y;
+		envMapSpec.MinFilter = TextureFilterMin::Linear;
+		envMapSpec.MaxFilter = TextureFilterMag::Linear;
+		envMapSpec.WrapS = TextureWrap::ClampEdge;
+		envMapSpec.WrapT = TextureWrap::ClampEdge;
+		envMapSpec.WrapR = TextureWrap::ClampEdge;
+		envMapSpec.AType = AssetType::CubeTexture;
+		m_envMapAttachment = ColorAttachment(skyboxFboSpec.ColorBufferSpec.size());
+		skyboxFboSpec.ColorBufferSpec.push_back(envMapSpec);
 
 		TextureSpecification depthBufferSpec;
 		depthBufferSpec.Name = "SkyboxDepthBuffer";
 		depthBufferSpec.Format = ImageInternalFormat::DEPTH24;
-		depthBufferSpec.Width = m_resolution.x;
-		depthBufferSpec.Height = m_resolution.y;
+		depthBufferSpec.Width = m_envMapSize.x;
+		depthBufferSpec.Height = m_envMapSize.y;
 		depthBufferSpec.AType = AssetType::RenderBuffer;
 
-		FrameBufferSpecification cubeFboSpec;
-		cubeFboSpec.Name = "SkyboxFrameBuffer";
-		cubeFboSpec.Width = m_resolution.x;
-		cubeFboSpec.Height = m_resolution.y;
+		skyboxFboSpec.FrameBufferUsage = FrameBufferUsage::ColorBuffer;
+		skyboxFboSpec.DepthBufferSpec = depthBufferSpec;
+		skyboxFboSpec.DepthAttachment = DepthAttachment::Depth;
+		Ref<FrameBuffer> fbo = FrameBuffer::Create(skyboxFboSpec);
 
-		m_cubeTexAttach = ColorAttachment(cubeFboSpec.ColorBufferSpec.size());
-		cubeFboSpec.ColorBufferSpec.push_back(cubeTextureSpec);
-		cubeFboSpec.FrameBufferUsage = FrameBufferUsage::ColorBuffer;
-		cubeFboSpec.DepthBufferSpec = depthBufferSpec;
-		cubeFboSpec.DepthAttachment = DepthAttachment::Depth;
-		Ref<FrameBuffer> fbo = FrameBuffer::Create(cubeFboSpec);
-
-		RenderPassSpecification corePassSpec;
-		corePassSpec.Name = "CorePass";
-		corePassSpec.FrameBuffer = fbo;
-		m_corePass = RenderPass::Create(corePassSpec);
+		RenderPassSpecification hdrPassSpec;
+		hdrPassSpec.Name = "HDRPass";
+		hdrPassSpec.FrameBuffer = fbo;
+		m_hdrPass = RenderPass::Create(hdrPassSpec);
 
 		RenderState state;
 		state.Blend = Blend::Disable();
@@ -126,18 +130,71 @@ namespace pio
 		state.DepthTest = DepthTest::Common();
 		state.Clear = Clear::Common(Renderer::TRANSPARENT_COLOR);
 		state.Stencil.Enable = false;
-		m_corePass->setState(state);
+		m_hdrPass->setState(state);
 	}
 
-	void Skybox::initHDR()
+	void Skybox::createDiffuseConvPass()
 	{
-		PIO_ASSERT_RETURN(Renderer::IsRenderThread(), "Skybox::initHDR() should be called in render thread");
-		m_HDRTexture->init();
+		FrameBufferSpecification diffuseFboSpec;
+		diffuseFboSpec.Name = "DiffuseConvFrameBuffer";
+		diffuseFboSpec.Width = m_diffuseMapSize.x;
+		diffuseFboSpec.Height = m_diffuseMapSize.y;
 
+		TextureSpecification diffuseMapSpec;
+		diffuseMapSpec.Name = "DiffuseMap";
+		diffuseMapSpec.Format = ImageInternalFormat::RGB16F;
+		diffuseMapSpec.Width = m_diffuseMapSize.x;
+		diffuseMapSpec.Height = m_diffuseMapSize.y;
+		diffuseMapSpec.MinFilter = TextureFilterMin::Linear;
+		diffuseMapSpec.MaxFilter = TextureFilterMag::Linear;
+		diffuseMapSpec.WrapS = TextureWrap::ClampEdge;
+		diffuseMapSpec.WrapT = TextureWrap::ClampEdge;
+		diffuseMapSpec.WrapR = TextureWrap::ClampEdge;
+		diffuseMapSpec.AType = AssetType::CubeTexture;
+		m_diffuseMapAttachment = ColorAttachment(diffuseFboSpec.ColorBufferSpec.size());
+		diffuseFboSpec.ColorBufferSpec.push_back(diffuseMapSpec);
+
+		TextureSpecification depthBufferSpec;
+		depthBufferSpec.Name = "DiffuseMapDepthBuffer";
+		depthBufferSpec.Format = ImageInternalFormat::DEPTH24;
+		depthBufferSpec.Width = m_diffuseMapSize.x;
+		depthBufferSpec.Height = m_diffuseMapSize.y;
+		depthBufferSpec.AType = AssetType::RenderBuffer;
+
+		diffuseFboSpec.FrameBufferUsage = FrameBufferUsage::ColorBuffer;
+		diffuseFboSpec.DepthBufferSpec = depthBufferSpec;
+		diffuseFboSpec.DepthAttachment = DepthAttachment::Depth;
+		Ref<FrameBuffer> fbo = FrameBuffer::Create(diffuseFboSpec);
+
+		RenderPassSpecification diffusePassSpec;
+		diffusePassSpec.Name = "DiffuseMapPass";
+		diffusePassSpec.FrameBuffer = fbo;
+		m_diffuseConvPass = RenderPass::Create(diffusePassSpec);
+
+		RenderState state;
+		state.Blend = Blend::Disable();
+		state.Cull = CullFace::Common();
+		state.DepthTest = DepthTest::Common();
+		state.Clear = Clear::Common(Renderer::TRANSPARENT_COLOR);
+		state.Stencil.Enable = false;
+		m_diffuseConvPass->setState(state);
+	}
+
+	void Skybox::createEnvMap()
+	{
+		PIO_ASSERT_RETURN(Renderer::IsRenderThread(), "Skybox::createEnvMap() should be called in render thread");
+		m_HDRTexture->init();
 		// --------- draw HDR raw pixel into cube texture --------------
-		Renderer::BeginRenderPass(m_corePass);
-		Renderer::RenderHDRToCube(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_cubeTexAttach, m_HDRTexture, m_corePass->getFramebuffer());
-		Renderer::EndRenderPass(m_corePass);
+		Renderer::BeginRenderPass(m_hdrPass);
+		Ref<FrameBuffer> skyboxFbo = m_hdrPass->getFramebuffer();
+		Ref<CubeTexture> envMap = RefCast<Texture2D, CubeTexture>(skyboxFbo->getColorBuffer(m_envMapAttachment));
+		Renderer::RenderHDRToEnvMap(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_envMapAttachment, m_HDRTexture, skyboxFbo);
+		Renderer::EndRenderPass(m_hdrPass);
 		// -------------------------------------------------------------
+
+		Renderer::BeginRenderPass(m_diffuseConvPass);
+		Ref<FrameBuffer> diffuseFbo = m_diffuseConvPass->getFramebuffer();
+		Renderer::RenderDiffuseConvolution(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_diffuseMapAttachment, envMap, diffuseFbo);
+		Renderer::EndRenderPass(m_diffuseConvPass);
 	}
 }

@@ -26,7 +26,8 @@ namespace pio
 		}
 		image.AFmt = m_fmt;
 		image.Name = m_name;
-		image.Path = absPath;		
+		image.Path = absPath;	
+		image.ParentDir = absPath.substr(0, absPath.find_last_of("/"));
 		if (m_fmt == AssetFmt::HDR)
 		{
 			stbi_set_flip_vertically_on_load(true);

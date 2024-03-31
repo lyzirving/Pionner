@@ -108,7 +108,12 @@ namespace pio
 			}
 			case ShaderType::Equirectangular_To_Cube:
 			{
-				m_shaders[index] = Shader::Create("equirectangular_to_cube", "equirectangular_to_cube", "equirectangular_to_cube");
+				m_shaders[index] = Shader::Create("equirectangular_to_cube", "cube", "equirectangular_to_cube");
+				return m_shaders[index];
+			}
+			case ShaderType::Diffuse_Convolution:
+			{
+				m_shaders[index] = Shader::Create("diffuse_convolution", "cube", "diffuse_convolution");
 				return m_shaders[index];
 			}
 			case ShaderType::Skybox:

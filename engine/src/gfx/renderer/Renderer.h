@@ -133,7 +133,8 @@ namespace pio
 
 		// ------------------------------- Tools -------------------------------------
 		static void RenderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state);
-		static void RenderHDRToCube(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment cubeAttach, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &cubeFbo);
+		static void RenderHDRToEnvMap(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment envMapAttachment, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &fbo);
+		static void RenderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo);
 		static void Postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state);
 		// ---------------------------------------------------------------------------
 

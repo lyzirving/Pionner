@@ -10,24 +10,17 @@ namespace pio
 		return clear;
 	}
 
-	Clear Clear::Create(ClearBits bit)
-	{
-		Clear clear;
-		clear.Bits.set((uint8_t)bit);
-		return clear;
-	}
-
 	Clear Clear::Create(uint8_t bits)
 	{
 		Clear clear;
-		if(PIO_BIT((uint8_t)ClearBits::Color) & bits)
-			clear.Bits.set((uint8_t)ClearBits::Color);
+		if(PIO_BIT(ClearBits_Color) & bits)
+			clear.Bits.set(ClearBits_Color);
 
-		if (PIO_BIT((uint8_t)ClearBits::Depth) & bits)
-			clear.Bits.set((uint8_t)ClearBits::Depth);
+		if (PIO_BIT(ClearBits_Depth) & bits)
+			clear.Bits.set(ClearBits_Depth);
 
-		if (PIO_BIT((uint8_t)ClearBits::Stencil) & bits)
-			clear.Bits.set((uint8_t)ClearBits::Stencil);
+		if (PIO_BIT(ClearBits_Stencil) & bits)
+			clear.Bits.set(ClearBits_Stencil);
 
 		return clear;
 	}

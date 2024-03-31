@@ -48,7 +48,7 @@ namespace pio
 	public:
 		int32_t Width{ 0 }, Height{ 0 };
 		int32_t Channel{ 0 };
-		std::string	Name{}, Path{};
+		std::string	Name{}, Path{}, ParentDir{};
 		AssetFmt AFmt{ AssetFmt::Num };
 
 	public:

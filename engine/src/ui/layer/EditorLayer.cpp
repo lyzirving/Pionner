@@ -5,6 +5,7 @@
 #include "asset/AssetsManager.h"
 
 #include "scene/Components.h"
+#include "scene/Skybox.h"
 
 #include "animation/Animation.h"
 #include "animation/Animator.h"
@@ -160,13 +161,19 @@ namespace pio
 			const float rowWidth = m_layoutParam.Viewport.Width;
 			
 			ImGui::PushItemWidth(rowWidth);
-			ImGui::InputText("##scene_name", const_cast<char *>(rlComp.Tag.data()),
-							 rlComp.Tag.size(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputText("##scene_name", const_cast<char *>(rlComp.Tag.data()), rlComp.Tag.size(), ImGuiInputTextFlags_ReadOnly);
 			ImGui::PopItemWidth();
 
 			if (ImGui::CollapsingHeader("Physics##Scene", ImGuiUtils::Flag_Collapse_Header))
 			{
 				ImGui::Checkbox("Simulate##Scene_Physics", &sceneComp.Simulate);
+			}
+
+			if (ImGui::CollapsingHeader("Skybox##Scene", ImGuiUtils::Flag_Collapse_Header))
+			{				
+				Ref<Skybox> sk = AssetsManager::GetRuntimeAsset<Skybox>(sceneComp.Skybox);
+				const auto &name = sk->getName();
+				ImGui::Text("Env map: %s", name.c_str());
 			}
 		}
 	}

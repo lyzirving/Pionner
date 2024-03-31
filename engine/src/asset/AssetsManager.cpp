@@ -125,8 +125,9 @@ namespace pio
 			case AssetFmt::GLB:
 				return ASSETS_ROOT + "/model";
 			case AssetFmt::PNG:
-			case AssetFmt::HDR:
 				return ASSETS_ROOT + "/pic";
+			case AssetFmt::HDR:
+				return ASSETS_ROOT + "/pic/hdr";
 			default:
 				LOGE("invalid assets type[%u]", fmt);
 				break;

@@ -62,6 +62,28 @@ namespace pio
 		}
 	}
 
+	void GLRenderBuffer::bind(uint32_t width, uint32_t height)
+	{
+		init();
+
+		if (isInit())
+		{
+			glBindRenderbuffer(GL_RENDERBUFFER, m_bufferId);
+			if (m_spec.Width != width || m_spec.Height != height)
+			{
+				m_spec.Width = width;
+				m_spec.Height = height;
+				glRenderbufferStorage(GL_RENDERBUFFER, GLHelper::GetGLTextureInternalFmt(m_internalFmt),
+									  m_spec.Width, m_spec.Height);
+			}
+			GLHelper::CheckError("fail to bind render buffer[%s][%u]", m_spec.Name.c_str(), m_bufferId);
+		}
+		else
+		{
+			LOGE("RenderBuffer[%s] invalid state[%u]", m_spec.Name.c_str(), m_bufferId);
+		}
+	}
+
 	void GLRenderBuffer::unbind()
 	{
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);

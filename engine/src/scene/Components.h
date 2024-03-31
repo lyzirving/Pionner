@@ -174,7 +174,8 @@ namespace pio
 	struct SceneComponent
 	{
 		// Physics Related
-		AssetHandle PhycisScene;
+		AssetHandle PhycisScene{ NullAsset };
+		AssetHandle Skybox{ NullAsset };
 		bool Simulate{ true };
 		bool Primary{ false };
 	};

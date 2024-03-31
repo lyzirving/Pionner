@@ -153,13 +153,13 @@ namespace pio
 	void GLState::SetClear(const Clear &clear)
 	{
 		uint32_t bits{ 0 };
-		if (clear.Bits.test((uint32_t)ClearBits::Color))
+		if (clear.Bits.test(ClearBits_Color))
 			bits |= GL_COLOR_BUFFER_BIT;
 
-		if (clear.Bits.test((uint32_t)ClearBits::Depth))
+		if (clear.Bits.test(ClearBits_Depth))
 			bits |= GL_DEPTH_BUFFER_BIT;
 
-		if (clear.Bits.test((uint32_t)ClearBits::Stencil))
+		if (clear.Bits.test(ClearBits_Stencil))
 			bits |= GL_STENCIL_BUFFER_BIT;
 
 		glClearColor(clear.Color.r, clear.Color.g, clear.Color.b, clear.Color.a);

@@ -300,6 +300,10 @@ namespace pio
 		AssetsManager::Get()->addRuntimeAsset(physicsScene);
 		sceneComp.PhycisScene = physicsScene->getHandle();
 
+		m_skybox = CreateRef<Skybox>("default_skybox", AssetFmt::HDR);
+		AssetsManager::Get()->addRuntimeAsset(m_skybox);
+		sceneComp.Skybox = m_skybox->getHandle();
+
 		// Main Camera
 		m_mainCameraEnt = s_registry->create<CameraComponent>();
 		auto &cameraComp = m_mainCameraEnt->getComponent<CameraComponent>();
@@ -397,8 +401,6 @@ namespace pio
 			PIO_RELATION_SET_PARENT_INDEX(ent, m_sceneRoot->getCacheIndex());
 			PIO_RELATION_SET_CHILD_INDEX(m_sceneRoot, ent->getCacheIndex());
 		}
-
-		m_skybox = CreateRef<Skybox>("default_skybox", AssetFmt::HDR);
 
 		EventBus::Get()->submit([]()
 		{

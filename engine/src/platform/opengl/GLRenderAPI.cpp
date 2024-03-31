@@ -21,6 +21,7 @@
 #include "gfx/rhi/VertexArray.h"
 #include "gfx/rhi/VertexBuffer.h"
 #include "gfx/rhi/IndexBuffer.h"
+#include "gfx/rhi/RenderBuffer.h"
 #include "gfx/rhi/UniformBufferSet.h"
 #include "gfx/rhi/Material.h"
 #include "gfx/rhi/FrameBuffer.h"
@@ -656,38 +657,38 @@ namespace pio
 		shader->bind(false);
 	}
 
-	void GLRenderAPI::renderHDRToCube(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment cubeAttach, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &cubeFbo)
+	void GLRenderAPI::renderHDRToEnvMap(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment envMapAttachment, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &fbo)
 	{
 		Ref<MeshBase> cubeMesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderHDRToCube: Cube Mesh is invalid");
+		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderHDRToEnvMap: Cube Mesh is invalid");
 
 		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Equirectangular_To_Cube);
 		PIO_ASSERT_RETURN(shader.use_count() != 0, "Equirectangular_To_Cube shader is invalid");
 
-		PIO_ASSERT_RETURN(HDRTexture.use_count() != 0, "renderHDRToCube: HDRTexture is invalid");
-		PIO_ASSERT_RETURN(cubeFbo.use_count() != 0, "renderHDRToCube: cubeFbo is invalid");
+		PIO_ASSERT_RETURN(HDRTexture.use_count() != 0, "renderHDRToEnvMap: HDRTexture is invalid");
+		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderHDRToEnvMap: fbo is invalid");
 
 		Ref<MeshSource> meshSource = cubeMesh->getMeshSource();
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
 
 		shader->bind(true);
 
+		shader->setMat4("u_prjMat", prjMat);
+
 		HDRTexture->active(PIO_UINT(TextureSampler::Slot0));
 		HDRTexture->bind();
-
 		shader->setTextureSampler("u_equirectangularMap", TextureSampler::Slot0);
-		shader->setMat4("u_prjMat", prjMat);
 
 		submesh.VertexArray->bind();
 		submesh.IndexBuffer->bind();
 
 		for (uint8_t i = 0; i < LightDir_Num; i++)
 		{			
-			cubeFbo->bindTarget(cubeAttach, LightDir(i));
-			GLState::SetClear(Clear::Common());
-			shader->setMat4("u_viewMat", viewMat[i]);			
+			shader->setMat4("u_viewMat", viewMat[i]);
+			fbo->bindTarget(envMapAttachment, LightDir(i));
+			GLState::SetClear(Clear::Common());			
 			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-			if (GLHelper::CheckError("renderHDRToCube fail at light dir[%u]!!", i))
+			if (GLHelper::CheckError("renderHDRToEnvMap fail at light dir[%u]!!", i))
 				LOGD("succeed to render HDR to cube face[%s]", LightDirStr(LightDir(i)));
 		}		
 
@@ -695,6 +696,48 @@ namespace pio
 		submesh.VertexArray->unbind();
 
 		HDRTexture->unbind();
+		shader->bind(false);
+	}
+
+	void GLRenderAPI::renderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
+	{
+		Ref<MeshBase> cubeMesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
+		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderDiffuseConvolution: Cube Mesh is invalid");
+
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Diffuse_Convolution);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "Diffuse_Convolution shader is invalid");
+
+		PIO_ASSERT_RETURN(envMap.use_count() != 0, "renderDiffuseConvolution: envMap is invalid");
+		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderDiffuseConvolution: fbo is invalid");
+
+		Ref<MeshSource> meshSource = cubeMesh->getMeshSource();
+		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
+
+		shader->bind(true);
+
+		shader->setMat4("u_prjMat", prjMat);
+
+		envMap->active(PIO_UINT(TextureSampler::Slot1));
+		envMap->bind();
+		shader->setTextureSampler("u_envMap", TextureSampler::Slot1);
+		
+		submesh.VertexArray->bind();
+		submesh.IndexBuffer->bind();
+
+		for (uint8_t i = 0; i < LightDir_Num; i++)
+		{
+			shader->setMat4("u_viewMat", viewMat[i]);
+			fbo->bindTarget(diffuseMapAttachment, LightDir(i));
+			GLState::SetClear(Clear::Common());
+			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+			if (GLHelper::CheckError("renderDiffuseConvolution fail at light dir[%u]!!", i))
+				LOGD("succeed to render diffuse convolution to cube face[%s]", LightDirStr(LightDir(i)));
+		}
+
+		submesh.IndexBuffer->unbind();
+		submesh.VertexArray->unbind();
+
+		envMap->unbind();
 		shader->bind(false);
 	}
 

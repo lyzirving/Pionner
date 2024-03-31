@@ -14,6 +14,8 @@ namespace pio
 
 		virtual void active(uint32_t sampler = 0) override { /* Not implemented*/ }
 		virtual uint32_t getMipLevelCount() const override { return 0;/* Not implemented*/ }
+		virtual void bind() override {};
+		virtual void bind(uint32_t width, uint32_t height) = 0;
 
 	public:
 		static Ref<RenderBuffer> Create(const TextureSpecification &spec);

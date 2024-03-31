@@ -301,7 +301,7 @@ namespace pio
 			RenderState state;
 			// Fix Peter Panning
 			state.Cull = CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front);
-			state.Clear = Clear::Create(ClearBits::Depth);
+			state.Clear = Clear::Create(PIO_BIT(ClearBits_Depth));
 			state.DepthTest = DepthTest::Common();
 			state.Blend = Blend::Disable();
 			m_distantLightShadowPass->setState(state);
@@ -339,7 +339,7 @@ namespace pio
 			RenderState state;
 			// Fix Peter Panning
 			state.Cull = CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front);
-			state.Clear = Clear::Create(ClearBits::Depth);
+			state.Clear = Clear::Create(PIO_BIT(ClearBits_Depth));
 			state.DepthTest = DepthTest::Common();
 			state.Blend = Blend::Disable();
 			m_pointLightShadowPass->setState(state);
@@ -668,7 +668,7 @@ namespace pio
 			skState.Cull = CullFace::Common();
 			skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
 			skState.Stencil.Enable = false;
-			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getSkyBg(), skState);	
+			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);	
 
 			RenderPass::RenderSprites(spCmd);
 

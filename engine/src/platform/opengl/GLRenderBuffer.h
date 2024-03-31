@@ -19,6 +19,7 @@ namespace pio
 		virtual void destroy() override;
 
 		virtual void bind() override;
+		virtual void bind(uint32_t width, uint32_t height) override;
 		virtual void unbind() override;
 
 		virtual bool isInit() const override { return m_bufferId != 0; }

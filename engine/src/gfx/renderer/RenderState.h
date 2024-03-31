@@ -15,19 +15,19 @@ namespace pio
 		Decr, DecrWrap, Invert
 	};
 
-	enum class ClearBits : uint8_t
+	enum ClearBits : uint8_t
 	{
-		Color = 0, Depth, Stencil, Count
+		ClearBits_Color = 0, ClearBits_Depth, ClearBits_Stencil, 
+		ClearBits_Count
 	};
 
 	struct Clear
 	{
 		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
-		std::bitset<(uint8_t)ClearBits::Count> Bits{};
+		std::bitset<ClearBits_Count> Bits{};
 
 		static Clear Common(const glm::vec4 &color = glm::vec4(0.f, 0.f, 0.f, 1.f));
-		static Clear Create(ClearBits bit);
-		static Clear Create(uint8_t bits);
+		static Clear Create(uint8_t flags);
 	};
 
 	enum class BlendFactor : uint8_t

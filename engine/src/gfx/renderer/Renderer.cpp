@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Renderer.h"
+#include "Renderer.h"
 #include "RenderThread.h"
 
 #include "asset/AssetsManager.h"
@@ -194,9 +195,14 @@ namespace pio
 		s_API->renderSkybox(meshHandle, submeshIndex, uniformBufferSet, cubeTexture, state);
 	}
 
-	void Renderer::RenderHDRToCube(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment cubeAttach, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &cubeFbo)
+	void Renderer::RenderHDRToEnvMap(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment envMapAttachment, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &fbo)
 	{
-		s_API->renderHDRToCube(meshHandle, submeshIndex, prjMat, viewMat, state, cubeAttach, HDRTexture, cubeFbo);
+		s_API->renderHDRToEnvMap(meshHandle, submeshIndex, prjMat, viewMat, state, envMapAttachment, HDRTexture, fbo);
+	}
+
+	void Renderer::RenderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
+	{
+		s_API->renderDiffuseConvolution(meshHandle, submeshIndex, prjMat, viewMat, state, diffuseAttachment, envMap, fbo);
 	}
 
 	void Renderer::Postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)
