@@ -10,6 +10,8 @@ const int FRAG_TYPE_OUTLINE = 3;
 // look visually correct with a constant U_F0 of 0.04.
 const vec3 U_F0 = vec3(0.04f);
 
+const float Epsilon = 0.00001;
+
 const int POINT_LIGHT_LIMIT = 10;
 
 const vec3 SPL_DIR[20] = vec3[]
@@ -82,13 +84,10 @@ out vec4 o_color;
 
 vec3 calcPointLightOut(PointLight pointLight);
 
-float normalDistributionGGX(vec3 N, vec3 H, float roughness);
-
-float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
-float geometrySchlickGGX(float NdotV, float roughness);
-
-vec3 fresnelSchlick(float cosTheta, vec3 F0);
-vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
+vec3  FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
+float NdfGGX(float NdotH, float roughness);
+float GaSchlickGGX(float NdotL, float NdotV, float roughness);
+float GaSchlickG1(float cosTheta, float k);
 
 float softShadow(int lightIndex, PointLight pointLight);
 float pointLightSoftShadow(int lightIndex, PointLight pointLight);
@@ -119,6 +118,7 @@ vec3 calcPointLightOut(PointLight pointLight)
     vec3 L = normalize(pointLight.Position - m_params.FragPos);
     vec3 H = normalize(m_params.V + L);
     float NdotL = max(dot(m_params.N, L), 0.f); 
+    float NdotH = max(dot(m_params.N, H), 0.f); 
     float lightDistance = length(pointLight.Position - m_params.FragPos);
     float attenuation = clamp(1.0 - (lightDistance * lightDistance) / (pointLight.Radius * pointLight.Radius), 0.f, 1.f);
     attenuation *= mix(attenuation, 1.0, pointLight.Falloff);
@@ -128,69 +128,51 @@ vec3 calcPointLightOut(PointLight pointLight)
     vec3 radiance = pointLight.Radiance * pointLight.Intensity * attenuation;
 
     // Cook-Torrance BRDF
-    float NDF = normalDistributionGGX(m_params.N, H, m_params.Roughness);  
-    float G = geometrySmith(m_params.N, m_params.V, L, m_params.Roughness);  
-    vec3 F = fresnelSchlick(clamp(dot(H, m_params.V), 0.0, 1.0), m_params.F0);
+    vec3 F = FresnelSchlickRoughness(max(0.f, dot(H, m_params.V)), m_params.F0, m_params.Roughness);
+    float NDF = NdfGGX(NdotH, m_params.Roughness);  
+    float G = GaSchlickGGX(NdotL, m_params.NdotV, m_params.Roughness);
 
-    vec3 numerator = NDF * G * F; 
-    // + 0.0001 to prevent divide by zero
-    float denominator = 4.0 * m_params.NdotV * NdotL + 0.0001;
     // Cook-Torrance specular
-    vec3 specular = numerator / denominator;
+    vec3 specular = (NDF * G * F) / max(Epsilon, 4.0 * NdotL * m_params.NdotV);
+    specular = clamp(specular, vec3(0.0f), vec3(10.0f));
 
-    vec3 kS = F;
-    // For energy conservation, the diffuse and specular light can't
-    // be above 1.0 
-    vec3 kD = vec3(1.0) - kS;
-    kD *= (1.0 - m_params.Metalness);
+    vec3 ks = F;
+    vec3 kd = (vec3(1.0) - ks) * (1.0 - m_params.Metalness);// For energy conservation
+    vec3 diffuse = kd * m_params.Albedo;
 
-    vec3 Lo = (kD * m_params.Albedo / PI + specular) * radiance * NdotL;
+    vec3 Lo = (diffuse + specular) * radiance * NdotL;
     return Lo;
 }
 
-float normalDistributionGGX(vec3 N, vec3 H, float roughness)
-{
-    float a = roughness * roughness;
-    float a2 = a * a;
-    float NdotH = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH * NdotH;
-
-    float nom = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = PI * denom * denom;
-
-    return nom / denom;
-}
-
-float geometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float  NdotV = max(dot(N, V), 0.0);
-    float  NdotL = max(dot(N, L), 0.0);
-    float  ggx2 = geometrySchlickGGX(NdotV, roughness);
-    float  ggx1 = geometrySchlickGGX(NdotL, roughness);
-    return ggx1 * ggx2;
-}
-
-float geometrySchlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r * r) / 8.0;
-
-    float nom   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / denom;
-}
-
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
-{
-    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
-
-vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 {
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 } 
+
+// GGX/Towbridge-Reitz normal distribution function.
+// Uses Disney's reparametrization of alpha = roughness^2
+float NdfGGX(float NdotH, float roughness)
+{
+	float alpha = roughness * roughness;
+	float alphaSq = alpha * alpha;
+
+	float denom = (NdotH * NdotH) * (alphaSq - 1.0) + 1.0;
+	return alphaSq / (PI * denom * denom);
+}
+
+// Schlick-GGX approximation of geometric attenuation function using Smith's method.
+float GaSchlickGGX(float NdotL, float NdotV, float roughness)
+{
+	float r = roughness + 1.0;
+	float k = (r * r) / 8.0; // Epic suggests using this roughness remapping for analytic lights.
+	return GaSchlickG1(NdotL, k) * GaSchlickG1(NdotV, k);
+}
+
+// Single term for separable Schlick-GGX below.
+float GaSchlickG1(float cosTheta, float k)
+{
+	return cosTheta / (cosTheta * (1.0 - k) + k);
+}
 
 float softShadow(int lightIndex, PointLight pointLight)
 {
