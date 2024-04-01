@@ -661,7 +661,7 @@ namespace pio
 											   glm::ivec2(0), glm::ivec2(gp->getFramebuffer()->getWidth(), gp->getFramebuffer()->getHeight()),
 											   glm::ivec2(0), glm::ivec2(lp->getFramebuffer()->getWidth(), lp->getFramebuffer()->getHeight()),
 											   FB_DepthBuffer_Bit, TextureFilterMag::Nearest);
-			RenderPass::RenderLightingEffect_Deferred(env, gp, dlsp, plsp, ubs);
+			RenderPass::RenderLightingEffect_Deferred(env, sk, gp, dlsp, plsp, ubs);
 
 			RenderState skState;
 			skState.Blend = Blend::Disable();

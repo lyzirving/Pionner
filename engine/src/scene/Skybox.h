@@ -22,9 +22,13 @@ namespace pio
 		void prepare(); // Need to be called in Render thread
 
 		Ref<CubeTexture> getEnvMap();
+		Ref<CubeTexture> getDiffuseMap();
 
+		float getIntensity() const { return m_envMapIntensity; }
 		AssetHandle getCubeMesh() const { return m_cubeMesh; }
 		const std::string &getName() const { return m_image.Name; }
+
+		void setIntensity(float val) { m_envMapIntensity = val; }
 
 	private:
 		void createData(const std::string &name, AssetFmt fmt);
@@ -47,6 +51,7 @@ namespace pio
 		glm::mat4 m_viewMat[LightDir_Num];
 		AssetHandle m_cubeMesh{ NullAsset };
 
+		float m_envMapIntensity{ 0.1f };
 		glm::uvec2 m_envMapSize{ 512, 512 };
 		glm::uvec2 m_diffuseMapSize{ 32, 32 };
 	};

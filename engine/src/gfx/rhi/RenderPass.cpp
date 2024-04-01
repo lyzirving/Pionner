@@ -8,6 +8,8 @@
 
 #include "platform/opengl/GLRenderPass.h"
 #include "asset/AssetsManager.h"
+
+#include "scene/Skybox.h"
 #include "scene/Light.h"
 
 #ifdef LOCAL_TAG
@@ -28,7 +30,7 @@ namespace pio
 		}
 	}
 
-	void RenderPass::RenderLightingEffect_Deferred(const LightEnvironment &lightEnv, Ref<RenderPass> &GBufferPass, Ref<RenderPass> &distantLightShadowPass, Ref<RenderPass> &pointLightShadowPass, Ref<UniformBufferSet> &uniformBufferSet)
+	void RenderPass::RenderLightingEffect_Deferred(const LightEnvironment &lightEnv, Ref<Skybox> &skybox, Ref<RenderPass> &GBufferPass, Ref<RenderPass> &distantLightShadowPass, Ref<RenderPass> &pointLightShadowPass, Ref<UniformBufferSet> &uniformBufferSet)
 	{
 		// Firstly, directional lighting effect for the whole screen
 		RenderState dirLightEffectState;
@@ -36,7 +38,7 @@ namespace pio
 		dirLightEffectState.Cull = CullFace::Common();
 		dirLightEffectState.Blend = Blend::Disable();
 		dirLightEffectState.Stencil.Enable = false;
-		Renderer::RenderDistantLightingQuad_Deferred(Renderer::GetConfig().FullScreenQuad, uniformBufferSet,
+		Renderer::RenderDistantLightingQuad_Deferred(Renderer::GetConfig().FullScreenQuad, skybox, uniformBufferSet,
 												     GBufferPass, distantLightShadowPass, dirLightEffectState);
 		/*
 		* ------------------------ Stencil Pass for point light effect -------------------------------

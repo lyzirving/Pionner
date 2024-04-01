@@ -59,6 +59,16 @@ namespace pio
 		return RefCast<Texture2D, CubeTexture>(m_hdrPass->getFramebuffer()->getColorBuffer(m_envMapAttachment));
 	}
 
+	Ref<CubeTexture> Skybox::getDiffuseMap()
+	{
+		if (!m_diffuseConvPass->getFramebuffer()->getColorBuffer(m_diffuseMapAttachment)->isInit())
+		{
+			LOGE("prepare() has not been called");
+			return Ref<CubeTexture>();
+		}
+		return RefCast<Texture2D, CubeTexture>(m_diffuseConvPass->getFramebuffer()->getColorBuffer(m_diffuseMapAttachment));
+	}
+
 	void Skybox::createData(const std::string &name, AssetFmt fmt)
 	{
 		ImageImporter importer(name, fmt);

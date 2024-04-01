@@ -68,25 +68,29 @@ uniform sampler2D u_GAlbedoAlpha; // vec4 albedo(3) + alpha(1)
 uniform sampler2D u_GMaterial;    // vec3 roughness + metalness + ao
 uniform sampler2D u_GEmission;    // vec3
 
-uniform sampler2D u_shadowMap;
+uniform sampler2D   u_shadowMap;
+uniform samplerCube u_irradianceMap;
 
-uniform vec4 u_bgColor;
+uniform float u_envMapIntensity;
+uniform vec4  u_bgColor;
 
 in vec2 v_texcoord; 
 out vec4 o_color;
 
-int nearestInt(float val);
-vec4 meshColor();
-vec3 calculateDistantLights();
+int   nearestInt(float val);
+vec4  meshColor();
+vec3  calculateDistantLightEffect();
 float calcShadow(int mode);
 
 float distantLightHardShadow();
 float distantLightPCFShadow(int radius);
 
 float NdfGGX(float NdotH, float roughness);
-vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
+vec3  FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness);
 float GaSchlickGGX(float NdotL, float NdotV, float roughness);
 float GaSchlickG1(float cosTheta, float k);
+
+vec3 IBL();
 
 void main() {
     vec4 baseColor = texture(u_GAlbedoAlpha, v_texcoord);
@@ -114,17 +118,16 @@ int nearestInt(float val)
 
 vec4 meshColor()
 {
-    // TODO: use an unified ambient
-    vec3 ambient = vec3(0.03f) * m_params.Albedo * m_params.AO;
-    vec3 lightEffect = calculateDistantLights(); 
-    vec3 color = u_distantLight.CastShadow ? ((1.f - calcShadow(u_distantLight.SdMode)) * lightEffect) : lightEffect;
+    vec3 lightEffect = calculateDistantLightEffect(); 
+    vec3 lightContribution = u_distantLight.CastShadow ? ((1.f - calcShadow(u_distantLight.SdMode)) * lightEffect) : lightEffect;
+
+    vec3 iblContribution = IBL();
     
-    // TODO: IBL
-    color += ambient + m_params.Emission;   
-    return vec4(color.rgb, m_params.Alpha);
+    lightContribution += iblContribution + m_params.Emission;
+    return vec4(lightContribution.rgb, m_params.Alpha);
 }
 
-vec3 calculateDistantLights()
+vec3 calculateDistantLightEffect()
 {
     m_params.V = normalize(u_matrices.CameraPosition - m_params.FragPos);
     m_params.R = reflect(-m_params.V, m_params.N);
@@ -139,17 +142,29 @@ vec3 calculateDistantLights()
 	float NdotL = max(0.f, dot(m_params.N, Li));
 	float NdotH = max(0.f, dot(m_params.N, Lh));
 
-    vec3 F = FresnelSchlickRoughness(max(0.f, dot(Lh, m_params.V)), m_params.F0, m_params.Roughness);
+    vec3  F = FresnelSchlickRoughness(max(0.f, dot(Lh, m_params.V)), m_params.F0, m_params.Roughness);
     float D = NdfGGX(NdotH, m_params.Roughness);
     float G = GaSchlickGGX(NdotL, m_params.NdotV, m_params.Roughness);
 
-    vec3 kd = (1.0 - F) * (1.0 - m_params.Metalness);
+    vec3 kd = (vec3(1.0) - F) * (1.0 - m_params.Metalness);
 	vec3 diffuseBRDF = kd * m_params.Albedo;
 
     // Cook-Torrance
 	vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * NdotL * m_params.NdotV);
 	specularBRDF = clamp(specularBRDF, vec3(0.0f), vec3(10.0f));
     return (diffuseBRDF + specularBRDF) * NdotL * Lradiance;
+}
+
+vec3 IBL()
+{
+    vec3 ks = FresnelSchlickRoughness(m_params.NdotV, m_params.F0, m_params.Roughness); 
+    vec3 kd = (vec3(1.0) - ks) * (1.0 - m_params.Metalness);
+
+    vec3 irradiance = texture(u_irradianceMap, m_params.N).rgb;
+    vec3 diffuseIBL = irradiance * m_params.Albedo;
+    
+    vec3 ambient = kd * diffuseIBL * u_envMapIntensity * m_params.AO;// TODO: IBL specular part
+    return ambient;
 }
 
 float calcShadow(int mode)

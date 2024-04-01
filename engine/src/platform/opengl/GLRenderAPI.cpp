@@ -12,6 +12,8 @@
 #include "asset/AssetsManager.h"
 #include "core/utils/Profiler.h"
 
+#include "scene/Skybox.h"
+
 #include "gfx/struct/MaterialAsset.h"
 #include "gfx/struct/ShaderLibrary.h"
 #include "gfx/struct/Geometry2D.h"
@@ -433,7 +435,7 @@ namespace pio
 		shader->bind(false);
 	}
 
-	void GLRenderAPI::renderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
+	void GLRenderAPI::renderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<Skybox> &skybox, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
 	{
 		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
 		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderDistantLightingQuad_Deferred: Quad Mesh is invalid");
@@ -446,6 +448,9 @@ namespace pio
 
 		PIO_ASSERT_RETURN(shadowPass.use_count() != 0, "shadow pass is invalid");
 		Ref<Texture> shadowBuffer = shadowPass->getFramebuffer()->getDepthBuffer();
+
+		PIO_ASSERT_RETURN(skybox.use_count() != 0, "skybox is invalid");
+		Ref<CubeTexture> diffuseMap = skybox->getDiffuseMap();
 
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto dirLightUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLight));
@@ -493,7 +498,12 @@ namespace pio
 		shadowBuffer->active(PIO_UINT(TextureSampler::Slot5));
 		shadowBuffer->bind();
 
+		shader->setTextureSampler("u_irradianceMap", TextureSampler::Slot6);
+		diffuseMap->active(PIO_UINT(TextureSampler::Slot6));
+		diffuseMap->bind();
+
 		shader->setVec4("u_bgColor", Renderer::GetConfig().ClearColor);
+		shader->setFloat("u_envMapIntensity", skybox->getIntensity());
 
 		quadMesh->VertexArray->bind();
 		quadMesh->IndexBuffer->bind();

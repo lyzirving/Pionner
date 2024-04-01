@@ -170,9 +170,9 @@ namespace pio
 		s_API->renderPointLightQuad_Deferred(meshHandle, uniformBufferSet, GBufferPass, shadowPass, state);
 	}
 
-	void Renderer::RenderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
+	void Renderer::RenderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<Skybox> &skybox, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
 	{
-		s_API->renderDistantLightingQuad_Deferred(meshHandle, uniformBufferSet, GBufferPass, shadowPass, state);
+		s_API->renderDistantLightingQuad_Deferred(meshHandle, skybox, uniformBufferSet, GBufferPass, shadowPass, state);
 	}
 
 	void Renderer::RenderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
