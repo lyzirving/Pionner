@@ -18,6 +18,9 @@ namespace pio
 		virtual void beginFrame() override;
 		virtual void endFrame() override;
 
+		virtual void beginUI() override;
+		virtual void endUI() override;
+
 		virtual void commitViewport(const Viewport &viewport) override;
 		virtual void commitViewport(int32_t x, int32_t y, int32_t width, int32_t height) override;
 
@@ -65,7 +68,6 @@ namespace pio
 	private:
 		void initOpenGL();
 		void initImGui();
-
 		void destroyImGui();
 
 		void saveViewport(const Viewport &viewport);
@@ -84,15 +86,20 @@ namespace pio
 		// -----------------------------------------------------------------------------
 
 		void submitRenderState(const RenderState &state);
+		void compareAndUpdateRenderState(RenderState &old, const RenderState &input);
 
-		void onPreOutlining(const RenderState &state);
-		void onOutlining(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state);
-		void onOutlining_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state);
+		void onPreOutlining();
+		void onOutlining(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat);
+		void onOutlining_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat);
 
-	private:
+	private:		
+		const RenderState m_defaultState{ Clear::Common(glm::vec4(0.f, 0.f, 0.f, 1.f)),
+										  Blend::Disable(), DepthTest::Common(),
+										  CullFace::Common(), StencilTest::Common(),
+										  RenderMode::PBR, false };
 		RenderState m_globalState{};
-		Viewport m_viewport{};
 
+		Viewport m_viewport{};
 		std::list<Viewport> m_viewportStack;
 	};
 }

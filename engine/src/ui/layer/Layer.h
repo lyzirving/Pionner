@@ -22,6 +22,7 @@ namespace pio
 		// Ensure to be called in render thread
 		virtual void onRenderDestroy() {}
 		virtual void onUpdate(const Timestep &ts) {}
+		virtual void onUpdateUI(const Timestep &ts) {}
 		virtual void onWindowSizeChange(uint32_t width, uint32_t height) {}
 
 	public:

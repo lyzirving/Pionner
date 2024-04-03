@@ -95,6 +95,9 @@ namespace pio
 		static void BeginFrame();
 		static void EndFrame();
 
+		static void BeginUI();
+		static void EndUI();
+
 		static void RenderLoop(RenderThread *thread);
 
 		static bool IsRenderThread() { return SystemUtils::GetThreadId() == s_data->ThreadId; }

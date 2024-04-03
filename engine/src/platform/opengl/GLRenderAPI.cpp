@@ -59,11 +59,20 @@ namespace pio
 
 	void GLRenderAPI::beginFrame()
 	{
-		uint64_t start{ PROFILER_TIME };
-		commitViewport(0, 0, Application::MainWindow()->getWidth(), Application::MainWindow()->getHeight());
-		GLState::SetClear(m_globalState.Clear);
-		GLState::SetDepthTest(m_globalState.DepthTest);
+		m_globalState = m_defaultState;
 
+		commitViewport(0, 0, Application::MainWindow()->getWidth(), Application::MainWindow()->getHeight());
+		
+		GLState::SetClear(m_globalState.Clear);
+		submitRenderState(m_globalState);		
+	}
+
+	void GLRenderAPI::endFrame()
+	{
+	}
+
+	void GLRenderAPI::beginUI()
+	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		{
@@ -76,12 +85,10 @@ namespace pio
 			std::lock_guard<std::mutex> lk{ Application::Get()->EventMutex };
 			ImGui::NewFrame();
 		}
-		PROFILERD_DURATION(start, "BeginFrame");
 	}
 
-	void GLRenderAPI::endFrame()
+	void GLRenderAPI::endUI()
 	{
-		uint64_t start{ PROFILER_TIME };
 		// Rendering
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -94,7 +101,6 @@ namespace pio
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
-		PROFILERD_DURATION(start, "EndFrame");
 	}
 
 	void GLRenderAPI::commitViewport(const Viewport &viewport)
@@ -182,7 +188,7 @@ namespace pio
 		Ref<UniformBuffer> boneTransformUB = meshSource->getBoneTransformUB();
 		Ref<UniformBuffer> sdUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLightShadowData));
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
@@ -247,7 +253,7 @@ namespace pio
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
 		Ref<UniformBuffer> boneTransformUB = meshSource->getBoneTransformUB();
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
@@ -309,7 +315,7 @@ namespace pio
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 
@@ -363,7 +369,7 @@ namespace pio
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto pointLightDataUB = uniformBufferSet->get(PIO_UINT(UBBindings::PointLightData));
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 
@@ -456,7 +462,7 @@ namespace pio
 		auto dirLightUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLight));
 		auto dirLightSdUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLightShadowData));
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 
@@ -537,7 +543,7 @@ namespace pio
 
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 	
@@ -569,7 +575,7 @@ namespace pio
 
 		PIO_ASSERT_RETURN(texture.use_count() != 0, "renderTextureQuad2D: texture is invalid");
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 
@@ -603,7 +609,7 @@ namespace pio
 		Ref<Texture2D> sprite = AssetsManager::GetRuntimeAsset<Texture2D>(texture);
 		PIO_ASSERT_RETURN(sprite.use_count() != 0, "renderSprite: texture is invalid");
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 
@@ -641,7 +647,7 @@ namespace pio
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
 		Ref<UniformBuffer> cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 
@@ -761,7 +767,7 @@ namespace pio
 		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Postprocessing);
 		PIO_ASSERT_RETURN(shader.use_count() != 0, "postprocessing: shader is invalid");
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 
@@ -855,13 +861,6 @@ namespace pio
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
 		LOGD("glew succeed to init, version[%d.%d]", major, minor);
-
-		m_globalState.Blend = Blend::Common();
-		m_globalState.Cull = CullFace::Common();
-		m_globalState.DepthTest = DepthTest::Common();
-		// Global Background Color
-		m_globalState.Clear = Clear::Common(glm::vec4(0.f, 0.f, 0.f, 1.f));
-		m_globalState.Stencil.Enable = true;
 	}
 
 	void GLRenderAPI::initImGui()
@@ -936,9 +935,9 @@ namespace pio
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
-		submitRenderState(state);
-		onPreOutlining(state);
-
+		compareAndUpdateRenderState(m_globalState, state);
+		if (state.Selected) { onPreOutlining(); }
+		
 		shader->bind(true);
 
 		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
@@ -1017,7 +1016,7 @@ namespace pio
 
 		shader->bind(false);
 
-		onOutlining(meshHandle, submeshIndex, uniformBufferSet, modelMat, state);
+		if (state.Selected) { onOutlining(meshHandle, submeshIndex, uniformBufferSet, modelMat); }
 	}
 
 	void GLRenderAPI::drawMatPreview(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
@@ -1036,8 +1035,8 @@ namespace pio
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
-		submitRenderState(state);
-		onPreOutlining(state);
+		compareAndUpdateRenderState(m_globalState, state);
+		if (state.Selected) { onPreOutlining(); }
 
 		shader->bind(true);
 
@@ -1098,7 +1097,7 @@ namespace pio
 		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
 		shader->bind(false);
 
-		onOutlining(meshHandle, submeshIndex, uniformBufferSet, modelMat, state);
+		if (state.Selected) { onOutlining(meshHandle, submeshIndex, uniformBufferSet, modelMat); } 
 	}
 
 	void GLRenderAPI::drawWireframe(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
@@ -1115,7 +1114,7 @@ namespace pio
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto boneTransformUB = meshSource->getBoneTransformUB();
 
-		submitRenderState(state);
+		compareAndUpdateRenderState(m_globalState, state);
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
@@ -1197,8 +1196,8 @@ namespace pio
 
 		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
 
-		submitRenderState(state);
-		onPreOutlining(state);
+		compareAndUpdateRenderState(m_globalState, state);
+		if (state.Selected) { onPreOutlining(); }
 
 		shader->bind(true);
 
@@ -1261,7 +1260,7 @@ namespace pio
 		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
 		shader->bind(false);
 
-		onOutlining_deferred(meshHandle, submeshIndex, uniformBufferSet, modelMat, state);
+		if (state.Selected) { onOutlining_deferred(meshHandle, submeshIndex, uniformBufferSet, modelMat); }
 	}
 
 	void GLRenderAPI::submitRenderState(const RenderState &state)
@@ -1272,152 +1271,170 @@ namespace pio
 		GLState::SetStencilTest(state.Stencil);
 	}
 
-	void GLRenderAPI::onPreOutlining(const RenderState &state)
+	void GLRenderAPI::compareAndUpdateRenderState(RenderState &old, const RenderState &input)
 	{
-		if (state.Selected)
+		if (old.Blend != input.Blend)
 		{
-			// 1st. render pass for outline, 
-			// update stencil buffer to 1s for each fragment drawn
-			StencilTest stencil;
-			stencil.Enable = true;
-			stencil.setMask(0xff);
-			stencil.setFunc(StencilFunc{ FuncAttr::Always, 1, 0xff });
-			stencil.setOp(StencilOp{ FuncAttr::Keep, FuncAttr::Keep, FuncAttr::Replace });
-			GLState::SetStencilTest(stencil);
+			GLState::SetBlendMode(input.Blend);
+			old.Blend = input.Blend;
+		}
+
+		if (old.DepthTest != input.DepthTest)
+		{
+			GLState::SetDepthTest(input.DepthTest);
+			old.DepthTest = input.DepthTest;
+		}
+
+		if (old.Cull != input.Cull)
+		{
+			GLState::SetCullFace(input.Cull);
+			old.Cull = input.Cull;
+		}
+
+		if (old.Stencil != input.Stencil)
+		{
+			GLState::SetStencilTest(input.Stencil);
+			old.Stencil = input.Stencil;
 		}
 	}
 
-	void GLRenderAPI::onOutlining(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
+	void GLRenderAPI::onPreOutlining()
 	{
-		if (state.Selected)
+		// 1st. render pass for outline, 
+		// update stencil buffer to 1s for each fragment drawn
+		StencilTest stencil;
+		stencil.Enable = true;
+		stencil.setMask(0xff);
+		stencil.setFunc(StencilFunc{ FuncAttr::Always, 1, 0xff });
+		stencil.setOp(StencilOp{ FuncAttr::Keep, FuncAttr::Keep, FuncAttr::Replace });
+		GLState::SetStencilTest(stencil);
+	}
+
+	void GLRenderAPI::onOutlining(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat)
+	{
+		// 2nd. render pass for outline, draw slightly scaled versions of the objects
+		// Now stencil buffer is filled with 1s. 
+		// The parts of the buffer that are 1 are not drawn, thus only drawing 
+		// the objects' size differences, making it look like borders.
+		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
+		auto shader = ShaderLibrary::Get()->find(ShaderType::Outline);
+
+		auto &meshSource = mesh->getMeshSource();
+		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
+
+		auto boneTransformUB = meshSource->getBoneTransformUB();
+		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
+
+		StencilTest stencil;
+		stencil.Enable = true;
+		stencil.setMask(0x00);
+		stencil.setFunc(StencilFunc{ FuncAttr::Notequal, 1, 0xff });
+		GLState::SetStencilTest(stencil);
+
+		shader->bind(true);
+
+		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
+		cameraUB->bind();
+
+		if (boneTransformUB)
 		{
-			// 2nd. render pass for outline, draw slightly scaled versions of the objects
-			// Now stencil buffer is filled with 1s. 
-			// The parts of the buffer that are 1 are not drawn, thus only drawing 
-			// the objects' size differences, making it look like borders.
-			Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-			auto shader = ShaderLibrary::Get()->find(ShaderType::Outline);
+			UniformBuffer::Binding(shader, "BoneMatrices", boneTransformUB->getBinding());
+			const BoneTransformUD &boneUD = meshSource->getBoneTransformUD();
+			boneTransformUB->setData(boneUD.Block.getBuffer()->as<void *>(), boneUD.Block.getByteUsed());
+			boneTransformUB->bind();
+		}
 
-			auto &meshSource = mesh->getMeshSource();
-			const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
+		shader->setMat4("u_modelMat", modelMat);
+		shader->setBool("u_playAnimation", boneTransformUB.get());
+		shader->setBool("u_bStatic", mesh->is<StaticMesh>());
+		shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
+		shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
 
-			auto boneTransformUB = meshSource->getBoneTransformUB();
-			auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
+		submesh.VertexArray->bind();
+		submesh.IndexBuffer->bind();
 
-			StencilTest stencil;
-			stencil.Enable = true;
-			stencil.setMask(0x00);
-			stencil.setFunc(StencilFunc{ FuncAttr::Notequal, 1, 0xff });
-			GLState::SetStencilTest(stencil);
+		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::CheckError("onOutlining fail!!");
 
-			shader->bind(true);
+		submesh.IndexBuffer->unbind();
+		submesh.VertexArray->unbind();
 
-			UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-			cameraUB->bind();
+		cameraUB->unbind();
+		if (boneTransformUB) boneTransformUB->unbind();
 
-			if (boneTransformUB)
+		shader->bind(false);
+
+		//restore stencil test
+		GLState::SetStencilTest(m_globalState.Stencil);
+	}
+
+	void GLRenderAPI::onOutlining_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat) 
+	{
+		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
+		auto shader = ShaderLibrary::Get()->find(ShaderType::Outline_Deferred);
+
+		auto &meshSource = mesh->getMeshSource();
+		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
+
+		auto boneTransformUB = meshSource->getBoneTransformUB();
+		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
+
+		StencilTest stencil;
+		stencil.Enable = true;
+		stencil.setMask(0x00);
+		stencil.setFunc(StencilFunc{ FuncAttr::Notequal, 1, 0xff });
+		GLState::SetStencilTest(stencil);
+
+		shader->bind(true);
+
+		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
+		cameraUB->bind();
+
+		Ref<BufferTexture> gpuAnimBuffer;
+		if (boneTransformUB)
+		{
+			const BoneTransformUD &boneUD = meshSource->getBoneTransformUD();
+			shader->setBool("u_bGpuAnimated", boneUD.GPUAnimated);
+			if (boneUD.GPUAnimated)
+			{
+				shader->setInt("u_boneNum", boneUD.GPUTransform.BoneNum);
+				shader->setInt("u_frameIndex", boneUD.GPUTransform.CurrentFrame);
+				TextureSampler sampler{ TextureSampler::Slot0 };
+				shader->getAvailableSampler(sampler);
+				gpuAnimBuffer = boneUD.GPUTransform.BufferTexture;
+				gpuAnimBuffer->active(PIO_UINT(sampler));
+				gpuAnimBuffer->bind();
+				shader->setInt("u_gpuAnimBuffer", PIO_INT(sampler));
+			}
+			else
 			{
 				UniformBuffer::Binding(shader, "BoneMatrices", boneTransformUB->getBinding());
-				const BoneTransformUD &boneUD = meshSource->getBoneTransformUD();
 				boneTransformUB->setData(boneUD.Block.getBuffer()->as<void *>(), boneUD.Block.getByteUsed());
 				boneTransformUB->bind();
 			}
-
-			shader->setMat4("u_modelMat", modelMat);
-			shader->setBool("u_playAnimation", boneTransformUB.get());
-			shader->setBool("u_bStatic", mesh->is<StaticMesh>());
-			shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
-			shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
-
-			submesh.VertexArray->bind();
-			submesh.IndexBuffer->bind();
-
-			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-			GLHelper::CheckError("onOutlining fail!!");
-
-			submesh.IndexBuffer->unbind();
-			submesh.VertexArray->unbind();
-
-			cameraUB->unbind();
-			if (boneTransformUB) boneTransformUB->unbind();
-
-			shader->bind(false);
-
-			//restore stencil test
-			GLState::SetStencilTest(m_globalState.Stencil);
 		}
-	}
 
-	void GLRenderAPI::onOutlining_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
-	{
-		if (state.Selected)
-		{
-			Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-			auto shader = ShaderLibrary::Get()->find(ShaderType::Outline_Deferred);
+		shader->setMat4("u_modelMat", modelMat);
+		shader->setBool("u_playAnimation", boneTransformUB.get());
+		shader->setBool("u_bStatic", mesh->is<StaticMesh>());
+		shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
+		shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
 
-			auto &meshSource = mesh->getMeshSource();
-			const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
+		submesh.VertexArray->bind();
+		submesh.IndexBuffer->bind();
 
-			auto boneTransformUB = meshSource->getBoneTransformUB();
-			auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
+		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::CheckError("onOutlining_deferred fail!!");
 
-			StencilTest stencil;
-			stencil.Enable = true;
-			stencil.setMask(0x00);
-			stencil.setFunc(StencilFunc{ FuncAttr::Notequal, 1, 0xff });
-			GLState::SetStencilTest(stencil);
+		submesh.IndexBuffer->unbind();
+		submesh.VertexArray->unbind();
 
-			shader->bind(true);
+		cameraUB->unbind();
+		if (boneTransformUB) boneTransformUB->unbind();
+		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
+		shader->bind(false);
 
-			UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-			cameraUB->bind();
-
-			Ref<BufferTexture> gpuAnimBuffer;
-			if (boneTransformUB)
-			{
-				const BoneTransformUD &boneUD = meshSource->getBoneTransformUD();
-				shader->setBool("u_bGpuAnimated", boneUD.GPUAnimated);
-				if (boneUD.GPUAnimated)
-				{
-					shader->setInt("u_boneNum", boneUD.GPUTransform.BoneNum);
-					shader->setInt("u_frameIndex", boneUD.GPUTransform.CurrentFrame);
-					TextureSampler sampler{ TextureSampler::Slot0 };
-					shader->getAvailableSampler(sampler);
-					gpuAnimBuffer = boneUD.GPUTransform.BufferTexture;
-					gpuAnimBuffer->active(PIO_UINT(sampler));
-					gpuAnimBuffer->bind();
-					shader->setInt("u_gpuAnimBuffer", PIO_INT(sampler));
-				}
-				else
-				{
-					UniformBuffer::Binding(shader, "BoneMatrices", boneTransformUB->getBinding());
-					boneTransformUB->setData(boneUD.Block.getBuffer()->as<void *>(), boneUD.Block.getByteUsed());
-					boneTransformUB->bind();
-				}
-			}
-
-			shader->setMat4("u_modelMat", modelMat);
-			shader->setBool("u_playAnimation", boneTransformUB.get());
-			shader->setBool("u_bStatic", mesh->is<StaticMesh>());
-			shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
-			shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
-
-			submesh.VertexArray->bind();
-			submesh.IndexBuffer->bind();
-
-			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-			GLHelper::CheckError("onOutlining_deferred fail!!");
-
-			submesh.IndexBuffer->unbind();
-			submesh.VertexArray->unbind();
-
-			cameraUB->unbind();
-			if (boneTransformUB) boneTransformUB->unbind();
-			if (gpuAnimBuffer) gpuAnimBuffer->unbind();
-			shader->bind(false);
-
-			//restore stencil test
-			GLState::SetStencilTest(m_globalState.Stencil);
-		}
+		//restore stencil test
+		GLState::SetStencilTest(m_globalState.Stencil);
 	}
 }

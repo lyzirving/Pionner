@@ -58,7 +58,7 @@ namespace pio
 		m_sceneRoot.reset();
 	}
 
-	void SceneHierarchyLayer::onUpdate(const Timestep &ts)
+	void SceneHierarchyLayer::onUpdateUI(const Timestep &ts)
 	{
 		PIO_ASSERT_RETURN(m_sceneRoot.use_count() != 0, "SceneHierarchyLayer: scene root is invalid");
 

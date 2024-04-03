@@ -37,6 +37,9 @@ namespace pio
 		virtual void beginFrame() = 0;
 		virtual void endFrame() = 0;
 
+		virtual void beginUI() = 0;
+		virtual void endUI() = 0;
+
 		virtual void commitViewport(const Viewport &viewport) = 0;
 		virtual void commitViewport(int32_t x, int32_t y, int32_t width, int32_t height) = 0;
 

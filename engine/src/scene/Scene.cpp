@@ -368,7 +368,7 @@ namespace pio
 		}
 
 		// Plane
-		{
+		{			
 			Ref<Entity> ent = Registry::Get()->create<MeshSourceComponent, RelationshipComponent>(NodeType::MeshSource);
 			Ref<MeshSource> planeMs = MeshFactory::CreatePlane();
 			Ref<Asset> planeMsAst = AssetsManager::CreateRuntimeAssets<StaticMesh>(planeMs);			
@@ -436,9 +436,10 @@ namespace pio
 						MeshBuildParam param; 
 						param.State.Blend = Blend::Disable();
 						param.State.Cull = CullFace::Disable();
+						param.State.Stencil = StencilTest::Disable();
 						param.RigidType = RigidBodyComponent::Type::Dynamic;
 						param.Parent = m_sceneRoot;
-						auto asset = CreateMesh<BoxColliderComponent>(meshSrc, world, param);
+						auto asset = CreateDynamicMesh<BoxColliderComponent>(meshSrc, world, param);
 						LOGD("mesh source[%s] is parsed, uid[%u]", meshSrc->getName().c_str(), (uint32_t)asset->getHandle());
 						break;
 					}

@@ -81,7 +81,7 @@ namespace pio
 		m_sceneEnt.reset();
 	}
 
-	void EditorLayer::onUpdate(const Timestep &ts)
+	void EditorLayer::onUpdateUI(const Timestep &ts)
 	{
 		const std::string &name = m_name;
 		WindowLayoutParams &param = m_layoutParam;

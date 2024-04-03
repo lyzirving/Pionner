@@ -19,16 +19,7 @@ namespace pio
 	{
 		ClearBits_Color = 0, ClearBits_Depth, ClearBits_Stencil, 
 		ClearBits_Count
-	};
-
-	struct Clear
-	{
-		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
-		std::bitset<ClearBits_Count> Bits{};
-
-		static Clear Common(const glm::vec4 &color = glm::vec4(0.f, 0.f, 0.f, 1.f));
-		static Clear Create(uint8_t flags);
-	};
+	};	
 
 	enum class BlendFactor : uint8_t
 	{
@@ -57,6 +48,15 @@ namespace pio
 		Viewport(int32_t x, int32_t y, int32_t w, int32_t h) : X(x), Y(y), Width(w), Height(h) {}
 	};
 
+	struct Clear
+	{
+		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
+		std::bitset<ClearBits_Count> Bits{};
+
+		static Clear Common(const glm::vec4 &color = glm::vec4(0.f, 0.f, 0.f, 1.f));
+		static Clear Create(uint8_t flags);
+	};
+
 	struct Blend
 	{
 		bool Enable{ false };
@@ -66,6 +66,12 @@ namespace pio
 
 		Blend() {}
 		Blend(BlendFactor IN_Src, BlendFactor IN_Dst, BlendEquation In_Equation) : Enable(true), Src(IN_Src), Dst(IN_Dst), Equation(In_Equation) {}
+
+		bool operator==(const Blend &rhs);
+		bool operator!=(const Blend &rhs) { return !((*this) == rhs); }
+
+		bool operator==(const Blend &rhs) const;
+		bool operator!=(const Blend &rhs) const { return !((*this) == rhs); }
 
 		static Blend Common();
 		static Blend Disable();
@@ -81,6 +87,12 @@ namespace pio
 
 		DepthTest() {}
 		DepthTest(FuncAttr func, DepthTest::Mask mark) : Enable(true), Func(func), Mark(mark) {}
+
+		bool operator==(const DepthTest &rhs);
+		bool operator!=(const DepthTest &rhs) { return !((*this) == rhs); }
+
+		bool operator==(const DepthTest &rhs) const;
+		bool operator!=(const DepthTest &rhs) const { return !((*this) == rhs); }
 
 		static DepthTest Common();
 		static DepthTest Always();
@@ -99,6 +111,12 @@ namespace pio
 		bool Enable{ false };
 		FaceDirection Direction{ FaceDirection::CouterClockwise };
 		FaceMode Mode{ FaceMode_Back };
+
+		bool operator==(const CullFace &rhs);
+		bool operator!=(const CullFace &rhs) { return !((*this) == rhs); }
+
+		bool operator==(const CullFace &rhs) const;
+		bool operator!=(const CullFace &rhs) const { return !((*this) == rhs); }
 
 		static CullFace Common();
 		static CullFace Create(FaceDirection dir, FaceMode mode);
@@ -124,6 +142,14 @@ namespace pio
 
 		StencilFunc() {}
 		StencilFunc(FuncAttr val, int32_t ref, uint32_t mask) : Val(val), Ref(ref), Mask(mask) {}
+
+		bool operator==(const StencilFunc &rhs);
+		bool operator!=(const StencilFunc &rhs) { return !((*this) == rhs); }
+
+		bool operator==(const StencilFunc &rhs) const;
+		bool operator!=(const StencilFunc &rhs) const { return !((*this) == rhs); }
+
+		static bool ArrayEqual(const StencilFunc *lhs, const StencilFunc *rhs, uint32_t num) { for (size_t i = 0; i < num; i++) { if (lhs[i] != rhs[i]) { return false; } } return true; }
 	};
 
 	/*
@@ -141,6 +167,15 @@ namespace pio
 		StencilOp() {}
 		StencilOp(FuncAttr attr) : sFail(attr), dpFail(attr), dpPass(attr) {}
 		StencilOp(FuncAttr in_sFail, FuncAttr in_dpFail, FuncAttr in_dpPass) : sFail(in_sFail), dpFail(in_dpFail), dpPass(in_dpPass) {}
+
+		bool operator==(const StencilOp &rhs);
+		bool operator!=(const StencilOp &rhs) { return !((*this) == rhs); }
+
+		bool operator==(const StencilOp &rhs) const;
+		bool operator!=(const StencilOp &rhs) const { return !((*this) == rhs); }
+
+		static bool ArrayEqual(StencilOp *lhs, StencilOp *rhs, uint32_t num) { for (size_t i = 0; i < num; i++) { if (lhs[i] != rhs[i]) { return false; } } return true; }
+		static bool ArrayEqual(const StencilOp *lhs, const StencilOp *rhs, uint32_t num) { for (size_t i = 0; i < num; i++) { if (lhs[i] != rhs[i]) { return false; } } return true; }
 	};
 
 	enum StencilSeparateBit : uint8_t
@@ -200,19 +235,23 @@ namespace pio
 
 		bool any(StencilSeparateBit flag) const { return m_separateFlag.test(flag); }
 
-		StencilTest()
+		StencilTest(bool enbale = true) : Enable(enbale)
 		{
 			for (uint8_t i = 0; i < FaceMode_Num; i++) { m_mask[i] = 0xff; }
 			m_separateFlag.reset();
 		}
 
+		bool operator==(const StencilTest &rhs);
+		bool operator!=(const StencilTest &rhs) { return !((*this) == rhs); }
+
 	public:
-		static StencilTest Disable() { StencilTest t; t.Enable = false; return t; }
+		static StencilTest Common() { return StencilTest(true); }
+		static StencilTest Disable() { return StencilTest(false); }		
 		
 	private:
-		uint32_t m_mask[FaceMode_Num];
+		uint32_t    m_mask[FaceMode_Num];
 		StencilFunc m_func[FaceMode_Num];
-		StencilOp m_op[FaceMode_Num];
+		StencilOp   m_op[FaceMode_Num];
 		std::bitset<StencilSeparateBit_Num> m_separateFlag;
 	};
 
@@ -222,9 +261,15 @@ namespace pio
 		Blend Blend{ Blend::Common() };
 		DepthTest DepthTest{ DepthTest::Common() };
 		CullFace Cull{ CullFace::Common() };
-		StencilTest Stencil;
+		StencilTest Stencil{ StencilTest::Common() };
 		RenderMode Mode{ RenderMode::PBR };
 		bool Selected{ false };
+
+		RenderState() {}
+		RenderState(const pio::Clear &clear, const pio::Blend &blend, const pio::DepthTest &depth, const pio::CullFace &cull, const pio::StencilTest &stencil, pio::RenderMode mode, bool select) 
+			: Clear(clear), Blend(blend), DepthTest(depth), Cull(cull), Stencil(stencil), Mode(mode), Selected(select)
+		{
+		}
 	};
 }
 

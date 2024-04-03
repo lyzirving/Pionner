@@ -145,6 +145,13 @@ namespace pio
 	}
 
 	void MotionControlLayer::onUpdate(const Timestep &ts)
+	{	
+		onDrawVisionCtl(ts);
+		onDrawMotionCtl(ts);
+		onDrawMotionView(ts);
+	}
+
+	void MotionControlLayer::onUpdateUI(const Timestep &ts)
 	{
 		// Circle background
 		if (m_drawCircle)
@@ -156,10 +163,6 @@ namespace pio
 				drawList->AddCircleFilled(ImVec2(c.Left + c.width() * 0.5f, c.Top + c.height() * 0.5f), c.height() * 0.5f, ImGui::ColorConvertFloat4ToU32(ImVec4(0.f, 0.f, 0.f, 0.3f)));
 			});
 		}
-
-		onDrawVisionCtl(ts);
-		onDrawMotionCtl(ts);
-		onDrawMotionView(ts);
 	}
 
 	void MotionControlLayer::onWindowSizeChange(uint32_t width, uint32_t height)

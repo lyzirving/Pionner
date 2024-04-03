@@ -109,6 +109,16 @@ namespace pio
 		s_API->endFrame();
 	}
 
+	void Renderer::BeginUI()
+	{
+		s_API->beginUI();
+	}
+
+	void Renderer::EndUI()
+	{
+		s_API->endUI();
+	}
+
 	void Renderer::RenderLoop(RenderThread *thread)
 	{
 		if (s_listener) { s_listener->onRenderInit(); }

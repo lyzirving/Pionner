@@ -201,9 +201,9 @@ namespace pio
 					dc.ModelMat = isRigged ? transform.mat() : transform.mat() * submeshes[submeshIndex].Transform;
 					dc.IsRigged = isRigged;
 					dc.State.DepthTest = DepthTest::Common();					
-					dc.State.Cull = CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front);
+					dc.State.Cull = CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front);					
 					dc.State.Blend = Blend::Disable();
-					dc.State.Stencil = StencilTest::Disable();
+					dc.State.Stencil = StencilTest::Disable();					
 				}
 			}
 		}

@@ -42,6 +42,15 @@ namespace pio
 		}
 	}
 
+	void LayerManager::onUpdateUI(const Timestep &ts)
+	{
+		for (auto layer : m_stack)
+		{
+			if (layer)
+				layer->onUpdateUI(ts);
+		}
+	}
+
 	bool LayerManager::onWindowResize(Event &event)
 	{
 		auto *p = event.as<WindowResizeEvent>();

@@ -21,11 +21,11 @@ namespace pio
 		virtual void setEventCallback(const EvtCbFn &callback) override { m_data.cbFunc = callback; }
 		virtual void getWindowPos(int32_t &x, int32_t &y) override;
 
-		inline virtual uint32_t getWidth()  const override  { return m_data.m_width; }
-		inline virtual uint32_t getHeight() const override { return m_data.m_height; }
-		inline virtual void *getNativeWindow() const override { return m_window; }
-		inline virtual glm::vec2 getCursorPos() const override { return m_data.m_cursorPos; }
-		inline virtual bool isVSync() const override { return m_data.m_vsync; }
+		virtual uint32_t getWidth()  const override  { return m_data.m_width; }
+		virtual uint32_t getHeight() const override { return m_data.m_height; }
+		virtual void *getNativeWindow() const override { return m_window; }
+		virtual glm::vec2 getCursorPos() const override { return m_data.m_cursorPos; }
+		virtual bool isVSync() const override { return m_data.m_vsync; }
 
 		virtual void setVSync(bool enabled) override;
 		virtual void setCursorMode(CursorMode mode) override;

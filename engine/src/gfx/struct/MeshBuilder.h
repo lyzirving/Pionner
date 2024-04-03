@@ -96,7 +96,7 @@ namespace pio
 	}
 
 	template <typename ... Comps>
-	Ref<Asset> CreateMesh(Ref<MeshSource> &meshSrc, Ref<PhysicsScene> &world, const MeshBuildParam &param)
+	Ref<Asset> CreateDynamicMesh(Ref<MeshSource> &meshSrc, Ref<PhysicsScene> &world, const MeshBuildParam &param)
 	{
 		return BuildMesh<Mesh, MeshComponent, Comps...>(meshSrc, world, param);
 	}

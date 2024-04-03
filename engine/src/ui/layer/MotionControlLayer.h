@@ -31,6 +31,7 @@ namespace pio
 		virtual void onDetach() override;
 		virtual bool onEvent(Event &event) override;
 		virtual void onUpdate(const Timestep &ts) override;
+		virtual void onUpdateUI(const Timestep &ts) override;
 		virtual void onWindowSizeChange(uint32_t width, uint32_t height) override;
 
 	private:

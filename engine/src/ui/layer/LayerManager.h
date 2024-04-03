@@ -16,6 +16,7 @@ namespace pio
 		bool onEvent(Event &event);
 		void onRenderDestroy();
 		void onUpdate(const Timestep &ts);
+		void onUpdateUI(const Timestep &ts);
 		bool onWindowResize(Event &event);
 
 	public:

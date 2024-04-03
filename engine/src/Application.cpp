@@ -119,23 +119,17 @@ namespace pio
 			//----------- Fill in the pending render command -----------
 			step.tick();
 
-			Renderer::SubmitRC([=]() mutable
-			{				
-				Renderer::BeginFrame();
-			});
-
+			Renderer::SubmitRC([=]() mutable { Renderer::BeginFrame(); });
 			m_layerManager.onUpdate(step);
 
-			Renderer::SubmitRC([=]() mutable
-			{
-				Renderer::EndFrame();
-			});
+			Renderer::SubmitRC([=]() mutable { Renderer::BeginUI(); });
+			m_layerManager.onUpdateUI(step);
+			Renderer::SubmitRC([=]() mutable { Renderer::EndUI(); });
+
+			Renderer::SubmitRC([=]() mutable { Renderer::EndFrame(); });
 			//----------------------------------------------------------
 
-			Renderer::SubmitRC([&]()
-			{
-				m_graphics->swapBuffer();
-			});
+			Renderer::SubmitRC([&]() { m_graphics->swapBuffer(); });
 
 			frameTime.tick();
 			Renderer::GetConfig().FPS = m_frameRec.avgFps((uint64_t)frameTime);
