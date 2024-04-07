@@ -28,7 +28,7 @@ namespace pio
 
 	enum class TextureFilterMin : uint8_t
 	{
-		None = 0, Linear, Nearest
+		None = 0, Linear, Nearest, Linear_Mipmap_Linear, Linear_Mipmap_Nearest, Nearest_Mipmap_Linear
 	};
 
 	enum class TextureFilterMag : uint8_t

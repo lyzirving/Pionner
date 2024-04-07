@@ -11,6 +11,6 @@ out vec3 v_localPos;
 
 void main()
 {
-    v_localPos = a_pos;
+    v_localPos  = a_pos;
     gl_Position = u_prjMat * u_viewMat * vec4(a_pos, 1.0);
 }

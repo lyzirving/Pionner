@@ -75,6 +75,7 @@ namespace pio
 		virtual void renderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state) = 0;
 		virtual void renderHDRToEnvMap(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment envMapAttachment, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &fbo) = 0;
 		virtual void renderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo) = 0;
+		virtual void renderPrefilterConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment prefilterMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo) = 0;
 		virtual void postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state) = 0;
 		// ---------------------------------------------------------------------------
 

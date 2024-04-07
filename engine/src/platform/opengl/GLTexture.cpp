@@ -172,6 +172,9 @@ namespace pio
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GLHelper::GetGLTextureWrap(m_spec.WrapT));
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GLHelper::GetGLTextureWrap(m_spec.WrapR));
 
+			if (m_spec.GenerateMips)
+				glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
 			if (GLHelper::CheckError("err happens when init cube texture[%s]", m_spec.Name.c_str()))
 				LOGD("succeed to init cube texture[%s][%u], size[%u, %u]", m_spec.Name.c_str(), m_textureId, m_spec.Width, m_spec.Height);
 

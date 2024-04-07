@@ -726,16 +726,30 @@ namespace pio
 		PIO_ASSERT_RETURN(envMap.use_count() != 0, "renderDiffuseConvolution: envMap is invalid");
 		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderDiffuseConvolution: fbo is invalid");
 
+		Ref<Texture2D> diffuseMap = fbo->getColorBuffer(diffuseMapAttachment);
+		PIO_ASSERT_RETURN(diffuseMap.use_count() != 0, "renderDiffuseConvolution: prefilter map is invalid");
+		Ref<Texture> depthBuf = fbo->getDepthBuffer();
+		PIO_ASSERT_RETURN(depthBuf.use_count() != 0, "renderDiffuseConvolution: depth buffer is invalid");
+		RenderBuffer *renderBuf = depthBuf->as<RenderBuffer>();
+		PIO_ASSERT_RETURN(renderBuf != nullptr, "renderDiffuseConvolution: render buffer is invalid");
+		const uint32_t width  = diffuseMap->getWidth();
+		const uint32_t height = diffuseMap->getHeight();
+
 		Ref<MeshSource> meshSource = cubeMesh->getMeshSource();
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
+
+		saveViewport(m_viewport);
+
+		commitViewport(0, 0, width, height);
+		renderBuf->bind(width, height);
 
 		shader->bind(true);
 
 		shader->setMat4("u_prjMat", prjMat);
 
-		envMap->active(PIO_UINT(TextureSampler::Slot1));
+		envMap->active(PIO_UINT(TextureSampler::Slot0));
 		envMap->bind();
-		shader->setTextureSampler("u_envMap", TextureSampler::Slot1);
+		shader->setTextureSampler("u_envMap", TextureSampler::Slot0);
 		
 		submesh.VertexArray->bind();
 		submesh.IndexBuffer->bind();
@@ -755,6 +769,75 @@ namespace pio
 
 		envMap->unbind();
 		shader->bind(false);
+
+		m_viewport = restoreViewport();
+	}
+
+	void GLRenderAPI::renderPrefilterConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment prefilterMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
+	{
+		Ref<MeshBase> cubeMesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
+		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderPrefilterConvolution: Cube Mesh is invalid");
+
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::PrefilterMap_Convolution);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "PrefilterMap_Convolution shader is invalid");
+
+		PIO_ASSERT_RETURN(envMap.use_count() != 0, "renderPrefilterConvolution: envMap is invalid");
+		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderPrefilterConvolution: fbo is invalid");
+		
+		Ref<Texture2D> prefilterMap = fbo->getColorBuffer(prefilterMapAttachment);
+		PIO_ASSERT_RETURN(prefilterMap.use_count() != 0, "renderPrefilterConvolution: prefilter map is invalid");
+		Ref<Texture> depthBuf = fbo->getDepthBuffer();
+		PIO_ASSERT_RETURN(depthBuf.use_count() != 0, "renderPrefilterConvolution: depth buffer is invalid");
+		RenderBuffer *renderBuf = depthBuf->as<RenderBuffer>();
+		PIO_ASSERT_RETURN(renderBuf != nullptr, "renderPrefilterConvolution: render buffer is invalid");
+
+		const uint32_t mipLevel = prefilterMap->getMipLevelCount();
+		const uint32_t texWidth = prefilterMap->getWidth();
+		const uint32_t texHeight = prefilterMap->getHeight();
+
+		Ref<MeshSource> meshSource = cubeMesh->getMeshSource();
+		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
+
+		saveViewport(m_viewport);
+
+		shader->bind(true);
+
+		shader->setMat4("u_prjMat", prjMat);
+
+		envMap->active(PIO_UINT(TextureSampler::Slot0));
+		envMap->bind();
+		shader->setTextureSampler("u_envMap", TextureSampler::Slot0);		
+
+		for (uint32_t mip = 0; mip < mipLevel; ++mip)
+		{
+			uint32_t mipWidth  = static_cast<uint32_t>(texWidth * std::pow(0.5, mip));
+			uint32_t mipHeight = static_cast<uint32_t>(texHeight * std::pow(0.5, mip));
+			commitViewport(0, 0, mipWidth, mipHeight);
+			renderBuf->bind(mipWidth, mipHeight);
+
+			float roughness = float(mip) / float(mipLevel - 1);
+			shader->setFloat("u_roughness", roughness);
+
+			submesh.VertexArray->bind();
+			submesh.IndexBuffer->bind();
+
+			for (uint8_t i = 0; i < LightDir_Num; i++)
+			{
+				shader->setMat4("u_viewMat", viewMat[i]);
+				fbo->bindTarget(prefilterMapAttachment, LightDir(i), mip);
+				GLState::SetClear(Clear::Common());
+				glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+				if (GLHelper::CheckError("renderPrefilterConvolution fail at light dir[%u]!", i))
+					LOGD("succeed to render prefiler map convolution, cube[%s], mip[%u]", LightDirStr(LightDir(i)), mip);
+			}
+
+			submesh.VertexArray->unbind();
+			submesh.IndexBuffer->unbind();
+		}
+
+		envMap->unbind();
+		shader->bind(false);
+		m_viewport = restoreViewport();
 	}
 
 	void GLRenderAPI::postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)

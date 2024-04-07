@@ -116,6 +116,11 @@ namespace pio
 				m_shaders[index] = Shader::Create("diffuse_convolution", "cube", "diffuse_convolution");
 				return m_shaders[index];
 			}
+			case ShaderType::PrefilterMap_Convolution:
+			{
+				m_shaders[index] = Shader::Create("prefilter_map_convolution", "cube", "prefilter_map_convolution");
+				return m_shaders[index];
+			}
 			case ShaderType::Skybox:
 			{
 				m_shaders[index] = Shader::Create("skybox", "skybox", "skybox");

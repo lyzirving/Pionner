@@ -301,6 +301,12 @@ namespace pio
 				return GL_LINEAR;
 			case TextureFilterMin::Nearest:
 				return GL_NEAREST;
+			case TextureFilterMin::Linear_Mipmap_Linear:
+				return GL_LINEAR_MIPMAP_LINEAR;
+			case TextureFilterMin::Linear_Mipmap_Nearest:
+				return GL_LINEAR_MIPMAP_NEAREST;
+			case TextureFilterMin::Nearest_Mipmap_Linear:
+				return GL_NEAREST_MIPMAP_LINEAR;
 			default:
 				LOGE("invalid min filter[%u]", filter);
 				return GL_NONE;

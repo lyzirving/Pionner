@@ -22,6 +22,7 @@ namespace pio
 		AssetType AType{ AssetType::Texture };
 		glm::vec4 BorderColor{ 1.f };
 
+		uint32_t MaxMipLevel{ 0 };
 		bool GenerateMips{ false };		
 		bool SRGB{ true };// if false, linear rgb
 		bool Storage{ false };

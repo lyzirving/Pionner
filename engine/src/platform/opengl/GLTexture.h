@@ -36,7 +36,7 @@ namespace pio
 		virtual uint32_t getHeight() const override { return m_spec.Height; }
 		virtual uint32_t getSize() const override { return m_size; }
 		virtual const std::string &getName() const override { return m_spec.Name; }
-		virtual uint32_t getMipLevelCount() const override { return 0; }
+		virtual uint32_t getMipLevelCount() const override { return m_spec.MaxMipLevel; }
 		virtual bool SRGB() const override { return m_spec.SRGB; };
 
 		virtual bool init() override;
@@ -65,7 +65,7 @@ namespace pio
 		virtual uint32_t getHeight() const override { return m_spec.Height; }
 		virtual uint32_t getSize() const override { return m_size; }
 		virtual const std::string &getName() const override { return m_spec.Name; }
-		virtual uint32_t getMipLevelCount() const override { return 0; }
+		virtual uint32_t getMipLevelCount() const override { return m_spec.MaxMipLevel; }
 		virtual Ref<Buffer> getBuffer() override { return Ref<Buffer>(); };
 		virtual bool SRGB() const override { return m_spec.SRGB; };
 
