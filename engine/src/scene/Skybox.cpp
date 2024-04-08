@@ -61,22 +61,22 @@ namespace pio
 
 	Ref<CubeTexture> Skybox::getDiffuseMap()
 	{
-		if (!m_convPass->getFramebuffer()->getColorBuffer(m_diffuseMapAttachment)->isInit())
+		if (!m_diffuseConvPass || !m_diffuseConvPass->getFramebuffer()->getColorBuffer(m_diffuseMapAttachment)->isInit())
 		{
 			LOGE("prepare() has not been called");
 			return Ref<CubeTexture>();
 		}
-		return RefCast<Texture2D, CubeTexture>(m_convPass->getFramebuffer()->getColorBuffer(m_diffuseMapAttachment));
+		return RefCast<Texture2D, CubeTexture>(m_diffuseConvPass->getFramebuffer()->getColorBuffer(m_diffuseMapAttachment));
 	}
 
 	Ref<CubeTexture> Skybox::getPrefilterMap()
 	{
-		if (!m_convPass->getFramebuffer()->getColorBuffer(m_prefilterMapAttachment)->isInit())
+		if (!m_prefilterMapConvPass || !m_prefilterMapConvPass->getFramebuffer()->getColorBuffer(m_prefilterMapAttachment)->isInit())
 		{
 			LOGE("prepare() has not been called");
 			return Ref<CubeTexture>();
 		}
-		return RefCast<Texture2D, CubeTexture>(m_convPass->getFramebuffer()->getColorBuffer(m_prefilterMapAttachment));
+		return RefCast<Texture2D, CubeTexture>(m_prefilterMapConvPass->getFramebuffer()->getColorBuffer(m_prefilterMapAttachment));
 	}
 
 	void Skybox::createData(const std::string &name, AssetFmt fmt)
@@ -89,7 +89,8 @@ namespace pio
 			return;
 
 		createHDRPass();
-		createIblConvPass();
+		createDiffuseConvPass();
+		createSpecularConvPass();
 	}
 
 	void Skybox::createHDRPass()
@@ -153,17 +154,17 @@ namespace pio
 		m_hdrPass->setState(state);
 	}
 
-	void Skybox::createIblConvPass()
+	void Skybox::createDiffuseConvPass()
 	{
-		FrameBufferSpecification convPassFboSpec;
-		convPassFboSpec.Name = "ConvPassFrameBuffer";
-		convPassFboSpec.Width = m_diffuseMapSize.x;
-		convPassFboSpec.Height = m_diffuseMapSize.y;
+		FrameBufferSpecification diffuseConvPassFboSpec;
+		diffuseConvPassFboSpec.Name = "DiffuseConvPassFbo";
+		diffuseConvPassFboSpec.Width  = m_diffuseMapSize.x;
+		diffuseConvPassFboSpec.Height = m_diffuseMapSize.y;
 
 		TextureSpecification diffuseMapSpec;
 		diffuseMapSpec.Name = "DiffuseEnvMap";
 		diffuseMapSpec.Format = ImageInternalFormat::RGB16F;
-		diffuseMapSpec.Width = m_diffuseMapSize.x;
+		diffuseMapSpec.Width  = m_diffuseMapSize.x;
 		diffuseMapSpec.Height = m_diffuseMapSize.y;
 		diffuseMapSpec.MinFilter = TextureFilterMin::Linear;
 		diffuseMapSpec.MaxFilter = TextureFilterMag::Linear;
@@ -171,8 +172,41 @@ namespace pio
 		diffuseMapSpec.WrapT = TextureWrap::ClampEdge;
 		diffuseMapSpec.WrapR = TextureWrap::ClampEdge;
 		diffuseMapSpec.AType = AssetType::CubeTexture;
-		m_diffuseMapAttachment = ColorAttachment(convPassFboSpec.ColorBufferSpec.size());
-		convPassFboSpec.ColorBufferSpec.push_back(diffuseMapSpec);
+		m_diffuseMapAttachment = ColorAttachment(diffuseConvPassFboSpec.ColorBufferSpec.size());
+		diffuseConvPassFboSpec.ColorBufferSpec.push_back(diffuseMapSpec);
+
+		TextureSpecification depthBufferSpec;
+		depthBufferSpec.Name = "DiffuseConvPassDepthBuffer";
+		depthBufferSpec.Format = ImageInternalFormat::DEPTH24;
+		depthBufferSpec.Width  = m_diffuseMapSize.x;
+		depthBufferSpec.Height = m_diffuseMapSize.y;
+		depthBufferSpec.AType = AssetType::RenderBuffer;
+
+		diffuseConvPassFboSpec.FrameBufferUsage = FrameBufferUsage::ColorBuffer;
+		diffuseConvPassFboSpec.DepthBufferSpec = depthBufferSpec;
+		diffuseConvPassFboSpec.DepthAttachment = DepthAttachment::Depth;
+		Ref<FrameBuffer> fbo = FrameBuffer::Create(diffuseConvPassFboSpec);
+
+		RenderPassSpecification convPassSpec;
+		convPassSpec.Name = "DiffuseConvPass";
+		convPassSpec.FrameBuffer = fbo;
+		m_diffuseConvPass = RenderPass::Create(convPassSpec);
+
+		RenderState state;
+		state.Blend = Blend::Disable();
+		state.Cull = CullFace::Common();
+		state.DepthTest = DepthTest::Common();
+		state.Clear = Clear::Common(Renderer::TRANSPARENT_COLOR);
+		state.Stencil.Enable = false;
+		m_diffuseConvPass->setState(state);
+	}
+
+	void Skybox::createSpecularConvPass()
+	{
+		FrameBufferSpecification prefilterConvPassFboSpec;
+		prefilterConvPassFboSpec.Name = "PrefilterConvPassFbo";
+		prefilterConvPassFboSpec.Width  = m_prefilterSize.x;
+		prefilterConvPassFboSpec.Height = m_prefilterSize.y;
 
 		TextureSpecification prefilterMapSpec;
 		prefilterMapSpec.Name = "PrefilterMap";
@@ -187,25 +221,25 @@ namespace pio
 		prefilterMapSpec.AType = AssetType::CubeTexture;
 		prefilterMapSpec.GenerateMips = true;
 		prefilterMapSpec.MaxMipLevel = 5;
-		m_prefilterMapAttachment = ColorAttachment(convPassFboSpec.ColorBufferSpec.size());
-		convPassFboSpec.ColorBufferSpec.push_back(prefilterMapSpec);
+		m_prefilterMapAttachment = ColorAttachment(prefilterConvPassFboSpec.ColorBufferSpec.size());
+		prefilterConvPassFboSpec.ColorBufferSpec.push_back(prefilterMapSpec);
 
 		TextureSpecification depthBufferSpec;
-		depthBufferSpec.Name = "ConvPassDepthBuffer";
+		depthBufferSpec.Name = "PrefilterMapConvPassDepthBuffer";
 		depthBufferSpec.Format = ImageInternalFormat::DEPTH24;
-		depthBufferSpec.Width = m_diffuseMapSize.x;
-		depthBufferSpec.Height = m_diffuseMapSize.y;
+		depthBufferSpec.Width  = m_prefilterSize.x;
+		depthBufferSpec.Height = m_prefilterSize.y;
 		depthBufferSpec.AType = AssetType::RenderBuffer;
 
-		convPassFboSpec.FrameBufferUsage = FrameBufferUsage::ColorBuffer;
-		convPassFboSpec.DepthBufferSpec = depthBufferSpec;
-		convPassFboSpec.DepthAttachment = DepthAttachment::Depth;
-		Ref<FrameBuffer> fbo = FrameBuffer::Create(convPassFboSpec);
+		prefilterConvPassFboSpec.FrameBufferUsage = FrameBufferUsage::ColorBuffer;
+		prefilterConvPassFboSpec.DepthBufferSpec = depthBufferSpec;
+		prefilterConvPassFboSpec.DepthAttachment = DepthAttachment::Depth;
+		Ref<FrameBuffer> fbo = FrameBuffer::Create(prefilterConvPassFboSpec);
 
 		RenderPassSpecification convPassSpec;
-		convPassSpec.Name = "ConvolutionPass";
+		convPassSpec.Name = "PrefilterMapConvPass";
 		convPassSpec.FrameBuffer = fbo;
-		m_convPass = RenderPass::Create(convPassSpec);
+		m_prefilterMapConvPass = RenderPass::Create(convPassSpec);
 
 		RenderState state;
 		state.Blend = Blend::Disable();
@@ -213,25 +247,26 @@ namespace pio
 		state.DepthTest = DepthTest::Common();
 		state.Clear = Clear::Common(Renderer::TRANSPARENT_COLOR);
 		state.Stencil.Enable = false;
-		m_convPass->setState(state);
+		m_prefilterMapConvPass->setState(state);
 	}
 
 	void Skybox::createEnvMap()
 	{
 		PIO_ASSERT_RETURN(Renderer::IsRenderThread(), "Skybox::createEnvMap() should be called in render thread");
 		m_HDRTexture->init();
-		// --------- draw HDR raw pixel into cube texture --------------
+
 		Renderer::BeginRenderPass(m_hdrPass);
 		Ref<FrameBuffer> skyboxFbo = m_hdrPass->getFramebuffer();
 		Ref<CubeTexture> envMap = RefCast<Texture2D, CubeTexture>(skyboxFbo->getColorBuffer(m_envMapAttachment));
 		Renderer::RenderHDRToEnvMap(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_envMapAttachment, m_HDRTexture, skyboxFbo);
 		Renderer::EndRenderPass(m_hdrPass);
-		// -------------------------------------------------------------
 
-		Renderer::BeginRenderPass(m_convPass);
-		Ref<FrameBuffer> convPassFbo = m_convPass->getFramebuffer();
-		Renderer::RenderDiffuseConvolution(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_diffuseMapAttachment, envMap, convPassFbo);
-		Renderer::RenderPrefilterMapConvolution(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_prefilterMapAttachment, envMap, convPassFbo);
-		Renderer::EndRenderPass(m_convPass);
+		Renderer::BeginRenderPass(m_diffuseConvPass);
+		Renderer::RenderDiffuseConvolution(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_diffuseMapAttachment, envMap, m_diffuseConvPass->getFramebuffer());
+		Renderer::EndRenderPass(m_diffuseConvPass);
+
+		Renderer::BeginRenderPass(m_prefilterMapConvPass);
+		Renderer::RenderDiffuseConvolution(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_prefilterMapAttachment, envMap, m_prefilterMapConvPass->getFramebuffer());
+		Renderer::EndRenderPass(m_prefilterMapConvPass);		
 	}
 }

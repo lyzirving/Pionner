@@ -81,10 +81,7 @@ namespace pio
 		createDeferredPass(m_colorBufferSize.x, m_colorBufferSize.y);
 		createScreenPass();
 
-		Renderer::SubmitTask([sk]() mutable
-		{
-			sk->prepare();
-		});
+		Renderer::SubmitTask([sk]() mutable { sk->prepare(); });
 	}
 
 	void SceneRenderer::onDetach(const Scene &scene)
@@ -668,7 +665,7 @@ namespace pio
 			skState.Cull = CullFace::Common();
 			skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
 			skState.Stencil.Enable = false;
-			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);	
+			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);
 
 			RenderPass::RenderSprites(spCmd);
 

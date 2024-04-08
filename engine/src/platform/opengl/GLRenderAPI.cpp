@@ -64,7 +64,10 @@ namespace pio
 		commitViewport(0, 0, Application::MainWindow()->getWidth(), Application::MainWindow()->getHeight());
 		
 		GLState::SetClear(m_globalState.Clear);
-		submitRenderState(m_globalState);		
+		submitRenderState(m_globalState);	
+
+		// TODO: global render attributes
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	}
 
 	void GLRenderAPI::endFrame()
@@ -456,7 +459,9 @@ namespace pio
 		Ref<Texture> shadowBuffer = shadowPass->getFramebuffer()->getDepthBuffer();
 
 		PIO_ASSERT_RETURN(skybox.use_count() != 0, "skybox is invalid");
+		// TODO: add case when IBL is invalid
 		Ref<CubeTexture> diffuseMap = skybox->getDiffuseMap();
+		Ref<CubeTexture> prefilterMap = skybox->getPrefilterMap();
 
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto dirLightUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLight));
@@ -508,6 +513,10 @@ namespace pio
 		diffuseMap->active(PIO_UINT(TextureSampler::Slot6));
 		diffuseMap->bind();
 
+		shader->setTextureSampler("u_prefilterMap", TextureSampler::Slot7);
+		prefilterMap->active(PIO_UINT(TextureSampler::Slot7));
+		prefilterMap->bind();
+
 		shader->setVec4("u_bgColor", Renderer::GetConfig().ClearColor);
 		shader->setFloat("u_envMapIntensity", skybox->getIntensity());
 
@@ -529,6 +538,10 @@ namespace pio
 		albedoBuf->unbind();
 		matBuf->unbind();
 		emissionBuf->unbind();
+
+		shadowBuffer->unbind();
+		diffuseMap->unbind();
+		prefilterMap->unbind();
 
 		shader->bind(false);
 	}
@@ -749,24 +762,25 @@ namespace pio
 
 		envMap->active(PIO_UINT(TextureSampler::Slot0));
 		envMap->bind();
-		shader->setTextureSampler("u_envMap", TextureSampler::Slot0);
-		
-		submesh.VertexArray->bind();
-		submesh.IndexBuffer->bind();
+		shader->setTextureSampler("u_envMap", TextureSampler::Slot0);		
 
 		for (uint8_t i = 0; i < LightDir_Num; i++)
 		{
 			shader->setMat4("u_viewMat", viewMat[i]);
 			fbo->bindTarget(diffuseMapAttachment, LightDir(i));
 			GLState::SetClear(Clear::Common());
+
+			submesh.VertexArray->bind();
+			submesh.IndexBuffer->bind();
+
 			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 			if (GLHelper::CheckError("renderDiffuseConvolution fail at light dir[%u]!!", i))
 				LOGD("succeed to render diffuse convolution to cube face[%s]", LightDirStr(LightDir(i)));
+
+			submesh.IndexBuffer->unbind();
+			submesh.VertexArray->unbind();
 		}
-
-		submesh.IndexBuffer->unbind();
-		submesh.VertexArray->unbind();
-
+	
 		envMap->unbind();
 		shader->bind(false);
 
@@ -816,23 +830,24 @@ namespace pio
 			renderBuf->bind(mipWidth, mipHeight);
 
 			float roughness = float(mip) / float(mipLevel - 1);
-			shader->setFloat("u_roughness", roughness);
-
-			submesh.VertexArray->bind();
-			submesh.IndexBuffer->bind();
+			shader->setFloat("u_roughness", roughness);			
 
 			for (uint8_t i = 0; i < LightDir_Num; i++)
-			{
+			{				
 				shader->setMat4("u_viewMat", viewMat[i]);
 				fbo->bindTarget(prefilterMapAttachment, LightDir(i), mip);
 				GLState::SetClear(Clear::Common());
+
+				submesh.VertexArray->bind();
+				submesh.IndexBuffer->bind();
+
 				glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 				if (GLHelper::CheckError("renderPrefilterConvolution fail at light dir[%u]!", i))
 					LOGD("succeed to render prefiler map convolution, cube[%s], mip[%u]", LightDirStr(LightDir(i)), mip);
-			}
 
-			submesh.VertexArray->unbind();
-			submesh.IndexBuffer->unbind();
+				submesh.VertexArray->unbind();
+				submesh.IndexBuffer->unbind();
+			}			
 		}
 
 		envMap->unbind();

@@ -70,6 +70,7 @@ uniform sampler2D u_GEmission;    // vec3
 
 uniform sampler2D   u_shadowMap;
 uniform samplerCube u_irradianceMap;
+uniform samplerCube u_prefilterMap;
 
 uniform float u_envMapIntensity;
 uniform vec4  u_bgColor;
