@@ -462,6 +462,7 @@ namespace pio
 		// TODO: add case when IBL is invalid
 		Ref<CubeTexture> diffuseMap = skybox->getDiffuseMap();
 		Ref<CubeTexture> prefilterMap = skybox->getPrefilterMap();
+		Ref<Texture2D> brdfLUT = skybox->getBrdfLUT();
 
 		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
 		auto dirLightUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLight));
@@ -517,6 +518,10 @@ namespace pio
 		prefilterMap->active(PIO_UINT(TextureSampler::Slot7));
 		prefilterMap->bind();
 
+		shader->setTextureSampler("u_brdfLUT", TextureSampler::Slot8);
+		brdfLUT->active(PIO_UINT(TextureSampler::Slot8));
+		brdfLUT->bind();
+
 		shader->setVec4("u_bgColor", Renderer::GetConfig().ClearColor);
 		shader->setFloat("u_envMapIntensity", skybox->getIntensity());
 
@@ -542,6 +547,7 @@ namespace pio
 		shadowBuffer->unbind();
 		diffuseMap->unbind();
 		prefilterMap->unbind();
+		brdfLUT->unbind();
 
 		shader->bind(false);
 	}
@@ -853,6 +859,35 @@ namespace pio
 		envMap->unbind();
 		shader->bind(false);
 		m_viewport = restoreViewport();
+	}
+
+	void GLRenderAPI::renderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo)
+	{
+		Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(quadMesh);
+		PIO_ASSERT_RETURN(mesh.use_count() != 0, "renderBrdfConvolution: Quad Mesh is invalid");
+
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Brdf_Convolution);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderBrdfConvolution: Brdf_Convolution shader is invalid");
+
+		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderBrdfConvolution: fbo is invalid");
+		/*Ref<Texture> depthBuf = fbo->getDepthBuffer();
+		PIO_ASSERT_RETURN(depthBuf.use_count() != 0, "renderBrdfConvolution: depth buf is invalid");
+		RenderBuffer *buf = depthBuf->as<RenderBuffer>();
+		PIO_ASSERT_RETURN(buf != nullptr, "renderBrdfConvolution: render buf is invalid");*/
+
+		shader->bind(true);
+
+		mesh->VertexArray->bind();
+		mesh->IndexBuffer->bind();
+
+		glDrawElements(GL_TRIANGLES, mesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+		if (GLHelper::CheckError("renderBrdfConvolution fail!!"))
+			LOGD("succeed to create brdf lut texture");
+
+		mesh->IndexBuffer->unbind();
+		mesh->VertexArray->unbind();
+
+		shader->bind(false);
 	}
 
 	void GLRenderAPI::postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)

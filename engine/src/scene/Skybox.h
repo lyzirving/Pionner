@@ -24,6 +24,7 @@ namespace pio
 		Ref<CubeTexture> getEnvMap();
 		Ref<CubeTexture> getDiffuseMap();
 		Ref<CubeTexture> getPrefilterMap();
+		Ref<Texture2D>   getBrdfLUT();
 
 		float getIntensity() const { return m_envMapIntensity; }
 		AssetHandle getCubeMesh() const { return m_cubeMesh; }
@@ -37,6 +38,7 @@ namespace pio
 		void createHDRPass();
 		void createDiffuseConvPass();
 		void createSpecularConvPass();
+		void createBrdfConvPass();
 
 		void createEnvMap();
 
@@ -53,8 +55,13 @@ namespace pio
 		glm::uvec2 m_diffuseMapSize{ 32, 32 };
 
 		Ref<RenderPass> m_prefilterMapConvPass;
-		ColorAttachment m_prefilterMapAttachment{ ColorAttachment::Num }; // IBL specular convolution
+		ColorAttachment m_prefilterMapAttachment{ ColorAttachment::Num }; // IBL specular convolution -- prefilter map
 		glm::uvec2 m_prefilterSize{ 128, 128 };
+
+		Ref<RenderPass> m_brdfConvPass;
+		ColorAttachment m_brdfAttachment{ ColorAttachment::Num }; // IBL specular convolution -- brdf convolution
+		glm::uvec2 m_brdfTextureSize{ 512, 512 };
+		AssetHandle m_quad{ NullAsset };
 		
 		glm::mat4 m_prjMat{ 1.f };
 		glm::mat4 m_viewMat[LightDir_Num];

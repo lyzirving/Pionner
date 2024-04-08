@@ -7,6 +7,7 @@
 #include "gfx/rhi/RenderPass.h"
 
 #include "gfx/struct/MeshFactory.h"
+#include "gfx/struct/Geometry2D.h"
 #include "gfx/renderer/Renderer.h"
 
 #ifdef LOCAL_TAG
@@ -79,6 +80,16 @@ namespace pio
 		return RefCast<Texture2D, CubeTexture>(m_prefilterMapConvPass->getFramebuffer()->getColorBuffer(m_prefilterMapAttachment));
 	}
 
+	Ref<Texture2D> Skybox::getBrdfLUT()
+	{
+		if (!m_brdfConvPass || !m_brdfConvPass->getFramebuffer()->getColorBuffer(m_brdfAttachment)->isInit())
+		{
+			LOGE("prepare() has not been called");
+			return Ref<Texture2D>();
+		}
+		return m_brdfConvPass->getFramebuffer()->getColorBuffer(m_brdfAttachment);
+	}
+
 	void Skybox::createData(const std::string &name, AssetFmt fmt)
 	{
 		ImageImporter importer(name, fmt);
@@ -91,6 +102,7 @@ namespace pio
 		createHDRPass();
 		createDiffuseConvPass();
 		createSpecularConvPass();
+		createBrdfConvPass();
 	}
 
 	void Skybox::createHDRPass()
@@ -125,6 +137,7 @@ namespace pio
 		envMapSpec.WrapT = TextureWrap::ClampEdge;
 		envMapSpec.WrapR = TextureWrap::ClampEdge;
 		envMapSpec.AType = AssetType::CubeTexture;
+		envMapSpec.GenerateMips = true;
 		m_envMapAttachment = ColorAttachment(skyboxFboSpec.ColorBufferSpec.size());
 		skyboxFboSpec.ColorBufferSpec.push_back(envMapSpec);
 
@@ -250,6 +263,54 @@ namespace pio
 		m_prefilterMapConvPass->setState(state);
 	}
 
+	void Skybox::createBrdfConvPass()
+	{
+		m_quad = MeshFactory::CreateScreenQuad(0, 0, m_brdfTextureSize.x, m_brdfTextureSize.y, m_brdfTextureSize.x, m_brdfTextureSize.y)->getHandle();
+
+		FrameBufferSpecification brdfConvFboSpec;
+		brdfConvFboSpec.Name = "BrdfConvPassFbo";
+		brdfConvFboSpec.Width  = m_brdfTextureSize.x;
+		brdfConvFboSpec.Height = m_brdfTextureSize.y;
+
+		TextureSpecification brdfTexSpec;
+		brdfTexSpec.Name = "BrdfConvTexture";
+		brdfTexSpec.Format = ImageInternalFormat::RGB16F;
+		brdfTexSpec.Width  = m_brdfTextureSize.x;
+		brdfTexSpec.Height = m_brdfTextureSize.y;
+		brdfTexSpec.MinFilter = TextureFilterMin::Linear;
+		brdfTexSpec.MaxFilter = TextureFilterMag::Linear;
+		brdfTexSpec.WrapS = TextureWrap::ClampEdge;
+		brdfTexSpec.WrapT = TextureWrap::ClampEdge;
+		brdfTexSpec.AType = AssetType::Texture2D;
+		m_brdfAttachment = ColorAttachment(brdfConvFboSpec.ColorBufferSpec.size());
+		brdfConvFboSpec.ColorBufferSpec.push_back(brdfTexSpec);
+
+		TextureSpecification depthBufferSpec;
+		depthBufferSpec.Name = "BrdfConvPassDepthBuffer";
+		depthBufferSpec.Format = ImageInternalFormat::DEPTH24;
+		depthBufferSpec.Width  = m_brdfTextureSize.x;
+		depthBufferSpec.Height = m_brdfTextureSize.y;
+		depthBufferSpec.AType = AssetType::RenderBuffer;
+
+		brdfConvFboSpec.FrameBufferUsage = FrameBufferUsage::ColorBuffer;
+		brdfConvFboSpec.DepthBufferSpec = depthBufferSpec;
+		brdfConvFboSpec.DepthAttachment = DepthAttachment::Depth;
+		Ref<FrameBuffer> fbo = FrameBuffer::Create(brdfConvFboSpec);
+
+		RenderPassSpecification convPassSpec;
+		convPassSpec.Name = "BrdfConvPass";
+		convPassSpec.FrameBuffer = fbo;
+		m_brdfConvPass = RenderPass::Create(convPassSpec);
+
+		RenderState state;
+		state.Blend = Blend::Disable();
+		state.Cull = CullFace::Common();
+		state.DepthTest = DepthTest::Common();
+		state.Clear = Clear::Common(Renderer::TRANSPARENT_COLOR);
+		state.Stencil.Enable = false;
+		m_brdfConvPass->setState(state);
+	}
+
 	void Skybox::createEnvMap()
 	{
 		PIO_ASSERT_RETURN(Renderer::IsRenderThread(), "Skybox::createEnvMap() should be called in render thread");
@@ -267,6 +328,10 @@ namespace pio
 
 		Renderer::BeginRenderPass(m_prefilterMapConvPass);
 		Renderer::RenderDiffuseConvolution(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_prefilterMapAttachment, envMap, m_prefilterMapConvPass->getFramebuffer());
-		Renderer::EndRenderPass(m_prefilterMapConvPass);		
+		Renderer::EndRenderPass(m_prefilterMapConvPass);
+
+		Renderer::BeginRenderPass(m_brdfConvPass);		
+		Renderer::RenderBrdfConvolution(m_quad, RenderState{}, m_brdfConvPass->getFramebuffer());
+		Renderer::EndRenderPass(m_brdfConvPass);
 	}
 }

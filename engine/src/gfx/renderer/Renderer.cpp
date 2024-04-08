@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Renderer.h"
 #include "Renderer.h"
+#include "Renderer.h"
 #include "RenderThread.h"
 
 #include "asset/AssetsManager.h"
@@ -219,6 +220,11 @@ namespace pio
 	void Renderer::RenderPrefilterMapConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment prefilterMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
 	{
 		s_API->renderPrefilterConvolution(meshHandle, submeshIndex, prjMat, viewMat, state, prefilterMapAttachment, envMap, fbo);
+	}
+
+	void Renderer::RenderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo)
+	{
+		s_API->renderBrdfConvolution(quadMesh, state, fbo);
 	}
 
 	void Renderer::Postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)

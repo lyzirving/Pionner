@@ -69,6 +69,7 @@ uniform sampler2D u_GMaterial;    // vec3 roughness + metalness + ao
 uniform sampler2D u_GEmission;    // vec3
 
 uniform sampler2D   u_shadowMap;
+uniform sampler2D   u_brdfLUT;
 uniform samplerCube u_irradianceMap;
 uniform samplerCube u_prefilterMap;
 
@@ -122,9 +123,9 @@ vec4 meshColor()
     vec3 lightEffect = calculateDistantLightEffect(); 
     vec3 lightContribution = u_distantLight.CastShadow ? ((1.f - calcShadow(u_distantLight.SdMode)) * lightEffect) : lightEffect;
 
-    vec3 iblContribution = IBL();
+    vec3 iblContribution = IBL() * u_envMapIntensity;
     
-    lightContribution += iblContribution + m_params.Emission;
+    lightContribution += iblContribution * m_params.AO + m_params.Emission;
     return vec4(lightContribution.rgb, m_params.Alpha);
 }
 
@@ -162,9 +163,16 @@ vec3 IBL()
     vec3 kd = (vec3(1.0) - ks) * (1.0 - m_params.Metalness);
 
     vec3 irradiance = texture(u_irradianceMap, m_params.N).rgb;
-    vec3 diffuseIBL = irradiance * m_params.Albedo;
+    vec3 diffuseIBL = kd * irradiance * m_params.Albedo;
+
+    // TODO: skybox rotation
+    // MAX_REFLECTION_LOD couble be replaced by textureQueryLevels(u_prefilterMap);
+    const float MAX_REFLECTION_LOD = 4.0;
+    vec3 prefilteredColor = textureLod(u_prefilterMap, m_params.R, m_params.Roughness * MAX_REFLECTION_LOD).rgb;    
+    vec2 brdf = texture(u_brdfLUT, vec2(m_params.NdotV, m_params.Roughness)).rg;
+    vec3 specularIBL = prefilteredColor * (ks * brdf.x + brdf.y);
     
-    vec3 ambient = kd * diffuseIBL * u_envMapIntensity * m_params.AO;// TODO: IBL specular part
+    vec3 ambient = diffuseIBL + specularIBL;
     return ambient;
 }
 

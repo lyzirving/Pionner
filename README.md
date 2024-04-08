@@ -6,22 +6,29 @@ If you have any questions about the engine or find some bugs and problems in it,
 
 # Features
 
-- Lighting
-  - Directional light, Point light
+- Deffered Shading
 - PBR
-- Physics
+  * IBL
+
+- Lighting
+  - Directional light
+  - Point light
+  - Hard shadow & Soft shadow
+
 - Animation
   - Skeletal animation
   - GPU accelerated animation
-- Camera control && Target control
+- Target Picking
+- Camera control
+- Physics
 
 # Showcase
 You can go to the directory "video" to watch the showcase video.
 
 # Possible TODO list
 
-- IBL
-- Character control
-- Text Rendering
+- Material ball and Material selection
+- Terrain rendering
+- Character control 
 - ........
 
