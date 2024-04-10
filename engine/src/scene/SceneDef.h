@@ -4,8 +4,9 @@
 #include "asset/Asset.h"
 
 namespace pio
-{
-	#define POINT_LIGHT_LIMIT 10
+{	
+	// TODO: support more point light?
+	#define POINT_LIGHT_LIMIT 4
 
 	enum class LightType : uint8_t
 	{

@@ -25,6 +25,22 @@ If you have any questions about the engine or find some bugs and problems in it,
 # Showcase
 You can go to the directory "video" to watch the showcase video.
 
+# Build
+
+### Windows
+
+**Prerequisites**
+
+- Windows10
+- Visual Studio 2022 ( Maybe lower version is also OK )
+- OpenGL SDK
+
+**How to build**
+
+- clone the repository 
+- open the project by its root folder in Visual Studio
+- the project is supported by cmake, so build it directly and select Pionner.exe and run it.
+
 # Possible TODO list
 
 - Material ball and Material selection

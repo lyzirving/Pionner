@@ -90,7 +90,7 @@ namespace pio
 	struct PointLightShadowData
 	{
 		PIO_UNIFORM_STRUCT_DECLARE(PointLightShadowData)
-
+		// TODO: optimize data struct of metadata, it might slow down the application due to the limit of bandwidth
 		int32_t LightCount;
 		PointLightMetadata Metadata[POINT_LIGHT_LIMIT];
 	};

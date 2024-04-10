@@ -3,15 +3,15 @@
 precision highp float;
 
 const int POINT_LIGHT_DIRECTION_NUM = 6;
-const int POINT_LIGHT_LIMIT = 10;
+const int POINT_LIGHT_LIMIT = 4;
 
 layout (triangles) in;
-// max_vertices is 3 * 6 * POINT_LIGHT_LIMIT
-layout (triangle_strip, max_vertices=180) out;
 
-// max_vertices is 3 * 6 * 4(for hardware compatibility)
-// TODO: how to set max_vertices dynamically? 
-// layout (triangle_strip, max_vertices=72) out; 
+// layout (triangle_strip, max_vertices=180) out;
+// max_vertices is 3 * 6 * POINT_LIGHT_LIMIT
+// 72 is value for for some hardware compatibility
+// TODO: how to set max_vertices dynamically?
+layout (triangle_strip, max_vertices=72) out; 
 
 struct LightMetaData
 {
@@ -22,7 +22,11 @@ struct LightMetaData
 
 layout(std140) uniform PointLightShadowData
 {
-	int LightCount;
+    // TODO:????
+    // The num of LightMeataData array will influence the fps
+    // POINT_LIGHT_LIMIT used to be set 10, and the fps is slowed down
+    // The slow down of fps is caused by the limit of bandwidth?
+    int LightCount;
 	LightMetaData LightData[POINT_LIGHT_LIMIT];
 } u_shadowData;
 
