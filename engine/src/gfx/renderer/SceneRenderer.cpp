@@ -587,6 +587,8 @@ namespace pio
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
 		std::map<MeshKey, DrawCommand> &cmd = m_shadowPassDraws;
 
+		// [TODO]: Only the light that can cast shadow will update shadow map.
+
 		Renderer::SubmitRC([env, distsp, ubs, cmd]() mutable
 		{
 			Renderer::BeginRenderPass(distsp);
@@ -598,6 +600,7 @@ namespace pio
 			Renderer::EndRenderPass(distsp);
 		});
 
+		// [NOTE] Frame buffer for mutiple point lights contains a cubemap array
 		Renderer::SubmitRC([ptsp, ubs, cmd]() mutable
 		{
 			Renderer::BeginRenderPass(ptsp);
