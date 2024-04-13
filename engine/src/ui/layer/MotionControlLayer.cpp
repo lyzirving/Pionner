@@ -17,6 +17,7 @@
 
 #include "ui/Ui3D.h"
 #include "ui/View.h"
+#include "ui/editor/GizmoTransform.h"
 
 #include "asset/AssetsManager.h"
 #include "window/event/MouseEvent.h"
