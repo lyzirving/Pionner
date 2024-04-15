@@ -28,6 +28,12 @@ namespace pio
 		return *this;
 	}
 
+	EulerAngle &EulerAngle::operator+=(const EulerAngle &rhs)
+	{
+		*this += rhs.angle();
+		return *this;
+	}
+
 	EulerAngle &EulerAngle::operator=(const glm::vec3 &euler)
 	{
 		if (euler != m_euler)

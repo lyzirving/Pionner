@@ -18,6 +18,14 @@ namespace pio
 
 		virtual void onCreateMesh() = 0;
 		virtual void onDraw() = 0;
+
+		void setTransform(const glm::mat4 &mat) { m_transform = mat; }
+
+		const glm::mat4 &getTransform() { return m_transform; }
+		const glm::mat4 &getTransform() const { return m_transform; }
+
+	protected:
+		glm::mat4 m_transform{ 1.f };
 	};
 }
 

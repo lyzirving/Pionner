@@ -23,9 +23,9 @@ namespace pio
 		uint32_t Size{ 0 };
 		uint32_t Capacity{ 0 };
 
-		Ref<VertexArray> VertexArray{};
+		Ref<VertexArray>  VertexArray{};
 		Ref<VertexBuffer> VertexBuffer{};
-		Ref<IndexBuffer> IndexBuffer{};
+		Ref<IndexBuffer>  IndexBuffer{};
 	};
 
 	class LineMesh : public Geometry2D

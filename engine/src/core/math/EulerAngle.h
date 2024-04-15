@@ -10,11 +10,13 @@ namespace pio
 	public:
 		EulerAngle() {}
 		EulerAngle(const glm::vec3 &euler) : m_euler(Math::Reminder(euler, 360.f)) {}
+		EulerAngle(float xRot, float yRot, float zRot) : m_euler(Math::Reminder(glm::vec3(xRot, yRot, zRot), 360.f)) {}
 		~EulerAngle() = default;
 
 		EulerAngle operator*(const EulerAngle &rhs);
 		EulerAngle operator+(const glm::vec3 &euler);
 		EulerAngle &operator+=(const glm::vec3 &euler);
+		EulerAngle &operator+=(const EulerAngle &rhs);
 		EulerAngle &operator=(const glm::vec3 &euler);
 
 		void invalidate(bool val = true) { m_dirty = val; }

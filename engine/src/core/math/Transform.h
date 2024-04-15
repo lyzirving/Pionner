@@ -17,8 +17,8 @@ namespace pio
 								       Euler.mat() *
 								       glm::scale(glm::mat4(1.f), Scale); }
 	public:
-		glm::vec3 Position{ 0.f };
-		glm::vec3 Scale{ 1.f };	
+		glm::vec3  Position{ 0.f };
+		glm::vec3  Scale{ 1.f };	
 		EulerAngle Euler;
 	};
 }

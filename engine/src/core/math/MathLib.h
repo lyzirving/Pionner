@@ -31,6 +31,8 @@ namespace pio
 		inline bool Equal(float lhs, float rhs) { return IsZero(lhs - rhs); }
 		inline bool Equal(const glm::vec2 &lhs, const glm::vec2 &rhs) { return IsZero(lhs - rhs); }
 		inline bool Equal(const glm::vec3 &lhs, const glm::vec3 &rhs) { return IsZero(lhs - rhs); }
+		inline bool LessEqual(const glm::vec3 &lhs, const glm::vec3 &rhs) { return lhs.x <= rhs.x && lhs.y <= rhs.y && lhs.z <= rhs.z; }
+		inline bool GreatEqual(const glm::vec3 &lhs, const glm::vec3 &rhs) { return lhs.x >= rhs.x && lhs.y >= rhs.y && lhs.z >= rhs.z; }
 
 		inline glm::mat3 NormalMat(const glm::mat4 &modelMat) { return glm::transpose(glm::inverse(glm::mat3(modelMat))); }		
 
