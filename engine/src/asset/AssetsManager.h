@@ -15,24 +15,24 @@ namespace pio
 
 	public:
 		template<typename T, typename ... Args>
-		static Ref<Asset> CreateRuntimeAssets(Args&& ... args)
-		{
-			if (!std::is_base_of<Asset, T>())
-				return Ref<Asset>();
-			Ref<Asset> ret = CreateRef<Asset, T>(std::forward<Args>(args)...);
-			AssetsManager::Get()->addRuntimeAsset(ret);
-			return ret;
-		}
-
-		/*template<typename T, typename ... Args>
 		static Ref<T> CreateRuntimeAssets(Args&& ... args)
 		{
 			if (!std::is_base_of<Asset, T>())
-				return Ref<Asset>();
-			Ref<T> ret = RefCast<Asset, T>(CreateRef<Asset, T>(std::forward<Args>(args)...));
+			{
+			#ifdef LOCAL_TAG
+			#undef LOCAL_TAG
+			#endif
+			#define LOCAL_TAG "AssetsManager"
+				
+				const std::type_info &classInfo = typeid(T);
+				LOGE("invalid derived class[%s]", classInfo.name());
+				return Ref<T>();
+			}
+			
+			Ref<T> ret = CreateRef<T>(std::forward<Args>(args)...);
 			AssetsManager::Get()->addRuntimeAsset(ret);
 			return ret;
-		}*/
+		}
 
 		static Ref<Asset> GetRuntimeAsset(const AssetHandle &handle)
 		{

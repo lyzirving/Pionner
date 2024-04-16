@@ -37,14 +37,14 @@ namespace pio
 			PIO_RELATION_SET_CHILD_INDEX(param.Parent, hostEnt->getCacheIndex());
 		}
 
-		Ref<Asset> result = AssetsManager::CreateRuntimeAssets<MeshT>(meshSrc);
+		Ref<MeshT> result = AssetsManager::CreateRuntimeAssets<MeshT>(meshSrc);
 
 		// Animation
 		AssetHandle animHandle{ NullAsset };
 		if (meshSrc->hasAnimation())
 		{
 			AnimationComponent &comp = hostEnt->addComponent<AnimationComponent>();
-			Ref<Asset> animAssets = AssetsManager::CreateRuntimeAssets<AnimationAsset>(meshSrc);
+			Ref<AnimationAsset> animAssets = AssetsManager::CreateRuntimeAssets<AnimationAsset>(meshSrc);
 			animHandle = comp.Handle = animAssets->getHandle();
 			comp.Selection = 0;
 			comp.GPUSkinning = true;

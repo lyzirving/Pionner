@@ -60,7 +60,7 @@ namespace pio
 		//X axis
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateCylinder(config.Radius, config.Height, config.Itr);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			Ref<Cylinder> cylinder = RefCast<MeshSource, Cylinder>(meshSrc);
 			cylinder->setColor(glm::vec3(1.f, 0.f, 0.f));
@@ -89,7 +89,7 @@ namespace pio
 		//Y axis
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateCylinder(config.Radius, config.Height, config.Itr);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			Ref<Cylinder> cylinder = RefCast<MeshSource, Cylinder>(meshSrc);
 			cylinder->setColor(glm::vec3(0.f, 1.f, 0.f));
@@ -117,7 +117,7 @@ namespace pio
 		//Z axis
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateCylinder(config.Radius, config.Height, config.Itr);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			Ref<Cylinder> cylinder = RefCast<MeshSource, Cylinder>(meshSrc);
 			cylinder->setColor(glm::vec3(0.f, 0.f, 1.f));
@@ -150,7 +150,7 @@ namespace pio
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateArrow3D(config.CylinderRadius, config.CylinderHeight,
 																 config.ConeRadius, config.ConeHeight, config.Itr);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			Ref<Arrow3D> arrow = RefCast<MeshSource, Arrow3D>(meshSrc);
 			arrow->setColor(glm::vec3(1.f, 0.f, 0.f));
@@ -181,7 +181,7 @@ namespace pio
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateArrow3D(config.CylinderRadius, config.CylinderHeight,
 																 config.ConeRadius, config.ConeHeight, config.Itr);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			Ref<Arrow3D> arrow = RefCast<MeshSource, Arrow3D>(meshSrc);
 			arrow->setColor(glm::vec3(0.f, 1.f, 0.f));
@@ -211,7 +211,7 @@ namespace pio
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateArrow3D(config.CylinderRadius, config.CylinderHeight,
 																 config.ConeRadius, config.ConeHeight, config.Itr);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			Ref<Arrow3D> arrow = RefCast<MeshSource, Arrow3D>(meshSrc);
 			arrow->setColor(glm::vec3(0.f, 0.f, 1.f));
@@ -263,7 +263,7 @@ namespace pio
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(1.f, 0.f, 0.f), itr, ringItr);
 			meshSrc->as<Geometry>()->setAlpha(alpha);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			std::vector<Submesh> &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());			
 			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(90.f), AXIS_Y);				
@@ -291,7 +291,7 @@ namespace pio
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(0.f, 1.f, 0.f), itr, ringItr);
 			meshSrc->as<Geometry>()->setAlpha(alpha);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);			
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			std::vector<Submesh> &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());
 			submeshes[0].Transform = glm::rotate(glm::mat4(1.f), glm::radians(-90.f), AXIS_X);
@@ -319,7 +319,7 @@ namespace pio
 		{
 			Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(radius, ringWidth, glm::vec3(0.f, 0.f, 1.f), itr, ringItr);
 			meshSrc->as<Geometry>()->setAlpha(alpha);
-			Ref<Asset> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
+			Ref<StaticMesh> meshAsset = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
 
 			C3dUIComponent &uiComp = ZTorus->getComponent<C3dUIComponent>();
 			uiComp.Name = UI_TORUS_Z;
@@ -359,7 +359,7 @@ namespace pio
 
 	Ref<LineMesh> UiDistantLight::CreateLightMesh(float radius, float lightLen, const glm::vec4 &color)
 	{
-		auto lineMesh = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>("DistantLight"));
+		auto lineMesh = AssetsManager::CreateRuntimeAssets<LineMesh>("DistantLight");
 		std::vector<LineVertex> &vertexArray = lineMesh->Vertex;
 		std::vector<uint32_t> &indice = lineMesh->Indices;
 
@@ -449,7 +449,7 @@ namespace pio
 
 	Ref<LineMesh> UiPointLight::CreatePointLightMesh(float radius, const glm::vec4 &color)
 	{
-		auto lineMesh = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>("PointLight"));
+		auto lineMesh = AssetsManager::CreateRuntimeAssets<LineMesh>("PointLight");
 		std::vector<LineVertex> &vertexArray = lineMesh->Vertex;
 		std::vector<uint32_t> &indice = lineMesh->Indices;
 		

@@ -72,7 +72,7 @@ namespace pio
 			return nullptr;
 		}
 
-		auto meshSource = CreateRefCast<Asset, MeshSource>(m_name);
+		auto meshSource = CreateRef<MeshSource>(m_name);
 		parseMeshes(scene, meshSource);
 		parseSkeleton(scene, meshSource);
 		parseAnimation(scene, meshSource);

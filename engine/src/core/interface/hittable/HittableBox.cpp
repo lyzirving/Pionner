@@ -39,7 +39,7 @@ namespace pio
 		m_aabb.Min = glm::vec3(-0.5f * m_len.x, 0.f, -0.5f * m_len.z);
 		m_aabb.Max = glm::vec3(0.5f * m_len.x, m_len.y, 0.5f * m_len.z);
 
-		m_outline = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>(std::string("HittaleBox") + std::to_string(g_HittableBoxCnt++)));
+		m_outline = AssetsManager::CreateRuntimeAssets<LineMesh>(std::string("HittaleBox") + std::to_string(g_HittableBoxCnt++));
 		m_outline->Vertex.reserve(8);		
 		m_outline->Indices.reserve(2 * 12);
 

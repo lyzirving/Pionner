@@ -23,6 +23,8 @@
 #include <cmath>
 #include <bitset>
 
+#include <typeinfo>
+
 #include "CoreType.h"
 #include "core/LogSystem.h"
 #include "core/math/MathLib.h"
@@ -69,12 +71,6 @@ namespace pio
 	constexpr Ref<Parent> CreateRef(Args&& ... args)
 	{
 		return std::shared_ptr<Parent>(new Derived(std::forward<Args>(args)...));
-	}
-
-	template<typename Parent, typename Derived, typename ... Args>
-	constexpr Ref<Derived> CreateRefCast(Args&& ... args)
-	{
-		return std::dynamic_pointer_cast<Derived>(std::shared_ptr<Parent>(new Derived(std::forward<Args>(args)...)));
 	}
 
 	template<typename Parent, typename Derived>

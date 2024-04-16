@@ -371,7 +371,7 @@ namespace pio
 		{			
 			Ref<Entity> ent = Registry::Get()->create<MeshSourceComponent, RelationshipComponent>(NodeType::MeshSource);
 			Ref<MeshSource> planeMs = MeshFactory::CreatePlane();
-			Ref<Asset> planeMsAst = AssetsManager::CreateRuntimeAssets<StaticMesh>(planeMs);			
+			Ref<StaticMesh> planeMsAst = AssetsManager::CreateRuntimeAssets<StaticMesh>(planeMs);
 			auto &submeshes = const_cast<std::vector<Submesh> &>(planeMs->getSubmeshes());
 			for (uint32_t i = 0; i < submeshes.size(); i++)
 			{				

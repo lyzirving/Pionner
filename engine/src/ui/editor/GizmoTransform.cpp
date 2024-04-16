@@ -27,7 +27,7 @@ namespace pio
 	void GizmoTransform::onCreateMesh()
 	{
 		Ref<Arrow3D> arrow = RefCast<MeshSource, Arrow3D>(MeshFactory::CreateArrow3D(0.013f, 0.4f, 0.025f, 0.1f, 24));
-		m_arrow = RefCast<Asset, StaticMesh>(AssetsManager::CreateRuntimeAssets<StaticMesh>(arrow));
+		m_arrow = AssetsManager::CreateRuntimeAssets<StaticMesh>(arrow);
 
 		glm::vec3 len = glm::vec3(0.2f, 1.f, 0.2f);
 		m_shape[EditorAxis_X] = CreateRef<HittableBox>(len);

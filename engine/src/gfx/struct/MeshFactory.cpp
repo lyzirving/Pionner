@@ -27,7 +27,7 @@ namespace pio
 	{
 		float radius = 0.5f * len;
 		std::string name = std::string("Cube") + std::to_string(s_cubeNum++);
-		Ref<Geometry> cube = RefCast<Asset, Geometry>(AssetsManager::CreateRuntimeAssets<Geometry>(name));
+		Ref<Geometry> cube = AssetsManager::CreateRuntimeAssets<Geometry>(name);
 
 		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Color);
 		cube->m_materials.push_back(ma->getMaterial());
@@ -239,7 +239,7 @@ namespace pio
 	{
 		//TODO: dynamically add material
 		std::string name = std::string("Plane") + std::to_string(s_planeNum++);
-		auto meshSource = RefCast<Asset, MeshSource>(AssetsManager::CreateRuntimeAssets<MeshSource>(name));
+		auto meshSource = AssetsManager::CreateRuntimeAssets<MeshSource>(name);
 
 		Ref<MaterialAsset> ma = MaterialLibrary::Get()->getMaterial(MaterialType_Packed_SandyRock);
 		meshSource->m_materials.push_back(ma->getMaterial());
@@ -321,7 +321,7 @@ namespace pio
 	Ref<MeshSource> MeshFactory::CreateCylinder(float radius, float height, uint32_t itrCnt)
 	{
 		std::string name = std::string("Cylinder") + std::to_string(s_cylinderNum++);
-		Ref<Cylinder> cylinder = RefCast<Asset, Cylinder>(AssetsManager::CreateRuntimeAssets<Cylinder>(name));
+		Ref<Cylinder> cylinder = AssetsManager::CreateRuntimeAssets<Cylinder>(name);
 		// Bottom center is (0.f, 0.f, 0.f)
 		cylinder->m_height = height;
 		cylinder->m_radius = radius;
@@ -434,7 +434,7 @@ namespace pio
 	Ref<MeshSource> MeshFactory::CreateCone(float radius, float height, uint32_t itrCnt)
 	{
 		std::string name = std::string("Cone") + std::to_string(s_coneNum++);
-		Ref<Cone> cone = RefCast<Asset, Cone>(AssetsManager::CreateRuntimeAssets<Cone>(name));
+		Ref<Cone> cone = AssetsManager::CreateRuntimeAssets<Cone>(name);
 		// Bottom center is (0.f, 0.f, 0.f)
 		cone->m_height = height;
 		cone->m_radius = radius;
@@ -522,7 +522,7 @@ namespace pio
 	Ref<MeshSource> MeshFactory::CreateArrow3D(float cylinderRadius, float cylinderHeight, float coneRadius, float coneHeight, uint32_t itrCnt)
 	{
 		std::string name = std::string("Arrow3D") + std::to_string(s_arrowNum++);
-		Ref<Arrow3D> arrow = RefCast<Asset, Arrow3D>(AssetsManager::CreateRuntimeAssets<Arrow3D>(name));
+		Ref<Arrow3D> arrow = AssetsManager::CreateRuntimeAssets<Arrow3D>(name);
 		// Bottom center is (0.f, 0.f, 0.f)
 		arrow->m_cylinRadius = cylinderRadius;
 		arrow->m_cylinHeight = cylinderHeight;
@@ -692,7 +692,7 @@ namespace pio
 	Ref<MeshSource> MeshFactory::CreateSphere(float radius, const glm::vec3 &color, uint32_t horItrCnt, uint32_t verItrCnt)
 	{
 		std::string name = std::string("Sphere") + std::to_string(s_sphereNum++);
-		Ref<Sphere> sphere = RefCast<Asset, Sphere>(AssetsManager::CreateRuntimeAssets<Sphere>(name));
+		Ref<Sphere> sphere = AssetsManager::CreateRuntimeAssets<Sphere>(name);
 		sphere->m_radius = radius;
 		sphere->m_horItrCnt = horItrCnt;
 		sphere->m_verItrCnt = verItrCnt;
@@ -713,7 +713,7 @@ namespace pio
 	Ref<MeshSource> MeshFactory::CreateTorus(float radius, float ringWidth, const glm::vec3 &color, uint32_t itrCnt, uint32_t ringItrCnt)
 	{
 		std::string name = std::string("Torus") + std::to_string(s_torusNum++);
-		Ref<Torus> torus = RefCast<Asset, Torus>(AssetsManager::CreateRuntimeAssets<Torus>(name));
+		Ref<Torus> torus = AssetsManager::CreateRuntimeAssets<Torus>(name);
 		torus->m_radius = radius;
 		torus->m_ringRadius = ringWidth;
 		torus->m_itrCnt = itrCnt;
@@ -734,7 +734,7 @@ namespace pio
 	Ref<Geometry2D> MeshFactory::CreateFullScreenQuad()
 	{
 		std::string name = std::string("FullScreenQuad") + std::to_string(s_fullScreenQuadNum++);
-		auto quad = RefCast<Asset, QuadMesh>(AssetsManager::CreateRuntimeAssets<QuadMesh>(name));
+		auto quad = AssetsManager::CreateRuntimeAssets<QuadMesh>(name);
 
 		QuadVertex lt;
 		lt.Position = glm::vec3(-1.f, 1.f, 0.f);
@@ -782,7 +782,7 @@ namespace pio
 	Ref<Geometry2D> MeshFactory::CreateScreenQuad(uint32_t l, uint32_t t, uint32_t r, uint32_t b, uint32_t screenWidth, uint32_t screenHeight)
 	{
 		std::string name = std::string("ScreenQuad") + std::to_string(s_fullScreenQuadNum++);
-		auto quad = RefCast<Asset, QuadMesh>(AssetsManager::CreateRuntimeAssets<QuadMesh>(name));
+		auto quad = AssetsManager::CreateRuntimeAssets<QuadMesh>(name);
 
 		glm::vec2 p = UiDef::ScreenToVertex(l, t, screenWidth, screenHeight);
 		QuadVertex lt;

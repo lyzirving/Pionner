@@ -20,7 +20,7 @@ namespace pio
 	{
 		m_dirty.reset();
 
-		m_lineMesh = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>("DebugLine"));
+		m_lineMesh = AssetsManager::CreateRuntimeAssets<LineMesh>("DebugLine");
 		m_lineMesh->VertexBuffer = VertexBuffer::Create(LINE_MESH_LIMIT, BufferUsage::Dynamic);
 		m_lineMesh->VertexBuffer->setLayout(VertexBuffer::To<LineVertex>());
 		m_lineMesh->VertexArray = VertexArray::Create();

@@ -1,5 +1,4 @@
 #include "MaterialLibrary.h"
-#include "MaterialAsset.h"
 
 #include "asset/AssetsManager.h"
 #include "asset/MaterialImporter.h"
@@ -63,8 +62,7 @@ namespace pio
 			if (mi)
 			{
 				LOGD("load packed material[%s]", path.c_str());
-				Ref<Asset> asset = AssetsManager::CreateRuntimeAssets<MaterialAsset>(mi);
-				Ref<MaterialAsset> ma = RefCast<Asset, MaterialAsset>(asset);
+				Ref<MaterialAsset> ma = AssetsManager::CreateRuntimeAssets<MaterialAsset>(mi);
 				m_materialAssets[i] = ma;
 			}
 			else
@@ -82,8 +80,7 @@ namespace pio
 			if (mi)
 			{
 				LOGD("load color material[%s]", name.c_str());
-				Ref<Asset> asset = AssetsManager::CreateRuntimeAssets<MaterialAsset>(mi);
-				Ref<MaterialAsset> ma = RefCast<Asset, MaterialAsset>(asset);
+				Ref<MaterialAsset> ma = AssetsManager::CreateRuntimeAssets<MaterialAsset>(mi);
 				m_materialAssets[MaterialType_Color] = ma;
 			}
 			else
