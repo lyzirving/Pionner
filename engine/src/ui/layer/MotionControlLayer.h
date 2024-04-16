@@ -61,6 +61,7 @@ namespace pio
 		bool onHandleIconClick(const glm::vec2 &cursor);
 		bool onHandleObject3dClick(const glm::vec2 &winCursor);
 		bool onHandleSpriteClick(const glm::vec2 &winCursor);
+		bool onHandleGizmoClick(const glm::vec2 &winCursor);
 
 	private:
 		static const std::string ICON_ID_NORMAL[MotionCtl_Num];

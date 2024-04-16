@@ -26,10 +26,17 @@ namespace pio
 
 	void GizmoTransform::onCreateMesh()
 	{
+		// [TODO] make attributes supported by interface of configuration
+		float cylinderRadius = 0.013f;
+		float cylinderHeight = 0.4f;
+		float coneRadius     = 0.025f;
+		float coneHeight     = 0.1f;
+
 		Ref<Arrow3D> arrow = RefCast<MeshSource, Arrow3D>(MeshFactory::CreateArrow3D(0.013f, 0.4f, 0.025f, 0.1f, 24));
 		m_arrow = AssetsManager::CreateRuntimeAssets<StaticMesh>(arrow);
 
-		glm::vec3 len = glm::vec3(0.2f, 1.f, 0.2f);
+		float size = std::max(cylinderRadius, coneRadius) * 2.f;
+		glm::vec3 len = glm::vec3(size, cylinderHeight + coneHeight, size);
 		m_shape[EditorAxis_X] = CreateRef<HittableBox>(len);
 		m_shape[EditorAxis_Y] = CreateRef<HittableBox>(len);
 		m_shape[EditorAxis_Z] = CreateRef<HittableBox>(len);
@@ -73,10 +80,13 @@ namespace pio
 
 	bool GizmoTransform::onHit(HitQuery &query)
 	{
-		if (m_shape[EditorAxis_X]->onHit(query) || 
+		if (m_shape[EditorAxis_X]->onHit(query) ||
 			m_shape[EditorAxis_Y]->onHit(query) ||
 			m_shape[EditorAxis_Z]->onHit(query))
+		{
+			LOGD("GizmoTransform clicked");
 			return true;
+		}
 
 		return false;
 	}

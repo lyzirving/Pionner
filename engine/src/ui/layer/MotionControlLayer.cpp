@@ -109,6 +109,7 @@ namespace pio
 		m_uiPointLight = CreateRef<UiPointLight>(0.5f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
 
 		m_gizmoTransform = CreateRef<GizmoTransform>();
+		m_gizmoTransform->setTranslation(glm::vec3(2.f, 0.f, 0.f));
 
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
 						   Application::MainWindow()->getHeight());
@@ -153,8 +154,8 @@ namespace pio
 		onDrawMotionCtl(ts);
 		onDrawMotionView(ts);
 
-		/*auto param = DrawParam::Wrap(ts, m_motionUBSet);
-		m_gizmoTransform->onDraw(param);*/
+		auto param = DrawParam::Wrap(ts, m_motionUBSet);
+		m_gizmoTransform->onDraw(param);
 	}
 
 	void MotionControlLayer::onUpdateUI(const Timestep &ts)
@@ -801,6 +802,10 @@ namespace pio
 			return true;
 		}
 
+		// ---------- Test ----------
+		onHandleGizmoClick(winCursor);
+		// --------------------------
+
 		if (onHandleObject3dClick(winCursor))
 		{		
 			MotionController::SelectSprite(nullptr);
@@ -899,5 +904,13 @@ namespace pio
 		}
 		MotionController::SelectSprite(nullptr);
 		return false;
+	}
+
+	bool MotionControlLayer::onHandleGizmoClick(const glm::vec2 &winCursor)
+	{
+		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
+		Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+		HitQuery query(r);
+		return m_gizmoTransform->onHit(query);
 	}
 }

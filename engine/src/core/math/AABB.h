@@ -20,11 +20,6 @@ namespace pio
 		float lenX() const { return std::abs(Max.x - Min.x); }
 		float lenY() const { return std::abs(Max.y - Min.y); }
 		float lenZ() const { return std::abs(Max.z - Min.z); }
-
-		static AABB Multiply(const glm::mat4 &mat, const AABB &aabb)
-		{
-			return AABB(mat * glm::vec4(aabb.Min, 1.f), mat * glm::vec4(aabb.Max, 1.f));
-		}
 	};
 }
 

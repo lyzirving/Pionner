@@ -10,6 +10,9 @@ namespace pio
 		Ray  R{};
 		glm::vec3 Intersection{ 0.f };
 		bool Hit{ false };
+
+		HitQuery() {}
+		HitQuery(const Ray &r) : R(r) {}
 	};	
 
 	class Hittable

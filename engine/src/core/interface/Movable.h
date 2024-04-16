@@ -11,15 +11,15 @@ namespace pio
 		Movable() {}
 		~Movable() = default;
 
-		void setTranslation(const glm::vec3 &val) { m_transform.Position = val; }
-		void setScale(const glm::vec3 &val) { m_transform.Scale = val; }
-		void setRotation(const glm::vec3 &val) { m_transform.Euler = val; }
-		void setRotation(const EulerAngle &val) { m_transform.Euler = val; }
+		virtual void setTranslation(const glm::vec3 &val) { m_transform.Position = val; }
+		virtual void setScale(const glm::vec3 &val) { m_transform.Scale = val; }
+		virtual void setRotation(const glm::vec3 &val) { m_transform.Euler = val; }
+		virtual void setRotation(const EulerAngle &val) { m_transform.Euler = val; }
 
-		void setLocalTranslation(const glm::vec3 &val) { m_localTransform.Position = val; }
-		void setLocalScale(const glm::vec3 &val) { m_localTransform.Scale = val; }
-		void setLocalRotation(const glm::vec3 &val) { m_localTransform.Euler = val; }
-		void setLocalRotation(const EulerAngle &val) { m_localTransform.Euler = val; }
+		virtual void setLocalTranslation(const glm::vec3 &val) { m_localTransform.Position = val; }
+		virtual void setLocalScale(const glm::vec3 &val) { m_localTransform.Scale = val; }
+		virtual void setLocalRotation(const glm::vec3 &val) { m_localTransform.Euler = val; }
+		virtual void setLocalRotation(const EulerAngle &val) { m_localTransform.Euler = val; }
 
 		glm::mat4 getTransform() { return m_transform.mat(); }
 		glm::mat4 getTransform() const { return m_transform.mat(); }
