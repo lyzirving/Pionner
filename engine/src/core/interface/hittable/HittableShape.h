@@ -4,7 +4,9 @@
 #include "Hittable.h"
 
 #include "core/interface/Movable.h"
+
 #include "gfx/struct/Geometry2D.h"
+#include "gfx/renderer/RenderData.h"
 
 namespace pio
 {
@@ -20,10 +22,11 @@ namespace pio
 	class HittableShape : public Hittable, public Movable
 	{
 	public:
-		HittableShape() : Hittable(), Movable() { onCreateShape(); }
+		HittableShape() : Hittable(), Movable() {}
 		virtual ~HittableShape() = default;
 
 		virtual void onCreateShape() = 0;
+		virtual void onDraw(const DrawParam &param) = 0;
 
 		virtual HitShapeType getShapeType() const { return HitShapeType::None; }
 

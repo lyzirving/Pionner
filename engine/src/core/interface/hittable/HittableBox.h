@@ -15,12 +15,13 @@ namespace pio
 	OVERRIDE_HITTABLE_SHAPE(HitShapeType::Box)
 
 	public:
-		HittableBox() : HittableShape() {}
-		HittableBox(const glm::vec3 &len) : HittableShape(), m_len(glm::abs(len)) {}
+		HittableBox();
+		HittableBox(const glm::vec3 &len);
 		~HittableBox() = default;
 
 		virtual void onCreateShape() override;
 		virtual bool onHit(HitQuery &query) override;
+		virtual void onDraw(const DrawParam &param) override;
 
 	private:
 		glm::vec3 m_len{ 1.f };

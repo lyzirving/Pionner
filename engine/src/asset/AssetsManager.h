@@ -24,6 +24,16 @@ namespace pio
 			return ret;
 		}
 
+		/*template<typename T, typename ... Args>
+		static Ref<T> CreateRuntimeAssets(Args&& ... args)
+		{
+			if (!std::is_base_of<Asset, T>())
+				return Ref<Asset>();
+			Ref<T> ret = RefCast<Asset, T>(CreateRef<Asset, T>(std::forward<Args>(args)...));
+			AssetsManager::Get()->addRuntimeAsset(ret);
+			return ret;
+		}*/
+
 		static Ref<Asset> GetRuntimeAsset(const AssetHandle &handle)
 		{
 			return AssetsManager::Get()->getRuntimeAsset(handle);

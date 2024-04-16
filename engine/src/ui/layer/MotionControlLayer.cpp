@@ -108,6 +108,8 @@ namespace pio
 		m_uiDistantLight = CreateRef<UiDistantLight>(0.5f, 2.f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
 		m_uiPointLight = CreateRef<UiPointLight>(0.5f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
 
+		m_gizmoTransform = CreateRef<GizmoTransform>();
+
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
 						   Application::MainWindow()->getHeight());
 	}
@@ -150,6 +152,9 @@ namespace pio
 		onDrawVisionCtl(ts);
 		onDrawMotionCtl(ts);
 		onDrawMotionView(ts);
+
+		/*auto param = DrawParam::Wrap(ts, m_motionUBSet);
+		m_gizmoTransform->onDraw(param);*/
 	}
 
 	void MotionControlLayer::onUpdateUI(const Timestep &ts)

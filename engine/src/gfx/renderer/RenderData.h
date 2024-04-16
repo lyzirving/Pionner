@@ -7,6 +7,7 @@
 namespace pio
 {
 	class MaterialTable;
+	class UniformBufferSet;
 
 	namespace SceneDataAttr
 	{
@@ -64,6 +65,20 @@ namespace pio
 
 			return SubmeshIndex <= other.SubmeshIndex;
 		}
+	};
+
+	struct DrawParam
+	{
+		Timestep Step;
+		Ref<UniformBufferSet> Ubs;
+
+		DrawParam() {}
+		DrawParam(const Timestep &ts, const Ref<UniformBufferSet> &ubs) : Step(ts), Ubs(ubs) 
+		{
+		}
+
+		static DrawParam Wrap(const Timestep &ts, const Ref<UniformBufferSet> &ubs) 
+		{ return DrawParam(ts, ubs); }
 	};
 
 	struct DrawCommand

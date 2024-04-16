@@ -1,12 +1,26 @@
 #include "HittableBox.h"
 
+#include "asset/AssetsManager.h"
+
 #include "gfx/rhi/VertexArray.h"
 #include "gfx/rhi/VertexBuffer.h"
 #include "gfx/rhi/IndexBuffer.h"
 
+#include "gfx/renderer/Renderer.h"
+
 namespace pio
 {
 	static uint32_t g_HittableBoxCnt{ 0 };
+
+	HittableBox::HittableBox() : HittableShape()
+	{
+		onCreateShape();
+	}
+
+	HittableBox::HittableBox(const glm::vec3 &len) : HittableShape(), m_len(glm::abs(len))
+	{
+		onCreateShape();
+	}
 
 	void HittableBox::onCreateShape()
 	{		
@@ -25,7 +39,7 @@ namespace pio
 		m_aabb.Min = glm::vec3(-0.5f * m_len.x, 0.f, -0.5f * m_len.z);
 		m_aabb.Max = glm::vec3(0.5f * m_len.x, m_len.y, 0.5f * m_len.z);
 
-		m_outline = CreateRef<LineMesh>(std::string("HittaleBox") + std::to_string(g_HittableBoxCnt++));
+		m_outline = RefCast<Asset, LineMesh>(AssetsManager::CreateRuntimeAssets<LineMesh>(std::string("HittaleBox") + std::to_string(g_HittableBoxCnt++)));
 		m_outline->Vertex.reserve(8);		
 		m_outline->Indices.reserve(2 * 12);
 
@@ -158,5 +172,22 @@ namespace pio
 		}
 
 		return false;
+	}
+
+	void HittableBox::onDraw(const DrawParam &param)
+	{
+		HittableBox *self = this;
+		Ref<LineMesh> mesh = m_outline;		
+		Renderer::SubmitRC([param, self, mesh]() mutable
+		{
+			glm::mat4 trans = self->getTransform() * self->getLocalTransform();
+			Ref<UniformBufferSet> ubs = param.Ubs;
+			RenderState state;
+			state.Blend = Blend::Disable();
+			state.DepthTest = DepthTest::Disable();
+			state.Cull = CullFace::Disable();
+			state.Stencil = StencilTest::Disable();
+			Renderer::RenderLine(mesh->getHandle(), ubs, trans, state);
+		});
 	}
 }

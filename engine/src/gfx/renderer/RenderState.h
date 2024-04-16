@@ -266,10 +266,17 @@ namespace pio
 		bool Selected{ false };
 
 		RenderState() {}
+
 		RenderState(const pio::Clear &clear, const pio::Blend &blend, const pio::DepthTest &depth, const pio::CullFace &cull, const pio::StencilTest &stencil, pio::RenderMode mode, bool select) 
 			: Clear(clear), Blend(blend), DepthTest(depth), Cull(cull), Stencil(stencil), Mode(mode), Selected(select)
 		{
 		}
+
+		RenderState(const pio::Blend &blend, const pio::DepthTest &depth, const pio::CullFace &cull, const pio::StencilTest &stencil, pio::RenderMode mode)
+			: Blend(blend), DepthTest(depth), Cull(cull), Stencil(stencil), Mode(mode)
+		{
+		}
+
 	};
 }
 

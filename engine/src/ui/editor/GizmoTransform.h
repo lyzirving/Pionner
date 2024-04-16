@@ -6,22 +6,24 @@
 
 namespace pio
 {
-	class Arrow3D;
+	class StaticMesh;
 	class HittableShape;
 
 	class GizmoTransform : public EditorUI, public Hittable
 	{
 	public:
-		GizmoTransform() {}
+		GizmoTransform();
 		~GizmoTransform() = default;
 
 		virtual void onCreateMesh() override;
-		virtual void onDraw() override;
+		virtual void onDraw(const DrawParam &param) override;
 		virtual bool onHit(HitQuery &query) override;
 
+		void setTranslation(const glm::vec3 &translation);
+
 	private:
-		Ref<Arrow3D> m_arrow;
-		std::shared_ptr<HittableShape> m_shape[EditorAxis_Cnt];
+		Ref<StaticMesh> m_arrow;
+		Ref<HittableShape> m_shape[EditorAxis_Cnt];
 	};
 }
 
