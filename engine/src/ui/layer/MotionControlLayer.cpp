@@ -154,7 +154,7 @@ namespace pio
 		onDrawMotionCtl(ts);
 		onDrawMotionView(ts);
 
-		auto param = DrawParam::Wrap(ts, m_motionUBSet);
+		DrawParam param{ ts, m_motionUBSet };
 		m_gizmoTransform->onDraw(param);
 	}
 

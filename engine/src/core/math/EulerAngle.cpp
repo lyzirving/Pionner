@@ -13,6 +13,28 @@ namespace pio
 	{
 		EulerAngle e(this->m_euler + rhs.m_euler);
 		return e;
+	}	
+
+	EulerAngle EulerAngle::operator+(const EulerAngle &rhs)
+	{
+		EulerAngle e(this->m_euler + rhs.m_euler);
+		return e;
+	}
+
+	EulerAngle &EulerAngle::operator+=(const EulerAngle &rhs)
+	{
+		*this += rhs.angle();
+		return *this;
+	}
+
+	bool EulerAngle::operator==(const EulerAngle &rhs)
+	{
+		return this != &rhs && this->m_euler == rhs.m_euler;
+	}
+
+	bool EulerAngle::operator!=(const EulerAngle &rhs)
+	{
+		return !(*this == rhs);
 	}
 
 	EulerAngle EulerAngle::operator+(const glm::vec3 &euler)
@@ -28,10 +50,14 @@ namespace pio
 		return *this;
 	}
 
-	EulerAngle &EulerAngle::operator+=(const EulerAngle &rhs)
+	bool EulerAngle::operator==(const glm::vec3 &euler)
 	{
-		*this += rhs.angle();
-		return *this;
+		return this->m_euler == euler;
+	}
+
+	bool EulerAngle::operator!=(const glm::vec3 &euler)
+	{
+		return !(*this == euler);
 	}
 
 	EulerAngle &EulerAngle::operator=(const glm::vec3 &euler)

@@ -52,7 +52,7 @@ namespace pio
 
 	void GizmoTransform::onDraw(const DrawParam &param)
 	{
-		Ref<UniformBufferSet> ubs = param.Ubs;
+		Ref<UniformBufferSet> ubs = param.UBSet;
 		auto drawFunc = [ubs](Ref<StaticMesh> mesh, Ref<HittableShape> shape, const glm::vec4 &color) mutable
 		{		
 			Renderer::SubmitRC([mesh, ubs, shape, color]() mutable
@@ -87,7 +87,6 @@ namespace pio
 			LOGD("GizmoTransform clicked");
 			return true;
 		}
-
 		return false;
 	}
 

@@ -70,15 +70,12 @@ namespace pio
 	struct DrawParam
 	{
 		Timestep Step;
-		Ref<UniformBufferSet> Ubs;
+		Ref<UniformBufferSet> UBSet;
 
 		DrawParam() {}
-		DrawParam(const Timestep &ts, const Ref<UniformBufferSet> &ubs) : Step(ts), Ubs(ubs) 
+		DrawParam(const Timestep &ts, const Ref<UniformBufferSet> &ubs) : Step(ts), UBSet(ubs) 
 		{
 		}
-
-		static DrawParam Wrap(const Timestep &ts, const Ref<UniformBufferSet> &ubs) 
-		{ return DrawParam(ts, ubs); }
 	};
 
 	struct DrawCommand

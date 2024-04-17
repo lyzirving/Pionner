@@ -33,27 +33,32 @@ namespace pio
 		*    |  v3 --------|-- v2
 		*    | /           |  /
 		*    |/      O     | /
-		     /             |/
+		*    /             |/
 		*    v0 ---------- v1
 		*/
-		m_obb.Len    = m_len;
-		m_obb.Center = glm::vec3(0.f, m_len.y * 0.5f, 0.f);
-		m_obb.updatePoints();
+		m_points[0] = glm::vec3(-0.5f * m_len.x, 0.f, 0.5f * m_len.z);
+		m_points[1] = glm::vec3(0.5f * m_len.x, 0.f, 0.5f * m_len.z);
+		m_points[2] = glm::vec3(0.5f * m_len.x, 0.f, -0.5f * m_len.z);
+		m_points[3] = glm::vec3(-0.5f * m_len.x, 0.f, -0.5f * m_len.z);
+
+		m_points[4] = glm::vec3(-0.5f * m_len.x, m_len.y, 0.5f * m_len.z);
+		m_points[5] = glm::vec3(0.5f * m_len.x, m_len.y, 0.5f * m_len.z);
+		m_points[6] = glm::vec3(0.5f * m_len.x, m_len.y, -0.5f * m_len.z);
+		m_points[7] = glm::vec3(-0.5f * m_len.x, m_len.y, -0.5f * m_len.z);				
 
 		m_outline = AssetsManager::CreateRuntimeAssets<LineMesh>(std::string("HittaleBox") + std::to_string(g_HittableBoxCnt++));
 		m_outline->Vertex.reserve(8);		
 		m_outline->Indices.reserve(2 * 12);
 
-		glm::vec4 color{ 1.f, 0.f, 0.f, 1.f };
-		m_outline->Vertex.emplace_back(m_obb.at(0), color);
-		m_outline->Vertex.emplace_back(m_obb.at(1), color);
-		m_outline->Vertex.emplace_back(m_obb.at(2), color);
-		m_outline->Vertex.emplace_back(m_obb.at(3), color);
+		m_outline->Vertex.emplace_back(m_points[0], Renderer::GetConfig().OutlineColor);
+		m_outline->Vertex.emplace_back(m_points[1], Renderer::GetConfig().OutlineColor);
+		m_outline->Vertex.emplace_back(m_points[2], Renderer::GetConfig().OutlineColor);
+		m_outline->Vertex.emplace_back(m_points[3], Renderer::GetConfig().OutlineColor);
 
-		m_outline->Vertex.emplace_back(m_obb.at(4), color);
-		m_outline->Vertex.emplace_back(m_obb.at(5), color);
-		m_outline->Vertex.emplace_back(m_obb.at(6), color);
-		m_outline->Vertex.emplace_back(m_obb.at(7), color);		
+		m_outline->Vertex.emplace_back(m_points[4], Renderer::GetConfig().OutlineColor);
+		m_outline->Vertex.emplace_back(m_points[5], Renderer::GetConfig().OutlineColor);
+		m_outline->Vertex.emplace_back(m_points[6], Renderer::GetConfig().OutlineColor);
+		m_outline->Vertex.emplace_back(m_points[7], Renderer::GetConfig().OutlineColor);		
 
 		// -------- bottom face -------- 
 		m_outline->Indices.push_back(0);
@@ -101,11 +106,13 @@ namespace pio
 
 		m_outline->VertexArray = VertexArray::Create();
 		m_outline->VertexArray->addVertexBuffer(m_outline->VertexBuffer);
+
+		updateAABB();
 	}
 
 	bool HittableBox::onHit(HitQuery &query)
 	{
-
+		updateAABB();
 		return false;
 	#if 0
 		const AABB &aabb = m_aabb;
@@ -186,61 +193,20 @@ namespace pio
 		Renderer::SubmitRC([param, self, mesh]() mutable
 		{
 			glm::mat4 trans = self->getTransform() * self->getLocalTransform();
-			Ref<UniformBufferSet> ubs = param.Ubs;
-			RenderState state;
-			state.Blend = Blend::Disable();
-			state.DepthTest = DepthTest::Disable();
-			state.Cull = CullFace::Disable();
-			state.Stencil = StencilTest::Disable();
+			Ref<UniformBufferSet> ubs = param.UBSet;
+			RenderState state{ Blend::Disable(), DepthTest::Disable(), CullFace::Disable(), StencilTest::Disable() };
 			Renderer::RenderLine(mesh->getHandle(), ubs, trans, state);
 		});
 	}
 
-	void HittableBox::setTranslation(const glm::vec3 &val)
+	void HittableBox::updateAABB()
 	{
-		m_obb.setTranslation(val);
-		Movable::setTranslation(val);
-	}
-
-	void HittableBox::setScale(const glm::vec3 &val)
-	{
-		m_obb.setScale(val);
-		Movable::setScale(val);
-	}
-
-	void HittableBox::setRotation(const glm::vec3 &val)
-	{
-		m_obb.setRotation(val);
-		Movable::setRotation(val);
-	}
-
-	void HittableBox::setRotation(const EulerAngle &val)
-	{
-		m_obb.setRotation(val);
-		Movable::setRotation(val);
-	}
-
-	void HittableBox::setLocalTranslation(const glm::vec3 &val)
-	{
-		m_obb.setCenter(val);
-		Movable::setLocalTranslation(val);
-	}
-
-	void HittableBox::setLocalScale(const glm::vec3 &val)
-	{
-		m_obb.setLength(val);
-		Movable::setLocalScale(val);
-	}
-
-	void HittableBox::setLocalRotation(const glm::vec3 &val)
-	{
-		m_obb.setLocalRotation(val);
-		Movable::setLocalRotation(val);
-	}
-
-	void HittableBox::setLocalRotation(const EulerAngle &val)
-	{
-		m_obb.setLocalRotation(val);
-		Movable::setLocalRotation(val);
+		m_aabb.reset();
+		for (uint32_t i = 0; i < 8; i++)
+		{
+			glm::vec3 p = m_transform.mat() * m_localTransform.mat() * glm::vec4(m_points[i], 1.f);
+			m_aabb.Min = glm::min(m_aabb.Min, p);
+			m_aabb.Max = glm::max(m_aabb.Max, p);
+		}
 	}
 }

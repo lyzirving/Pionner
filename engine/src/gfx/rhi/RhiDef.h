@@ -134,6 +134,7 @@ namespace pio
 		float FPS{ 0.f };
 		uint64_t FrameTime{ 0 };	
 		glm::vec4 ClearColor{ 0.3f, 0.3f, 0.3f, 1.f };
+		glm::vec4 OutlineColor{ 1.f, 0.f, 0.f, 1.f };
 		RenderStrategy Strategy{ RenderStrategy::Deferred };
 		AssetHandle FullScreenQuad{ NullAsset };
 		RendererDebugger Debugger{};

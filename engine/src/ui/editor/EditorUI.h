@@ -1,7 +1,7 @@
 #ifndef __PIONNER_UI_EDITOR_EDITOR_UI_H__
 #define __PIONNER_UI_EDITOR_EDITOR_UI_H__
 
-#include "gfx/renderer/RenderData.h"
+#include "core/InterfaceDef.h"
 
 namespace pio
 {
@@ -10,14 +10,11 @@ namespace pio
 		EditorAxis_X, EditorAxis_Y, EditorAxis_Z, EditorAxis_Cnt
 	};
 
-	class EditorUI
+	class EditorUI : public Drawable
 	{
 	public:
 		EditorUI() {}
 		virtual ~EditorUI() = default;
-
-		virtual void onCreateMesh() = 0;
-		virtual void onDraw(const DrawParam &param) = 0;
 	};
 }
 

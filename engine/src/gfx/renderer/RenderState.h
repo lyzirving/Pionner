@@ -277,6 +277,11 @@ namespace pio
 		{
 		}
 
+		RenderState(const pio::Blend &blend, const pio::DepthTest &depth, const pio::CullFace &cull, const pio::StencilTest &stencil)
+			: Blend(blend), DepthTest(depth), Cull(cull), Stencil(stencil)
+		{
+		}
+
 	};
 }
 

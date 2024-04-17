@@ -3,7 +3,7 @@
 
 #include "HittableShape.h"
 
-#include "core/math/OBB.h"
+#include "core/math/AABB.h"
 
 namespace pio
 {
@@ -23,19 +23,13 @@ namespace pio
 		virtual bool onHit(HitQuery &query) override;
 		virtual void onDraw(const DrawParam &param) override;
 
-		virtual void setTranslation(const glm::vec3 &val) override;
-		virtual void setScale(const glm::vec3 &val) override;
-		virtual void setRotation(const glm::vec3 &val) override;
-		virtual void setRotation(const EulerAngle &val) override;
-
-		virtual void setLocalTranslation(const glm::vec3 &val) override;
-		virtual void setLocalScale(const glm::vec3 &val) override;
-		virtual void setLocalRotation(const glm::vec3 &val) override;
-		virtual void setLocalRotation(const EulerAngle &val) override;
+	private:
+		void updateAABB();
 
 	private:
 		glm::vec3 m_len{ 1.f };
-		OBB m_obb{};
+		glm::vec3 m_points[8];
+		AABB m_aabb{};	
 	};
 }
 

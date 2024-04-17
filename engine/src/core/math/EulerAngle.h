@@ -14,9 +14,17 @@ namespace pio
 		~EulerAngle() = default;
 
 		EulerAngle operator*(const EulerAngle &rhs);
-		EulerAngle operator+(const glm::vec3 &euler);
-		EulerAngle &operator+=(const glm::vec3 &euler);
+
+		EulerAngle operator+(const EulerAngle &rhs);
 		EulerAngle &operator+=(const EulerAngle &rhs);
+		bool operator==(const EulerAngle &rhs);
+		bool operator!=(const EulerAngle &rhs);
+
+		EulerAngle operator+(const glm::vec3 &euler);		
+		EulerAngle &operator+=(const glm::vec3 &euler);
+		bool operator==(const glm::vec3 &euler);
+		bool operator!=(const glm::vec3 &euler);
+		
 		EulerAngle &operator=(const glm::vec3 &euler);
 
 		void invalidate(bool val = true) { m_dirty = val; }

@@ -2,7 +2,7 @@
 
 namespace pio
 {
-	bool Intersection(const Ray &ray, const OBB &obb, float distance)
+	bool Intersection(const Ray &ray, const AABB &aabb, float distance)
 	{
 		return false;
 	}
