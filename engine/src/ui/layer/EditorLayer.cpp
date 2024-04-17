@@ -167,6 +167,17 @@ namespace pio
 			if (ImGui::CollapsingHeader("Physics##Scene", ImGuiUtils::Flag_Collapse_Header))
 			{
 				ImGui::Checkbox("Simulate##Scene_Physics", &sceneComp.Simulate);
+				ImGui::SameLine();
+				bool raycastSwitch = Renderer::GetConfig().Debugger.Raycast;
+				ImGui::Checkbox("Raycast##Scene_Physics", &raycastSwitch);
+				if (raycastSwitch != Renderer::GetConfig().Debugger.Raycast)
+				{
+					Renderer::GetConfig().Debugger.Raycast = raycastSwitch;
+					if (!raycastSwitch)
+					{
+						GDebugger::Get()->clear(GDebug_Line);
+					}
+				}
 			}
 
 			if (ImGui::CollapsingHeader("Skybox##Scene", ImGuiUtils::Flag_Collapse_Header))

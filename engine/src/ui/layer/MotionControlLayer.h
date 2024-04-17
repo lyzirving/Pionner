@@ -18,6 +18,7 @@ namespace pio
 	class UiPointLight;
 	class PhysicsScene;
 	class GizmoTransform;
+	class Ray;
 	struct DirectionalLightComponent;
 	struct PointLightComponent;
 	struct TransformComponent;
@@ -58,10 +59,10 @@ namespace pio
 		void onRotateMode(Ref<Entity> &ent, const glm::vec3 &eulerDiff, const std::string_view &ctlName);
 
 		bool onHandleClick(const glm::vec2 &winCursor);
-		bool onHandleIconClick(const glm::vec2 &cursor);
-		bool onHandleObject3dClick(const glm::vec2 &winCursor);
-		bool onHandleSpriteClick(const glm::vec2 &winCursor);
-		bool onHandleGizmoClick(const glm::vec2 &winCursor);
+		bool onHandleIconClick(const glm::vec2 &screenPt);
+		bool onHandleSpriteClick(const glm::vec2 &screenPt);
+		bool onHandleObject3dClick(const Ray &ray);
+		bool onHandleGizmoClick(const Ray &ray);
 
 	private:
 		static const std::string ICON_ID_NORMAL[MotionCtl_Num];

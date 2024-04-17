@@ -8,6 +8,7 @@
 #include "gfx/struct/MeshFactory.h"
 #include "gfx/struct/Geometry.h"
 #include "gfx/struct/Geometry2D.h"
+#include "gfx/debug/GDebugger.h"
 
 #include "physics/PhysicsScene.h"
 #include "physics/PhysicsActor.h"
@@ -153,9 +154,6 @@ namespace pio
 		onDrawVisionCtl(ts);
 		onDrawMotionCtl(ts);
 		onDrawMotionView(ts);
-
-		DrawParam param{ ts, m_motionUBSet };
-		m_gizmoTransform->onDraw(param);
 	}
 
 	void MotionControlLayer::onUpdateUI(const Timestep &ts)
@@ -421,6 +419,27 @@ namespace pio
 
 	void MotionControlLayer::onDrawMotionCtl(const Timestep &ts)
 	{
+		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
+		Camera &camera = camComp.Camera;
+		const Viewport &vp = camera.getViewport();
+
+		CameraUD &cameraUD = m_motionCamUD;
+		Ref<UniformBufferSet> ubSet = m_motionUBSet;
+		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
+
+		cameraUD.ViewMat = camera.getViewMat();
+		cameraUD.PrjMat = camera.getPrjMat();
+		cameraUD.OrthoMat = camera.getOrthoMat();
+		cameraUD.CameraPosition = camera.getCameraPos();
+		cameraUD.FrustumFar = camera.far();
+		cameraUD.serialize();
+
+		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
+		{
+			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
+			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
+		});
+
 		switch (MotionController::GetMode())
 		{
 			case MotionCtl_Move:
@@ -436,6 +455,20 @@ namespace pio
 			default:
 				break;
 		}
+
+		DrawParam param{ ts, ubSet };
+		m_gizmoTransform->onDraw(param);
+
+		if (GDebugger::Get()->any(GDebug_Line))
+		{
+			Renderer::SubmitRC([ubSet]() mutable
+			{
+				GDebugger::Get()->flush();
+				AssetHandle h = GDebugger::Get()->getLineMesh()->getHandle();
+				RenderState state{ Blend::Disable(), DepthTest::Disable(), CullFace::Disable(), StencilTest::Disable() };
+				Renderer::RenderLine(h, ubSet, glm::mat4(1.f), state);
+			});
+		}
 	}
 
 	void MotionControlLayer::onDrawMotionView(const Timestep &ts)
@@ -449,12 +482,7 @@ namespace pio
 			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
 		});
 
-		RenderState s;
-		s.Blend = Blend::Disable();
-		s.DepthTest = DepthTest::Always();
-		s.Cull = CullFace::Common();
-		s.Stencil.Enable = false;
-
+		RenderState s{ Blend::Disable(), DepthTest::Always(), CullFace::Common(), StencilTest::Disable() };
 		for (uint8_t i = 0; i < MotionCtl_Num; i++)
 		{
 			if (!m_views[i]) continue;
@@ -532,26 +560,7 @@ namespace pio
 
 	void MotionControlLayer::onDrawMoveCtl(const glm::vec3 &ctlPos)
 	{
-		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
-		Camera &camera = camComp.Camera;
-		const Viewport &vp = camera.getViewport();
-
-		CameraUD &cameraUD = m_motionCamUD;
 		Ref<UniformBufferSet> ubSet = m_motionUBSet;
-		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
-
-		cameraUD.ViewMat = camera.getViewMat();
-		cameraUD.PrjMat = camera.getPrjMat();
-		cameraUD.OrthoMat = camera.getOrthoMat();
-		cameraUD.CameraPosition = camera.getCameraPos();
-		cameraUD.FrustumFar = camera.far();
-		cameraUD.serialize();
-
-		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
-		{
-			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
-			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
-		});
 
 		auto drawFunc = [ubSet](C3dUIComponent &_meshComp, const glm::vec3 _pos) mutable
 		{
@@ -599,26 +608,7 @@ namespace pio
 
 	void MotionControlLayer::onDrawRotationCtl(const glm::vec3 &ctlPos)
 	{
-		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
-		Camera &camera = camComp.Camera;
-		const Viewport &vp = camera.getViewport();
-
-		CameraUD &cameraUD = m_motionCamUD;
 		Ref<UniformBufferSet> ubSet = m_motionUBSet;
-		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
-
-		cameraUD.ViewMat = camera.getViewMat();
-		cameraUD.PrjMat = camera.getPrjMat();
-		cameraUD.OrthoMat = camera.getOrthoMat();
-		cameraUD.CameraPosition = camera.getCameraPos();
-		cameraUD.FrustumFar = camera.far();
-		cameraUD.serialize();
-
-		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
-		{
-			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
-			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
-		});
 
 		auto drawFunc = [ctlPos, ubSet](C3dUIComponent &meshComp)
 		{
@@ -786,27 +776,27 @@ namespace pio
 
 	bool MotionControlLayer::onHandleClick(const glm::vec2 &winCursor)
 	{		
-		glm::vec2 screenCursor = winCursor - glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top);
-		if (m_viewIconsRect.contain(screenCursor.x, screenCursor.y))
+		glm::vec2 screenPt = winCursor - glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top);
+		if (m_viewIconsRect.contain(screenPt.x, screenPt.y) && onHandleIconClick(screenPt))
 		{
-			if (onHandleIconClick(screenCursor)) 
-			{ 			
-				return true; 
-			}
+			return true;
 		}
 
-		if (onHandleSpriteClick(winCursor))
+		if (onHandleSpriteClick(screenPt))
 		{
 			if (MotionController::GetObj3D()) { MotionController::GetObj3D()->setSelection(false); }
 			MotionController::SelectObj3D(nullptr);
 			return true;
 		}
 
-		// ---------- Test ----------
-		onHandleGizmoClick(winCursor);
-		// --------------------------
+		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
+		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+		GDebugger::Get()->drawLine(ray);
 
-		if (onHandleObject3dClick(winCursor))
+		// In Test 
+		onHandleGizmoClick(ray);
+
+		if (onHandleObject3dClick(ray))
 		{		
 			MotionController::SelectSprite(nullptr);
 			return true;
@@ -815,11 +805,11 @@ namespace pio
 		return false;
 	}
 
-	bool MotionControlLayer::onHandleIconClick(const glm::vec2 &cursor)
+	bool MotionControlLayer::onHandleIconClick(const glm::vec2 &screenPt)
 	{
 		for (uint8_t i = 0; i < MotionCtl_Num; i++)
 		{
-			if (m_views[i] && m_views[i]->contains(cursor) && !MotionController::bSelectedView(m_views[i]))
+			if (m_views[i] && m_views[i]->contains(screenPt) && !MotionController::bSelectedView(m_views[i]))
 			{
 				if (MotionController::bSelectedView())
 				{
@@ -863,12 +853,30 @@ namespace pio
 		}
 	}
 
-	bool MotionControlLayer::onHandleObject3dClick(const glm::vec2 &winCursor)
+	bool MotionControlLayer::onHandleSpriteClick(const glm::vec2 &screenPt)
 	{
-		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
-		Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+		EntityView view = s_registry->view<SpriteComponent>();
+		auto it = view.begin();
+		while (it != view.end())
+		{
+			Ref<Entity> ent = it->second;
+			SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
+			bool consume = Math::Contains(screenPt, spriteComp.Rect);
+			if (consume)
+			{
+				MotionController::SelectSprite(ent);
+				return consume;
+			}
+			it++;
+		}
+		MotionController::SelectSprite(nullptr);
+		return false;
+	}
+
+	bool MotionControlLayer::onHandleObject3dClick(const Ray &ray)
+	{
 		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(r);
+		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(ray);
 		if (MotionController::bObj3dSelectd()) { MotionController::GetObj3D()->setSelection(false); }
 		Ref<Entity> select3d;
 		bool consume = result.Hit && result.Actor->getEnt(select3d);
@@ -885,32 +893,9 @@ namespace pio
 		return consume;
 	}
 
-	bool MotionControlLayer::onHandleSpriteClick(const glm::vec2 &winCursor)
+	bool MotionControlLayer::onHandleGizmoClick(const Ray &ray)
 	{
-		glm::vec2 vpCursor = winCursor - glm::vec2(m_layoutParam.Position.Left, m_layoutParam.Position.Top);
-		EntityView view = s_registry->view<SpriteComponent>();
-		auto it = view.begin();
-		while (it != view.end())
-		{
-			Ref<Entity> ent = it->second;
-			SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
-			bool consume = Math::Contains(vpCursor, spriteComp.Rect);
-			if (consume)
-			{
-				MotionController::SelectSprite(ent);
-				return consume;
-			}
-			it++;
-		}
-		MotionController::SelectSprite(nullptr);
-		return false;
-	}
-
-	bool MotionControlLayer::onHandleGizmoClick(const glm::vec2 &winCursor)
-	{
-		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
-		Ray r = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-		HitQuery query(r);
+		HitQuery query(ray);
 		return m_gizmoTransform->onHit(query);
 	}
 }

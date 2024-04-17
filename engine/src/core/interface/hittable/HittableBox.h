@@ -29,7 +29,7 @@ namespace pio
 	private:
 		glm::vec3 m_len{ 1.f };
 		glm::vec3 m_points[8];
-		AABB m_aabb{};	
+		AABB m_originalAABB{}, m_AABB{};
 	};
 }
 

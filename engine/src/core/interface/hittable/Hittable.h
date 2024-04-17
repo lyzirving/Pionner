@@ -7,8 +7,8 @@ namespace pio
 {
 	struct HitQuery
 	{	
-		Ray  R{};
-		glm::vec3 Intersection{ 0.f };
+		Ray R{};
+		glm::vec3 HitPt{ 0.f };
 		bool Hit{ false };
 
 		HitQuery() {}

@@ -4,6 +4,7 @@
 #include "core/utils/Profiler.h"
 
 #include "gfx/struct/MaterialLibrary.h"
+#include "gfx/debug/GDebugger.h"
 
 #include "asset/AssetsManager.h"
 
@@ -171,6 +172,7 @@ namespace pio
 		// Initialize in render thread
 		m_graphics->init();
 		m_window->setVSync(true);
+		GDebugger::Init();
 	}
 
 	void Application::onRenderDestroy()
@@ -180,6 +182,9 @@ namespace pio
 		m_layerManager.popAll();
 
 		MaterialLibrary::Shutdown();
+
+		GDebugger::Shutdown();
+
 		// Destroy in render thread
 		AssetsManager::Shutdown();
 	}

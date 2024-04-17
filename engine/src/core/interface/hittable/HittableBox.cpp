@@ -1,12 +1,18 @@
 #include "HittableBox.h"
 
 #include "asset/AssetsManager.h"
+#include "core/math/Intersection.h"
 
 #include "gfx/rhi/VertexArray.h"
 #include "gfx/rhi/VertexBuffer.h"
 #include "gfx/rhi/IndexBuffer.h"
 
 #include "gfx/renderer/Renderer.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "HittableBox"
 
 namespace pio
 {
@@ -44,9 +50,16 @@ namespace pio
 		m_points[4] = glm::vec3(-0.5f * m_len.x, m_len.y, 0.5f * m_len.z);
 		m_points[5] = glm::vec3(0.5f * m_len.x, m_len.y, 0.5f * m_len.z);
 		m_points[6] = glm::vec3(0.5f * m_len.x, m_len.y, -0.5f * m_len.z);
-		m_points[7] = glm::vec3(-0.5f * m_len.x, m_len.y, -0.5f * m_len.z);				
+		m_points[7] = glm::vec3(-0.5f * m_len.x, m_len.y, -0.5f * m_len.z);	
 
-		m_outline = AssetsManager::CreateRuntimeAssets<LineMesh>(std::string("HittaleBox") + std::to_string(g_HittableBoxCnt++));
+		// save original AABB
+		for (uint32_t i = 0; i < 8; i++)
+		{
+			m_originalAABB.Min = glm::min(m_originalAABB.Min, m_points[i]);
+			m_originalAABB.Max = glm::max(m_originalAABB.Max, m_points[i]);
+		}
+
+		m_outline = AssetsManager::CreateRuntimeAssets<LineMesh>(std::string("HittaleBox-") + std::to_string(g_HittableBoxCnt++));
 		m_outline->Vertex.reserve(8);		
 		m_outline->Indices.reserve(2 * 12);
 
@@ -106,84 +119,12 @@ namespace pio
 
 		m_outline->VertexArray = VertexArray::Create();
 		m_outline->VertexArray->addVertexBuffer(m_outline->VertexBuffer);
-
-		updateAABB();
 	}
 
 	bool HittableBox::onHit(HitQuery &query)
 	{
 		updateAABB();
-		return false;
-	#if 0
-		const AABB &aabb = m_aabb;
-
-		const Ray &r = query.R;
-		float t{ -1.f };
-		glm::vec3 ptOnPlane{ 0.f };
-
-		if (!Math::IsZero(r.Dir.x))
-		{
-			//ray: P=O+D*t
-			if (r.Dir.x > 0)
-				t = (aabb.Min.x - r.Origin.x) / r.Dir.x;
-			else
-				t = (aabb.Max.x - r.Origin.x) / r.Dir.x;
-
-			if (t > 0.f)
-			{
-				ptOnPlane = r.Origin + t * r.Dir;
-				if (aabb.Min.y < ptOnPlane.y && ptOnPlane.y < aabb.Max.y &&
-					aabb.Min.z < ptOnPlane.z && ptOnPlane.z < aabb.Max.z)
-				{
-					query.Hit = true;
-					query.Intersection = ptOnPlane;
-					return true;
-				}
-			}
-		}
-
-		if (!Math::IsZero(r.Dir.y))
-		{
-			if (r.Dir.y > 0)
-				t = (aabb.Min.y - r.Origin.y) / r.Dir.y;
-			else
-				t = (aabb.Max.y - r.Origin.y) / r.Dir.y;
-
-			if (t > 0.f)
-			{
-				ptOnPlane = r.Origin + t * r.Dir;
-				if (aabb.Min.z < ptOnPlane.z && ptOnPlane.z < aabb.Max.z &&
-					aabb.Min.x < ptOnPlane.x && ptOnPlane.x < aabb.Max.x)
-				{
-					query.Hit = true;
-					query.Intersection = ptOnPlane;
-					return true;
-				}
-			}
-		}
-
-		if (!Math::IsZero(r.Dir.z))
-		{
-			if (r.Dir.z > 0)
-				t = (aabb.Min.z - r.Origin.z) / r.Dir.z;
-			else
-				t = (aabb.Max.z - r.Origin.z) / r.Dir.z;
-
-			if (t > 0.f)
-			{
-				ptOnPlane = r.Origin + t * r.Dir;
-				if (aabb.Min.x < ptOnPlane.x && ptOnPlane.x < aabb.Max.x &&
-					aabb.Min.y < ptOnPlane.y && ptOnPlane.y < aabb.Max.y)
-				{
-					query.Hit = true;
-					query.Intersection = ptOnPlane;
-					return true;
-				}
-			}
-		}
-
-		return false;
-	#endif // 0
+		return Intersection(query, m_AABB);
 	}
 
 	void HittableBox::onDraw(const DrawParam &param)
@@ -201,12 +142,10 @@ namespace pio
 
 	void HittableBox::updateAABB()
 	{
-		m_aabb.reset();
-		for (uint32_t i = 0; i < 8; i++)
-		{
-			glm::vec3 p = m_transform.mat() * m_localTransform.mat() * glm::vec4(m_points[i], 1.f);
-			m_aabb.Min = glm::min(m_aabb.Min, p);
-			m_aabb.Max = glm::max(m_aabb.Max, p);
-		}
+		glm::mat4 mat = m_transform.mat() * m_localTransform.mat();
+		glm::vec3 p0 = mat * glm::vec4(m_originalAABB.Min, 1.f);
+		glm::vec3 p1 = mat * glm::vec4(m_originalAABB.Max, 1.f);
+		m_AABB.Min = glm::min(p0, p1);
+		m_AABB.Max = glm::max(p0, p1);
 	}
 }

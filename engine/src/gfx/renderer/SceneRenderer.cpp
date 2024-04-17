@@ -15,8 +15,6 @@
 #include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/RenderPass.h"
 
-#include "gfx/debug/GDebugger.h"
-
 #include "core/math/Transform.h"
 #include "core/utils/Profiler.h"
 
@@ -565,15 +563,6 @@ namespace pio
 				auto &dc = it.second;
 				Renderer::RenderSubmesh(dc.Mesh, dc.SubmeshIndex, dc.MaterialTb, sp, ubs, dc.ModelMat, dc.State);
 			}
-
-			// ---------- draw debug mesh -------------			
-			GDebugger::Get()->flush();
-			if (GDebugger::Get()->any(GDebugType::Line))
-			{
-				AssetHandle h = GDebugger::Get()->getLineMesh()->getHandle();
-				Renderer::RenderLine(h, ubs, glm::mat4(1.f), RenderState());
-			}
-			// ----------------------------------------
 
 			Renderer::EndRenderPass(fp);
 		});

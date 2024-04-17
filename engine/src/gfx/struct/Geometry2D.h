@@ -17,7 +17,7 @@ namespace pio
 		Geometry2D(const std::string &name) : Asset(name) {}
 		virtual ~Geometry2D() = default;
 
-		virtual void clear() { Size = Capacity = 0; };
+		virtual void clear() { Size = 0; };
 
 	public:
 		uint32_t Size{ 0 };
