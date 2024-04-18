@@ -68,7 +68,7 @@ namespace pio
 	}
 
 	Camera::CameraImpl::CameraImpl(const CameraImpl &rhs) : m_camPos(rhs.m_camPos), m_camPosSpherical(rhs.m_camPosSpherical)
-		, m_lookAt(rhs.m_lookAt), m_camRight(rhs.m_camRight), m_camUp(rhs.m_camUp)
+		, m_lookAt(rhs.m_lookAt), m_camRight(rhs.m_camRight), m_camUp(rhs.m_camUp), m_camFront(rhs.m_camFront)
 		, m_viewMat(rhs.m_viewMat)
 	{
 	}
@@ -82,6 +82,7 @@ namespace pio
 			m_lookAt = rhs.m_lookAt;
 			m_camRight = rhs.m_camRight;
 			m_camUp = rhs.m_camUp;
+			m_camFront = rhs.m_camFront;
 			m_viewMat = rhs.m_viewMat;
 		}
 		return *this;
@@ -166,6 +167,7 @@ namespace pio
 		// compute the right and up vector by view direction and world up
 		m_camRight = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
 		m_camUp = glm::normalize(glm::cross(m_camRight, viewDir));
+		m_camFront = -viewDir;
 
 		m_viewMat = glm::lookAt(m_camPos, m_lookAt, m_camUp);
 	}

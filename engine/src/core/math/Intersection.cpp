@@ -9,7 +9,6 @@ namespace pio
 {
 	bool Intersection(HitQuery &query, const AABB &aabb)
 	{
-	#if 0
 		float t{ -1.f };
 		const Ray &ray = query.R;
 		glm::vec3 ptOnPlane{ 0.f };
@@ -74,7 +73,6 @@ namespace pio
 				}
 			}
 		}
-	#endif // 0
 		return false;
 	}
 }

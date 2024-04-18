@@ -790,8 +790,7 @@ namespace pio
 		}
 
 		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
-		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
-		GDebugger::Get()->drawLine(ray);
+		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);		
 
 		// In Test 
 		onHandleGizmoClick(ray);

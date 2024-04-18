@@ -1,6 +1,8 @@
 #include "Ray.h"
 
 #include "gfx/struct/Camera.h"
+#include "gfx/renderer/Renderer.h"
+#include "gfx/debug/GDebugger.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -43,10 +45,16 @@ namespace pio
 		glm::mat3 invRot = glm::inverse(rotMat);
 		camPt = invRot * camPt;
 		camPt += camPos;
-
-		// set the pt in frustum for GDebuger visualization
-		camPt.z -= near;
-		camPos.z -= near;
+		
+		if (Renderer::GetConfig().Debugger.Raycast)
+		{
+			// adjust the point in frustum for GDebuger visualization
+			glm::vec3 pos = camPos;
+			glm::vec3 dstPos = camPt;
+			pos = pos - camera.getFrontAxis() * near;
+			dstPos = dstPos - camera.getFrontAxis() * near;
+			GDebugger::Get()->drawLine(Ray(pos, glm::normalize(dstPos - pos)));
+		}
 
 		return Ray(camPos, glm::normalize(camPt - camPos));
 	}

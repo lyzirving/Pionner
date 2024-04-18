@@ -80,20 +80,22 @@ namespace pio
 
 	bool GizmoTransform::onHit(HitQuery &query)
 	{
-		/*if (m_shape[EditorAxis_X]->onHit(query) ||
-			m_shape[EditorAxis_Y]->onHit(query) ||
-			m_shape[EditorAxis_Z]->onHit(query))
+		if (m_shape[EditorAxis_X]->onHit(query))
 		{
-			LOGD("GizmoTransform clicked");
+			LOGD("GizmoTransform X axis hit");
 			return true;
 		}
-		return false;*/
-		bool hit = m_shape[EditorAxis_X]->onHit(query);
-		if(!hit)
-			hit = m_shape[EditorAxis_Y]->onHit(query);
-		if (!hit)
-			m_shape[EditorAxis_Z]->onHit(query);
-		return hit;
+		if (m_shape[EditorAxis_Y]->onHit(query))
+		{
+			LOGD("GizmoTransform Y axis hit");
+			return true;
+		}
+		if (m_shape[EditorAxis_Z]->onHit(query))
+		{
+			LOGD("GizmoTransform Z axis hit");
+			return true;
+		}
+		return false;		
 	}
 
 	void GizmoTransform::setTranslation(const glm::vec3 &translation)

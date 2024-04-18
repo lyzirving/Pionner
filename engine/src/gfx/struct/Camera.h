@@ -73,6 +73,7 @@ namespace pio
 			glm::vec3 m_camRight{ 0.f };
 			// camera's +y
 			glm::vec3 m_camUp{ 0.f };
+			glm::vec3 m_camFront{ 0.f };
 			glm::mat4 m_viewMat{ 1.f };
 		};
 		// -----------------------------------------------------------------------
@@ -103,37 +104,41 @@ namespace pio
 		static glm::mat4 GetViewportMat(const Viewport &vp);
 
 	public:
-		inline void setVisible(bool b) { m_visible = b; }
-		inline void setPosition(float theta, float phi, float r) { m_camImpl.setPosition(theta, phi, r); }
-		inline void setPosition(const SphereCoord &position) { m_camImpl.setPosition(position); }
-		inline void setPosition(const glm::vec3 &pos) { m_camImpl.setPosition(pos); }
-		inline void setLookAt(const glm::vec3 &lookAt) { m_camImpl.setLookAt(lookAt); }
+		void setVisible(bool b) { m_visible = b; }
+		void setPosition(float theta, float phi, float r) { m_camImpl.setPosition(theta, phi, r); }
+		void setPosition(const SphereCoord &position) { m_camImpl.setPosition(position); }
+		void setPosition(const glm::vec3 &pos) { m_camImpl.setPosition(pos); }
+		void setLookAt(const glm::vec3 &lookAt) { m_camImpl.setLookAt(lookAt); }
 
-		inline void setFov(float fov) { m_frustum.setFov(fov); }
-		inline void setAspect(float aspect) { m_frustum.setAspect(aspect); }
-		inline void setNearFar(float near, float far) { m_frustum.setNearFar(near, far); }
-		inline void setOrtho(float l, float r, float b, float t) { m_frustum.setOrtho(l, r, b, t); }
-		inline void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) { m_viewport = Viewport{ x, y, w, h }; }
+		void setFov(float fov) { m_frustum.setFov(fov); }
+		void setAspect(float aspect) { m_frustum.setAspect(aspect); }
+		void setNearFar(float near, float far) { m_frustum.setNearFar(near, far); }
+		void setOrtho(float l, float r, float b, float t) { m_frustum.setOrtho(l, r, b, t); }
+		void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) { m_viewport = Viewport{ x, y, w, h }; }
 
-		inline CameraId getCameraId() const { return m_id; }
-		inline bool isVisible() const { return m_visible; }
+		CameraId getCameraId() const { return m_id; }
+		bool     isVisible()   const { return m_visible; }
 
-		inline float near() const { return m_frustum.near(); }
-		inline float far() const { return m_frustum.far(); }
-		inline float fov() const { return m_frustum.fov(); }
+		float near() const { return m_frustum.near(); }
+		float far() const { return m_frustum.far(); }
+		float fov() const { return m_frustum.fov(); }
 
-		inline float top() const { return m_frustum.top(); }
-		inline float bottom() const { return m_frustum.bottom(); }
-		inline float right() const { return m_frustum.right(); }
-		inline float left() const { return m_frustum.left(); }
+		float top() const { return m_frustum.top(); }
+		float bottom() const { return m_frustum.bottom(); }
+		float right() const { return m_frustum.right(); }
+		float left() const { return m_frustum.left(); }
 
-		inline const glm::vec3 &getCameraPos() const { return m_camImpl.getCamPos(); }
-		inline const SphereCoord &getCameraPosSC() const { return m_camImpl.getCamPosSC(); }
+		const glm::vec3 &getCameraPos() const { return m_camImpl.getCamPos(); }
+		const SphereCoord &getCameraPosSC() const { return m_camImpl.getCamPosSC(); }
 
-		inline const glm::mat4 &getViewMat() const { return m_camImpl.getViewMat(); }
-		inline const glm::mat4 &getPrjMat() const { return m_frustum.getPerspectMat(); }
-		inline const glm::mat4 &getOrthoMat() const { return m_frustum.getOrthoMat(); }
-		inline const Viewport &getViewport() const { return m_viewport; }
+		const glm::mat4 &getViewMat() const { return m_camImpl.getViewMat(); }
+		const glm::mat4 &getPrjMat() const { return m_frustum.getPerspectMat(); }
+		const glm::mat4 &getOrthoMat() const { return m_frustum.getOrthoMat(); }
+		const Viewport  &getViewport() const { return m_viewport; }
+
+		const glm::vec3 &getRightAxis() const { return m_camImpl.m_camRight; }
+		const glm::vec3 &getUpAxis()    const    { return m_camImpl.m_camUp; }
+		const glm::vec3 &getFrontAxis() const { return m_camImpl.m_camFront; }
 
 	protected:
 		bool m_visible{ true };
