@@ -9,7 +9,8 @@ namespace pio
 	{	
 		Ray R{};
 		glm::vec3 HitPt{ 0.f };
-		bool Hit{ false };
+		void *HitActor{ nullptr };
+		bool  Hit{ false };
 
 		HitQuery() {}
 		HitQuery(const Ray &r) : R(r) {}

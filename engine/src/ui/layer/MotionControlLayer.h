@@ -6,6 +6,7 @@
 #include "ui/MotionController.h"
 #include "gfx/struct/Camera.h"
 #include "physics/PhysicsDef.h"
+#include "window/event/EventHandler.h"
 
 namespace pio
 {
@@ -23,7 +24,7 @@ namespace pio
 	struct PointLightComponent;
 	struct TransformComponent;
 
-	class MotionControlLayer : public Layer
+	class MotionControlLayer : public Layer, public EventHandler
 	{
 	public:
 		MotionControlLayer(const WindowLayoutParams &param);
@@ -36,11 +37,12 @@ namespace pio
 		virtual void onUpdateUI(const Timestep &ts) override;
 		virtual void onWindowSizeChange(uint32_t width, uint32_t height) override;
 
+		virtual bool onMouseButtonPressed(Event &event) override;
+		virtual bool onMouseButtonReleased(Event &event) override;
+		virtual bool onMouseMoved(Event &event) override;
+		virtual bool onMouseScrolled(Event &event) override;
+
 	private:
-		bool onMouseButtonPressed(Event &event);
-		bool onMouseMoved(Event &event);
-		bool onMouseButtonReleased(Event &event);
-		bool onMouseScrolled(Event &event);
 
 		void onDrawVisionCtl(const Timestep &ts);
 		void onDrawMotionCtl(const Timestep &ts);
@@ -62,7 +64,6 @@ namespace pio
 		bool onHandleIconClick(const glm::vec2 &screenPt);
 		bool onHandleSpriteClick(const glm::vec2 &screenPt);
 		bool onHandleObject3dClick(const Ray &ray);
-		bool onHandleGizmoClick(const Ray &ray);
 
 	private:
 		static const std::string ICON_ID_NORMAL[MotionCtl_Num];

@@ -5,10 +5,13 @@
 #include "gfx/struct/Mesh.h"
 #include "gfx/struct/Geometry.h"
 #include "gfx/struct/MeshFactory.h"
-
 #include "gfx/renderer/Renderer.h"
 
+#include "scene/Registry.h"
+#include "scene/Components.h"
+
 #include "core/interface/hittable/HittableBox.h"
+#include "window/event/MouseEvent.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -22,6 +25,7 @@ namespace pio
 	GizmoTransform::GizmoTransform() : EditorUI(), Hittable()
 	{
 		onCreateMesh();
+		m_mainCameraEnt = Registry::Get()->mainCameraEnt();
 	}
 
 	void GizmoTransform::onCreateMesh()
@@ -66,15 +70,15 @@ namespace pio
 			});
 		};
 
-		drawFunc(m_arrow, m_shape[EditorAxis_X], glm::vec4(1.f, 0.f, 0.f, 1.f));
-		drawFunc(m_arrow, m_shape[EditorAxis_Y], glm::vec4(0.f, 1.f, 0.f, 1.f));
-		drawFunc(m_arrow, m_shape[EditorAxis_Z], glm::vec4(0.f, 0.f, 1.f, 1.f));
+		drawFunc(m_arrow, m_shape[EditorAxis_X], m_selectedAxis == EditorAxis_X ? glm::vec4(1.f, 1.f, 1.f, 1.f) : glm::vec4(1.f, 0.f, 0.f, 1.f));
+		drawFunc(m_arrow, m_shape[EditorAxis_Y], m_selectedAxis == EditorAxis_Y ? glm::vec4(1.f, 1.f, 1.f, 1.f) : glm::vec4(0.f, 1.f, 0.f, 1.f));
+		drawFunc(m_arrow, m_shape[EditorAxis_Z], m_selectedAxis == EditorAxis_Z ? glm::vec4(1.f, 1.f, 1.f, 1.f) : glm::vec4(0.f, 0.f, 1.f, 1.f));
 
-		// draw outline of each gizmo
-		for (uint32_t i = 0; i < EditorAxis_Cnt; i++)
+		if (bDrawOutline())
 		{
-			if (m_shape[i])
-				m_shape[i]->onDraw(param);
+			for (uint32_t i = 0; i < EditorAxis_Num; i++)
+				if (m_shape[i])
+					m_shape[i]->onDraw(param);
 		}
 	}
 
@@ -82,28 +86,64 @@ namespace pio
 	{
 		if (m_shape[EditorAxis_X]->onHit(query))
 		{
-			LOGD("GizmoTransform X axis hit");
+			//LOGD("GizmoTransform X axis hit");
+			query.HitActor = m_shape[EditorAxis_X].get();
+			m_selectedAxis = EditorAxis_X;
 			return true;
 		}
 		if (m_shape[EditorAxis_Y]->onHit(query))
 		{
-			LOGD("GizmoTransform Y axis hit");
+			//LOGD("GizmoTransform Y axis hit");
+			query.HitActor = m_shape[EditorAxis_Y].get();
+			m_selectedAxis = EditorAxis_Y;
 			return true;
 		}
 		if (m_shape[EditorAxis_Z]->onHit(query))
 		{
-			LOGD("GizmoTransform Z axis hit");
+			//LOGD("GizmoTransform Z axis hit");
+			query.HitActor = m_shape[EditorAxis_Z].get();
+			m_selectedAxis = EditorAxis_Z;
 			return true;
 		}
+		m_selectedAxis = EditorAxis_Num;
 		return false;		
 	}
 
 	void GizmoTransform::setTranslation(const glm::vec3 &translation)
 	{
-		for (uint32_t i = 0; i < EditorAxis_Cnt; i++)
+		for (uint32_t i = 0; i < EditorAxis_Num; i++)
 		{
 			if (m_shape[i])
 				m_shape[i]->setTranslation(translation);
 		}
+	}
+
+	bool GizmoTransform::onMouseButtonPressed(Event &event)
+	{
+		return false;
+	}
+
+	bool GizmoTransform::onMouseButtonReleased(Event &event)
+	{
+		return false;
+	}
+
+	bool GizmoTransform::onMouseMoved(Event &event)
+	{
+		auto *e = event.as<MouseMovedEvent>();
+		glm::vec2 winCursor{ e->getX(), e->getY() };
+		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
+		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+		HitQuery querty{ray};
+		if (onHit(querty))
+		{
+
+		}
+		return false;
+	}
+
+	bool GizmoTransform::onMouseScrolled(Event &event)
+	{
+		return false;
 	}
 }
