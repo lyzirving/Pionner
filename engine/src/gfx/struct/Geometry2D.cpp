@@ -7,6 +7,13 @@
 
 namespace pio
 {
+	void LineSegment::clear()
+	{
+		Vertex.clear();
+		Indices.clear();
+		Geometry2D::clear();
+	}
+
 	void LineMesh::clear()
 	{
 		Vertex.clear();
@@ -20,6 +27,9 @@ namespace pio
 		Indices.clear();
 		Geometry2D::clear();
 	}
+
+	template<>
+	bool Asset::is<LineSegment>() const { return this->getAssetType() == AssetType::LineSegment; }
 
 	template<>
 	bool Asset::is<LineMesh>() const { return this->getAssetType() == AssetType::LineMesh; }

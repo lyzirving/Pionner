@@ -552,6 +552,39 @@ namespace pio
 		shader->bind(false);
 	}
 
+	void GLRenderAPI::renderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
+	{
+		Ref<LineSegment> lineMesh = AssetsManager::GetRuntimeAsset<LineSegment>(meshHandle);
+		PIO_ASSERT_RETURN(lineMesh.use_count() != 0, "renderLineSegment: LineSegment is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::LineSegment);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderLineSegment: LineSegment shader is invalid");
+
+		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
+
+		compareAndUpdateRenderState(m_globalState, state);
+
+		shader->bind(true);
+
+		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
+		cameraUB->bind();
+
+		shader->setMat4("u_modelMat", trans);
+		shader->setVec4("u_color", lineMesh->Color);
+
+		lineMesh->VertexArray->bind();
+		lineMesh->IndexBuffer->bind();
+
+		glDrawElements(GL_LINES, lineMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+		GLHelper::CheckError("renderLineSegment fail!!");
+
+		lineMesh->IndexBuffer->unbind();
+		lineMesh->VertexArray->unbind();
+
+		cameraUB->unbind();
+
+		shader->bind(false);
+	}
+
 	void GLRenderAPI::renderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
 	{
 		Ref<LineMesh> lineMesh = AssetsManager::GetRuntimeAsset<LineMesh>(meshHandle);

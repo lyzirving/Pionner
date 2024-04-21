@@ -142,6 +142,11 @@ namespace pio
 
 	void HittableBox::updateAABB()
 	{
+		if (!bTransformChange())
+			return;
+
+		invalidTransform(false);
+
 		glm::mat4 mat = m_transform.mat() * m_localTransform.mat();
 		glm::vec3 p0 = mat * glm::vec4(m_originalAABB.Min, 1.f);
 		glm::vec3 p1 = mat * glm::vec4(m_originalAABB.Max, 1.f);

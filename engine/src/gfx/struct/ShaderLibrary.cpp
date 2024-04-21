@@ -80,7 +80,12 @@ namespace pio
 			{
 				m_shaders[index] = Shader::Create("PointLightEffect_Deferred", "quad2d", "pointLight_effect_deferred");
 				return m_shaders[index];
-			}			
+			}
+			case ShaderType::LineSegment:
+			{
+				m_shaders[index] = Shader::Create("LineSegment", "line_segment", "line_segment");
+				return m_shaders[index];
+			}
 			case ShaderType::Color_Line:
 			{
 				m_shaders[index] = Shader::Create("ColorLine", "color_line", "color_line");

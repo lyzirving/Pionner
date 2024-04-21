@@ -1,20 +1,20 @@
-#ifndef __PIONNER_UI_EDITOR_GIZMO_TRANSFORM_H__
-#define __PIONNER_UI_EDITOR_GIZMO_TRANSFORM_H__
+#ifndef __PIONNER_UI_EDITOR_GIZMO_ROTATOR_H__
+#define __PIONNER_UI_EDITOR_GIZMO_ROTATOR_H__
 
 #include "EditorUI.h"
 #include "core/func/hittable/HittableShape.h"
 
 namespace pio
 {
-	class StaticMesh;
-	class HittableShape;
+	class LineSegment;
 	class Entity;
+	class StaticMesh;
 
-	class GizmoTransform : public EditorUI, public Hittable
+	class GizmoRotator : public EditorUI, public Hittable
 	{
 	public:
-		GizmoTransform();
-		~GizmoTransform() = default;
+		GizmoRotator();
+		~GizmoRotator() = default;
 
 		virtual void onCreateMesh() override;
 		virtual void onDraw(const DrawParam &param) override;
@@ -26,9 +26,14 @@ namespace pio
 		virtual bool onMouseScrolled(Event &event) override;
 
 		void setTranslation(float x, float y, float z);
-	
+
 	private:
-		Ref<StaticMesh>    m_arrow;
+		void createHalfCircle();
+
+	private:
+		float m_radius{ 0.5f }, m_ringWidth{ 0.015f };
+		Ref<LineSegment>   m_halfCircle;
+		Ref<StaticMesh>    m_halfTorus;
 		Ref<HittableShape> m_shape[EditorAxis_Num];
 		Ref<Entity>        m_cameraEnt;
 		EditorAxis         m_selectedAxis{ EditorAxis_Num };

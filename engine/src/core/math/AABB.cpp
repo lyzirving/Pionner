@@ -7,6 +7,7 @@
 #include "gfx/rhi/IndexBuffer.h"
 
 #include "gfx/renderer/Renderer.h"
+#include "gfx/struct/Geometry2D.h"
 
 static uint32_t g_AABBCnt{ 0 };
 

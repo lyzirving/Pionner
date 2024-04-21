@@ -710,10 +710,10 @@ namespace pio
 		return sphere;
 	}
 
-	Ref<MeshSource> MeshFactory::CreateTorus(float radius, float ringWidth, const glm::vec3 &color, uint32_t itrCnt, uint32_t ringItrCnt)
+	Ref<MeshSource> MeshFactory::CreateTorus(float radius, float ringWidth, const glm::vec3 &color, uint32_t itrCnt, uint32_t ringItrCnt, bool half)
 	{
 		std::string name = std::string("Torus") + std::to_string(s_torusNum++);
-		Ref<Torus> torus = AssetsManager::CreateRuntimeAssets<Torus>(name);
+		Ref<Torus> torus = AssetsManager::CreateRuntimeAssets<Torus>(name, half);
 		torus->m_radius = radius;
 		torus->m_ringRadius = ringWidth;
 		torus->m_itrCnt = itrCnt;

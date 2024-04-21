@@ -14,4 +14,8 @@ namespace pio
 		m_N = glm::normalize(glm::cross(edge1, edge2));
 		m_D = -glm::dot(m_N, p0);
 	}
+
+	Plane::Plane(const glm::vec4 &abcd) : m_N(glm::normalize(glm::vec3(abcd))), m_D(abcd.w)
+	{
+	}
 }

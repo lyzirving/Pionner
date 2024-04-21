@@ -1,7 +1,7 @@
 #ifndef __PIONNER_CORE_MATH_AABB_H__
 #define __PIONNER_CORE_MATH_AABB_H__
 
-#include "core/InterfaceDef.h"
+#include "core/func/Drawable.h"
 
 namespace pio
 {

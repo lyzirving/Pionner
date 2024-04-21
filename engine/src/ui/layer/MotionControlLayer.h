@@ -19,6 +19,7 @@ namespace pio
 	class UiPointLight;
 	class PhysicsScene;
 	class GizmoTransform;
+	class GizmoRotator;
 	class Ray;
 	struct DirectionalLightComponent;
 	struct PointLightComponent;
@@ -90,6 +91,7 @@ namespace pio
 		Ref<PhysicsScene> m_motionCtlPhysx[MotionCtl_Num];
 
 		Ref<GizmoTransform> m_gizmoTransform;
+		Ref<GizmoRotator>   m_gizmoRotator;
 
 		Ref<View> m_views[MotionCtl_Num];
 		LayoutRect m_viewIconsRect;

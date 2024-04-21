@@ -20,6 +20,12 @@ namespace pio
 
 	constexpr static const char *ShadowModeNames[ShadowMode_Num] = { "Hard", "Soft", "Soft_2X", "Soft_4X" };
 
+	struct SimpleVertex
+	{
+		glm::vec3 Position{ 0.f };
+		glm::vec2 Texcoord{ 0.f };
+	};
+
 	struct Vertex
 	{
 		glm::vec3 Position{ 0.f };
@@ -57,7 +63,7 @@ namespace pio
 	struct QuadVertex
 	{
 		glm::vec3 Position{ 0.f };
-		glm::vec2 Texcoord{ 0.f, 0.f };
+		glm::vec2 Texcoord{ 0.f };
 
 		QuadVertex() {}
 		QuadVertex(const glm::vec2 &pos, const glm::vec2 &texcoord) : Position(glm::vec3(pos.x, pos.y, 0.f)), Texcoord(texcoord) {}

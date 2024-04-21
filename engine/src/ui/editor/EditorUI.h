@@ -2,7 +2,7 @@
 #define __PIONNER_UI_EDITOR_EDITOR_UI_H__
 
 #include "ui/UiDef.h"
-#include "core/InterfaceDef.h"
+#include "core/func/Drawable.h"
 #include "window/event/EventHandler.h"
 
 namespace pio
@@ -18,13 +18,16 @@ namespace pio
 		EditorUI() {}
 		virtual ~EditorUI() = default;
 
-		bool bDrawOutline() const { return m_drawOutline; }
+		bool bVisible() const { return m_bVisible; }
+		bool bShowOutline() const { return m_bShowOutline; }
 
-		void setDrawOutline(bool draw) { m_drawOutline = draw; }
+		void setVisible(bool val) { m_bVisible = val; }
+		void setShowOutline(bool draw) { m_bShowOutline = draw; }
 		void setLayoutParam(const WindowLayoutParams &param) { m_layoutParam = param; }
 
 	protected:
-		bool m_drawOutline{ false };
+		bool m_bVisible{ false };
+		bool m_bShowOutline{ false };
 		WindowLayoutParams m_layoutParam{};
 	};
 }

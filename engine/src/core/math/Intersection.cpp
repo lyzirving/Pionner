@@ -1,5 +1,9 @@
 #include "Intersection.h"
 
+#include "core/math/AABB.h"
+#include "core/math/Plane.h"
+#include "core/func/hittable/Hittable.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -72,6 +76,35 @@ namespace pio
 					return true;
 				}
 			}
+		}
+		return false;
+	}
+
+	bool Intersection(HitQuery &query, const Plane &plane)
+	{
+		const glm::vec3 &p0 = query.R.Origin;
+		const glm::vec3 &n0 = query.R.Dir;
+		const glm::vec3 &n1 = plane.getNormal();
+		float d = plane.getD();
+
+		if (plane.bOnPlane(p0))
+		{
+			query.Hit = true;
+			query.HitPt = p0;
+			return true;
+		}
+
+		float nDot = glm::dot(n0, n1);
+		// plane and ray are in parallel direction
+		if (Math::Equal(nDot, 0.f))
+			return false;
+
+		float t = -(glm::dot(p0, n1) + d) / nDot;
+		if (t >= 0.f)
+		{
+			query.Hit = true;
+			query.HitPt = query.R.at(t);
+			return true;
 		}
 		return false;
 	}

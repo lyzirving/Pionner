@@ -1,8 +1,7 @@
-#ifndef __PIONNER_CORE_INTERFACE_HITTABLE_HITTABLE_BOX_H__
-#define __PIONNER_CORE_INTERFACE_HITTABLE_HITTABLE_BOX_H__
+#ifndef __PIONNER_CORE_FUNC_HITTABLE_HITTABLE_BOX_H__
+#define __PIONNER_CORE_FUNC_HITTABLE_HITTABLE_BOX_H__
 
 #include "HittableShape.h"
-
 #include "core/math/AABB.h"
 
 namespace pio

@@ -14,6 +14,8 @@ namespace pio
 		Ray(const glm::vec3 &origin, const glm::vec3 &dir) : Origin(origin), Dir(dir) {}
 		~Ray() = default;
 
+		glm::vec3 at(float t) { return Origin + t * Dir; }
+
 	public:
 		/*
 		* @brief: Build a ray in world space by click on screen.

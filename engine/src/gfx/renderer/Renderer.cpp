@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Renderer.h"
 #include "Renderer.h"
+#include "Renderer.h"
 #include "RenderThread.h"
 
 #include "asset/AssetsManager.h"
@@ -185,6 +186,11 @@ namespace pio
 	void Renderer::RenderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<Skybox> &skybox, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
 	{
 		s_API->renderDistantLightingQuad_Deferred(meshHandle, skybox, uniformBufferSet, GBufferPass, shadowPass, state);
+	}
+
+	void Renderer::RenderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
+	{
+		s_API->renderLineSegment(meshHandle, uniformBufferSet, trans, state);
 	}
 
 	void Renderer::RenderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)

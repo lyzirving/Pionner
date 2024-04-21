@@ -212,7 +212,8 @@ namespace pio
 								   glm::vec3(m_radius + m_ringRadius, m_radius + m_ringRadius, m_ringRadius));
 		m_boundingBox = submesh.BoundingBox;
 
-		const float span = 360.f / float(m_itrCnt);		
+		const float scanningAngle = m_half ? 180.f : 360.f;
+		const float span = scanningAngle / float(m_itrCnt);
 		uint32_t index{ 0 };
 
 		auto __makeGeo = [&](float _angle0, float _angle1, uint32_t j) 
@@ -258,7 +259,7 @@ namespace pio
 		}
 
 		float angle0 = (m_itrCnt - 1) * span;
-		float angle1 = 360.f;
+		float angle1 = scanningAngle;
 		__makeGeo(angle0, angle1, m_itrCnt - 1);
 
 		submesh.VertexCount = m_vertices.size();

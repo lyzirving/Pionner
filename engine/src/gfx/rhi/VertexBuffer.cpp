@@ -41,7 +41,7 @@ namespace pio
 		VertexBufferElement tagent{ "Tangent", ShaderDataType::Float3, false };
 		VertexBufferElement binormal{ "Binormal", ShaderDataType::Float3, false };
 		VertexBufferElement texCoord{ "Texcoord", ShaderDataType::Float2, false };
-		VertexBufferLayout layout{ pos, normal, tagent, binormal, texCoord };
+		VertexBufferLayout  layout{ pos, normal, tagent, binormal, texCoord };
 		return layout;
 	}
 
@@ -50,7 +50,16 @@ namespace pio
 	{
 		VertexBufferElement weights{ "Weights", ShaderDataType::Float4, false };
 		VertexBufferElement boneInfoIndices{ "BoneInfoIndices", ShaderDataType::UInt4, false };
-		VertexBufferLayout layout{ weights, boneInfoIndices };
+		VertexBufferLayout  layout{ weights, boneInfoIndices };
+		return layout;
+	}
+
+	template<>
+	VertexBufferLayout VertexBuffer::To<SimpleVertex>()
+	{
+		VertexBufferElement pos{ "Position", ShaderDataType::Float3, false };
+		VertexBufferElement texcoord{ "Texcoord", ShaderDataType::Float2, false };
+		VertexBufferLayout  layout{ pos, texcoord };
 		return layout;
 	}
 
@@ -59,7 +68,7 @@ namespace pio
 	{
 		VertexBufferElement pos{ "Position", ShaderDataType::Float3, false };
 		VertexBufferElement color{ "Color", ShaderDataType::Float4, false };
-		VertexBufferLayout layout{ pos, color };
+		VertexBufferLayout  layout{ pos, color };
 		return layout;
 	}
 
@@ -68,7 +77,7 @@ namespace pio
 	{
 		VertexBufferElement pos{ "Position", ShaderDataType::Float3, false };
 		VertexBufferElement texcoord{ "Texcoord", ShaderDataType::Float2, false };
-		VertexBufferLayout layout{ pos, texcoord };
+		VertexBufferLayout  layout{ pos, texcoord };
 		return layout;
 	}
 }

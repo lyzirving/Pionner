@@ -1,5 +1,5 @@
-#ifndef __PIONNER_CORE_CORE_TYPE_H__
-#define __PIONNER_CORE_CORE_TYPE_H__
+#ifndef __PIONNER_CORE_BASE_TYPE_H__
+#define __PIONNER_CORE_BASE_TYPE_H__
 
 #include "core/math/MathLib.h"
 

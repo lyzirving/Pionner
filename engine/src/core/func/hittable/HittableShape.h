@@ -1,9 +1,9 @@
-#ifndef __PIONNER_CORE_INTERFACE_HITTABLE_HITTABLE_SHAPE_H__
-#define __PIONNER_CORE_INTERFACE_HITTABLE_HITTABLE_SHAPE_H__
+#ifndef __PIONNER_CORE_FUNC_HITTABLE_HITTABLE_SHAPE_H__
+#define __PIONNER_CORE_FUNC_HITTABLE_HITTABLE_SHAPE_H__
 
 #include "Hittable.h"
 
-#include "core/interface/Movable.h"
+#include "core/func/Movable.h"
 
 #include "gfx/struct/Geometry2D.h"
 #include "gfx/renderer/RenderData.h"
@@ -12,7 +12,7 @@ namespace pio
 {
 	enum class HitShapeType : uint8_t
 	{
-		None, Box
+		None, Box, FlatCircle
 	};
 
 	#define OVERRIDE_HITTABLE_SHAPE(type)  public:\

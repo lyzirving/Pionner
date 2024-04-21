@@ -98,6 +98,9 @@ namespace pio
 	VertexBufferLayout VertexBuffer::To<BoneInfluence>();
 
 	template<>
+	VertexBufferLayout VertexBuffer::To<SimpleVertex>();
+
+	template<>
 	VertexBufferLayout VertexBuffer::To<LineVertex>();
 
 	template<>

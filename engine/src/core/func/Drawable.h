@@ -1,5 +1,5 @@
-#ifndef __PIONNER_CORE_INTERFACE_DRAWABLE_H__
-#define __PIONNER_CORE_INTERFACE_DRAWABLE_H__
+#ifndef __PIONNER_CORE_FUNC_DRAWABLE_H__
+#define __PIONNER_CORE_FUNC_DRAWABLE_H__
 
 #include "gfx/renderer/RenderData.h"
 

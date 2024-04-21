@@ -1,9 +1,6 @@
 #include "MathLib.h"
 #include <math.h>
 
-#include "MathLib.h"
-
-#include "core/CoreType.h"
 #include "gfx/struct/Camera.h"
 
 namespace pio

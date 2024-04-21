@@ -19,6 +19,7 @@
 #include "ui/Ui3D.h"
 #include "ui/View.h"
 #include "ui/editor/GizmoTransform.h"
+#include "ui/editor/GizmoRotator.h"
 
 #include "asset/AssetsManager.h"
 #include "window/event/MouseEvent.h"
@@ -107,10 +108,10 @@ namespace pio
 		torusActorZ->setActorTransform(glm::vec3(0.f), quaternion::IDENTITY);
 
 		m_uiDistantLight = CreateRef<UiDistantLight>(0.5f, 2.f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
-		m_uiPointLight = CreateRef<UiPointLight>(0.5f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
+		m_uiPointLight   = CreateRef<UiPointLight>(0.5f, glm::vec4(0.964f, 0.953f, 0.051f, 1.f));
 
 		m_gizmoTransform = CreateRef<GizmoTransform>();
-		m_gizmoTransform->setTranslation(glm::vec3(2.f, 0.f, 0.f));
+		m_gizmoRotator   = CreateRef<GizmoRotator>();
 
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
 						   Application::MainWindow()->getHeight());
@@ -190,6 +191,7 @@ namespace pio
 		m_circleLayoutParam.Viewport.Y = height - m_circleLayoutParam.Position.Top - m_circleLayoutParam.Viewport.Height;
 
 		m_gizmoTransform->setLayoutParam(m_layoutParam);
+		m_gizmoRotator->setLayoutParam(m_layoutParam);
 
 		uint32_t l{ 10 }, t{ 5 }, viewWid{ 30 }, viewHeight{ 30 };
 		m_views[MotionCtl_Move]->setPosition(l, t, viewWid, viewHeight);
@@ -212,11 +214,6 @@ namespace pio
 		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
 		MotionController::DownTime(TimeUtil::CurrentTimeMs());
 		MotionController::WinCursor(winCursor);
-
-		if (m_gizmoTransform->onMouseButtonPressed(event))
-		{
-			return true;
-		}
 
 		// ------------------- Vision control pressing work flow ----------------------
 		if (m_circleLayoutParam.Position.contain((uint32_t)winCursor.x, (uint32_t)winCursor.y))
@@ -257,11 +254,6 @@ namespace pio
 
 	bool MotionControlLayer::onMouseButtonReleased(Event &event)
 	{
-		if (m_gizmoTransform->onMouseButtonReleased(event))
-		{
-			return true;
-		}
-
 		bool bUsing = !MotionController::bTarget(MotionTarget_None);
 		if (!bUsing && MotionController::bClick(TimeUtil::CurrentTimeMs(), MotionController::GetDownTime()))
 		{
@@ -283,11 +275,6 @@ namespace pio
 	{
 		auto *p = event.as<MouseMovedEvent>();
 		glm::vec2 windowCursor(p->getX(), p->getY());
-
-		if (m_gizmoTransform->onMouseMoved(event))
-		{
-			return true;
-		}
 
 		// ------------------- Vision control pressing work flow ----------------------		
 		if (MotionController::bTarget(MotionTarget_Vision))
@@ -474,6 +461,7 @@ namespace pio
 
 		DrawParam param{ ts, ubSet };
 		m_gizmoTransform->onDraw(param);
+		m_gizmoRotator->onDraw(param);
 
 		if (GDebugger::Get()->any(GDebug_Line))
 		{
@@ -806,7 +794,7 @@ namespace pio
 		}
 
 		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
-		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);		
+		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);	
 
 		if (onHandleObject3dClick(ray))
 		{		

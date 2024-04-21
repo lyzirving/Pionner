@@ -28,6 +28,21 @@ namespace pio
 		Ref<IndexBuffer>  IndexBuffer{};
 	};
 
+	class LineSegment : public Geometry2D
+	{
+		OVERRIDE_ASSET_TYPE(AssetType::LineSegment)
+	public:
+		LineSegment(const std::string &name) : Geometry2D(name) {}
+		virtual ~LineSegment() = default;
+
+		virtual void clear() override;
+
+	public:
+		std::vector<SimpleVertex> Vertex{};
+		std::vector<uint32_t>     Indices{};
+		glm::vec4 Color{ 1.f };
+	};
+
 	class LineMesh : public Geometry2D
 	{
 		OVERRIDE_ASSET_TYPE(AssetType::LineMesh)
@@ -39,7 +54,7 @@ namespace pio
 
 	public:
 		std::vector<LineVertex> Vertex{};
-		std::vector<uint32_t> Indices{};
+		std::vector<uint32_t>   Indices{};
 	};
 
 	class QuadMesh : public Geometry2D
@@ -53,8 +68,11 @@ namespace pio
 
 	public:
 		std::vector<QuadVertex> Vertex{};
-		std::vector<uint32_t> Indices{};
+		std::vector<uint32_t>   Indices{};
 	};
+
+	template<>
+	bool Asset::is<LineSegment>() const;
 
 	template<>
 	bool Asset::is<LineMesh>() const;

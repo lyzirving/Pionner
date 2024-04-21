@@ -112,7 +112,7 @@ namespace pio
 		OVERRIDE_ASSET_TYPE(AssetType::Torus)
 
 	public:
-		Torus(const std::string &name) : Geometry(name) {}
+		Torus(const std::string &name, bool half = false) : Geometry(name), m_half(half) {}
 		virtual ~Torus() = default;
 
 		void setRadius(float radius);
@@ -123,6 +123,7 @@ namespace pio
 		static void MakeRingVertex(const glm::vec2 &posXY, float radius, uint32_t itr, std::vector<Vertex> &out);
 
 	private:
+		bool  m_half{ false };
 		float m_radius{ 0.f };
 		float m_ringRadius{ 0.f };
 		uint32_t m_itrCnt{ 0 };
