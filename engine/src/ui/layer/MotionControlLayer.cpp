@@ -524,8 +524,7 @@ namespace pio
 		}
 
 		glm::vec3 ctlPos(0.f);
-		if (MotionController::bObj3dSelectd() && 
-		   (MotionController::GetObj3D()->getGlobalPoseSubmesh(ctlPos) || MotionController::GetObj3D()->getGlobalPose(ctlPos)))
+		if (MotionController::bObj3dSelectd() && MotionController::GetObj3D()->getGlobalPose(ctlPos))
 		{
 			onDrawMoveCtl(ctlPos);
 			return;
@@ -554,8 +553,7 @@ namespace pio
 		}
 
 		glm::vec3 ctlPos(0.f);
-		if (MotionController::bObj3dSelectd() &&
-		   (MotionController::GetObj3D()->getGlobalPoseSubmesh(ctlPos) || MotionController::GetObj3D()->getGlobalPose(ctlPos)))
+		if (MotionController::bObj3dSelectd() && MotionController::GetObj3D()->getGlobalPose(ctlPos))
 		{
 			onDrawRotationCtl(ctlPos);
 			return;
@@ -588,7 +586,7 @@ namespace pio
 		Ref<PhysicsActor> actor;
 		if (MotionController::GetAixs() == MotionCtlAxis_X || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
-			PIO_ASSERT_RETURN(m_selectCoord->XAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get X axis's actor");
+			PIO_ASSERT_RETURN(m_selectCoord->XAxisEnt->acquireActor(actor), "onDrawMoveCtl: fail to get X axis's actor");
 			actor->setGlobalPose(ctlPos);
 			drawFunc(m_selectCoord->XAxisEnt->getComponent<C3dUIComponent>(), ctlPos);
 		}
@@ -596,7 +594,7 @@ namespace pio
 		// Y Axis
 		if (MotionController::GetAixs() == MotionCtlAxis_Y || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
-			PIO_ASSERT_RETURN(m_selectCoord->YAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get Y axis's actor");
+			PIO_ASSERT_RETURN(m_selectCoord->YAxisEnt->acquireActor(actor), "onDrawMoveCtl: fail to get Y axis's actor");
 			actor->setGlobalPose(ctlPos);
 			drawFunc(m_selectCoord->YAxisEnt->getComponent<C3dUIComponent>(), ctlPos);
 		}	
@@ -604,7 +602,7 @@ namespace pio
 		// Z Axis
 		if (MotionController::GetAixs() == MotionCtlAxis_Z || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
-			PIO_ASSERT_RETURN(m_selectCoord->ZAxisEnt->getActor(actor), "onDrawMoveCtl: fail to get Z axis's actor");
+			PIO_ASSERT_RETURN(m_selectCoord->ZAxisEnt->acquireActor(actor), "onDrawMoveCtl: fail to get Z axis's actor");
 			actor->setGlobalPose(ctlPos);
 			drawFunc(m_selectCoord->ZAxisEnt->getComponent<C3dUIComponent>(), ctlPos);
 		}
@@ -635,21 +633,21 @@ namespace pio
 		Ref<PhysicsActor> actor;
 		if (MotionController::GetAixs() == MotionCtlAxis_X || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
-			PIO_ASSERT_RETURN(m_rotateCtl->XTorus->getActor(actor), "onDrawRotationCtl: fail to get X torus's actor");
+			PIO_ASSERT_RETURN(m_rotateCtl->XTorus->acquireActor(actor), "onDrawRotationCtl: fail to get X torus's actor");
 			actor->setGlobalPose(ctlPos);
 			drawFunc(m_rotateCtl->XTorus->getComponent<C3dUIComponent>());
 		}
 
 		if (MotionController::GetAixs() == MotionCtlAxis_Y || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
-			PIO_ASSERT_RETURN(m_rotateCtl->YTorus->getActor(actor), "onDrawRotationCtl: fail to get Y torus's actor");
+			PIO_ASSERT_RETURN(m_rotateCtl->YTorus->acquireActor(actor), "onDrawRotationCtl: fail to get Y torus's actor");
 			actor->setGlobalPose(ctlPos);
 			drawFunc(m_rotateCtl->YTorus->getComponent<C3dUIComponent>());
 		}
 
 		if (MotionController::GetAixs() == MotionCtlAxis_Z || MotionController::GetAixs() == MotionCtlAxis_Num)
 		{
-			PIO_ASSERT_RETURN(m_rotateCtl->ZTorus->getActor(actor), "onDrawRotationCtl: fail to get Z torus's actor");
+			PIO_ASSERT_RETURN(m_rotateCtl->ZTorus->acquireActor(actor), "onDrawRotationCtl: fail to get Z torus's actor");
 			actor->setGlobalPose(ctlPos);
 			drawFunc(m_rotateCtl->ZTorus->getComponent<C3dUIComponent>());
 		}

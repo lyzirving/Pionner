@@ -56,22 +56,25 @@ namespace pio
 	class MouseButtonEvent : public Event
 	{
 	public:
-		inline MouseCode getMouseButton() const { return m_button; }
+		MouseCode getMouseButton() const { return m_button; }
+		float getCursorX() const { return m_cursorX; }
+		float getCursorY() const { return m_cursorY; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton)
 
 	protected:
-		MouseButtonEvent(const MouseCode button) : m_button(button) {}
+		MouseButtonEvent(const MouseCode button, float x, float y) : m_button(button), m_cursorX(x), m_cursorY(y) {}
 
 	protected:
 		MouseCode m_button;
+		float m_cursorX, m_cursorY;
 	};
 
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(const MouseCode button)
-			: MouseButtonEvent(button) {}
+		MouseButtonPressedEvent(const MouseCode button, float x = 0.f, float y = 0.f)
+			: MouseButtonEvent(button, x, y) {}
 
 		virtual std::string toString() const override
 		{
@@ -86,8 +89,8 @@ namespace pio
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(const MouseCode button)
-			: MouseButtonEvent(button) {}
+		MouseButtonReleasedEvent(const MouseCode button, float x = 0.f, float y = 0.f)
+			: MouseButtonEvent(button, x, y) {}
 
 		virtual std::string toString() const override
 		{

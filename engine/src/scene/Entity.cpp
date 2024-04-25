@@ -68,121 +68,176 @@ namespace pio
 
 	bool Entity::getGlobalPose(glm::vec3 &out)
 	{
-		if (m_nodeType == NodeType::MeshSource && hasComponent<MeshSourceComponent>())
+		switch (m_nodeType)
 		{
-			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(getComponent<MeshSourceComponent>().SourceHandle);
-			// Root Node's position is always world origin
-			out = meshSrc->GlobalPose.mat() * glm::vec4(0.f, 0.f, 0.f, 1.f);
-			return true;
-		}
-		return false;
-	}
-
-	bool Entity::getGlobalPoseSubmesh(glm::vec3 &out)
-	{
-		if (m_nodeType != NodeType::Mesh)
-			return false;
-
-		if (hasComponent<MeshComponent>())
-		{
-			MeshComponent &meshComp = getComponent<MeshComponent>();
-			TransformComponent &transComp = getComponent<TransformComponent>();
-			auto meshSource = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
-			const Submesh &submesh = meshSource->getSubmeshes()[meshComp.SubmeshIndex];
-			// The out position does not consider the effect of animation.
-			out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);
-			return true;
-		}
-		else if (hasComponent<StaticMeshComponent>())
-		{
-			StaticMeshComponent &comp = getComponent<StaticMeshComponent>();
-			TransformComponent &transComp = getComponent<TransformComponent>();
-			auto meshSource = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
-			const Submesh &submesh = meshSource->getSubmeshes()[0];
-			out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);
-			return true;
+			case pio::NodeType::MeshSource:
+			{
+				if (hasComponent<MeshSourceComponent>())
+				{
+					Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(getComponent<MeshSourceComponent>().SourceHandle);
+					// Root Node's position is always world origin
+					out = meshSrc->GlobalPose.mat() * glm::vec4(0.f, 0.f, 0.f, 1.f);
+					return true;
+				}
+				break;
+			}
+			case pio::NodeType::Mesh:
+			{
+				if (hasComponent<MeshComponent>())
+				{
+					MeshComponent &meshComp = getComponent<MeshComponent>();
+					TransformComponent &transComp = getComponent<TransformComponent>();
+					auto meshSource = AssetsManager::GetRuntimeAsset<MeshSource>(meshComp.SourceHandle);
+					const Submesh &submesh = meshSource->getSubmeshes()[meshComp.SubmeshIndex];
+					// The out position does not consider the effect of animation.
+					out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);
+					return true;
+				}
+				else if (hasComponent<StaticMeshComponent>())
+				{
+					StaticMeshComponent &comp = getComponent<StaticMeshComponent>();
+					TransformComponent &transComp = getComponent<TransformComponent>();
+					auto meshSource = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
+					const Submesh &submesh = meshSource->getSubmeshes()[0];
+					out = meshSource->GlobalPose.mat() * transComp.mat() * glm::vec4(glm::vec3(0.f), 1.f);
+					return true;
+				}
+				break;
+			}
+			default:
+				break;
 		}
 		return false;
 	}
 
 	bool Entity::setSelection(bool select)
 	{
-		if (hasComponent<MeshSourceComponent>())
+		switch (m_nodeType)
 		{
-			auto meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(getComponent<MeshSourceComponent>().SourceHandle);
-			const std::vector<Submesh> &mesh = meshSrc->getSubmeshes();
-			for (uint32_t i = 0; i < mesh.size(); i++)
+			case pio::NodeType::MeshSource:
 			{
-				const Submesh &sub = mesh[i];
-				if (sub.Ent->hasComponent<MeshComponent>())
+				if (hasComponent<MeshSourceComponent>())
 				{
-					sub.Ent->getComponent<MeshComponent>().State.Selected = select;
+					auto meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(getComponent<MeshSourceComponent>().SourceHandle);
+					const std::vector<Submesh> &mesh = meshSrc->getSubmeshes();
+					for (uint32_t i = 0; i < mesh.size(); i++)
+					{
+						const Submesh &sub = mesh[i];
+						if (sub.Ent->hasComponent<MeshComponent>())
+						{
+							sub.Ent->getComponent<MeshComponent>().State.Selected = select;
+						}
+						else if (sub.Ent->hasComponent<StaticMeshComponent>())
+						{
+							sub.Ent->getComponent<StaticMeshComponent>().State.Selected = select;
+						}
+					}
+					return true;
 				}
-				else if (sub.Ent->hasComponent<StaticMeshComponent>())
+				break;
+			}				
+			case pio::NodeType::Mesh:
+			{
+				if (hasComponent<MeshComponent>())
 				{
-					sub.Ent->getComponent<StaticMeshComponent>().State.Selected = select;
+					getComponent<MeshComponent>().State.Selected = select;
+					return true;
 				}
+				else if (hasComponent<StaticMeshComponent>())
+				{
+					getComponent<StaticMeshComponent>().State.Selected = select;
+					return true;
+				}
+				break;
 			}
-		}
-		else if (hasComponent<MeshComponent>())
-		{
-			getComponent<MeshComponent>().State.Selected = select;
-			return true;
-		}
-		else if (hasComponent<StaticMeshComponent>())
-		{
-			getComponent<StaticMeshComponent>().State.Selected = select;
-			return true;
-		}
+			default:
+				break;
+		}		
 		return false;
 	}
 
 	bool Entity::setGlobalPose(const glm::vec3 &translation, const glm::vec3 &euler)
 	{
-		if (m_nodeType == NodeType::MeshSource && hasComponent<MeshSourceComponent>())
+		switch (m_nodeType)
 		{
-			auto &comp = getComponent<MeshSourceComponent>();
-			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
-			meshSrc->GlobalPose.Position = translation;
-			meshSrc->GlobalPose.Euler = euler;
-		}
-		else if (m_nodeType == NodeType::Mesh && hasComponent<TransformComponent>())
-		{
-			auto &comp = getComponent<TransformComponent>();
-			comp.Transform.Position = translation;
-			comp.Transform.Euler = euler;
-			return true;
-		}
-		else if (m_nodeType == NodeType::PointLight && hasComponent<PointLightComponent>())
-		{
-			auto &comp = getComponent<PointLightComponent>();
-			comp.Position = translation;
+			case pio::NodeType::MeshSource:
+			{
+				if (hasComponent<MeshSourceComponent>())
+				{
+					auto &comp = getComponent<MeshSourceComponent>();
+					Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
+					meshSrc->GlobalPose.Position = translation;
+					meshSrc->GlobalPose.Euler = euler;
+					return true;
+				}
+				break;
+			}
+			case pio::NodeType::Mesh:
+			{
+				if (hasComponent<TransformComponent>())
+				{
+					auto &comp = getComponent<TransformComponent>();
+					comp.Transform.Position = translation;
+					comp.Transform.Euler = euler;
+					return true;
+				}
+				break;
+			}
+			case pio::NodeType::PointLight:
+			{
+				if (hasComponent<PointLightComponent>())
+				{
+					auto &comp = getComponent<PointLightComponent>();
+					comp.Position = translation;
+					return true;
+				}
+				break;
+			}
+			default:
+				break;
 		}
 		return false;
 	}
 
 	bool Entity::setGlobalPoseDiff(const glm::vec3 &diff, const glm::vec3 &eulerDiff)
 	{
-		if (m_nodeType == NodeType::MeshSource && hasComponent<MeshSourceComponent>())
-		{		
-			auto &comp = getComponent<MeshSourceComponent>();
-			Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
-			meshSrc->GlobalPose.Position += diff;			
-			meshSrc->GlobalPose.Euler += eulerDiff;
-			return true;
-		}
-		else if (m_nodeType == NodeType::Mesh && hasComponent<TransformComponent>())
+		switch (m_nodeType)
 		{
-			auto &comp = getComponent<TransformComponent>();
-			comp.Transform.Position += diff;
-			comp.Transform.Euler += eulerDiff;
-			return true;
-		}
-		else if (m_nodeType == NodeType::PointLight && hasComponent<PointLightComponent>())
-		{
-			auto &comp = getComponent<PointLightComponent>();
-			comp.Position += diff;
-			return true;
+			case pio::NodeType::MeshSource:
+			{
+				if (hasComponent<MeshSourceComponent>())
+				{
+					auto &comp = getComponent<MeshSourceComponent>();
+					Ref<MeshSource> meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(comp.SourceHandle);
+					meshSrc->GlobalPose.Position += diff;
+					meshSrc->GlobalPose.Euler += eulerDiff;
+					return true;
+				}
+				break;
+			}
+			case pio::NodeType::Mesh:
+			{
+				if (hasComponent<TransformComponent>())
+				{
+					auto &comp = getComponent<TransformComponent>();
+					comp.Transform.Position += diff;
+					comp.Transform.Euler += eulerDiff;
+					return true;
+				}
+				break;
+			}
+			case pio::NodeType::PointLight:
+			{
+				if (hasComponent<PointLightComponent>())
+				{
+					auto &comp = getComponent<PointLightComponent>();
+					comp.Position += diff;
+					return true;
+				}
+				break;
+			}
+			default:
+				break;
 		}
 		return false;
 	}
@@ -190,7 +245,7 @@ namespace pio
 	bool Entity::setActorGlobalPose(const glm::vec3 &translation, const glm::quat &rotation)
 	{
 		Ref<PhysicsActor> ac;
-		if (getActor(ac))
+		if (acquireActor(ac))
 		{
 			ac->setGlobalPose(translation, rotation);
 			return true;	

@@ -206,13 +206,13 @@ namespace pio
 		{
 			case GLFW_PRESS:
 			{
-				MouseButtonPressedEvent event(button);
+				MouseButtonPressedEvent event(button, data.m_cursorPos.x, data.m_cursorPos.y);
 				data.cbFunc(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				MouseButtonReleasedEvent event(button);
+				MouseButtonReleasedEvent event(button, data.m_cursorPos.x, data.m_cursorPos.y);
 				data.cbFunc(event);
 				break;
 			}

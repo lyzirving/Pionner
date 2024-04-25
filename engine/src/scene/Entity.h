@@ -35,10 +35,7 @@ namespace pio
 
 		~Entity() = default;
 
-		// Get global pose of a MeshSource
 		bool getGlobalPose(glm::vec3 &out);
-		// Get global pose of a Submesh
-		bool getGlobalPoseSubmesh(glm::vec3 &out);
 
 		bool setSelection(bool select);
 		bool setGlobalPose(const glm::vec3 &translation, const glm::vec3 &euler);
@@ -47,8 +44,8 @@ namespace pio
 		bool setActorGlobalPose(const glm::vec3 &translation, const glm::quat &rotation = quaternion::IDENTITY);
 
 	public:
-		inline void attachActor(const Ref<PhysicsActor> &actor) { m_actor = actor; }
-		inline bool getActor(Ref<PhysicsActor> &out) { out = m_actor.lock();  return out.get() != nullptr; }
+		void attachActor(const Ref<PhysicsActor> &actor) { m_actor = actor; }
+		bool acquireActor(Ref<PhysicsActor> &out) { out = m_actor.lock(); return out.get() != nullptr; }
 
 	public:
 		template<typename Comp>

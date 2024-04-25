@@ -29,8 +29,6 @@ namespace pio
 
 	void GizmoRotator::onCreateMesh()
 	{
-		//createHalfCircle();
-
 		Ref<MeshSource> meshSrc = MeshFactory::CreateTorus(m_radius, m_ringWidth, glm::vec3(1.f, 0.f, 0.f), 36, 16, true);
 		meshSrc->as<Geometry>()->setAlpha(0.6f);
 		m_halfTorus = AssetsManager::CreateRuntimeAssets<StaticMesh>(meshSrc);
@@ -48,20 +46,6 @@ namespace pio
 		if (!bVisible()) return;
 
 		Ref<UniformBufferSet> ubs = param.UBSet;
-
-		/*auto drawLineSeg = [ubs](Ref<LineSegment> mesh, Ref<HittableShape> shape, const glm::vec4 &color) mutable
-		{
-			Renderer::SubmitRC([mesh, ubs, shape, color]() mutable
-			{
-				RenderState state{ Blend::Disable(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable(), RenderMode::MaterialPreview };
-				mesh->Color = color;
-				Renderer::RenderLineSegment(mesh->getHandle(), ubs, shape->getTransform() * shape->getLocalTransform(), state);
-			});
-		};
-
-		drawLineSeg(m_halfCircle, m_shape[EditorAxis_X], glm::vec4(1.f, 1.f, 1.f, 1.f));
-		drawLineSeg(m_halfCircle, m_shape[EditorAxis_Y], glm::vec4(1.f, 1.f, 1.f, 1.f));
-		drawLineSeg(m_halfCircle, m_shape[EditorAxis_Z], glm::vec4(1.f, 1.f, 1.f, 1.f));*/
 
 		auto drawTorus = [ubs](Ref<StaticMesh> mesh, Ref<HittableShape> shape, const glm::vec3 &color)
 		{
@@ -86,48 +70,50 @@ namespace pio
 		{
 			//LOGD("X axis hit");
 			query.HitActor = m_shape[EditorAxis_X].get();
-			m_selectedAxis = EditorAxis_X;
+			setSelectedAxis(EditorAxis_X);
 			return true;
 		}
+
 		if (m_shape[EditorAxis_Y]->onHit(query))
 		{
 			//LOGD("Y axis hit");
 			query.HitActor = m_shape[EditorAxis_Y].get();
-			m_selectedAxis = EditorAxis_Y;
+			setSelectedAxis(EditorAxis_Y);
 			return true;
 		}
+
 		if (m_shape[EditorAxis_Z]->onHit(query))
 		{
 			//LOGD("Z axis hit");
 			query.HitActor = m_shape[EditorAxis_Z].get();
-			m_selectedAxis = EditorAxis_Z;
+			setSelectedAxis(EditorAxis_Z);
 			return true;
 		}
-		m_selectedAxis = EditorAxis_Num;
+		setSelectedAxis(EditorAxis_Num);
 		return false;
 	}
 
 	bool GizmoRotator::onMouseButtonPressed(Event &event)
 	{
-		if (!bVisible()) return false;
+		if (!bVisible() || !bSelected()) return false;
 		return false;
 	}
 
 	bool GizmoRotator::onMouseButtonReleased(Event &event)
 	{
-		if (!bVisible()) return false;
+		if (!bVisible() || !bSelected()) return false;
 		return false;
 	}
 
 	bool GizmoRotator::onMouseMoved(Event &event)
 	{
-		if (!bVisible()) return false;
+		if (!bVisible() || !bSelected()) return false;
 		return false;
 	}
 
 	bool GizmoRotator::onMouseScrolled(Event &event)
 	{
-		if (!bVisible()) return false;
+		if (!bVisible() || !bSelected()) return false;
 		return false;
 	}
 
@@ -138,35 +124,5 @@ namespace pio
 			if (m_shape[i])
 				m_shape[i]->setTranslation(glm::vec3(x, y, z));
 		}
-	}
-
-	void GizmoRotator::createHalfCircle()
-	{
-		m_halfCircle = AssetsManager::CreateRuntimeAssets<LineSegment>("GizmoRotator");
-		m_halfCircle->Color = glm::vec4(1.f, 0.f, 0.f, 1.f);
-		m_halfCircle->Vertex.reserve(HALF_CIRCLE_ITR);
-		m_halfCircle->Indices.reserve((HALF_CIRCLE_ITR - 1) * 2);
-
-		uint32_t i{ 0 };
-		float step = 180.f / HALF_CIRCLE_ITR;
-		for (; i < (HALF_CIRCLE_ITR - 1); ++i)
-		{
-			SimpleVertex v;
-			v.Position = m_radius * glm::vec3(std::cos(glm::radians(float(i) * step)), std::sin(glm::radians(float(i) * step)), 0.f);
-			m_halfCircle->Vertex.emplace_back(v);
-			m_halfCircle->Indices.emplace_back(i);
-			m_halfCircle->Indices.emplace_back(i + 1);
-		}
-		SimpleVertex v;
-		v.Position = m_radius * glm::vec3(std::cos(glm::radians(float(i) * step)), std::sin(glm::radians(float(i) * step)), 0.f);
-		m_halfCircle->Vertex.emplace_back(v);
-
-		m_halfCircle->VertexBuffer = VertexBuffer::Create(m_halfCircle->Vertex.data(), m_halfCircle->Vertex.size() * sizeof(SimpleVertex));
-		m_halfCircle->VertexBuffer->setLayout(VertexBuffer::To<SimpleVertex>());
-
-		m_halfCircle->IndexBuffer = IndexBuffer::Create(m_halfCircle->Indices.data(), m_halfCircle->Indices.size() * sizeof(uint32_t), m_halfCircle->Indices.size());
-
-		m_halfCircle->VertexArray = VertexArray::Create();
-		m_halfCircle->VertexArray->addVertexBuffer(m_halfCircle->VertexBuffer);
 	}
 }

@@ -6,7 +6,6 @@
 
 namespace pio
 {
-	class LineSegment;
 	class Entity;
 	class StaticMesh;
 
@@ -25,14 +24,15 @@ namespace pio
 		virtual bool onMouseMoved(Event &event) override;
 		virtual bool onMouseScrolled(Event &event) override;
 
+		virtual bool bSelected() const override { return m_selectedAxis < EditorAxis_Num; };
+
 		void setTranslation(float x, float y, float z);
 
 	private:
-		void createHalfCircle();
+		void setSelectedAxis(EditorAxis axis) { m_selectedAxis = axis; }
 
 	private:
-		float m_radius{ 0.5f }, m_ringWidth{ 0.015f };
-		Ref<LineSegment>   m_halfCircle;
+		float m_radius{ 0.5f }, m_ringWidth{ 0.015f };	
 		Ref<StaticMesh>    m_halfTorus;
 		Ref<HittableShape> m_shape[EditorAxis_Num];
 		Ref<Entity>        m_cameraEnt;
