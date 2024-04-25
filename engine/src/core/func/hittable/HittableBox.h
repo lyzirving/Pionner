@@ -21,15 +21,16 @@ namespace pio
 		virtual void onCreateShape() override;
 		virtual bool onHit(HitQuery &query) override;
 		virtual void onDraw(const DrawParam &param) override;
-
-	private:
-		void updateAABB();
+		virtual void update() override;
 
 	private:
 		glm::vec3 m_len{ 1.f };
 		glm::vec3 m_points[8];
 		AABB m_originalAABB{}, m_AABB{};
 	};
+
+	template<>
+	bool HittableShape::is<HittableBox>();
 }
 
 #endif

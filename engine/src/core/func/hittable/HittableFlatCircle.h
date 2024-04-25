@@ -16,16 +16,22 @@ namespace pio
 		virtual void onCreateShape() override;
 		virtual bool onHit(HitQuery &query) override;
 		virtual void onDraw(const DrawParam &param) override;
+		virtual void update() override;
+
+		const Plane &getPlane() const { return m_plane; }
+		const glm::vec3 &getOrigin() const { return m_origin; }
 
 	private:
 		void resetData() { m_origin = glm::vec3(0.f); m_upDir = AXIS_Y; m_plane = Plane(AXIS_Z, m_origin); }
-		void updateData();
 
 	private:
 		float m_innerRadius{0.f}, m_outerRaidus{ 0.f }, m_radius{ 0.f };
 		glm::vec3 m_origin{ 0.f }, m_upDir{ AXIS_Y };
 		Plane m_plane{ AXIS_Z, m_origin };
 	};
+
+	template<>
+	bool HittableShape::is<HittableFlatCircle>();
 }
 
 #endif

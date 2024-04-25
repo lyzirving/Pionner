@@ -27,6 +27,21 @@ namespace pio
 		void setShowOutline(bool draw) { m_bShowOutline = draw; }
 		void setLayoutParam(const WindowLayoutParams &param) { m_layoutParam = param; }
 
+		static const char *EditorAxisStr(EditorAxis axis)
+		{
+			switch (axis)
+			{
+				case EditorAxis_X:
+					return "Editor Axis X";
+				case EditorAxis_Y:
+					return "Editor Axis Y";
+				case EditorAxis_Z:
+					return "Editor Axis Z";
+				default:
+					return "Editor Axis Num";
+			}
+		}
+
 	protected:
 		bool m_bVisible{ false };
 		bool m_bShowOutline{ false };

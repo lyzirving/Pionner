@@ -24,7 +24,7 @@ namespace pio
 
 	bool HittableFlatCircle::onHit(HitQuery &query)
 	{
-		updateData();
+		update();
 		Intersection(query, m_plane);
 		if (query.Hit)
 		{
@@ -41,7 +41,7 @@ namespace pio
 	{
 	}
 
-	void HittableFlatCircle::updateData()
+	void HittableFlatCircle::update()
 	{
 		if (!bTransformChange())
 			return;
@@ -61,7 +61,7 @@ namespace pio
 		transMat = m_transform.mat();
 
 		m_origin = transMat * localMat * glm::vec4(m_origin, 1.f);
-		m_upDir  = transMat * localMat * glm::vec4(m_upDir, 0.f);
+		m_upDir = transMat * localMat * glm::vec4(m_upDir, 0.f);
 
 		auto calcPlane = [](const glm::vec3 &_translation, const glm::mat4 &_rotMat, Plane &_plane)
 		{
@@ -83,4 +83,7 @@ namespace pio
 		calcPlane(localTrans, localRot, m_plane);
 		calcPlane(trans, rot, m_plane);
 	}
+
+	template<>
+	bool HittableShape::is<HittableFlatCircle>() { return this->getShapeType() == HitShapeType::FlatCircle; }
 }

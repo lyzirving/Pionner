@@ -11,10 +11,10 @@ namespace pio
 	{
 	public:
 		MouseMovedEvent(const float x, const float y)
-			: m_mouseX(x), m_mouseY(y) {}
+			: Event(), m_mouseX(x), m_mouseY(y) {}
 
-		inline float getX() const { return m_mouseX; }
-		inline float getY() const { return m_mouseY; }
+		float getCursorX() const { return m_mouseX; }
+		float getCursorY() const { return m_mouseY; }
 
 		virtual std::string toString() const override
 		{
@@ -34,10 +34,10 @@ namespace pio
 	{
 	public:
 		MouseScrolledEvent(const float xOffset, const float yOffset)
-			: m_offsetX(xOffset), m_offsetY(yOffset) {}
+			: Event(), m_offsetX(xOffset), m_offsetY(yOffset) {}
 
-		inline float getXOffset() const { return m_offsetX; }
-		inline float getYOffset() const { return m_offsetY; }
+		float getXOffset() const { return m_offsetX; }
+		float getYOffset() const { return m_offsetY; }
 
 		virtual std::string toString() const override
 		{

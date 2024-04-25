@@ -130,7 +130,7 @@ namespace pio
 		if (!bVisible()) return false;
 
 		auto *e = event.as<MouseMovedEvent>();
-		glm::vec2 winCursor{ e->getX(), e->getY() };
+		glm::vec2 winCursor{ e->getCursorX(), e->getCursorY() };
 		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
 		Ray ray = Ray::BuildFromScreen(viewportPt, m_cameraEnt->getComponent<CameraComponent>().Camera);
 		HitQuery querty{ray};

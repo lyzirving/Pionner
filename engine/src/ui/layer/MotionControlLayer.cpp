@@ -274,7 +274,7 @@ namespace pio
 	bool MotionControlLayer::onMouseMoved(Event &event)
 	{
 		auto *p = event.as<MouseMovedEvent>();
-		glm::vec2 windowCursor(p->getX(), p->getY());
+		glm::vec2 windowCursor(p->getCursorX(), p->getCursorY());
 
 		// ------------------- Vision control pressing work flow ----------------------		
 		if (MotionController::bTarget(MotionTarget_Vision))
@@ -288,7 +288,7 @@ namespace pio
 			comp.Camera.addPosDiff(delta.x, delta.y);
 			return true;
 		}
-		m_drawCircle = m_circleLayoutParam.Position.contain(p->getX(), p->getY());
+		m_drawCircle = m_circleLayoutParam.Position.contain(p->getCursorX(), p->getCursorY());
 		// -------------------------------------------------------------------
 
 		// ------------------- Object3d pressing work flow -------------------

@@ -27,11 +27,18 @@ namespace pio
 
 		virtual void onCreateShape() = 0;
 		virtual void onDraw(const DrawParam &param) = 0;
+		virtual void update() = 0;
 
 		virtual HitShapeType getShapeType() const { return HitShapeType::None; }
 
 		const Ref<LineMesh> &getOutline() { return m_outline; }
 		const Ref<LineMesh> &getOutline() const { return m_outline; }
+
+		template<class T>
+		bool is() { return false; }
+
+		template<class T>
+		T *as() { if (is<T>()) { return static_cast<T *>(this); } else { return nullptr; } }
 
 	protected:
 		HitShapeType  m_type{ HitShapeType::None };

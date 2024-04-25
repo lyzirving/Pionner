@@ -10,7 +10,10 @@
 #include "scene/Registry.h"
 #include "scene/Components.h"
 
+#include "core/math/Intersection.h"
 #include "core/func/hittable/HittableFlatCircle.h"
+
+#include "ui/UiDef.h"
 #include "window/event/MouseEvent.h"
 
 #ifdef LOCAL_TAG
@@ -24,6 +27,7 @@ namespace pio
 {
 	GizmoRotator::GizmoRotator() : EditorUI(), Hittable() 
 	{
+		m_cameraEnt = Registry::Get()->mainCameraEnt();
 		onCreateMesh();
 	}
 
@@ -37,7 +41,7 @@ namespace pio
 		m_shape[EditorAxis_Y] = CreateRef<HittableFlatCircle>(m_radius);
 		m_shape[EditorAxis_Z] = CreateRef<HittableFlatCircle>(m_radius);
 
-		m_shape[EditorAxis_X]->setLocalRotation(EulerAngle(90.f, 0.f, 90.f));
+		m_shape[EditorAxis_X]->setLocalRotation(EulerAngle(90.f, 0.f, -90.f));
 		m_shape[EditorAxis_Y]->setLocalRotation(EulerAngle(90.f, 0.f, 0.f));
 	}
 
@@ -96,19 +100,60 @@ namespace pio
 	bool GizmoRotator::onMouseButtonPressed(Event &event)
 	{
 		if (!bVisible() || !bSelected()) return false;
-		return false;
+
+		auto *e = event.as<MouseButtonPressedEvent>();
+		HitQuery query = intersectionWith(glm::vec2(e->getCursorX(), e->getCursorY()), m_shape[m_selectedAxis]->as<HittableFlatCircle>());
+
+		m_mousePressed = query.Hit;
+		if (m_mousePressed) { m_downPt = query.HitPt; }
+
+		return m_mousePressed;
 	}
 
 	bool GizmoRotator::onMouseButtonReleased(Event &event)
 	{
 		if (!bVisible() || !bSelected()) return false;
-		return false;
+		bool consume = m_mousePressed;
+		m_mousePressed = false;
+		return consume;
 	}
 
 	bool GizmoRotator::onMouseMoved(Event &event)
 	{
-		if (!bVisible() || !bSelected()) return false;
-		return false;
+		if (!bVisible() || !bSelected() || !m_mousePressed) return false;
+
+		auto *e = event.as<MouseMovedEvent>();
+		HitQuery query = intersectionWith(glm::vec2(e->getCursorX(), e->getCursorY()), m_shape[m_selectedAxis]->as<HittableFlatCircle>());
+		if (query.Hit)
+		{			
+			auto *shape = m_shape[m_selectedAxis]->as<HittableFlatCircle>();
+			const auto &plane = shape->getPlane();
+			glm::vec3 n = plane.getNormal();
+			if (m_selectedAxis == EditorAxis_Z) { n = -n; }
+			glm::vec3 origin = shape->getOrigin();
+
+			glm::vec3 edge0 = m_downPt - origin;
+			glm::vec3 edge1 = query.HitPt - origin;
+
+			float dot = glm::dot(edge0, edge1);
+			glm::vec3 cross = glm::cross(edge0, edge1);
+			float rotation{ 0.f };
+			if (glm::dot(cross, n) > 0.f)
+			{
+				rotation = glm::degrees(std::acos(dot));
+			}
+			else
+			{
+				rotation = 360.f - glm::degrees(std::acos(dot));
+			}
+			LOGD("%s rotation[%f]", EditorUI::EditorAxisStr(m_selectedAxis), rotation);
+		}
+		else
+		{
+			LOGE("invalid opt");
+		}
+
+		return true;
 	}
 
 	bool GizmoRotator::onMouseScrolled(Event &event)
@@ -124,5 +169,16 @@ namespace pio
 			if (m_shape[i])
 				m_shape[i]->setTranslation(glm::vec3(x, y, z));
 		}
+	}
+
+	HitQuery GizmoRotator::intersectionWith(const glm::vec2 &cursor, HittableFlatCircle *shape)
+	{
+		glm::ivec2 vpPoint = UiDef::ScreenToViewport(cursor, m_layoutParam);
+		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+
+		shape->update();
+		const Plane &plane = shape->getPlane();
+		Intersection(query, plane);
+		return query;
 	}
 }

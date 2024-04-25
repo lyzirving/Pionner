@@ -123,7 +123,7 @@ namespace pio
 
 	bool HittableBox::onHit(HitQuery &query)
 	{
-		updateAABB();
+		update();
 		return Intersection(query, m_AABB);
 	}
 
@@ -140,7 +140,7 @@ namespace pio
 		});
 	}
 
-	void HittableBox::updateAABB()
+	void HittableBox::update()
 	{
 		if (!bTransformChange())
 			return;
@@ -153,4 +153,7 @@ namespace pio
 		m_AABB.Min = glm::min(p0, p1);
 		m_AABB.Max = glm::max(p0, p1);
 	}
+
+	template<>
+	bool HittableShape::is<HittableBox>() { return this->getShapeType() == HitShapeType::Box; }
 }
