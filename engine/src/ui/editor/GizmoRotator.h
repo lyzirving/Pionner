@@ -8,7 +8,10 @@ namespace pio
 {
 	class Entity;
 	class StaticMesh;
+	class LineSegment;
 	class HittableFlatCircle;
+
+	struct SimpleVertex;
 
 	class GizmoRotator : public EditorUI, public Hittable
 	{
@@ -25,23 +28,24 @@ namespace pio
 		virtual bool onMouseMoved(Event &event) override;
 		virtual bool onMouseScrolled(Event &event) override;
 
-		virtual bool bSelected() const override { return m_selectedAxis < EditorAxis_Num; };
-
 		void setTranslation(float x, float y, float z);
 
 	private:
+		bool bSelected() const { return m_selectedAxis < EditorAxis_Num; };
 		void setSelectedAxis(EditorAxis axis) { m_selectedAxis = axis; }
-		HitQuery intersectionWith(const glm::vec2 &cursor, HittableFlatCircle *shape);
 
 	private:
 		float m_radius{ 0.5f }, m_ringWidth{ 0.015f };	
-		Ref<StaticMesh>    m_halfTorus;
+		Ref<StaticMesh>  m_halfTorus;
+		Ref<LineSegment> m_direction;
+		std::vector<SimpleVertex> m_pendingVertex;
+
 		Ref<HittableShape> m_shape[EditorAxis_Num];
 		Ref<Entity> m_cameraEnt;
-		EditorAxis  m_selectedAxis{ EditorAxis_Num };
 
-		bool m_mousePressed{ false };
-		glm::vec3 m_downPt{ 0.f };
+		glm::vec3  m_lastHitPt{ 0.f };
+		EditorAxis m_selectedAxis{ EditorAxis_Num };
+		float m_rotatedAngle{ 0.f };
 	};
 }
 

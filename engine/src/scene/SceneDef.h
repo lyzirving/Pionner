@@ -24,6 +24,9 @@ namespace pio
 	{
 		glm::vec3 Position{ 0.f };
 		glm::vec2 Texcoord{ 0.f };
+
+		SimpleVertex() {}
+		SimpleVertex(const glm::vec3 &pos, const glm::vec2 &tex) : Position(pos), Texcoord(tex) {}
 	};
 
 	struct Vertex

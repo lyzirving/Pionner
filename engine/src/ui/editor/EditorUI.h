@@ -18,8 +18,6 @@ namespace pio
 		EditorUI() {}
 		virtual ~EditorUI() = default;
 
-		virtual bool bSelected() const = 0;
-
 		bool bVisible() const { return m_bVisible; }
 		bool bShowOutline() const { return m_bShowOutline; }
 

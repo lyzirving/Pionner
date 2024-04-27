@@ -31,7 +31,7 @@ namespace pio
 		glm::mat4 vpMat = Camera::GetViewportMat(Viewport(0, 0, vp.Width, vp.Height));
 		glm::uvec2 vpSize{ vp.Width, vp.Height };
 
-		glm::vec2 p = Math::ToScreenPos(worldPos, mvp, vpMat, vpSize);
+		glm::vec2 p = WorldToScreenPos(worldPos, mvp, vpMat, vpSize);
 		if (p != spriteComp.Position)
 		{
 			spriteComp.Position = p;
@@ -43,10 +43,10 @@ namespace pio
 			spriteComp.Rect.RightBottom = glm::vec2(p.x + w / 2, p.y + h / 2);
 			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(spriteComp.QuadMesh);
 			mesh->Vertex.clear(); mesh->Vertex.reserve(4);
-			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 1.f));//lt
-			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x - w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 0.f));//lb
-			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 1.f));//rt
-			mesh->Vertex.emplace_back(glm::vec3(UiDef::ScreenToVertex(p.x + w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 0.f));//rb	
+			mesh->Vertex.emplace_back(glm::vec3(ScreenToVertex(p.x - w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 1.f));//lt
+			mesh->Vertex.emplace_back(glm::vec3(ScreenToVertex(p.x - w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 0.f));//lb
+			mesh->Vertex.emplace_back(glm::vec3(ScreenToVertex(p.x + w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 1.f));//rt
+			mesh->Vertex.emplace_back(glm::vec3(ScreenToVertex(p.x + w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 0.f));//rb	
 			Renderer::SubmitTask([mesh]() mutable
 			{
 				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));

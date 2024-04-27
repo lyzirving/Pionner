@@ -25,11 +25,10 @@ namespace pio
 		virtual bool onMouseMoved(Event &event) override;
 		virtual bool onMouseScrolled(Event &event) override;
 
-		virtual bool bSelected() const override { return m_selectedAxis < EditorAxis_Num; };
-
 		void setTranslation(float x, float y, float z);
 
 	private:
+		bool bSelected() const { return m_selectedAxis < EditorAxis_Num; };
 		void setSelectedAxis(EditorAxis axis) { m_selectedAxis = axis; }
 	
 	private:

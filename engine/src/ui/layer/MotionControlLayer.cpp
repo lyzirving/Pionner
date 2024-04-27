@@ -211,7 +211,7 @@ namespace pio
 	bool MotionControlLayer::onMouseButtonPressed(Event &event)
 	{
 		glm::vec2 winCursor = Application::MainWindow()->getCursorPos();
-		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
+		glm::ivec2 viewportPt = ScreenToViewport(winCursor, m_layoutParam);
 		MotionController::DownTime(TimeUtil::CurrentTimeMs());
 		MotionController::WinCursor(winCursor);
 
@@ -701,8 +701,8 @@ namespace pio
 		Ref<Entity> ctlEnt;
 		PIO_ASSERT_RETURN(ctlActor->getEnt(ctlEnt), "onSelectionMoved: entity is invalid");
 
-		glm::ivec2 curPt = UiDef::ScreenToViewport(cursor, param);
-		glm::ivec2 lastPt = UiDef::ScreenToViewport(last, param);
+		glm::ivec2 curPt = ScreenToViewport(cursor, param);
+		glm::ivec2 lastPt = ScreenToViewport(last, param);
 
 		Ray curRay = Ray::BuildFromScreen(curPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
 		Ray lastRay = Ray::BuildFromScreen(lastPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
@@ -791,7 +791,7 @@ namespace pio
 			return true;
 		}
 
-		glm::ivec2 viewportPt = UiDef::ScreenToViewport(winCursor, m_layoutParam);
+		glm::ivec2 viewportPt = ScreenToViewport(winCursor, m_layoutParam);
 		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);	
 
 		if (onHandleObject3dClick(ray))

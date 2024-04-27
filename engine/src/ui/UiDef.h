@@ -144,12 +144,11 @@ namespace pio
 		}
 	};
 
-	namespace UiDef
-	{
-		glm::ivec2 ScreenToViewport(const glm::vec2 &screenPt, const WindowLayoutParams& param);
-		// TODO: make a vertex in a specified viewport
-		glm::vec2 ScreenToVertex(uint32_t x, uint32_t y, uint32_t screenWidth, uint32_t screenHeight);	
-	}
+	glm::ivec2 ScreenToViewport(const glm::vec2 &screenPt, const WindowLayoutParams &param);
+	// TODO: make a vertex in a specified viewport
+	glm::vec2 ScreenToVertex(uint32_t x, uint32_t y, uint32_t screenWidth, uint32_t screenHeight);
+	// Transform the world position into screen defined by a viewport
+	glm::vec2 WorldToScreenPos(const glm::vec3 &worldPos, const glm::mat4 &mvpMat, const glm::mat4 &vpMat, const glm::uvec2 &windowSize);
 }
 
 #endif
