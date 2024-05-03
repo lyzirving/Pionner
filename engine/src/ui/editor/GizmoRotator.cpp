@@ -42,7 +42,7 @@ namespace pio
 		m_shape[EditorAxis_Y] = CreateRef<HittableFlatCircle>(m_radius);
 		m_shape[EditorAxis_Z] = CreateRef<HittableFlatCircle>(m_radius);
 
-		m_shape[EditorAxis_X]->setLocalRotation(EulerAngle(90.f, 0.f, -90.f));
+		m_shape[EditorAxis_X]->setLocalRotation(EulerAngle(90.f, 0.f, 90.f));
 		m_shape[EditorAxis_Y]->setLocalRotation(EulerAngle(90.f, 0.f, 0.f));
 
 		m_pendingVertex.reserve(2);
@@ -80,9 +80,17 @@ namespace pio
 			});
 		};
 
-		drawTorus(m_halfTorus, m_shape[EditorAxis_X], glm::vec3(1.f, 0.f, 0.f));
-		drawTorus(m_halfTorus, m_shape[EditorAxis_Y], glm::vec3(0.f, 1.f, 0.f));
-		drawTorus(m_halfTorus, m_shape[EditorAxis_Z], glm::vec3(0.f, 0.f, 1.f));
+		if (bSelected())
+		{
+			drawTorus(m_halfTorus, m_shape[m_selectedAxis], glm::vec3(1.f, 1.f, 1.f));
+		}
+		else
+		{
+			for (uint8_t i = 0; i < EditorAxis_Num; i++)
+			{
+				drawTorus(m_halfTorus, m_shape[i], GetAxisColor(EditorAxis(i), m_hoveringAxis));
+			}
+		}
 
 		if (!m_pendingVertex.empty())
 		{
@@ -90,8 +98,8 @@ namespace pio
 			m_direction->Vertex.assign(m_pendingVertex.begin(), m_pendingVertex.end());
 
 			Ref<LineSegment> mesh = m_direction;
-			glm::vec4 color = (m_selectedAxis == EditorAxis_X) ? glm::vec4(1.f, 0.f, 0.f, 1.f) : ((m_selectedAxis == EditorAxis_Y) ? glm::vec4(0.f, 1.f, 0.f, 1.f) : glm::vec4(0.f, 0.f, 1.f, 1.f));
-				
+			glm::vec4 color = GetAxisColor(m_selectedAxis, EditorAxis_Num);
+
 			Renderer::SubmitRC([ubs, mesh, color]() mutable
 			{
 				RenderState state{ Blend::Common(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable(), RenderMode::MaterialPreview };
@@ -126,8 +134,6 @@ namespace pio
 			setSelectedAxis(EditorAxis_Z);
 			return true;
 		}
-
-		setSelectedAxis(EditorAxis_Num);
 		return false;
 	}
 
@@ -156,45 +162,54 @@ namespace pio
 
 	bool GizmoRotator::onMouseMoved(Event &event)
 	{
-		if (!bVisible() || !bSelected()) return false;
+		if (!bVisible()) return false;
 
-		auto *e = event.as<MouseMovedEvent>();
-		auto *shape = m_shape[m_selectedAxis]->as<HittableFlatCircle>();
-		const Plane &plane = shape->getPlane();
+		cancelHovering();
 
-		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+		if (bSelected())
+		{
+			auto *e = event.as<MouseMovedEvent>();
+			auto *shape = m_shape[m_selectedAxis]->as<HittableFlatCircle>();
+			const Plane &plane = shape->getPlane();
 
-		if (Intersection(query, plane))
-		{			
-			glm::vec3 n = plane.getNormal();
-			if (m_selectedAxis == EditorAxis_Y) { n = -n; }
-			glm::vec3 origin = shape->getOrigin();
+			glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
+			HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
 
-			glm::vec3 edge0 = glm::normalize(m_lastHitPt - origin);
-			glm::vec3 edge1 = glm::normalize(query.HitPt - origin);
-
-			float dot = glm::dot(edge0, edge1);
-			glm::vec3 cross = glm::cross(edge0, edge1);
-			float rotation{ 0.f };
-			if (glm::dot(cross, n) > 0.f)
+			if (Intersection(query, plane))
 			{
-				rotation = glm::degrees(std::acos(dot));
+				glm::vec3 n = plane.getNormal();
+				if (m_selectedAxis == EditorAxis_Y) { n = -n; }
+				glm::vec3 origin = shape->getOrigin();
+
+				glm::vec3 edge0 = glm::normalize(m_lastHitPt - origin);
+				glm::vec3 edge1 = glm::normalize(query.HitPt - origin);
+
+				float dot = glm::dot(edge0, edge1);
+				glm::vec3 cross = glm::cross(edge0, edge1);
+				float rotation{ 0.f };
+				if (glm::dot(cross, n) > 0.f)
+				{
+					rotation = glm::degrees(std::acos(dot));
+				}
+				else
+				{
+					rotation = -glm::degrees(std::acos(dot));
+				}
+				m_rotatedAngle += rotation;
+				m_angleDiff = rotation;
+				//LOGD("rotated angle[%f], axis[%s]", m_rotatedAngle, EditorAxisStr(m_selectedAxis));
+				m_lastHitPt = query.HitPt;
+				m_pendingVertex.clear();
+				m_pendingVertex.emplace_back(origin, glm::vec2(0.f));
+				m_pendingVertex.emplace_back(query.HitPt, glm::vec2(0.f));
 			}
-			else
-			{
-				rotation = -glm::degrees(std::acos(dot));
-			}
-			m_rotatedAngle += rotation;
-			m_angleDiff = rotation;
-			//LOGD("rotated angle[%f], axis[%s]", m_rotatedAngle, EditorAxisStr(m_selectedAxis));
-			m_lastHitPt = query.HitPt;
-			m_pendingVertex.clear();
-			m_pendingVertex.emplace_back(origin, glm::vec2(0.f));
-			m_pendingVertex.emplace_back(query.HitPt, glm::vec2(0.f));
+			return true;
 		}
-
-		return true;
+		else
+		{
+			onMouseMoveHovering(event);
+			return false;
+		}
 	}
 
 	bool GizmoRotator::onMouseScrolled(Event &event)
@@ -211,5 +226,36 @@ namespace pio
 	void GizmoRotator::setTranslation(const glm::vec3 &location)
 	{
 		std::for_each(std::begin(m_shape), std::end(m_shape), [location](const Ref<HittableShape> &s) { s->setTranslation(location); });
+	}
+
+	bool GizmoRotator::onMouseMoveHovering(Event &event)
+	{
+		if (!bVisible()) return false;
+
+		auto *e = event.as<MouseMovedEvent>();
+		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
+		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+
+		if (m_shape[EditorAxis_X]->onHit(query))
+		{
+			//LOGD("hovering on X axis");
+			setHoveringAxis(EditorAxis_X);
+			return true;
+		}
+
+		if (m_shape[EditorAxis_Y]->onHit(query))
+		{
+			//LOGD("hovering on Y axis");
+			setHoveringAxis(EditorAxis_Y);
+			return true;
+		}
+
+		if (m_shape[EditorAxis_Z]->onHit(query))
+		{
+			//LOGD("hovering on Z axis");
+			setHoveringAxis(EditorAxis_Z);
+			return true;
+		}
+		return false;
 	}
 }

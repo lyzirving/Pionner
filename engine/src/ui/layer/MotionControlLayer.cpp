@@ -183,8 +183,7 @@ namespace pio
 	bool MotionControlLayer::onMouseButtonPressed(Event &event)
 	{
 		auto *e = event.as<MouseButtonPressedEvent>();
-		m_winCursor.x = e->getCursorX(); 
-		m_winCursor.y = e->getCursorY();
+		m_winCursor.x = e->getCursorX(); m_winCursor.y = e->getCursorY();
 		m_downTime = TimeUtil::CurrentTimeMs();
 
 		if (onMouseBtnPressVisionControl(event))
@@ -675,8 +674,7 @@ namespace pio
 
 	bool MotionControlLayer::onMouseMoveSceneItem(Event &event)
 	{
-		if (MotionController::bTarget(MotionTarget_Object3D) ||
-			MotionController::bTarget(MotionTarget_Sprite))
+		if (MotionController::bObj3dSelectd() || MotionController::bSpriteSelectd())
 		{
 			MotionCtlMode mode = MotionController::GetMode();
 			switch (mode)
@@ -708,8 +706,7 @@ namespace pio
 					break;
 			}
 			auto *p = event.as<MouseMovedEvent>();
-			m_winCursor.x = p->getCursorX();
-			m_winCursor.y = p->getCursorY();
+			m_winCursor.x = p->getCursorX(); m_winCursor.y = p->getCursorY();
 			return true;
 		}
 		return false;

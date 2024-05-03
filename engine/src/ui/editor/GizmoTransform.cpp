@@ -74,9 +74,17 @@ namespace pio
 			});
 		};
 
-		drawFunc(m_arrow, m_shape[EditorAxis_X], m_selectedAxis == EditorAxis_X ? glm::vec4(1.f, 1.f, 1.f, 1.f) : glm::vec4(1.f, 0.f, 0.f, 1.f));
-		drawFunc(m_arrow, m_shape[EditorAxis_Y], m_selectedAxis == EditorAxis_Y ? glm::vec4(1.f, 1.f, 1.f, 1.f) : glm::vec4(0.f, 1.f, 0.f, 1.f));
-		drawFunc(m_arrow, m_shape[EditorAxis_Z], m_selectedAxis == EditorAxis_Z ? glm::vec4(1.f, 1.f, 1.f, 1.f) : glm::vec4(0.f, 0.f, 1.f, 1.f));
+		if (bSelected())
+		{
+			drawFunc(m_arrow, m_shape[m_selectedAxis], glm::vec4(1.f, 1.f, 1.f, 1.f));
+		}
+		else
+		{
+			for (uint8_t i = 0; i < EditorAxis_Num; i++)
+			{
+				drawFunc(m_arrow, m_shape[i], GetAxisColor(EditorAxis(i), m_hoveringAxis));
+			}
+		}
 
 		if (bShowOutline())
 		{
@@ -110,7 +118,6 @@ namespace pio
 			setSelectedAxis(EditorAxis_Z);
 			return true;
 		}
-		setSelectedAxis(EditorAxis_Num);		
 		return false;		
 	}
 
@@ -121,7 +128,7 @@ namespace pio
 		auto *e = event.as<MouseButtonPressedEvent>();
 		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
 		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
-
+		
 		if (onHit(query)) { m_lastHitPt = query.R.PtOnNear; }
 		return query.Hit;
 	}
@@ -137,18 +144,28 @@ namespace pio
 
 	bool GizmoTransform::onMouseMoved(Event &event)
 	{
-		if (!bVisible() || !bSelected()) return false;
+		if (!bVisible()) return false;
 
-		auto *e = event.as<MouseMovedEvent>();
-		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		glm::vec3 ptOnNearPlane = Ray::PointOnNearPlane(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera);
-		glm::vec3 diff = ptOnNearPlane - m_lastHitPt;
-		m_transferVec += diff;
-		m_transferDiff = EditorUI::GetAxis(m_selectedAxis) * glm::dot(diff, EditorUI::GetAxis(m_selectedAxis)) * GIZMO_TRANSM_SCALE;
-		m_transferDist = EditorUI::GetAxis(m_selectedAxis) * glm::dot(m_transferVec, EditorUI::GetAxis(m_selectedAxis)) * GIZMO_TRANSM_SCALE;
-		m_lastHitPt = ptOnNearPlane;
-		//LOGD("transfer[%f], diff[%f, %f, %f], axis[%s]", m_transferDist, diff.x, diff.y, diff.z, EditorAxisStr(m_selectedAxis));
-		return true;
+		cancelHovering();
+
+		if (bSelected())
+		{
+			auto *e = event.as<MouseMovedEvent>();
+			glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
+			glm::vec3 ptOnNearPlane = Ray::PointOnNearPlane(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera);
+			glm::vec3 diff = ptOnNearPlane - m_lastHitPt;
+			m_transferVec += diff;
+			m_transferDiff = EditorUI::GetAxis(m_selectedAxis) * glm::dot(diff, EditorUI::GetAxis(m_selectedAxis)) * GIZMO_TRANSM_SCALE;
+			m_transferDist = EditorUI::GetAxis(m_selectedAxis) * glm::dot(m_transferVec, EditorUI::GetAxis(m_selectedAxis)) * GIZMO_TRANSM_SCALE;
+			m_lastHitPt = ptOnNearPlane;
+			//LOGD("transfer[%f], diff[%f, %f, %f], axis[%s]", m_transferDist, diff.x, diff.y, diff.z, EditorAxisStr(m_selectedAxis));
+			return true;
+		}
+		else
+		{
+			onMouseMoveHovering(event);
+			return false;
+		}
 	}
 
 	bool GizmoTransform::onMouseScrolled(Event &event)
@@ -165,5 +182,36 @@ namespace pio
 	void GizmoTransform::setTranslation(const glm::vec3 &translation)
 	{
 		std::for_each(std::begin(m_shape), std::end(m_shape), [translation](const Ref<HittableShape> &s) { s->setTranslation(translation); });
+	}
+
+	bool GizmoTransform::onMouseMoveHovering(Event &event)
+	{
+		if (!bVisible()) return false;
+
+		auto *e = event.as<MouseMovedEvent>();
+		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
+		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+		
+		if (m_shape[EditorAxis_X]->onHit(query))
+		{
+			//LOGD("hovering on X axis");
+			setHoveringAxis(EditorAxis_X);
+			return true;
+		}
+
+		if (m_shape[EditorAxis_Y]->onHit(query))
+		{
+			//LOGD("hovering on Y axis");
+			setHoveringAxis(EditorAxis_Y);
+			return true;
+		}
+
+		if (m_shape[EditorAxis_Z]->onHit(query))
+		{
+			//LOGD("hovering on Z axis");
+			setHoveringAxis(EditorAxis_Z);
+			return true;
+		}
+		return false;
 	}
 }

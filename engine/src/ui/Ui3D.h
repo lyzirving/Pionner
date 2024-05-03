@@ -50,19 +50,6 @@ namespace pio
 		Ref<Entity> XAxisEnt, YAxisEnt, ZAxisEnt;
 	};
 
-	class UiRotationCtl
-	{
-	public:
-		UiRotationCtl();
-		~UiRotationCtl();
-
-	private:
-		void build();
-
-	public:
-		Ref<Entity> XTorus, YTorus, ZTorus;
-	};
-
 	class UiDistantLight
 	{
 	public:

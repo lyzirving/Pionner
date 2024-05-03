@@ -55,6 +55,23 @@ namespace pio
 			}
 		}
 
+		static glm::vec4 GetAxisColor(EditorAxis axis, EditorAxis hover)
+		{
+			if (axis == hover)
+				return glm::vec4(1.f);
+
+			switch (axis)
+			{
+				case EditorAxis_Y:
+					return glm::vec4(0.f, 1.f, 0.f, 1.f);
+				case EditorAxis_Z:
+					return glm::vec4(0.f, 0.f, 1.f, 1.f);
+				case EditorAxis_X:
+				default:
+					return glm::vec4(1.f, 0.f, 0.f, 1.f);
+			}
+		}
+
 	protected:
 		bool m_bVisible{ false };
 		bool m_bShowOutline{ false };

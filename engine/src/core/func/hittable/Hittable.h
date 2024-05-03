@@ -10,7 +10,7 @@ namespace pio
 		Ray R{};
 		glm::vec3 HitPt{ 0.f };
 		void *HitActor{ nullptr };//TODO: add interface for hit actor?
-		bool  Hit{ false };
+		bool Hit{ false };
 
 		HitQuery() {}
 		HitQuery(const Ray &r) : R(r) {}
