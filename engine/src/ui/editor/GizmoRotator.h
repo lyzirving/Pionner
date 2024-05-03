@@ -29,10 +29,17 @@ namespace pio
 		virtual bool onMouseScrolled(Event &event) override;
 
 		void setTranslation(float x, float y, float z);
+		void setTranslation(const glm::vec3 &location);
+
+		void setSelectedAxis(EditorAxis axis) { m_selectedAxis = axis; }
+		void cancelSelection() { setSelectedAxis(EditorAxis_Num); }
+		float getRotatedAngle() const { return m_rotatedAngle; }
+		float getRotatedAngleDiff() const { return m_angleDiff; }
+		const glm::vec3 &getRotatedAxis() const { return GetAxis(m_selectedAxis); }
+		glm::vec3 getEulerDiff() const { return m_angleDiff * getRotatedAxis(); }
 
 	private:
 		bool bSelected() const { return m_selectedAxis < EditorAxis_Num; };
-		void setSelectedAxis(EditorAxis axis) { m_selectedAxis = axis; }
 
 	private:
 		float m_radius{ 0.5f }, m_ringWidth{ 0.015f };	
@@ -45,7 +52,7 @@ namespace pio
 
 		glm::vec3  m_lastHitPt{ 0.f };
 		EditorAxis m_selectedAxis{ EditorAxis_Num };
-		float m_rotatedAngle{ 0.f };
+		float m_rotatedAngle{ 0.f }, m_angleDiff{ 0.f };
 	};
 }
 

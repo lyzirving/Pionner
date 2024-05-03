@@ -26,16 +26,24 @@ namespace pio
 		virtual bool onMouseScrolled(Event &event) override;
 
 		void setTranslation(float x, float y, float z);
+		void setTranslation(const glm::vec3 &translation);	
+
+		void setSelectedAxis(EditorAxis axis) { m_selectedAxis = axis; }
+		void cancelSelection() { setSelectedAxis(EditorAxis_Num); }
+		const glm::vec3 &getTransferAxis() const { return GetAxis(m_selectedAxis); }
+		glm::vec3 getTransferDist() const { return m_transferDist; }
+		glm::vec3 getTransferDiff() const { return m_transferDiff; }
 
 	private:
 		bool bSelected() const { return m_selectedAxis < EditorAxis_Num; };
-		void setSelectedAxis(EditorAxis axis) { m_selectedAxis = axis; }
 	
 	private:
-		Ref<StaticMesh>    m_arrow;
+		Ref<StaticMesh> m_arrow;
 		Ref<HittableShape> m_shape[EditorAxis_Num];
-		Ref<Entity>        m_cameraEnt;
-		EditorAxis         m_selectedAxis{ EditorAxis_Num };
+		Ref<Entity> m_cameraEnt;
+
+		glm::vec3 m_lastHitPt{ 0.f }, m_transferVec{ 0.f }, m_transferDist{0.f}, m_transferDiff{ 0.f };
+		EditorAxis m_selectedAxis{ EditorAxis_Num };
 	};
 }
 

@@ -12,6 +12,7 @@ namespace pio
 	public:
 		Ray() {}
 		Ray(const glm::vec3 &origin, const glm::vec3 &dir) : Origin(origin), Dir(dir) {}
+		Ray(const glm::vec3 &origin, const glm::vec3 &dir, const glm::vec3 &ptOnNearPlane) : Origin(origin), Dir(dir), PtOnNear(ptOnNearPlane) {}
 		~Ray() = default;
 
 		glm::vec3 at(float t) { return Origin + t * Dir; }
@@ -26,10 +27,12 @@ namespace pio
 		* @param camera: camera of current screen
 		*/
 		static Ray BuildFromScreen(const glm::vec2 &viewportPt, const Camera &camera);
+		static glm::vec3 PointOnNearPlane(const glm::vec2 &viewportPt, const Camera &camera);
 
 	public:
 		glm::vec3 Origin{ 0.f };
 		glm::vec3 Dir{ 0.f, 0.f, -1.f };
+		glm::vec3 PtOnNear{ 0.f };
 	};
 }
 

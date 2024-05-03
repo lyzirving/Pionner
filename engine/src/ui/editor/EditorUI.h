@@ -40,6 +40,21 @@ namespace pio
 			}
 		}
 
+		static const glm::vec3 &GetAxis(EditorAxis axis)
+		{
+			switch (axis)
+			{
+				case EditorAxis_Y:
+					return AXIS_Y;
+				case EditorAxis_Z:
+					return AXIS_Z;
+				case EditorAxis_X:
+				case EditorAxis_Num:
+				default:
+					return AXIS_X;
+			}
+		}
+
 	protected:
 		bool m_bVisible{ false };
 		bool m_bShowOutline{ false };

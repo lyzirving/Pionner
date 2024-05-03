@@ -10,6 +10,7 @@
 #include "scene/Registry.h"
 #include "scene/Components.h"
 
+#include "core/math/Intersection.h"
 #include "core/func/hittable/HittableBox.h"
 #include "window/event/MouseEvent.h"
 
@@ -19,6 +20,7 @@
 #define LOCAL_TAG "GizmoTransform"
 
 #define GIZMO_TRANSM_OFFSET (0.06f)
+#define GIZMO_TRANSM_SCALE  (100.f)
 
 namespace pio
 {
@@ -91,65 +93,77 @@ namespace pio
 		if (m_shape[EditorAxis_X]->onHit(query))
 		{
 			//LOGD("X axis hit");
-			query.HitActor = m_shape[EditorAxis_X].get();
-			m_selectedAxis = EditorAxis_X;
+			setSelectedAxis(EditorAxis_X);
 			return true;
 		}
+
 		if (m_shape[EditorAxis_Y]->onHit(query))
 		{
-			//LOGD("Y axis hit");
-			query.HitActor = m_shape[EditorAxis_Y].get();
-			m_selectedAxis = EditorAxis_Y;
+			//LOGD("Y axis hit");		
+			setSelectedAxis(EditorAxis_Y);
 			return true;
 		}
+
 		if (m_shape[EditorAxis_Z]->onHit(query))
 		{
-			//LOGD("Z axis hit");
-			query.HitActor = m_shape[EditorAxis_Z].get();
-			m_selectedAxis = EditorAxis_Z;
+			//LOGD("Z axis hit");		
+			setSelectedAxis(EditorAxis_Z);
 			return true;
 		}
-		m_selectedAxis = EditorAxis_Num;
+		setSelectedAxis(EditorAxis_Num);		
 		return false;		
 	}
 
 	bool GizmoTransform::onMouseButtonPressed(Event &event)
 	{
 		if (!bVisible()) return false;
-		return false;
+
+		auto *e = event.as<MouseButtonPressedEvent>();
+		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
+		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+
+		if (onHit(query)) { m_lastHitPt = query.R.PtOnNear; }
+		return query.Hit;
 	}
 
 	bool GizmoTransform::onMouseButtonReleased(Event &event)
 	{
-		if (!bVisible()) return false;
-		return false;
+		if (!bVisible() || !bSelected()) return false;
+		//LOGD("release");
+		cancelSelection();
+		m_transferDist = m_transferDiff = m_transferVec = glm::vec3(0.f);		
+		return true;
 	}
 
 	bool GizmoTransform::onMouseMoved(Event &event)
 	{
-		if (!bVisible()) return false;
+		if (!bVisible() || !bSelected()) return false;
 
 		auto *e = event.as<MouseMovedEvent>();
-		glm::vec2 winCursor{ e->getCursorX(), e->getCursorY() };
-		glm::ivec2 viewportPt = ScreenToViewport(winCursor, m_layoutParam);
-		Ray ray = Ray::BuildFromScreen(viewportPt, m_cameraEnt->getComponent<CameraComponent>().Camera);
-		HitQuery querty{ray};
-		onHit(querty);
-		return false;
+		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
+		glm::vec3 ptOnNearPlane = Ray::PointOnNearPlane(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera);
+		glm::vec3 diff = ptOnNearPlane - m_lastHitPt;
+		m_transferVec += diff;
+		m_transferDiff = EditorUI::GetAxis(m_selectedAxis) * glm::dot(diff, EditorUI::GetAxis(m_selectedAxis)) * GIZMO_TRANSM_SCALE;
+		m_transferDist = EditorUI::GetAxis(m_selectedAxis) * glm::dot(m_transferVec, EditorUI::GetAxis(m_selectedAxis)) * GIZMO_TRANSM_SCALE;
+		m_lastHitPt = ptOnNearPlane;
+		//LOGD("transfer[%f], diff[%f, %f, %f], axis[%s]", m_transferDist, diff.x, diff.y, diff.z, EditorAxisStr(m_selectedAxis));
+		return true;
 	}
 
 	bool GizmoTransform::onMouseScrolled(Event &event)
 	{
-		if (!bVisible()) return false;
+		if (!bVisible() || !bSelected()) return false;
 		return false;
 	}
 
 	void GizmoTransform::setTranslation(float x, float y, float z)
 	{
-		for (uint32_t i = 0; i < EditorAxis_Num; i++)
-		{
-			if (m_shape[i])
-				m_shape[i]->setTranslation(glm::vec3(x, y, z));
-		}
+		std::for_each(std::begin(m_shape), std::end(m_shape), [x, y, z](const Ref<HittableShape> &s) { s->setTranslation(glm::vec3(x, y, z)); });
+	}
+
+	void GizmoTransform::setTranslation(const glm::vec3 &translation)
+	{
+		std::for_each(std::begin(m_shape), std::end(m_shape), [translation](const Ref<HittableShape> &s) { s->setTranslation(translation); });
 	}
 }

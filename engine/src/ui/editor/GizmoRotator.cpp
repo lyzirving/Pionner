@@ -105,10 +105,10 @@ namespace pio
 	bool GizmoRotator::onHit(HitQuery &query)
 	{
 		if (!bVisible()) return false;
+
 		if (m_shape[EditorAxis_X]->onHit(query))
 		{
 			//LOGD("X axis hit");
-			query.HitActor = m_shape[EditorAxis_X].get();
 			setSelectedAxis(EditorAxis_X);
 			return true;
 		}
@@ -116,7 +116,6 @@ namespace pio
 		if (m_shape[EditorAxis_Y]->onHit(query))
 		{
 			//LOGD("Y axis hit");
-			query.HitActor = m_shape[EditorAxis_Y].get();
 			setSelectedAxis(EditorAxis_Y);
 			return true;
 		}
@@ -124,10 +123,10 @@ namespace pio
 		if (m_shape[EditorAxis_Z]->onHit(query))
 		{
 			//LOGD("Z axis hit");
-			query.HitActor = m_shape[EditorAxis_Z].get();
 			setSelectedAxis(EditorAxis_Z);
 			return true;
 		}
+
 		setSelectedAxis(EditorAxis_Num);
 		return false;
 	}
@@ -140,21 +139,7 @@ namespace pio
 		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
 		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
 
-		std::for_each(std::begin(m_shape), std::end(m_shape), [](const Ref<HittableShape> &s) { s->update(); });
-
-		if (m_shape[EditorAxis_X]->onHit(query))
-		{
-			setSelectedAxis(EditorAxis_X);
-		}
-		else if (m_shape[EditorAxis_Y]->onHit(query))
-		{
-			setSelectedAxis(EditorAxis_Y);
-		}
-		else if (m_shape[EditorAxis_Z]->onHit(query))
-		{
-			setSelectedAxis(EditorAxis_Z);
-		}
-		if (query.Hit) { m_lastHitPt = query.HitPt; }
+		if (onHit(query)) { m_lastHitPt = query.HitPt; }
 		//if (query.Hit) LOGD("Press");
 		return query.Hit;
 	}
@@ -163,8 +148,8 @@ namespace pio
 	{
 		if (!bVisible() || !bSelected()) return false;
 		//LOGD("release");
-		setSelectedAxis(EditorAxis_Num);
-		m_rotatedAngle = 0.f;
+		cancelSelection();
+		m_angleDiff = m_rotatedAngle = 0.f;
 		m_pendingVertex.clear();
 		return true;
 	}
@@ -201,6 +186,7 @@ namespace pio
 				rotation = -glm::degrees(std::acos(dot));
 			}
 			m_rotatedAngle += rotation;
+			m_angleDiff = rotation;
 			//LOGD("rotated angle[%f], axis[%s]", m_rotatedAngle, EditorAxisStr(m_selectedAxis));
 			m_lastHitPt = query.HitPt;
 			m_pendingVertex.clear();
@@ -220,5 +206,10 @@ namespace pio
 	void GizmoRotator::setTranslation(float x, float y, float z)
 	{
 		std::for_each(std::begin(m_shape), std::end(m_shape), [x, y, z](const Ref<HittableShape> &s) { s->setTranslation(glm::vec3(x, y, z)); });
+	}
+
+	void GizmoRotator::setTranslation(const glm::vec3 &location)
+	{
+		std::for_each(std::begin(m_shape), std::end(m_shape), [location](const Ref<HittableShape> &s) { s->setTranslation(location); });
 	}
 }
