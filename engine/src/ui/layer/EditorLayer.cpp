@@ -360,40 +360,70 @@ namespace pio
 
 	void EditorLayer::onDrawMeshPanel(Ref<Entity> &ent)
 	{
-		if (ent && ent->hasComponent<MeshComponent>())
+		if (!ent) return;
+
+		Ref<MeshBase> meshBase{ nullptr };
+		uint32_t submeshIdx{ NullIndex };
+		bool bVisible{ false }, bVisibleUI{ false };
+
+		if (ent->hasComponent<MeshComponent>())
 		{
 			auto &meshComp = ent->getComponent<MeshComponent>();
-			Ref<MeshBase> meshBase = AssetsManager::GetRuntimeAsset<MeshBase>(meshComp.Handle);
-			if (meshBase)
-			{
-				const Submesh &submesh = meshBase->getMeshSource()->getSubmeshes()[meshComp.SubmeshIndex];	
-				const float rowWidth = m_layoutParam.Viewport.Width;
-				float cbWidth = 0.2f * rowWidth;
-				float inTextWidth = 0.8f * rowWidth;
-				// Visibility checkbox
-				ImGui::PushItemWidth(cbWidth);
-				ImGui::Checkbox("##mesh_visibility", &meshComp.Visible);
-				ImGui::PopItemWidth();
-				
-				ImGui::SameLine();
-				// Mesh name
-				ImGui::PushItemWidth(inTextWidth);
-				ImGui::InputText("##submesh_name", const_cast<char *>(submesh.MeshName.c_str()), 
-								 submesh.MeshName.size(), ImGuiInputTextFlags_ReadOnly);
-				ImGui::PopItemWidth();
+			meshBase = AssetsManager::GetRuntimeAsset<MeshBase>(meshComp.Handle);
+			submeshIdx = meshComp.SubmeshIndex;
+			bVisible = bVisibleUI = meshComp.Visible;
+		}
+		else if (ent->hasComponent<StaticMeshComponent>())
+		{
+			auto &meshComp = ent->getComponent<StaticMeshComponent>();
+			meshBase = AssetsManager::GetRuntimeAsset<MeshBase>(meshComp.Handle);
+			submeshIdx = meshComp.SubmeshIndex;
+			bVisible = bVisibleUI = meshComp.Visible;
+		}
 
-				if (ent->hasComponent<TransformComponent>())
-				{			
-					TransformComponent &comp = ent->getComponent<TransformComponent>();					
-					if (ImGui::CollapsingHeader("Transform##Mesh", ImGuiUtils::Flag_Collapse_Header))
-					{																		
-						ImGui::DragFloat3("Position##mesh", glm::value_ptr(comp.Transform.Position), 0.05f, -100.f, 100.f, "%.1f");
-						glm::vec3 angle = comp.Transform.Euler.angle();
-						ImGui::DragFloat3("Rotation##mesh", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
-						comp.Transform.Euler = angle;
-						ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");							
-					}
+		if (meshBase)
+		{
+			const Submesh &submesh = meshBase->getMeshSource()->getSubmeshes()[submeshIdx];
+			const float rowWidth = m_layoutParam.Viewport.Width;
+			float cbWidth = 0.2f * rowWidth;
+			float inTextWidth = 0.8f * rowWidth;
+			// Visibility checkbox
+			ImGui::PushItemWidth(cbWidth);
+			ImGui::Checkbox("##mesh_visibility", &bVisibleUI);
+			ImGui::PopItemWidth();
+
+			ImGui::SameLine();
+			// Mesh name
+			ImGui::PushItemWidth(inTextWidth);
+			ImGui::InputText("##submesh_name", const_cast<char *>(submesh.MeshName.c_str()),
+							 submesh.MeshName.size(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::PopItemWidth();
+
+			if (ent->hasComponent<TransformComponent>())
+			{
+				TransformComponent &comp = ent->getComponent<TransformComponent>();
+				if (ImGui::CollapsingHeader("Transform##Mesh", ImGuiUtils::Flag_Collapse_Header))
+				{
+					ImGui::DragFloat3("Position##mesh", glm::value_ptr(comp.Transform.Position), 0.05f, -100.f, 100.f, "%.1f");
+					glm::vec3 angle = comp.Transform.Euler.angle();
+					ImGui::DragFloat3("Rotation##mesh", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
+					comp.Transform.Euler = angle;
+					ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");
 				}
+			}
+		}
+
+		if (bVisible != bVisibleUI)
+		{
+			if (ent->hasComponent<MeshComponent>())
+			{
+				auto &meshComp = ent->getComponent<MeshComponent>();
+				meshComp.Visible = bVisibleUI;
+			}
+			else if (ent->hasComponent<StaticMeshComponent>())
+			{
+				auto &meshComp = ent->getComponent<StaticMeshComponent>();
+				meshComp.Visible = bVisibleUI;
 			}
 		}
 	}

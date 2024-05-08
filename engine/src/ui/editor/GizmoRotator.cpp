@@ -143,7 +143,7 @@ namespace pio
 
 		auto *e = event.as<MouseButtonPressedEvent>();
 		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera, true));
 
 		if (onHit(query)) { m_lastHitPt = query.HitPt; }
 		//if (query.Hit) LOGD("Press");
@@ -205,11 +205,8 @@ namespace pio
 			}
 			return true;
 		}
-		else
-		{
-			onMouseMoveHovering(event);
-			return false;
-		}
+		
+		return false;
 	}
 
 	bool GizmoRotator::onMouseScrolled(Event &event)
@@ -231,6 +228,8 @@ namespace pio
 	bool GizmoRotator::onMouseMoveHovering(Event &event)
 	{
 		if (!bVisible()) return false;
+
+		cancelHovering();
 
 		auto *e = event.as<MouseMovedEvent>();
 		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
@@ -256,6 +255,7 @@ namespace pio
 			setHoveringAxis(EditorAxis_Z);
 			return true;
 		}
+
 		return false;
 	}
 }

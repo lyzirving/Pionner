@@ -18,23 +18,28 @@ namespace pio
 {
 	struct MeshBuildParam
 	{
+		Ref<MeshSource> meshSrc;
+		Ref<PhysicsScene> physicWorld;
 		RigidBodyComponent::Type RigidType{ RigidBodyComponent::Type::None };
 		RenderState State{};
 		Ref<Entity> Parent;
 	};
 
 	template <typename MeshT, typename MeshCompT, typename ... Comps>
-	Ref<Asset> BuildMesh(Ref<MeshSource> &meshSrc, Ref<PhysicsScene> &physicsScene, const MeshBuildParam &param)
+	Ref<Asset> BuildMesh(const MeshBuildParam &param)
 	{
+		Ref<MeshSource> meshSrc = param.meshSrc;
+		Ref<PhysicsScene> physicsScene = param.physicWorld;
+
 		Ref<Entity> hostEnt = Registry::Get()->create<RelationshipComponent, MeshSourceComponent>(NodeType::MeshSource);
 		hostEnt->getComponent<MeshSourceComponent>().SourceHandle = meshSrc->getHandle();
 
 		PIO_RELATION_SET_TAG(hostEnt, meshSrc->getName());
-		PIO_RELATION_SET_SELF_INDEX(hostEnt, hostEnt->getCacheIndex());
+		PIO_RELATION_SET_SELF(hostEnt);
 		if (param.Parent) 
 		{	
-			PIO_RELATION_SET_PARENT_INDEX(hostEnt, param.Parent->getCacheIndex());
-			PIO_RELATION_SET_CHILD_INDEX(param.Parent, hostEnt->getCacheIndex());
+			PIO_RELATION_SET_PARENT(hostEnt, param.Parent);
+			PIO_RELATION_SET_CHILD(param.Parent, hostEnt);
 		}
 
 		Ref<MeshT> result = AssetsManager::CreateRuntimeAssets<MeshT>(meshSrc);
@@ -58,9 +63,9 @@ namespace pio
 			submeshes[i].Ent = ent;
 
 			PIO_RELATION_SET_TAG(ent, submeshes[i].MeshName);
-			PIO_RELATION_SET_SELF_INDEX(ent, ent->getCacheIndex());
-			PIO_RELATION_SET_CHILD_INDEX(hostEnt, ent->getCacheIndex());
-			PIO_RELATION_SET_PARENT_INDEX(ent, hostEnt->getCacheIndex());			
+			PIO_RELATION_SET_SELF(ent);
+			PIO_RELATION_SET_CHILD(hostEnt, ent);
+			PIO_RELATION_SET_PARENT(ent, hostEnt);			
 
 			if (ent->hasComponent<MeshComponent>())
 			{
@@ -86,7 +91,10 @@ namespace pio
 				AABB aabb(submeshes[i].Transform * glm::vec4(submeshes[i].BoundingBox.Min, 1.f),
 						  submeshes[i].Transform * glm::vec4(submeshes[i].BoundingBox.Max, 1.f));				
 				BoxColliderComponent &comp = ent->getComponent<BoxColliderComponent>();
-				comp.HalfSize = 0.5f * glm::vec3(aabb.lenX(), aabb.lenY(), aabb.lenZ());
+				//comp.HalfSize = 0.5f * glm::vec3(aabb.lenX(), aabb.lenY(), aabb.lenZ());
+				comp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f,
+										  Math::IsZero(aabb.lenY() * 0.5f) ? 1e-3 : aabb.lenY() * 0.5f,
+										  Math::IsZero(aabb.lenZ() * 0.5f) ? 1e-3 : aabb.lenZ() * 0.5f);
 				comp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
 				physicsScene->createActor<MeshCompT>(ent, param.RigidType);
 			}
@@ -96,15 +104,15 @@ namespace pio
 	}
 
 	template <typename ... Comps>
-	Ref<Asset> CreateDynamicMesh(Ref<MeshSource> &meshSrc, Ref<PhysicsScene> &world, const MeshBuildParam &param)
+	Ref<Asset> CreateDynamicMesh(const MeshBuildParam &param)
 	{
-		return BuildMesh<Mesh, MeshComponent, Comps...>(meshSrc, world, param);
+		return BuildMesh<Mesh, MeshComponent, Comps...>(param);
 	}
 
 	template <typename ... Comps>
-	Ref<Asset> CreateStaticMesh(Ref<MeshSource> &meshSrc, Ref<PhysicsScene> &world, const MeshBuildParam &param)
+	Ref<Asset> CreateStaticMesh(const MeshBuildParam &param)
 	{
-		return BuildMesh<StaticMesh, StaticMeshComponent, Comps...>(meshSrc, world, param);
+		return BuildMesh<StaticMesh, StaticMeshComponent, Comps...>(param);
 	}
 }
 

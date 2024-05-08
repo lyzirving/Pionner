@@ -586,7 +586,7 @@ namespace pio
 	bool MotionControlLayer::onHandleObject3dClick(const glm::vec2 &winCursor)
 	{
 		glm::ivec2 viewportPt = ScreenToViewport(winCursor, m_layoutParam);
-		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera);
+		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera, true);
 
 		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
 		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(ray);
@@ -674,9 +674,9 @@ namespace pio
 
 	bool MotionControlLayer::onMouseMoveSceneItem(Event &event)
 	{
-		if (MotionController::bObj3dSelectd() || MotionController::bSpriteSelectd())
+		MotionCtlMode mode = MotionController::GetMode();
+		if (MotionController::bTarget(MotionTarget_Object3D) || MotionController::bTarget(MotionTarget_Sprite))
 		{
-			MotionCtlMode mode = MotionController::GetMode();
 			switch (mode)
 			{
 				case MotionCtlMode::MotionCtl_Move:
@@ -708,6 +708,24 @@ namespace pio
 			auto *p = event.as<MouseMovedEvent>();
 			m_winCursor.x = p->getCursorX(); m_winCursor.y = p->getCursorY();
 			return true;
+		}
+		else
+		{
+			switch (mode)
+			{
+				case MotionCtlMode::MotionCtl_Move:
+				{
+					m_gizmoTransform->onMouseMoveHovering(event);
+					break;
+				}
+				case MotionCtlMode::MotionCtl_Rotation:
+				{
+					m_gizmoRotator->onMouseMoveHovering(event);
+					break;
+				}
+				default:
+					break;
+			}
 		}
 		return false;
 	}

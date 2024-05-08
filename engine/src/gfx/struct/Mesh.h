@@ -82,10 +82,10 @@ namespace pio
 		// Which means each vertex has its corresponding bone influence.
 		std::vector<BoneInfluence> BoneInfluences;
 
-		Ref<VertexArray> VertexArray{};
+		Ref<VertexArray>  VertexArray{};
 		Ref<VertexBuffer> BoneInfluenceBuffer{};
 		Ref<VertexBuffer> VertexBuffer{};
-		Ref<IndexBuffer> IndexBuffer{};
+		Ref<IndexBuffer>  IndexBuffer{};
 
 		Ref<Entity> Ent;
 	};

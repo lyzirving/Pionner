@@ -26,7 +26,7 @@ namespace pio
 		* @param viewportPt: touch point on screen, which is viewport coordinate, viewport's (0, 0) is left bottom
 		* @param camera: camera of current screen
 		*/
-		static Ray BuildFromScreen(const glm::vec2 &viewportPt, const Camera &camera);
+		static Ray BuildFromScreen(const glm::vec2 &viewportPt, const Camera &camera, bool bDraw = false);
 		static glm::vec3 PointOnNearPlane(const glm::vec2 &viewportPt, const Camera &camera);
 
 	public:

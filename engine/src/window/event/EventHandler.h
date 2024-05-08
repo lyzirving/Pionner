@@ -11,6 +11,7 @@ namespace pio
 		virtual bool onMouseButtonPressed(Event &event) = 0;
 		virtual bool onMouseButtonReleased(Event &event) = 0;
 		virtual bool onMouseMoved(Event &event) = 0;
+		virtual bool onMouseMoveHovering(Event &event) { return false; }
 		virtual bool onMouseScrolled(Event &event) = 0;
 	};
 }

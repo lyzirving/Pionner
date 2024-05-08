@@ -23,6 +23,7 @@ namespace pio
 		virtual bool onMouseButtonPressed(Event &event) override;
 		virtual bool onMouseButtonReleased(Event &event) override;
 		virtual bool onMouseMoved(Event &event) override;
+		virtual bool onMouseMoveHovering(Event &event) override;
 		virtual bool onMouseScrolled(Event &event) override;
 
 		void setTranslation(float x, float y, float z);
@@ -33,8 +34,6 @@ namespace pio
 		glm::vec3 getTransferDiff() const { return m_transferDiff; }
 
 	private:
-		bool onMouseMoveHovering(Event &event);
-
 		void setSelectedAxis(EditorAxis axis) { m_selectedAxis = axis; }
 		void cancelSelection() { setSelectedAxis(EditorAxis_Num); }
 		void setHoveringAxis(EditorAxis axis) { m_hoveringAxis = axis; }

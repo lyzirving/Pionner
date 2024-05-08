@@ -186,18 +186,21 @@ namespace pio
 		uint32_t SelectedEntIndex{ NullIndex };
 	};
 
-	#define PIO_RELATION_SET_TAG(pEnt, tag) if(pEnt && pEnt->hasComponent<RelationshipComponent>()) { pEnt->getComponent<RelationshipComponent>().Tag = tag; } 
-	#define PIO_RELATION_SET_SELF_INDEX(pEnt, self) if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
-										      { pEnt->getComponent<RelationshipComponent>().Self = self; }
-	#define PIO_RELATION_SET_PARENT_INDEX(pEnt, parentIndex) if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
-													   { pEnt->getComponent<RelationshipComponent>().ParentIndex = parentIndex; }
-	#define PIO_RELATION_SET_CHILD_INDEX(pEnt, childIndex)  if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
-													  {\
-														auto &comp = pEnt->getComponent<RelationshipComponent>();\
-														auto &children = comp.Children;\
-														auto it = std::find(children.begin(), children.end(), childIndex);\
-														if(it == children.end()) { children.push_back(childIndex); }\
-												      }
+	#define PIO_RELATION_SET_TAG(pEnt, tag) if(pEnt && pEnt->hasComponent<RelationshipComponent>()) { pEnt->getComponent<RelationshipComponent>().Tag = tag; }
+
+	#define PIO_RELATION_SET_SELF(pEnt) if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
+										{ pEnt->getComponent<RelationshipComponent>().Self = pEnt->getCacheIndex(); }
+
+	#define PIO_RELATION_SET_PARENT(pEnt, pParent) if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
+												   { pEnt->getComponent<RelationshipComponent>().ParentIndex = pParent->getCacheIndex(); }
+
+	#define PIO_RELATION_SET_CHILD(pEnt, pChild)  if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
+												  {\
+												     auto &comp = pEnt->getComponent<RelationshipComponent>();\
+												     auto &children = comp.Children;\
+												     auto it = std::find(children.begin(), children.end(), pChild->getCacheIndex());\
+												     if(it == children.end()) { children.push_back(pChild->getCacheIndex()); }\
+												  }
 }
 
 #endif

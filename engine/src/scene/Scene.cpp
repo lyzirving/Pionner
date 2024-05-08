@@ -103,9 +103,9 @@ namespace pio
 
 		auto &rlComp = ent->getComponent<RelationshipComponent>();
 		PIO_RELATION_SET_TAG(ent, light.Name);
-		PIO_RELATION_SET_SELF_INDEX(ent, ent->getCacheIndex());
-		PIO_RELATION_SET_PARENT_INDEX(ent, sceneRoot->getCacheIndex());
-		PIO_RELATION_SET_CHILD_INDEX(sceneRoot, ent->getCacheIndex());
+		PIO_RELATION_SET_SELF(ent);
+		PIO_RELATION_SET_PARENT(ent, sceneRoot);
+		PIO_RELATION_SET_CHILD(sceneRoot, ent);
 
 		auto &spriteComp = ent->getComponent<SpriteComponent>();
 		spriteComp.Visible = true;
@@ -291,7 +291,7 @@ namespace pio
 		// Scene and Physics
 		m_sceneRoot = s_registry->create<SceneComponent, RelationshipComponent>(NodeType::Scene);
 		PIO_RELATION_SET_TAG(m_sceneRoot, "MyScene");
-		PIO_RELATION_SET_SELF_INDEX(m_sceneRoot, m_sceneRoot->getCacheIndex());
+		PIO_RELATION_SET_SELF(m_sceneRoot);
 		auto &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
 		sceneComp.Primary = true;
 		sceneComp.Simulate = false;
@@ -324,10 +324,10 @@ namespace pio
 			lightComp.Intensity = m_lightEnv.DirectionalLight.Intensity;
 
 			auto &rlComp = ent->getComponent<RelationshipComponent>();
-			PIO_RELATION_SET_TAG(ent, "MainLight");
-			PIO_RELATION_SET_SELF_INDEX(ent, ent->getCacheIndex());
-			PIO_RELATION_SET_PARENT_INDEX(ent, m_sceneRoot->getCacheIndex());
-			PIO_RELATION_SET_CHILD_INDEX(m_sceneRoot, ent->getCacheIndex());
+			PIO_RELATION_SET_TAG(ent, "Sun");
+			PIO_RELATION_SET_SELF(ent);
+			PIO_RELATION_SET_PARENT(ent, m_sceneRoot);
+			PIO_RELATION_SET_CHILD(m_sceneRoot, ent);
 
 			TextureSpecification spec; 
 			spec.FlipVerticalWhenLoad = true;
@@ -340,10 +340,7 @@ namespace pio
 			spriteComp.Name = rlComp.Tag;	
 			spriteComp.QuadMesh = MeshFactory::CreateScreenQuad(0, 0, 1, 1, 1, 1)->getHandle(); 
 			spriteComp.Texture = icon->getHandle();
-			spriteComp.State.DepthTest = DepthTest::Disable();
-			spriteComp.State.Blend = Blend::Common();
-			spriteComp.State.Cull = CullFace::Common();
-			spriteComp.State.Stencil.Enable = false;
+			spriteComp.State = RenderState(Blend::Common(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable());
 		}
 
 		//Point Light
@@ -369,37 +366,13 @@ namespace pio
 
 		// Plane
 		{			
-			Ref<Entity> ent = Registry::Get()->create<MeshSourceComponent, RelationshipComponent>(NodeType::MeshSource);
-			Ref<MeshSource> planeMs = MeshFactory::CreatePlane();
-			Ref<StaticMesh> planeMsAst = AssetsManager::CreateRuntimeAssets<StaticMesh>(planeMs);
-			auto &submeshes = const_cast<std::vector<Submesh> &>(planeMs->getSubmeshes());
-			for (uint32_t i = 0; i < submeshes.size(); i++)
-			{				
-				auto ent = s_registry->create<StaticMeshComponent, TransformComponent, BoxColliderComponent>(NodeType::Mesh);
-				const AABB &aabb = submeshes[i].BoundingBox;
-				submeshes[i].Ent = ent;
-				auto &comp = ent->getComponent<StaticMeshComponent>();
-				comp.Handle = planeMsAst->getHandle();
-				comp.SourceHandle = planeMs->getHandle();
-				comp.SubmeshIndex = i;
-				comp.Visible = true;
-				comp.State.Blend = Blend::Disable();
-
-				auto &boxComp = ent->getComponent<BoxColliderComponent>();
-				// one dimension's length of plane might be zero
-				boxComp.HalfSize = glm::vec3(Math::IsZero(aabb.lenX() * 0.5f) ? 1e-3 : aabb.lenX() * 0.5f,
-											 Math::IsZero(aabb.lenY() * 0.5f) ? 1e-3 : aabb.lenY() * 0.5f,
-											 Math::IsZero(aabb.lenZ() * 0.5f) ? 1e-3 : aabb.lenZ() * 0.5f);
-				boxComp.Material = PhysicsSystem::Get()->getMaterial(PhysicsMatType::Normal);
-				physicsScene->createActor<StaticMeshComponent>(ent, RigidBodyComponent::Type::Static);
-			}
-			auto &meshSrcComp = ent->getComponent<MeshSourceComponent>();
-			meshSrcComp.SourceHandle = planeMs->getHandle();
-			auto &rlComp = ent->getComponent<RelationshipComponent>();
-			PIO_RELATION_SET_TAG(ent, planeMs->getName());
-			PIO_RELATION_SET_SELF_INDEX(ent, ent->getCacheIndex());
-			PIO_RELATION_SET_PARENT_INDEX(ent, m_sceneRoot->getCacheIndex());
-			PIO_RELATION_SET_CHILD_INDEX(m_sceneRoot, ent->getCacheIndex());
+			MeshBuildParam param;
+			param.meshSrc = MeshFactory::CreatePlane();
+			param.physicWorld = AssetsManager::GetRuntimeAsset<PhysicsScene>(m_sceneRoot->getComponent<SceneComponent>().PhycisScene);
+			param.State = RenderState(Blend::Disable(), DepthTest::Common(), CullFace::Common(), StencilTest::Disable());
+			param.RigidType = RigidBodyComponent::Type::Static;
+			param.Parent = m_sceneRoot;
+			CreateStaticMesh<BoxColliderComponent>(param);
 		}
 
 		EventBus::Get()->submit([]()
@@ -431,15 +404,13 @@ namespace pio
 					case AssetType::MeshSource:
 					{
 						Ref<MeshSource> meshSrc = RefCast<Asset, MeshSource>(arg.Assets);
-						auto &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
-						Ref<PhysicsScene> world = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene);
 						MeshBuildParam param; 
-						param.State.Blend = Blend::Disable();
-						param.State.Cull = CullFace::Disable();
-						param.State.Stencil = StencilTest::Disable();
+						param.meshSrc = meshSrc;
+						param.physicWorld = AssetsManager::GetRuntimeAsset<PhysicsScene>(m_sceneRoot->getComponent<SceneComponent>().PhycisScene);
+						param.State = RenderState(Blend::Disable(), DepthTest::Common(), CullFace::Common(), StencilTest::Disable());
 						param.RigidType = RigidBodyComponent::Type::Dynamic;
 						param.Parent = m_sceneRoot;
-						auto asset = CreateDynamicMesh<BoxColliderComponent>(meshSrc, world, param);
+						auto asset = CreateDynamicMesh<BoxColliderComponent>(param);
 						LOGD("mesh source[%s] is parsed, uid[%u]", meshSrc->getName().c_str(), (uint32_t)asset->getHandle());
 						break;
 					}

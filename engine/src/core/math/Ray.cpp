@@ -11,7 +11,7 @@
 
 namespace pio
 {
-	Ray Ray::BuildFromScreen(const glm::vec2 &viewportPt, const Camera &camera)
+	Ray Ray::BuildFromScreen(const glm::vec2 &viewportPt, const Camera &camera, bool bDraw)
 	{
 		float far = camera.far();
 		float near = camera.near();
@@ -46,7 +46,7 @@ namespace pio
 		camPt = invRot * camPt;
 		camPt += camPos;
 
-		if (Renderer::GetConfig().Debugger.Raycast)
+		if (Renderer::GetConfig().Debugger.Raycast && bDraw)
 		{
 			// adjust the point in frustum for GDebuger visualization
 			glm::vec3 pos = camPos;
