@@ -33,10 +33,11 @@ namespace pio
 		void setRoughnessMap(const Ref<Texture2D> &texture);
 		void setNormalMap(const Ref<Texture2D> &texture);
 
-		inline Ref<Material> getMaterial() const { return m_material; }
-		inline void setMaterial(const Ref<Material> &material) { m_material = material; }
-		inline void setCastShadow(bool cast) { m_material->setFlag(MaterialFlag::ShadowCasting, cast); }
-		inline bool isCastingShadow() { return m_material->getFlag(MaterialFlag::ShadowCasting); };
+		const std::string &getName() const { return m_material->getName(); }
+		Ref<Material> getMaterial() const { return m_material; }
+		void setMaterial(const Ref<Material> &material) { m_material = material; }
+		void setCastShadow(bool cast) { m_material->setFlag(MaterialFlag::ShadowCasting, cast); }
+		bool isCastingShadow() { return m_material->getFlag(MaterialFlag::ShadowCasting); };
 
 	private:
 		Ref<Material> m_material;
@@ -56,12 +57,12 @@ namespace pio
 		void clear(uint32_t index);
 		void clearAll();
 
-		inline bool exist(uint32_t index) const { return m_materials.find(index) != m_materials.end(); }
-		inline AssetHandle operator[](uint32_t index) const { if (exist(index)) { return m_materials.at(index); } else { return AssetHandle(0); } }
-		inline uint32_t getNum() const { return m_materialCount; }
+		bool exist(uint32_t index) const { return m_materials.find(index) != m_materials.end(); }
+		AssetHandle operator[](uint32_t index) const { if (exist(index)) { return m_materials.at(index); } else { return AssetHandle(0); } }
+		uint32_t getNum() const { return m_materialCount; }
 
-		inline std::map<uint32_t, AssetHandle>::iterator begin() { return m_materials.begin(); }
-		inline std::map<uint32_t, AssetHandle>::iterator end() { return m_materials.end(); }
+		std::map<uint32_t, AssetHandle>::iterator begin() { return m_materials.begin(); }
+		std::map<uint32_t, AssetHandle>::iterator end() { return m_materials.end(); }
 
 	private:
 		std::map<uint32_t, AssetHandle> m_materials;

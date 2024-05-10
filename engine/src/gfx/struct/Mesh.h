@@ -189,12 +189,12 @@ namespace pio
 		virtual ~MeshBase();
 
 	public:
-		inline uint32_t getSubmeshNum() const { return m_submeshIndex.size(); }
-		inline const std::vector<uint32_t> &getSubmeshIndex() const { return m_submeshIndex; }
-		inline const Ref<MeshSource> &getMeshSource() const { return m_meshSource; }
+		uint32_t getSubmeshNum() const { return m_submeshIndex.size(); }
+		const std::vector<uint32_t> &getSubmeshIndex() const { return m_submeshIndex; }
+		const Ref<MeshSource> &getMeshSource() const { return m_meshSource; }
 
-		inline Ref<MaterialTable> &getMaterialTable() { return m_materialTable; }
-		inline const Ref<MaterialTable> &getMaterialTable() const { return m_materialTable; }
+		Ref<MaterialTable> &getMaterialTable() { return m_materialTable; }
+		const Ref<MaterialTable> &getMaterialTable() const { return m_materialTable; }
 
 	private:
 		void createMaterialTable(const std::vector<Ref<Material>> &materials);

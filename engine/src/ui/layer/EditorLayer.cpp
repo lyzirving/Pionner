@@ -12,6 +12,7 @@
 
 #include "gfx/renderer/Renderer.h"
 #include "gfx/struct/Mesh.h"
+#include "gfx/struct/MaterialAsset.h"
 #include "gfx/debug/GDebugger.h"
 
 #include "ui/ImGuiUtils.h"
@@ -410,6 +411,97 @@ namespace pio
 					comp.Transform.Euler = angle;
 					ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");
 				}
+			}
+
+			Ref<MaterialTable> mt = meshBase->getMaterialTable();
+			Ref<MaterialAsset> ma = AssetsManager::GetRuntimeAsset<MaterialAsset>((*mt)[submesh.MaterialIndex]);
+			if (ma && ImGui::CollapsingHeader("Material##Mesh", ImGuiUtils::Flag_Collapse_Header))
+			{
+				float metallic, metallic_ui;
+				float roughness, roughness_ui;
+				float emission, emission_ui;
+				std::string name = ma->getName();
+				ImVec2 sz = ImVec2(-FLT_MIN, 0.0f);
+
+				metallic = metallic_ui = ma->getMetalness();
+				roughness = roughness_ui = ma->getRoughness();
+				emission = emission_ui = ma->getEmission();
+
+				ImGui::PushItemWidth(rowWidth);
+				ImGui::InputText("##material_name", const_cast<char *>(name.c_str()), name.size(), ImGuiInputTextFlags_ReadOnly);
+				ImGui::PopItemWidth();
+
+				if (ImGui::TreeNode("Albedo##Mesh"))
+				{			
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Texture  ");
+					ImGui::SameLine();
+					ImGui::BeginDisabled();
+					ImGui::Button("Empty", sz);
+					ImGui::EndDisabled();
+
+					ImGui::TreePop();
+				}
+
+				if (ImGui::TreeNode("Metallic##Mesh"))
+				{
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Metallic");
+					ImGui::SameLine();
+					ImGui::DragFloat("##Material_Metallic", &metallic_ui, 0.005f, 0.0f, 1.0f, "%.3f");		
+
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Texture ");
+					ImGui::SameLine();
+					ImGui::BeginDisabled();
+					ImGui::Button("Empty", sz);
+					ImGui::EndDisabled();
+
+					ImGui::TreePop();
+				}
+
+				if (ImGui::TreeNode("Roughness##Mesh"))
+				{
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Roughness");
+					ImGui::SameLine();
+					ImGui::DragFloat("##Material_Roughness", &roughness_ui, 0.005f, 0.0f, 1.0f, "%.3f");
+
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Texture  ");
+					ImGui::SameLine();
+					ImGui::BeginDisabled();
+					ImGui::Button("Empty", sz);
+					ImGui::EndDisabled();
+
+					ImGui::TreePop();
+				}
+
+				if (ImGui::TreeNode("Emission##Mesh"))
+				{
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Roughness");
+					ImGui::SameLine();
+					ImGui::DragFloat("##Material_Emission", &emission_ui, 0.005f, 0.0f, 1.0f, "%.3f");
+
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("Texture  ");
+					ImGui::SameLine();
+					ImGui::BeginDisabled();
+					ImGui::Button("Empty", sz);
+					ImGui::EndDisabled();
+
+					ImGui::TreePop();
+				}
+
+				if (!Math::Equal(metallic, metallic_ui)) 
+					ma->setMetalness(metallic_ui);
+
+				if (!Math::Equal(roughness, roughness_ui))
+					ma->setRoughness(roughness_ui);
+
+				if (!Math::Equal(emission, emission_ui))
+					ma->setEmission(emission_ui);
 			}
 		}
 
