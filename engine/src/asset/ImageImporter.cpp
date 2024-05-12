@@ -1,5 +1,5 @@
 #include "ImageImporter.h"
-#include "StbUtils.h"
+#include "ImageUtils.h"
 
 #include "asset/AssetsManager.h"
 

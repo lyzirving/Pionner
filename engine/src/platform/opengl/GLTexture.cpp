@@ -2,7 +2,7 @@
 #include "GLHelper.h"
 
 #include "gfx/renderer/RenderData.h"
-#include "asset/StbUtils.h"
+#include "asset/ImageUtils.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -22,7 +22,7 @@ namespace pio
 
 	GLTexture2D::GLTexture2D(const std::string &path, const TextureSpecification &spec)
 		: Texture2D(), GLTexture()/*use GLTexture() to ignore invalod log print*/
-	{
+	{		
 		m_spec = spec;
 		uint64_t start = TimeUtil::CurrentTimeMs();
 		if(spec.FlipVerticalWhenLoad)

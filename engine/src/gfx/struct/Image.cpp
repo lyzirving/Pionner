@@ -1,6 +1,6 @@
 #include "Image.h"
 
-#include "asset/StbUtils.h"
+#include "asset/ImageUtils.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

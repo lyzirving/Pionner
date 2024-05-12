@@ -35,10 +35,10 @@ namespace pio
 		void extend(uint64_t cap);
 
 	public:
-		inline uint64_t getCapacity() const { return m_capacity; }
-		inline uint64_t getSize() const { return m_offset; }
-		inline bool valid() const { return m_offset <= m_capacity; }
-		inline bool invalid() const { return !valid(); }
+		uint64_t getCapacity() const { return m_capacity; }
+		uint64_t getSize() const { return m_offset; }
+		bool valid() const { return m_offset <= m_capacity; }
+		bool invalid() const { return !valid(); }
 
 		operator bool() const { return m_data != nullptr; }
 		byte &operator[](int index) { return ((byte *)m_data)[index]; }

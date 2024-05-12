@@ -2,6 +2,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/material.h>
+#include <assimp/version.h>
 #include <limits>
 
 #include "AssimpMeshImporter.h"
@@ -18,6 +19,7 @@
 #include "gfx/rhi/Material.h"
 
 #include "asset/AssetsManager.h"
+#include "asset/ImageUtils.h"
 
 #include "animation/Animation.h"
 #include "animation/Skeleton.h"
@@ -62,6 +64,9 @@ namespace pio
 			LOGE("fail to find assets[%s][%s]", m_assetsDir.c_str(), AssetsManager::GetFmtPostfix(m_fmt));
 			return Ref<Asset>();
 		}
+
+		uint32_t major = aiGetVersionMajor(); uint32_t minor = aiGetVersionMinor();
+		LOGD("begin to load [%s] by assimp[%d.%d]", absPath.c_str(), major, minor);
 
 		Assimp::Importer importer;
 		const aiScene *scene = importer.ReadFile(absPath.c_str(), s_meshImportFlags);
@@ -285,17 +290,19 @@ namespace pio
 				float roughness{ 0.5f }, metalness{ 0.f }, emission{ 0.f };
 
 				aiColor3D aiColor, aiEmission;
+				ai_real aiFloat{ 0.f };
+				ai_int  aiInt{ 0 };
 				if (aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) == AI_SUCCESS)
 					albedoColor = { aiColor.r, aiColor.g, aiColor.b };
 
 				if (aiMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, aiEmission) == AI_SUCCESS)
 					emission = aiEmission.r;
 
-				if (aiMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) != aiReturn_SUCCESS)
-					roughness = 0.5f; // if fail, set default value
+				if (aiMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, aiFloat) == AI_SUCCESS)
+					roughness = aiFloat;
 
-				if (aiMaterial->Get(AI_MATKEY_REFLECTIVITY, metalness) != aiReturn_SUCCESS)
-					metalness = 0.0f; // if fail, set default value
+				if (aiMaterial->Get(AI_MATKEY_METALLIC_FACTOR, aiFloat) == AI_SUCCESS)
+					metalness = aiFloat;
 
 				aiString aiTexPath;
 				bool hasAlbedoMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
@@ -385,9 +392,9 @@ namespace pio
 					mi->set(MaterialAttrs::MU_NormalTexture, whiteTexture);
 					mi->set(MaterialAttrs::MU_UseNormalMap, false);
 				}
-
+				
 				// Roughness map
-				bool hasRoughnessMap = aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexPath) == AI_SUCCESS;
+				/*bool hasRoughnessMap = aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexPath) == AI_SUCCESS;
 				fallback = !hasRoughnessMap;
 				if (hasRoughnessMap)
 				{
@@ -414,12 +421,13 @@ namespace pio
 				{
 					mi->set(MaterialAttrs::MU_RoughnessTexture, whiteTexture);
 					mi->set(MaterialAttrs::MU_Roughness, roughness);
-				}
+				}*/
 
-				bool hasMetalnessMap = aiMaterial->GetTexture(aiTextureType_METALNESS, 0, &aiTexPath) == AI_SUCCESS;
-				fallback = !hasMetalnessMap;
-				if (hasMetalnessMap)
-				{
+				bool hasMetallicMap = aiMaterial->GetTexture(AI_MATKEY_METALLIC_TEXTURE, &aiTexPath) == AI_SUCCESS;
+				bool hasMetallicRoughness = hasMetallicMap && StringUtil::contains(aiTexPath.C_Str(), "roughness");
+				fallback = !hasMetallicMap && !hasMetallicRoughness;				
+				if (hasMetallicRoughness)
+				{			
 					TextureSpecification spec;
 					spec.Name = aiTexPath.C_Str();
 					spec.SRGB = true;
@@ -429,20 +437,67 @@ namespace pio
 					Ref<Texture2D> texture = AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
 					if (texture)
 					{
-						mi->set(MaterialAttrs::MU_MetalnessTexture, texture);
+
+						mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, texture);
 						mi->set(MaterialAttrs::MU_Metalness, 1.f);
+						mi->set(MaterialAttrs::MU_Roughness, 1.f);
 					}
 					else
 					{
-						LOGE("mesh failed to load metalness texture[%s]", aiTexPath.C_Str());
+						LOGE("mesh failed to load metallic-roughness texture from file [%s]", aiTexPath.C_Str());
 						fallback = true;
 					}
 				}
+				else if (hasMetallicMap)
+				{					
+					std::string texName = aiMaterialName.C_Str();
+					texName += "_metallicRoughness";
+					Ref<Texture2D> metallicRoughnessTex = AssetsManager::GetPackedAsset<Texture2D>(texName);
 
+					std::string path = m_assetsDir + aiTexPath.C_Str();
+					int32_t width{ 0 }, height{ 0 }, component{ 0 };
+
+					if (!metallicRoughnessTex)
+					{						
+						if (ImageUtils::GetPicInfo(path.c_str(), width, height, component))
+						{							
+							uint32_t size = width * height * 3 * sizeof(uint8_t);
+							auto *data = (uint8_t *)std::malloc(size);
+							std::memset(data, 255, size);
+							Ref<Buffer> buffer = CreateRef<Buffer>(data, size);
+
+							TextureSpecification spec;
+							spec.Name = texName;
+							spec.SRGB = true;
+
+							metallicRoughnessTex = Texture2D::Create(spec, buffer);
+						}
+						else
+						{
+							LOGE("fail to get image info[%f]", path.c_str());
+							fallback = true;
+						}
+					}	
+
+					if (metallicRoughnessTex)
+					{
+						// Read R channel only
+						uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, 1);
+						fallback = !(data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 1));
+						if (fallback)
+						{
+							LOGE("fail to get image's R channel data for metallic [%s]", path.c_str());
+						}			
+					}
+				}
+
+				// TODO: to be deleted
+				fallback = true;
 				if (fallback)
 				{
-					mi->set(MaterialAttrs::MU_MetalnessTexture, whiteTexture);
+					mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, whiteTexture);
 					mi->set(MaterialAttrs::MU_Metalness, metalness);
+					mi->set(MaterialAttrs::MU_Roughness, roughness);
 				}
 
 				// TODO: parse ambient occlusion
