@@ -17,8 +17,6 @@ namespace pio
 
 		static const char *MU_AlbedoTexture = "u_material.AlbedoTexture";
 		static const char *MU_EmissionTexture = "u_material.EmissionTexture";
-		static const char *MU_RoughnessTexture = "u_material.RoughnessTexture";
-		static const char *MU_MetalnessTexture = "u_material.MetalnessTexture";		
 		static const char *MU_MetallicRoughnessTexture = "u_material.MetallicRoughnessTexture";// R: metallic, G: roughness
 		static const char *MU_NormalTexture = "u_material.NormalTexture";
 		static const char *MU_AOTexture = "u_material.AOTexture";
@@ -50,6 +48,7 @@ namespace pio
 		virtual void unbind() = 0;
 
 		virtual void set(const std::string &name, const Ref<Texture2D> &texture) = 0;
+		virtual bool hasTexture2D(const std::string &name) = 0;
 		virtual Ref<Texture2D> getTexture2D(const std::string &name) = 0;
 
 		virtual const std::string &getName() const = 0;

@@ -20,8 +20,7 @@ namespace pio
 
 		Ref<Texture2D> getAlbedoMap();
 		Ref<Texture2D> getNormalMap();
-		Ref<Texture2D> getMetalnessMap();
-		Ref<Texture2D> getRoughnessMap();
+		Ref<Texture2D> getMetallicRoughnessMap();
 		
 		void setAlbedoColor(const glm::vec3 &color);
 		void setMetalness(float value);
@@ -29,8 +28,7 @@ namespace pio
 		void setEmission(float value);
 
 		void setAlbedoMap(const Ref<Texture2D> &texture);
-		void setMetalnessMap(const Ref<Texture2D> &texture);
-		void setRoughnessMap(const Ref<Texture2D> &texture);
+		void setMetallicRoughnessMap(const Ref<Texture2D> &texture);
 		void setNormalMap(const Ref<Texture2D> &texture);
 
 		const std::string &getName() const { return m_material->getName(); }

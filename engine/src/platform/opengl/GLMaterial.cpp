@@ -197,6 +197,25 @@ namespace pio
 		}
 	}
 
+	bool GLMaterial::hasTexture2D(const std::string &name)
+	{
+		return m_textures.find(name) != m_textures.end();
+	}
+
+	Ref<Texture2D> GLMaterial::getTexture2D(const std::string &name)
+	{
+		Ref<Texture2D> ret;
+		auto it = m_textures.find(name);
+		if (it != m_textures.end())
+		{
+			if (it->second.Texture)
+			{
+				ret = RefCast<Texture, Texture2D>(it->second.Texture);
+			}
+		}
+		return ret;
+	}
+
 	float GLMaterial::getFloat(const std::string &name)
 	{
 		float out;
@@ -275,20 +294,6 @@ namespace pio
 			return out;
 		}
 		return glm::mat4(1.f);
-	}
-
-	Ref<Texture2D> GLMaterial::getTexture2D(const std::string &name)
-	{
-		Ref<Texture2D> ret;
-		auto it = m_textures.find(name);
-		if (it != m_textures.end())
-		{
-			if (it->second.Texture)
-			{
-				ret = RefCast<Texture, Texture2D>(it->second.Texture);
-			}
-		}
-		return ret;
 	}
 
 	Ref<Material> GLMaterial::copy()

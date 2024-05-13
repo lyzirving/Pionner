@@ -43,6 +43,26 @@ namespace pio
 		}
 	}
 
+	Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height, uint32_t channelNum, int32_t val, const std::string &name)
+	{
+		uint32_t size = width * height * channelNum * sizeof(uint8_t);
+		auto *data = (uint8_t *)std::malloc(size);
+		std::memset(data, val, size);
+		Ref<Buffer> buffer = CreateRef<Buffer>(data, size);
+
+		TextureSpecification spec;
+		spec.Name = name;
+		spec.Format = Image::GetImageInternalFmt(channelNum);
+		spec.Width = width; spec.Height = height;
+		spec.MinFilter = TextureFilterMin::Linear;
+		spec.MaxFilter = TextureFilterMag::Linear;
+		spec.WrapS = TextureWrap::ClampEdge;
+		spec.WrapT = TextureWrap::ClampEdge;
+		spec.AType = AssetType::Texture2D;
+
+		return Texture2D::Create(spec, buffer);		
+	}
+
 	Ref<CubeTexture> CubeTexture::Create(const TextureSpecification &spec)
 	{
 		switch (RenderAPI::CurrentType())

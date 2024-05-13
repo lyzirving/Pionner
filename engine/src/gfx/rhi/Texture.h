@@ -73,6 +73,7 @@ namespace pio
 		static Ref<Texture2D> Create(const std::string &path, const TextureSpecification &spec);
 		static Ref<Texture2D> Create(const TextureSpecification &spec, const Ref<Buffer> &buffer);
 		static Ref<Texture2D> Create(const TextureSpecification &spec);
+		static Ref<Texture2D> Create(uint32_t width, uint32_t height, uint32_t channelNum, int32_t val, const std::string &name);
 
 	public:
 		Texture2D() : Texture() {}

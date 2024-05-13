@@ -41,14 +41,9 @@ namespace pio
 		return m_material->getTexture2D(MaterialAttrs::MU_NormalTexture);
 	}
 
-	Ref<Texture2D> MaterialAsset::getMetalnessMap()
+	Ref<Texture2D> MaterialAsset::getMetallicRoughnessMap()
 	{
-		return m_material->getTexture2D(MaterialAttrs::MU_MetalnessTexture);
-	}
-
-	Ref<Texture2D> MaterialAsset::getRoughnessMap()
-	{
-		return m_material->getTexture2D(MaterialAttrs::MU_RoughnessTexture);
+		return m_material->getTexture2D(MaterialAttrs::MU_MetallicRoughnessTexture);
 	}
 
 	void MaterialAsset::setAlbedoColor(const glm::vec3 &color)
@@ -76,14 +71,9 @@ namespace pio
 		m_material->set(MaterialAttrs::MU_AlbedoTexture, texture);
 	}
 
-	void MaterialAsset::setMetalnessMap(const Ref<Texture2D> &texture)
+	void MaterialAsset::setMetallicRoughnessMap(const Ref<Texture2D> &texture)
 	{
-		m_material->set(MaterialAttrs::MU_MetalnessTexture, texture);
-	}
-
-	void MaterialAsset::setRoughnessMap(const Ref<Texture2D> &texture)
-	{
-		m_material->set(MaterialAttrs::MU_RoughnessTexture, texture);
+		m_material->set(MaterialAttrs::MU_MetallicRoughnessTexture, texture);
 	}
 
 	void MaterialAsset::setNormalMap(const Ref<Texture2D> &texture)

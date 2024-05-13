@@ -4,6 +4,7 @@
 #include "MaterialImporter.h"
 
 #include "asset/AssetsManager.h"
+#include "asset/ImageUtils.h"
 
 #include "gfx/rhi/Material.h"
 #include "gfx/rhi/Texture.h"
@@ -69,11 +70,9 @@ namespace pio
 		material->set(MaterialAttrs::MU_AlbedoTexture, whiteTexture);
 		material->set(MaterialAttrs::MU_AlbedoColor, glm::vec3(1.f));
 
-		material->set(MaterialAttrs::MU_MetalnessTexture, whiteTexture);
+		material->set(MaterialAttrs::MU_MetallicRoughnessTexture, whiteTexture);
 		material->set(MaterialAttrs::MU_Metalness, 0.f);
-
-		material->set(MaterialAttrs::MU_RoughnessTexture, whiteTexture);
-		material->set(MaterialAttrs::MU_Roughness, 0.f);
+		material->set(MaterialAttrs::MU_Roughness, 0.5f);
 
 		material->set(MaterialAttrs::MU_AOTexture, whiteTexture);
 		material->set(MaterialAttrs::MU_AO, 1.f);
@@ -117,44 +116,74 @@ namespace pio
 			if (!material)
 				material = Material::Create(materialName);
 
-			TextureSpecification spec;
-			spec.Name = name;
-			spec.SRGB = true;
-			spec.Format = ImageInternalFormat::FROM_FILE;
-			Ref<Texture2D> texture = AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
+			std::string metalRoughnessName{ materialName }; metalRoughnessName += "_metallicRoughness";
+			Ref<Texture2D> metallicRoughnessTex = AssetsManager::GetPackedAsset<Texture2D>(metalRoughnessName);
 
-			if (texture)
+			int32_t width{ 0 }, height{ 0 }, component{ 0 };
+			if (!ImageUtils::GetPicInfo(path.c_str(), width, height, component))
 			{
-				material->set(MaterialAttrs::MU_MetalnessTexture, texture);
+				LOGE("fail to load image info for metallic [%s]", path.c_str());
+				return;
+			}
+
+			if (!metallicRoughnessTex)
+			{
+				metallicRoughnessTex = Texture2D::Create(width, height, 3, 255, metalRoughnessName);
+				AssetsManager::Get()->addPackedAsset(metalRoughnessName, metallicRoughnessTex);
+			}
+
+			// Read R channel for metallic
+			uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, component == 1 ? 0 : 1);
+			if (data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 1))
+			{
+				material->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
 				material->set(MaterialAttrs::MU_Metalness, 1.f);
 			}
 			else
 			{
-				material->set(MaterialAttrs::MU_MetalnessTexture, whiteTexture);
+				LOGE("fail to get image's channel data for metallic [%s]", path.c_str());
+				material->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
 				material->set(MaterialAttrs::MU_Metalness, 0.f);
 			}
+
+			if (data) { stbi_image_free(data); }
 		}
 		else if (IsRoughness(fileName))
 		{
 			if (!material)
 				material = Material::Create(materialName);
 
-			TextureSpecification spec;
-			spec.Name = name;
-			spec.SRGB = true;
-			spec.Format = ImageInternalFormat::FROM_FILE;
-			Ref<Texture2D> texture = AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
+			std::string metalRoughnessName{ materialName }; metalRoughnessName += "_metallicRoughness";
+			Ref<Texture2D> metallicRoughnessTex = AssetsManager::GetPackedAsset<Texture2D>(metalRoughnessName);
 
-			if (texture)
+			int32_t width{ 0 }, height{ 0 }, component{ 0 };
+			if (!ImageUtils::GetPicInfo(path.c_str(), width, height, component))
 			{
-				material->set(MaterialAttrs::MU_RoughnessTexture, texture);
+				LOGE("fail to load image info for roughness [%s]", path.c_str());
+				return;
+			}
+
+			if (!metallicRoughnessTex)
+			{
+				metallicRoughnessTex = Texture2D::Create(width, height, 3, 255, metalRoughnessName);
+				AssetsManager::Get()->addPackedAsset(metalRoughnessName, metallicRoughnessTex);
+			}
+
+			// Read G channel for roughness
+			uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, component == 1 ? 0 : 2);
+			if (data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 2))
+			{
+				material->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
 				material->set(MaterialAttrs::MU_Roughness, 1.f);
 			}
 			else
 			{
-				material->set(MaterialAttrs::MU_RoughnessTexture, whiteTexture);
-				material->set(MaterialAttrs::MU_Roughness, 0.5f); // default roughness
+				LOGE("fail to get image's channel data for roughness [%s]", path.c_str());
+				material->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
+				material->set(MaterialAttrs::MU_Roughness, 0.5f);
 			}
+
+			if (data) { stbi_image_free(data); }
 		}
 		else if (IsAO(fileName))
 		{
@@ -178,29 +207,5 @@ namespace pio
 				material->set(MaterialAttrs::MU_AO, 1.f);
 			}
 		}
-		// TODO: if we parse normal map, we should manually calculate the tangent.
-		/*else if (IsNormal(fileName))
-		{
-			if (!material)
-				material = Material::Create(materialName);
-
-			TextureSpecification spec;
-			spec.Name = name;
-			spec.SRGB = true;
-			spec.Format = ImageInternalFormat::FROM_FILE;
-			Ref<Texture2D> texture = AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
-
-			if (texture)
-			{
-				material->set(MaterialAttrs::MU_NormalTexture, texture);
-				material->set(MaterialAttrs::MU_UseNormalMap, true);
-			}
-			else
-			{
-				material->set(MaterialAttrs::MU_NormalTexture, whiteTexture);
-				material->set(MaterialAttrs::MU_UseNormalMap, false);
-			}
-		}*/
-		//std::string absPath = parentDir + "/" + fileName;
 	}
 }

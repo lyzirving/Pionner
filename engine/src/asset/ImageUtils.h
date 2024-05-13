@@ -14,7 +14,7 @@ namespace pio
 	class ImageUtils
 	{
 	public:
-		static bool GetPicInfo(const char *filePath, int32_t &width, int32_t height, int32_t &component);
+		static bool GetPicInfo(const char *filePath, int32_t &width, int32_t &height, int32_t &component);
 		static bool FillChannelData(uint8_t *src, uint8_t *dst, int32_t width, int32_t height, int32_t channelNum, int32_t reqChannel);
 	};
 }

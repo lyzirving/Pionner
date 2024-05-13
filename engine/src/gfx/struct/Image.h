@@ -35,12 +35,13 @@ namespace pio
 
 	class Image
 	{
-	public:
+	public:		
 		static uint32_t GetChannelCount(ImageInternalFormat fmt);
 		static PixelType GetPixelType(ImageInternalFormat imageFmt);
 		static uint32_t GetPixelByteSize(PixelType type);
 		static TextureInternalFmt GetInternalFmt(ImageInternalFormat imageFmt);
 		static TextureFmt GetTextureFmt(ImageInternalFormat imageFmt);
+		static ImageInternalFormat GetImageInternalFmt(uint32_t channelNum);
 
 	public:
 		Image() {}

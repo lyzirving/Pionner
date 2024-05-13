@@ -7,7 +7,7 @@
 
 namespace pio
 {
-	bool ImageUtils::GetPicInfo(const char *filePath, int32_t &width, int32_t height, int32_t &component)
+	bool ImageUtils::GetPicInfo(const char *filePath, int32_t &width, int32_t &height, int32_t &component)
 	{
 		return stbi_info(filePath, &width, &height, &component) == 1;
 	}

@@ -193,6 +193,24 @@ namespace pio
 		}
 	}
 
+	ImageInternalFormat Image::GetImageInternalFmt(uint32_t channelNum)
+	{
+		switch (channelNum)
+		{
+			case 1:
+				return ImageInternalFormat::RED;
+			case 2:
+				return ImageInternalFormat::RG;
+			case 3:
+				return ImageInternalFormat::RGB;
+			case 4:
+				return ImageInternalFormat::RGBA;
+			default:
+				LOGE("invalid channel num[%u]", channelNum);
+				return ImageInternalFormat::None;
+		}
+	}
+
 	void Image::release()
 	{
 		if (m_data) { stbi_image_free(m_data); m_data = nullptr; }

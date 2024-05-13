@@ -391,40 +391,12 @@ namespace pio
 				{
 					mi->set(MaterialAttrs::MU_NormalTexture, whiteTexture);
 					mi->set(MaterialAttrs::MU_UseNormalMap, false);
-				}
+				}			
 				
-				// Roughness map
-				/*bool hasRoughnessMap = aiMaterial->GetTexture(aiTextureType_SHININESS, 0, &aiTexPath) == AI_SUCCESS;
-				fallback = !hasRoughnessMap;
-				if (hasRoughnessMap)
-				{
-					TextureSpecification spec;
-					spec.Name = aiTexPath.C_Str();
-					spec.SRGB = true;
-					spec.Format = ImageInternalFormat::FROM_FILE;
-					
-					std::string path = m_assetsDir + spec.Name;
-					Ref<Texture2D> texture = AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
-					if (texture)
-					{
-						mi->set(MaterialAttrs::MU_RoughnessTexture, texture);
-						mi->set(MaterialAttrs::MU_Roughness, 1.f);
-					}
-					else
-					{
-						LOGE("mesh failed to load roughness texture[%s]", aiTexPath.C_Str());
-						fallback = true;
-					}
-				}
-
-				if (fallback)
-				{
-					mi->set(MaterialAttrs::MU_RoughnessTexture, whiteTexture);
-					mi->set(MaterialAttrs::MU_Roughness, roughness);
-				}*/
-
+				std::string metalRoughnessTexName{ aiMaterialName.C_Str() }; metalRoughnessTexName += "_metallicRoughness";
+				Ref<Texture2D> metallicRoughnessTex{};
 				bool hasMetallicMap = aiMaterial->GetTexture(AI_MATKEY_METALLIC_TEXTURE, &aiTexPath) == AI_SUCCESS;
-				bool hasMetallicRoughness = hasMetallicMap && StringUtil::contains(aiTexPath.C_Str(), "roughness");
+				bool hasMetallicRoughness = hasMetallicMap && StringUtil::contains(aiTexPath.C_Str(), "roughness");				
 				fallback = !hasMetallicMap && !hasMetallicRoughness;				
 				if (hasMetallicRoughness)
 				{			
@@ -449,53 +421,82 @@ namespace pio
 					}
 				}
 				else if (hasMetallicMap)
-				{					
-					std::string texName = aiMaterialName.C_Str();
-					texName += "_metallicRoughness";
-					Ref<Texture2D> metallicRoughnessTex = AssetsManager::GetPackedAsset<Texture2D>(texName);
-
+				{									
 					std::string path = m_assetsDir + aiTexPath.C_Str();
 					int32_t width{ 0 }, height{ 0 }, component{ 0 };
 
-					if (!metallicRoughnessTex)
-					{						
-						if (ImageUtils::GetPicInfo(path.c_str(), width, height, component))
-						{							
-							uint32_t size = width * height * 3 * sizeof(uint8_t);
-							auto *data = (uint8_t *)std::malloc(size);
-							std::memset(data, 255, size);
-							Ref<Buffer> buffer = CreateRef<Buffer>(data, size);
-
-							TextureSpecification spec;
-							spec.Name = texName;
-							spec.SRGB = true;
-
-							metallicRoughnessTex = Texture2D::Create(spec, buffer);
-						}
-						else
-						{
-							LOGE("fail to get image info[%f]", path.c_str());
-							fallback = true;
-						}
-					}	
+					if (ImageUtils::GetPicInfo(path.c_str(), width, height, component))
+					{
+						metallicRoughnessTex = Texture2D::Create(width, height, 3, 255, metalRoughnessTexName);						
+						AssetsManager::Get()->addPackedAsset(metalRoughnessTexName, metallicRoughnessTex);
+					}
+					else
+					{
+						LOGE("fail to get image info for metallic-roughness[%f] when paring metallic tex", path.c_str());
+						fallback = true;
+					}
 
 					if (metallicRoughnessTex)
 					{
-						// Read R channel only
+						// Read R channel for metallic
 						uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, 1);
 						fallback = !(data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 1));
-						if (fallback)
+						if (!fallback)
+						{
+							mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
+							mi->set(MaterialAttrs::MU_Metalness, 1.f);
+						}
+						else
 						{
 							LOGE("fail to get image's R channel data for metallic [%s]", path.c_str());
-						}			
+						}	
+
+						if (data) { stbi_image_free(data); }
 					}
 				}
 
-				// TODO: to be deleted
-				fallback = true;
+				bool hasRoughnessMap = aiMaterial->GetTexture(AI_MATKEY_ROUGHNESS_TEXTURE, &aiTexPath) == AI_SUCCESS;
+				// Read roughness if need
+				if ((fallback || (hasMetallicMap && !hasMetallicRoughness)) && hasRoughnessMap)
+				{
+					std::string path = m_assetsDir + aiTexPath.C_Str();
+					int32_t width{ 0 }, height{ 0 }, component{ 0 };
+					if (!metallicRoughnessTex)
+					{
+						if (ImageUtils::GetPicInfo(path.c_str(), width, height, component))
+						{
+							metallicRoughnessTex = Texture2D::Create(width, height, 3, 255, metalRoughnessTexName);
+							AssetsManager::Get()->addPackedAsset(metalRoughnessTexName, metallicRoughnessTex);
+						}
+						else
+						{
+							LOGE("fail to get image info for metallic-roughness[%f] when paring roughness tex", path.c_str());
+							fallback = true;
+						}
+					}
+
+					if (metallicRoughnessTex)
+					{
+						// Read G channel for roughness
+						uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, 2);
+						fallback = !(data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 2));
+						if (!fallback)
+						{
+							mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
+							mi->set(MaterialAttrs::MU_Roughness, 1.f);
+						}
+						else
+						{
+							LOGE("fail to get image's G channel data for roughness [%s]", path.c_str());
+						}
+						if (data) { stbi_image_free(data); }
+					}
+				}
+								
 				if (fallback)
 				{
-					mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, whiteTexture);
+					if (!mi->hasTexture2D(MaterialAttrs::MU_MetallicRoughnessTexture))
+						mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, whiteTexture);
 					mi->set(MaterialAttrs::MU_Metalness, metalness);
 					mi->set(MaterialAttrs::MU_Roughness, roughness);
 				}
@@ -515,10 +516,9 @@ namespace pio
 			mi->set(MaterialAttrs::MU_Metalness, 0.f);
 			mi->set(MaterialAttrs::MU_Roughness, 0.5f);
 			mi->set(MaterialAttrs::MU_UseNormalMap, false);
-			mi->set(MaterialAttrs::MU_AlbedoTexture, whiteTexture);
-			mi->set(MaterialAttrs::MU_RoughnessTexture, whiteTexture);
-			mi->set(MaterialAttrs::MU_MetalnessTexture, whiteTexture);
+			mi->set(MaterialAttrs::MU_AlbedoTexture, whiteTexture);			
 			mi->set(MaterialAttrs::MU_NormalTexture, whiteTexture);
+			mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, whiteTexture);
 			meshSource->m_materials.push_back(mi);
 		}
 	}

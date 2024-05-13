@@ -24,6 +24,7 @@ namespace pio
 		virtual void unbind() override;
 
 		virtual void set(const std::string &name, const Ref<Texture2D> &texture) override;
+		virtual bool hasTexture2D(const std::string &name) override;
 		virtual Ref<Texture2D> getTexture2D(const std::string &name) override;
 
 		virtual const std::string &getName() const override { return m_name; }
