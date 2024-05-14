@@ -22,8 +22,7 @@ struct MaterialAttributes
 
     sampler2D AlbedoTexture;
     sampler2D EmissionTexture;
-    sampler2D RoughnessTexture;
-    sampler2D MetalnessTexture;
+    sampler2D MetallicRoughnessTexture;
     sampler2D NormalTexture;
     sampler2D AOTexture;
 };

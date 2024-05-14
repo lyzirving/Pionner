@@ -19,8 +19,7 @@ struct MaterialAttributes
 
     sampler2D AlbedoTexture;
     sampler2D EmissionTexture;
-    sampler2D RoughnessTexture;
-    sampler2D MetalnessTexture;
+    sampler2D MetallicRoughnessTexture;
     sampler2D NormalTexture;
     sampler2D AOTexture;
 };
@@ -44,9 +43,9 @@ void main() {
     // w is type component, 2 for mesh
     gNormal = vec4(calcNormal(), 2.f);
     gAlbedoAlpha = vec4(albedoColor.rgb * u_material.AlbedoColor, albedoColor.a);
-    gMaterial.x = texture(u_material.RoughnessTexture, v_texCoord).r * u_material.Roughness;
+    gMaterial.x = texture(u_material.MetallicRoughnessTexture, v_texCoord).g * u_material.Roughness;
     gMaterial.x = max(gMaterial.x, 0.05f);// Minimum roughness of 0.05 to keep specular highlight
-    gMaterial.y = texture(u_material.MetalnessTexture, v_texCoord).r * u_material.Metalness;
+    gMaterial.y = texture(u_material.MetallicRoughnessTexture, v_texCoord).r * u_material.Metalness;
     gMaterial.z = texture(u_material.AOTexture, v_texCoord).r * u_material.AO;
     gEmission = texture(u_material.EmissionTexture, v_texCoord).rgb * u_material.Emission;
 }
