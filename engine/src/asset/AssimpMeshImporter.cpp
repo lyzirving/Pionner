@@ -270,8 +270,12 @@ namespace pio
 		if (!scene || !meshSource)
 			return;
 
+		glm::vec3 albedoColor{ 0.8f };
+		float roughness{ 0.5f }, metalness{ 0.f }, emission{ 0.f };
+
 		Ref<Texture2D> whiteTexture = Renderer::GetWhiteTexture();
 		Ref<Texture2D> blackTexture = Renderer::GetBlackTexture();
+
 		if (scene->HasMaterials())
 		{
 			meshSource->m_materials.reserve(scene->mNumMaterials);
@@ -285,9 +289,6 @@ namespace pio
 
 				auto mi = Material::Create(aiMaterialName.C_Str());
 				meshSource->m_materials.push_back(mi);
-
-				glm::vec3 albedoColor{ 0.8f };
-				float roughness{ 0.5f }, metalness{ 0.f }, emission{ 0.f };
 
 				aiColor3D aiColor, aiEmission;
 				ai_real aiFloat{ 0.f };
@@ -319,7 +320,7 @@ namespace pio
 					if (texture)
 					{
 						mi->set(MaterialAttrs::MU_AlbedoTexture, texture);
-						mi->set(MaterialAttrs::MU_AlbedoColor, glm::vec3(1.f));
+						mi->set(MaterialAttrs::MU_AlbedoColor, albedoColor);
 					}
 					else
 					{
@@ -349,7 +350,7 @@ namespace pio
 					if (texture)
 					{
 						mi->set(MaterialAttrs::MU_EmissionTexture, texture);
-						mi->set(MaterialAttrs::MU_Emission, 1.f);
+						mi->set(MaterialAttrs::MU_Emission, emission);
 					}
 					else
 					{
@@ -411,8 +412,8 @@ namespace pio
 					{
 
 						mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, texture);
-						mi->set(MaterialAttrs::MU_Metalness, 1.f);
-						mi->set(MaterialAttrs::MU_Roughness, 1.f);
+						mi->set(MaterialAttrs::MU_Metalness, metalness);
+						mi->set(MaterialAttrs::MU_Roughness, roughness);
 					}
 					else
 					{
@@ -444,7 +445,7 @@ namespace pio
 						if (!fallback)
 						{
 							mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
-							mi->set(MaterialAttrs::MU_Metalness, 1.f);
+							mi->set(MaterialAttrs::MU_Metalness, metalness);
 						}
 						else
 						{
@@ -483,7 +484,7 @@ namespace pio
 						if (!fallback)
 						{
 							mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
-							mi->set(MaterialAttrs::MU_Roughness, 1.f);
+							mi->set(MaterialAttrs::MU_Roughness, roughness);
 						}
 						else
 						{
@@ -511,10 +512,10 @@ namespace pio
 		{
 			// mesh has no material, create default one 
 			auto mi = Material::Create("default material");
-			mi->set(MaterialAttrs::MU_AlbedoColor, glm::vec3(0.8f));
-			mi->set(MaterialAttrs::MU_Emission, 0.f);
-			mi->set(MaterialAttrs::MU_Metalness, 0.f);
-			mi->set(MaterialAttrs::MU_Roughness, 0.5f);
+			mi->set(MaterialAttrs::MU_AlbedoColor, albedoColor);
+			mi->set(MaterialAttrs::MU_Emission, emission);
+			mi->set(MaterialAttrs::MU_Metalness, metalness);
+			mi->set(MaterialAttrs::MU_Roughness, roughness);
 			mi->set(MaterialAttrs::MU_UseNormalMap, false);
 			mi->set(MaterialAttrs::MU_AlbedoTexture, whiteTexture);			
 			mi->set(MaterialAttrs::MU_NormalTexture, whiteTexture);
