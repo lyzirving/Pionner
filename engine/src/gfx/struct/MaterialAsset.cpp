@@ -46,6 +46,11 @@ namespace pio
 		return m_material->getTexture2D(MaterialAttrs::MU_MetallicRoughnessTexture);
 	}
 
+	Ref<Texture2D> MaterialAsset::getEmissionMap()
+	{
+		return m_material->getTexture2D(MaterialAttrs::MU_EmissionTexture);
+	}
+
 	void MaterialAsset::setAlbedoColor(const glm::vec3 &color)
 	{
 		m_material->set(MaterialAttrs::MU_AlbedoColor, color);
@@ -79,6 +84,11 @@ namespace pio
 	void MaterialAsset::setNormalMap(const Ref<Texture2D> &texture)
 	{
 		m_material->set(MaterialAttrs::MU_NormalTexture, texture);
+	}
+
+	void MaterialAsset::setEmissionMap(const Ref<Texture2D> &texture)
+	{
+		m_material->set(MaterialAttrs::MU_EmissionTexture, texture);
 	}
 
 	MaterialTable::MaterialTable(uint32_t materialCount) : m_materialCount(materialCount)

@@ -11,6 +11,7 @@
 #include "animation/Animator.h"
 
 #include "gfx/renderer/Renderer.h"
+#include "gfx/rhi/Texture.h"
 #include "gfx/struct/Mesh.h"
 #include "gfx/struct/MaterialAsset.h"
 #include "gfx/debug/GDebugger.h"
@@ -419,13 +420,15 @@ namespace pio
 			{
 				float metallic, metallic_ui;
 				float roughness, roughness_ui;
-				float emission, emission_ui;
+
+				Ref<Texture2D> whiteTexture = Renderer::GetWhiteTexture();
+				Ref<Texture2D> blackTexture = Renderer::GetBlackTexture();
+
 				std::string name = ma->getName();
 				ImVec2 sz = ImVec2(-FLT_MIN, 0.0f);
 
 				metallic = metallic_ui = ma->getMetalness();
 				roughness = roughness_ui = ma->getRoughness();
-				emission = emission_ui = ma->getEmission();
 
 				ImGui::PushItemWidth(rowWidth);
 				ImGui::InputText("##material_name", const_cast<char *>(name.c_str()), name.size(), ImGuiInputTextFlags_ReadOnly);
@@ -433,63 +436,52 @@ namespace pio
 
 				if (ImGui::TreeNode("Albedo##Mesh"))
 				{			
-					ImGui::AlignTextToFramePadding();
-					ImGui::Text("Texture  ");
-					ImGui::SameLine();
-					ImGui::BeginDisabled();
-					ImGui::Button("Empty", sz);
-					ImGui::EndDisabled();
+					float imgWidth = ImGui::GetContentRegionAvail().x;
+					Ref<Texture2D> tx = ma->getAlbedoMap();
+					bool bTexture = tx && tx != whiteTexture && tx != blackTexture;
+					std::string msg = bTexture ? tx->getName() : "None Texture";
+
+					ImGui::TextWrapped(msg.c_str());
+					if (bTexture) { ImGuiUtils::DrawImage(tx->getId(), glm::vec2(imgWidth)); }
 
 					ImGui::TreePop();
 				}
 
-				if (ImGui::TreeNode("Metallic##Mesh"))
+				if (ImGui::TreeNode("MetallicRoughness##Mesh"))
 				{
-					ImGui::AlignTextToFramePadding();
-					ImGui::Text("Metallic");
-					ImGui::SameLine();
-					ImGui::DragFloat("##Material_Metallic", &metallic_ui, 0.005f, 0.0f, 1.0f, "%.3f");		
+					float imgWidth = ImGui::GetContentRegionAvail().x;
+					Ref<Texture2D> tx = ma->getMetallicRoughnessMap();	
+					bool bTexture = tx && tx != whiteTexture && tx != blackTexture;
+					std::string msg = bTexture ? tx->getName() : "None Texture";
+
+					ImGui::TextWrapped(msg.c_str());
+					if (bTexture) { ImGuiUtils::DrawImage(tx->getId(), glm::vec2(imgWidth)); }
 
 					ImGui::AlignTextToFramePadding();
-					ImGui::Text("Texture ");
+					ImGui::Text("Metallic ");
 					ImGui::SameLine();
-					ImGui::BeginDisabled();
-					ImGui::Button("Empty", sz);
-					ImGui::EndDisabled();
+					ImGui::DragFloat("##Material_Metallic", &metallic_ui, 0.005f, 0.0f, 1.0f, "%.3f");
 
-					ImGui::TreePop();
-				}
-
-				if (ImGui::TreeNode("Roughness##Mesh"))
-				{
 					ImGui::AlignTextToFramePadding();
 					ImGui::Text("Roughness");
 					ImGui::SameLine();
 					ImGui::DragFloat("##Material_Roughness", &roughness_ui, 0.005f, 0.0f, 1.0f, "%.3f");
 
-					ImGui::AlignTextToFramePadding();
-					ImGui::Text("Texture  ");
-					ImGui::SameLine();
-					ImGui::BeginDisabled();
-					ImGui::Button("Empty", sz);
-					ImGui::EndDisabled();
-
 					ImGui::TreePop();
-				}
+				}	
 
 				if (ImGui::TreeNode("Emission##Mesh"))
 				{
-					ImGui::AlignTextToFramePadding();
-					ImGui::Text("Roughness");
-					ImGui::SameLine();
-					ImGui::DragFloat("##Material_Emission", &emission_ui, 0.005f, 0.0f, 1.0f, "%.3f");
+					float imgWidth = ImGui::GetContentRegionAvail().x;
+					Ref<Texture2D> tx = ma->getEmissionMap();
+					bool bTexture = tx && tx != whiteTexture && tx != blackTexture;
+					std::string msg = bTexture ? tx->getName() : "None Texture";
 
-					ImGui::AlignTextToFramePadding();
-					ImGui::Text("Texture  ");
-					ImGui::SameLine();
-					ImGui::BeginDisabled();
-					ImGui::Button("Empty", sz);
-					ImGui::EndDisabled();
+					ImGui::TextWrapped(msg.c_str());										
+					if (bTexture) { ImGuiUtils::DrawImage(tx->getId(), glm::vec2(imgWidth)); }
+
+					bool emEnable{ false };// [TODO]: enable glow effect					
+					ImGui::Checkbox("Enabled##Mesh_Mat_Emission", &emEnable);
 
 					ImGui::TreePop();
 				}
@@ -499,9 +491,6 @@ namespace pio
 
 				if (!Math::Equal(roughness, roughness_ui))
 					ma->setRoughness(roughness_ui);
-
-				if (!Math::Equal(emission, emission_ui))
-					ma->setEmission(emission_ui);
 			}
 		}
 

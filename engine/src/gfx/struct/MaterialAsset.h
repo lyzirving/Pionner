@@ -21,6 +21,7 @@ namespace pio
 		Ref<Texture2D> getAlbedoMap();
 		Ref<Texture2D> getNormalMap();
 		Ref<Texture2D> getMetallicRoughnessMap();
+		Ref<Texture2D> getEmissionMap();
 		
 		void setAlbedoColor(const glm::vec3 &color);
 		void setMetalness(float value);
@@ -30,9 +31,11 @@ namespace pio
 		void setAlbedoMap(const Ref<Texture2D> &texture);
 		void setMetallicRoughnessMap(const Ref<Texture2D> &texture);
 		void setNormalMap(const Ref<Texture2D> &texture);
+		void setEmissionMap(const Ref<Texture2D> &texture);
 
 		const std::string &getName() const { return m_material->getName(); }
 		Ref<Material> getMaterial() const { return m_material; }
+
 		void setMaterial(const Ref<Material> &material) { m_material = material; }
 		void setCastShadow(bool cast) { m_material->setFlag(MaterialFlag::ShadowCasting, cast); }
 		bool isCastingShadow() { return m_material->getFlag(MaterialFlag::ShadowCasting); };
