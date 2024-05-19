@@ -38,6 +38,7 @@ namespace pio
 			PointLightMetadata &metadata = lightEnv.PtLightShadowData.Metadata[i];
 			metadata.FrustumFar = frustumFar;
 			metadata.Position = lightEnv.PointLightData[i].Position;
+			metadata.CastShadow = lightEnv.PointLightData[i].CastShadow;
 			metadata.LightSpaceMat[LightDir_PositiveX] = prjMat * glm::lookAt(metadata.Position, metadata.Position + glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, -1.f, 0.f));
 			metadata.LightSpaceMat[LightDir_NegativeX] = prjMat * glm::lookAt(metadata.Position, metadata.Position + glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f, -1.f, 0.f));
 			metadata.LightSpaceMat[LightDir_PositiveY] = prjMat * glm::lookAt(metadata.Position, metadata.Position + glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 1.f));
@@ -105,6 +106,7 @@ namespace pio
 		Camera &distLightCam = m_distantLightShadowPass->getCamera();
 		const Viewport &vp = camera.getViewport();
 
+		// [NOTE]: how to set a light matrix for distant light shadow that light's postion will not effect shadow
 		distLightCam.setPosition(lightEnv.DirectionalLight.Position);		
 		distLightCam.setLookAt(lightEnv.DirectionalLight.Position + lightEnv.DirectionalLight.Direction * 5.f);// 5 is a magic value
 		distLightCam.setOrtho(-10.f, 10.f, -10.f, 10.f);// TODO:
@@ -581,16 +583,19 @@ namespace pio
 		Renderer::SubmitRC([env, distsp, ubs, cmd]() mutable
 		{
 			Renderer::BeginRenderPass(distsp);
-			for (auto &it : cmd)
+			if (env.DirectionalLight.CastShadow)
 			{
-				auto &dc = it.second;
-				Renderer::RenderDistantLightShadow(dc.Mesh, dc.SubmeshIndex, dc.IsRigged, dc.MaterialTb, distsp, ubs, dc.ModelMat, dc.State);
-			}
+				for (auto &it : cmd)
+				{
+					auto &dc = it.second;
+					Renderer::RenderDistantLightShadow(dc.Mesh, dc.SubmeshIndex, dc.IsRigged, dc.MaterialTb, distsp, ubs, dc.ModelMat, dc.State);
+				}
+			}			
 			Renderer::EndRenderPass(distsp);
 		});
 
 		// [NOTE] Frame buffer for mutiple point lights contains a cubemap array
-		Renderer::SubmitRC([ptsp, ubs, cmd]() mutable
+		Renderer::SubmitRC([env, ptsp, ubs, cmd]() mutable
 		{
 			Renderer::BeginRenderPass(ptsp);
 			for (auto &it : cmd)

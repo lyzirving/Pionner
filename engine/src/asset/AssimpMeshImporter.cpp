@@ -270,11 +270,10 @@ namespace pio
 		if (!scene || !meshSource)
 			return;
 
-		glm::vec3 albedoColor{ 0.8f };
-		float roughness{ 0.5f }, metalness{ 0.f }, emission{ 0.f };
+		glm::vec3 albedoColor{ 0.8f }, emission{ 0.f };
+		float roughness{ 0.5f }, metalness{ 0.f };
 
 		Ref<Texture2D> whiteTexture = Renderer::GetWhiteTexture();
-		Ref<Texture2D> blackTexture = Renderer::GetBlackTexture();
 
 		if (scene->HasMaterials())
 		{
@@ -297,7 +296,7 @@ namespace pio
 					albedoColor = { aiColor.r, aiColor.g, aiColor.b };
 
 				if (aiMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, aiEmission) == AI_SUCCESS)
-					emission = aiEmission.r;
+					emission = glm::vec3(aiEmission.r, aiEmission.g, aiEmission.b);
 
 				if (aiMaterial->Get(AI_MATKEY_ROUGHNESS_FACTOR, aiFloat) == AI_SUCCESS)
 					roughness = aiFloat;
@@ -361,7 +360,7 @@ namespace pio
 
 				if (fallback)
 				{
-					mi->set(MaterialAttrs::MU_EmissionTexture, blackTexture);
+					mi->set(MaterialAttrs::MU_EmissionTexture, whiteTexture);
 					mi->set(MaterialAttrs::MU_Emission, emission);
 				}
 

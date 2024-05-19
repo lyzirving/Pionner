@@ -84,6 +84,7 @@ namespace pio
 			s.put(0, UniformBlock::CreateData(UniformDataType::Mat4Array, "LightSpaceMat", 6));
 			s.put(1, UniformBlock::CreateData(UniformDataType::Vec3, "Position"));
 			s.put(2, UniformBlock::CreateData(UniformDataType::Float, "FrustumFar"));
+			s.put(3, UniformBlock::CreateData(UniformDataType::Bool, "CastShadow"));
 			metadata->pushBack(s);
 		}
 		block.calculate();
@@ -236,6 +237,9 @@ namespace pio
 
 			auto frustumFarUD = s.getData(2);
 			Block.m_buffer->writeAt(&Metadata[i].FrustumFar, sizeof(float), frustumFarUD->getAlignOffset());
+
+			auto castShadowUD = s.getData(3);
+			Block.m_buffer->writeAt(&Metadata[i].CastShadow, sizeof(bool), castShadowUD->getAlignOffset());
 		}
 	}
 }

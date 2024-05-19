@@ -18,6 +18,7 @@ struct LightMetaData
     mat4 LightSpaceMat[POINT_LIGHT_DIRECTION_NUM];
     vec3 Position;
     float FrustumFar;
+    bool CastShadow;
 };
 
 layout(std140) uniform PointLightShadowData
@@ -38,6 +39,9 @@ flat out float v_frustumFar;
 void main() {
     for(int i = 0; i < u_shadowData.LightCount; i++)
     {
+        if(!u_shadowData.LightData[i].CastShadow)
+            continue;
+
         for(int face = 0; face < POINT_LIGHT_DIRECTION_NUM; ++face)
         {
             // Built-in variable that specifies to which face we render mainly for cube texture

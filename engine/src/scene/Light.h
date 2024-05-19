@@ -85,6 +85,7 @@ namespace pio
 		glm::mat4 LightSpaceMat[6];
 		glm::vec3 Position;
 		float FrustumFar;
+		bool CastShadow{ true };
 	};
 
 	struct PointLightShadowData

@@ -65,7 +65,7 @@ namespace pio
 		sceneData.Intensity = lightComp.Intensity;
 		sceneData.Bias = lightComp.Bias;
 		sceneData.SdMode = lightComp.SdMode;
-		sceneData.CastShadow = lightComp.CastShadow;
+		sceneData.CastShadow = lightComp.CastShadow;	
 
 		UpdateSpritePosition(sceneData.Position, spriteComp, cam);
 	}

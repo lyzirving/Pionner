@@ -13,7 +13,7 @@ layout (std140) uniform Matrices
 struct MaterialAttributes 
 {
     vec3 AlbedoColor;
-    float Emission;
+    vec3 Emission;
     float Roughness;
     float Metalness;
     float AO;
