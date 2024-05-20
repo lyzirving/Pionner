@@ -92,7 +92,8 @@ float GaSchlickG1(float cosTheta, float k);
 float softShadow(int lightIndex, PointLight pointLight);
 float pointLightSoftShadow(int lightIndex, PointLight pointLight);
 
-int nearestInt(float val);
+vec3 mon2lin(vec3 x);
+int  nearestInt(float val);
 vec4 meshColor();
 
 void main() {
@@ -101,7 +102,7 @@ void main() {
     vec3 surface = texture(u_GMaterial, v_texcoord).rgb;
 
     m_params.FragPos = texture(u_GPosition, v_texcoord).rgb;
-    m_params.Albedo = baseColor.rgb;
+    m_params.Albedo = mon2lin(baseColor.rgb);
     m_params.Alpha = baseColor.a;
     m_params.N = nt.xyz;
     m_params.Roughness = surface.r;
@@ -225,6 +226,11 @@ vec4 meshColor()
     //vec3 color = ambient + m_params.Emission + Lo;
 
     return vec4(Lo.rgb, m_params.Alpha);
+}
+
+vec3 mon2lin(vec3 x)
+{
+    return vec3(pow(x[0], 2.2), pow(x[1], 2.2), pow(x[2], 2.2));
 }
 
 int nearestInt(float val)

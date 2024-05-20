@@ -39,9 +39,9 @@ namespace pio
 			{
 				LOGE("[%s] invalid buffer", m_name.c_str());
 				continue;
-			}
-			submesh.VertexBuffer->setData(&(m_vertices[submesh.VertexOffset]), submesh.VertexCount * sizeof(Vertex));
-			submesh.IndexBuffer->setData(&(m_indices[submesh.IndexOffset]), submesh.IndexCount * sizeof(Index), submesh.IndexCount * 3);
+			}			
+			submesh.VertexBuffer->setData(m_vertices.data() + submesh.VertexOffset, submesh.VertexCount * sizeof(Vertex));
+			submesh.IndexBuffer->setData(m_indices.data() + submesh.IndexOffset, submesh.IndexCount * sizeof(Index), submesh.IndexCount * 3);
 		}
 
 		m_invalidate = false;

@@ -10,19 +10,17 @@ in vec2 v_texcoord;
 
 out vec4 o_color;
 
-vec3 toLinear(vec3 sRGB);
+vec3 mon2lin(vec3 x);
 
 void main() {
-    vec4 baseColor = texture(u_quadTexture, v_texcoord);
-    // TODO: why mutiple 255, is baseColor in [0, 1] ?
-    vec3 color = u_bSRGB ? toLinear(baseColor.rgb * 255.f) : baseColor.rgb;
+    vec4 baseColor = texture(u_quadTexture, v_texcoord);    
+    //vec3 color = u_bSRGB ? mon2lin(baseColor.rgb * 10.f) : baseColor.rgb;
+    //TODO: color is not correct
+    vec3 color = mon2lin(baseColor.rgb);
     o_color = vec4(color, baseColor.a);
 }
 
-vec3 toLinear(vec3 sRGB)
+vec3 mon2lin(vec3 x)
 {
-    bvec3 cutoff = lessThan(sRGB, vec3(0.04045));
-    vec3 higher = pow((sRGB + vec3(0.055)) / vec3(1.055), vec3(2.4));
-    vec3 lower = sRGB / vec3(12.92);
-    return mix(higher, lower, cutoff);
+    return vec3(pow(x[0], 2.2), pow(x[1], 2.2), pow(x[2], 2.2));
 }
