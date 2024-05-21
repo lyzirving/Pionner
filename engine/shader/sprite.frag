@@ -14,9 +14,7 @@ vec3 mon2lin(vec3 x);
 
 void main() {
     vec4 baseColor = texture(u_quadTexture, v_texcoord);    
-    //vec3 color = u_bSRGB ? mon2lin(baseColor.rgb * 10.f) : baseColor.rgb;
-    //TODO: color is not correct
-    vec3 color = mon2lin(baseColor.rgb);
+    vec3 color = u_bSRGB ? baseColor.rgb : mon2lin(baseColor.rgb);
     o_color = vec4(color, baseColor.a);
 }
 

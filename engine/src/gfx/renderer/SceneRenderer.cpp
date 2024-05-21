@@ -644,9 +644,8 @@ namespace pio
 		Ref<RenderPass> dlsp = m_distantLightShadowPass;
 		Ref<RenderPass> plsp = m_pointLightShadowPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
-		std::map<MeshKey, SpriteCommand> &spCmd = m_spriteDraws;
 
-		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs, spCmd]() mutable
+		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs]() mutable
 		{				
 			uint64_t start{ PROFILER_TIME };
 			Renderer::BeginRenderPass(lp);
@@ -664,8 +663,6 @@ namespace pio
 			skState.Stencil.Enable = false;
 			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);
 
-			RenderPass::RenderSprites(spCmd);
-
 			Renderer::EndRenderPass(lp);	
 			PROFILERD_DURATION(start, "LightingPass");
 		});
@@ -677,13 +674,15 @@ namespace pio
 		const LayoutViewport &vp = scene.m_layoutParam.Viewport;
 		const AssetHandle &handle = scene.m_screenQuad;		
 		Ref<Texture2D> composite = m_compositeTexture;
+		std::map<MeshKey, SpriteCommand>& spCmd = m_spriteDraws;
 
 		// No pass to bind, render on the default framebuffer
-		Renderer::SubmitRC([scpss, vp, handle, composite]() mutable
+		Renderer::SubmitRC([scpss, vp, handle, composite, spCmd]() mutable
 		{
 			uint64_t start{ PROFILER_TIME };
 			Renderer::BeginScreenPass(scpss, Viewport(vp.X, vp.Y, vp.Width, vp.Height));
 			RenderPass::Postprocessing(handle, composite);	
+			RenderPass::RenderSprites(spCmd);
 			Renderer::EndScreenPass(scpss);
 			PROFILERD_DURATION(start, "Composite");
 		});

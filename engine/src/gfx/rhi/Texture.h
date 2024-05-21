@@ -24,7 +24,7 @@ namespace pio
 
 		uint32_t MaxMipLevel{ 0 };
 		bool GenerateMips{ false };		
-		bool SRGB{ true };// if false, linear rgb
+		bool SRGB{ false };// if true, use sRGB color space in shader
 		bool Storage{ false };
 		bool FlipVerticalWhenLoad{ false };
 	};

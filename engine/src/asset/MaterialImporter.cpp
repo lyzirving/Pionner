@@ -95,8 +95,7 @@ namespace pio
 				material = Material::Create(materialName);
 
 			TextureSpecification spec;
-			spec.Name = name;
-			spec.SRGB = true;
+			spec.Name = name;			
 			spec.Format = ImageInternalFormat::FROM_FILE;
 			Ref<Texture2D> texture = AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
 
@@ -191,8 +190,7 @@ namespace pio
 				material = Material::Create(materialName);
 
 			TextureSpecification spec;
-			spec.Name = name;
-			spec.SRGB = true;
+			spec.Name = name;		
 			spec.Format = ImageInternalFormat::FROM_FILE;
 			Ref<Texture2D> texture = AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
 

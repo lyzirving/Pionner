@@ -310,8 +310,7 @@ namespace pio
 				if (hasAlbedoMap)
 				{
 					TextureSpecification spec;
-					spec.Name = aiTexPath.C_Str();
-					spec.SRGB = true;
+					spec.Name = aiTexPath.C_Str();				
 					spec.Format = ImageInternalFormat::FROM_FILE;
 
 					std::string path = m_assetsDir + spec.Name;
@@ -340,8 +339,7 @@ namespace pio
 				if (hasEmissionMap)
 				{
 					TextureSpecification spec;
-					spec.Name = aiTexPath.C_Str();
-					spec.SRGB = true;
+					spec.Name = aiTexPath.C_Str();			
 					spec.Format = ImageInternalFormat::FROM_FILE;
 
 					std::string path = m_assetsDir + spec.Name;
@@ -369,8 +367,7 @@ namespace pio
 				if (hasNormalMap)
 				{
 					TextureSpecification spec;
-					spec.Name = aiTexPath.C_Str();
-					spec.SRGB = true;
+					spec.Name = aiTexPath.C_Str();			
 					spec.Format = ImageInternalFormat::FROM_FILE;
 
 					std::string path = m_assetsDir + spec.Name;
@@ -401,8 +398,7 @@ namespace pio
 				if (hasMetallicRoughness)
 				{			
 					TextureSpecification spec;
-					spec.Name = aiTexPath.C_Str();
-					spec.SRGB = true;
+					spec.Name = aiTexPath.C_Str();				
 					spec.Format = ImageInternalFormat::FROM_FILE;
 
 					std::string path = m_assetsDir + spec.Name;

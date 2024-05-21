@@ -330,6 +330,7 @@ namespace pio
 			PIO_RELATION_SET_CHILD(m_sceneRoot, ent);
 
 			TextureSpecification spec; 
+			spec.SRGB = true;
 			spec.FlipVerticalWhenLoad = true;
 			Ref<Texture2D> icon = Texture2D::Create(AssetsManager::SpriteAbsPath("distant_light", AssetFmt::PNG), spec);
 			AssetsManager::Get()->addRuntimeAsset(icon);
@@ -346,6 +347,7 @@ namespace pio
 		//Point Light
 		{			
 			TextureSpecification spec;
+			spec.SRGB = true;
 			spec.FlipVerticalWhenLoad = true;
 			Ref<Texture2D> icon = Texture2D::Create(AssetsManager::SpriteAbsPath("point_light", AssetFmt::PNG), spec);
 			AssetsManager::Get()->addRuntimeAsset(icon);
