@@ -194,12 +194,18 @@ namespace pio
 	#define PIO_RELATION_SET_PARENT(pEnt, pParent) if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
 												   { pEnt->getComponent<RelationshipComponent>().ParentIndex = pParent->getCacheIndex(); }
 
+	//[BugFix]vector:_orphan_range_unlocked crash, if we don't call shrink_to_fit, 
+	//        the push_back will crash at debug mode
 	#define PIO_RELATION_SET_CHILD(pEnt, pChild)  if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
 												  {\
 												     auto &comp = pEnt->getComponent<RelationshipComponent>();\
 												     auto &children = comp.Children;\
 												     auto it = std::find(children.begin(), children.end(), pChild->getCacheIndex());\
-												     if(it == children.end()) { children.push_back(pChild->getCacheIndex()); }\
+												     if(it == children.end())\
+													 {\
+														 children.push_back(pChild->getCacheIndex());\
+                                                         children.shrink_to_fit();\
+													 }\
 												  }
 }
 
