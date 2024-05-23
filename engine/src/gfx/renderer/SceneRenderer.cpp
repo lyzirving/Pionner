@@ -27,15 +27,15 @@
 
 namespace pio
 {
-	static void FillPointLightShadowData(const Camera &camera, const Ref<FrameBuffer> &fbo, LightEnvironment &lightEnv)
-	{	
+	static void FillPointLightShadowData(const Camera& camera, const Ref<FrameBuffer>& fbo, LightEnvironment& lightEnv)
+	{
 		float fov = 90.f;
 		float frustumNear = camera.near();
 		float frustumFar = camera.far();
 		glm::mat4 prjMat = glm::perspective(glm::radians(fov), float(fbo->getWidth()) / float(fbo->getHeight()), frustumNear, frustumFar);
 		for (uint32_t i = 0; i < lightEnv.PtLightShadowData.LightCount; i++)
 		{
-			PointLightMetadata &metadata = lightEnv.PtLightShadowData.Metadata[i];
+			PointLightMetadata& metadata = lightEnv.PtLightShadowData.Metadata[i];
 			metadata.FrustumFar = frustumFar;
 			metadata.Position = lightEnv.PointLightData[i].Position;
 			metadata.CastShadow = lightEnv.PointLightData[i].CastShadow;
@@ -56,10 +56,10 @@ namespace pio
 	{
 	}
 
-	void SceneRenderer::onAttach(const Scene &scene)
+	void SceneRenderer::onAttach(const Scene& scene)
 	{
 		m_cameraUD.obtainBlock();
-		const LightEnvironment &lightEnv = scene.m_lightEnv;
+		const LightEnvironment& lightEnv = scene.m_lightEnv;
 		Ref<Skybox> sk = scene.m_skybox;
 
 		m_uniformBuffers = UniformBufferSet::Create();
@@ -72,7 +72,7 @@ namespace pio
 		m_shadowBufferSize.x = m_shadowBufferSize.y = Tiering::GetShadowResolution(Tiering::ShadowResolutionSetting::Low);
 
 		float aspectRatio = float(scene.m_layoutParam.Viewport.Width) / float(scene.m_layoutParam.Viewport.Height);
-		m_colorBufferSize.x = Tiering::GetColorResolution(Tiering::ColorResolutionSetting::Low);		
+		m_colorBufferSize.x = Tiering::GetColorResolution(Tiering::ColorResolutionSetting::Low);
 		m_colorBufferSize.y = float(m_colorBufferSize.x) / aspectRatio;
 
 		createShadowPass(m_shadowBufferSize.x, m_shadowBufferSize.y);
@@ -83,11 +83,11 @@ namespace pio
 		Renderer::SubmitTask([sk]() mutable { sk->prepare(); });
 	}
 
-	void SceneRenderer::onDetach(const Scene &scene)
+	void SceneRenderer::onDetach(const Scene& scene)
 	{
 	}
 
-	void SceneRenderer::onRenderDestroy(const Scene &scene)
+	void SceneRenderer::onRenderDestroy(const Scene& scene)
 	{
 		m_uniformBuffers.reset();
 		m_GBufferPass.reset();
@@ -97,17 +97,17 @@ namespace pio
 		m_screenPass.reset();
 	}
 
-	void SceneRenderer::beginScene(const Scene &scene, const Camera &camera)
+	void SceneRenderer::beginScene(const Scene& scene, const Camera& camera)
 	{
 		m_active = true;
 
-		LightEnvironment &lightEnv = const_cast<LightEnvironment &>(scene.m_lightEnv);
-		CameraUD &cameraUD = m_cameraUD;		
-		Camera &distLightCam = m_distantLightShadowPass->getCamera();
-		const Viewport &vp = camera.getViewport();
+		LightEnvironment& lightEnv = const_cast<LightEnvironment&>(scene.m_lightEnv);
+		CameraUD& cameraUD = m_cameraUD;
+		Camera& distLightCam = m_distantLightShadowPass->getCamera();
+		const Viewport& vp = camera.getViewport();
 
 		// [NOTE]: how to set a light matrix for distant light shadow that light's postion will not effect shadow
-		distLightCam.setPosition(lightEnv.DirectionalLight.Position);		
+		distLightCam.setPosition(lightEnv.DirectionalLight.Position);
 		distLightCam.setLookAt(lightEnv.DirectionalLight.Position + lightEnv.DirectionalLight.Direction * 5.f);// 5 is a magic value
 		distLightCam.setOrtho(-10.f, 10.f, -10.f, 10.f);// TODO:
 		distLightCam.setNearFar(camera.near(), camera.far());
@@ -117,8 +117,8 @@ namespace pio
 		cameraUD.PrjMat = camera.getPrjMat();
 		cameraUD.OrthoMat = camera.getOrthoMat();
 		cameraUD.CameraPosition = camera.getCameraPos();
-		cameraUD.FrustumFar = camera.far();		
-		
+		cameraUD.FrustumFar = camera.far();
+
 		auto cameraUB = m_uniformBuffers->get((uint32_t)UBBindings::Camera);
 		auto dirLightUB = m_uniformBuffers->get((uint32_t)UBBindings::DistantLight);
 		auto dirLightSdDataUB = m_uniformBuffers->get((uint32_t)UBBindings::DistantLightShadowData);
@@ -134,21 +134,21 @@ namespace pio
 		lightEnv.DirectionalLight.serialize();
 		lightEnv.DirectionalLightShadowData.serialize();
 		lightEnv.PointLightData.serialize();
-		lightEnv.PtLightShadowData.serialize();		
+		lightEnv.PtLightShadowData.serialize();
 
 		Renderer::SubmitRC([cameraUB, dirLightUB, dirLightSdDataUB, ptLightDataUB, ptLightSdDataUB, cameraUD, lightEnv]() mutable
-		{
-			uint64_t start{ PROFILER_TIME };
-			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
-			dirLightUB->setData(lightEnv.DirectionalLight.Block.getBuffer()->as<void *>(), lightEnv.DirectionalLight.Block.getByteUsed());
-			dirLightSdDataUB->setData(lightEnv.DirectionalLightShadowData.Block.getBuffer()->as<void *>(), lightEnv.DirectionalLightShadowData.Block.getByteUsed());
-			ptLightDataUB->setData(lightEnv.PointLightData.Block.getBuffer()->as<void *>(), lightEnv.PointLightData.Block.getByteUsed());
-			ptLightSdDataUB->setData(lightEnv.PtLightShadowData.Block.getBuffer()->as<void *>(), lightEnv.PtLightShadowData.Block.getByteUsed());
-			PROFILERD_DURATION(start, "UploadData");
-		});		
+			{
+				uint64_t start{ PROFILER_TIME };
+				cameraUB->setData(cameraUD.Block.getBuffer()->as<void*>(), cameraUD.Block.getByteUsed());
+				dirLightUB->setData(lightEnv.DirectionalLight.Block.getBuffer()->as<void*>(), lightEnv.DirectionalLight.Block.getByteUsed());
+				dirLightSdDataUB->setData(lightEnv.DirectionalLightShadowData.Block.getBuffer()->as<void*>(), lightEnv.DirectionalLightShadowData.Block.getByteUsed());
+				ptLightDataUB->setData(lightEnv.PointLightData.Block.getBuffer()->as<void*>(), lightEnv.PointLightData.Block.getByteUsed());
+				ptLightSdDataUB->setData(lightEnv.PtLightShadowData.Block.getBuffer()->as<void*>(), lightEnv.PtLightShadowData.Block.getByteUsed());
+				PROFILERD_DURATION(start, "UploadData");
+			});
 	}
 
-	void SceneRenderer::endScene(const Scene &scene)
+	void SceneRenderer::endScene(const Scene& scene)
 	{
 		PIO_ASSERT_RETURN(m_active, "beginScene() has not been called!");
 		uint64_t start{ PROFILER_TIME };
@@ -162,10 +162,10 @@ namespace pio
 		PROFILERD_DURATION(start, "EndScene");
 	}
 
-	void SceneRenderer::submitMesh(Ref<MeshBase> &mesh, uint32_t submeshIndex, Transform &transform, const RenderState &state)
+	void SceneRenderer::submitMesh(Ref<MeshBase>& mesh, uint32_t submeshIndex, Transform& transform, const RenderState& state)
 	{
-		const auto &meshSource = mesh->getMeshSource();
-		const auto &submeshes = meshSource->getSubmeshes();
+		const auto& meshSource = mesh->getMeshSource();
+		const auto& submeshes = meshSource->getSubmeshes();
 		Ref<MaterialTable> mt = mesh->getMaterialTable();
 		bool isRigged = submeshes[submeshIndex].IsRigged;
 
@@ -173,7 +173,7 @@ namespace pio
 
 		// Main geo
 		{
-			auto &dc = m_meshDraws[meshKey];
+			auto& dc = m_meshDraws[meshKey];
 			dc.Mesh = mesh->getHandle();
 			dc.SubmeshIndex = submeshIndex;
 			dc.MaterialTb = mt;
@@ -191,27 +191,27 @@ namespace pio
 				Ref<MaterialAsset> ma = AssetsManager::GetRuntimeAsset<MaterialAsset>(handle);
 				if (ma && ma->isCastingShadow())
 				{
-					auto &dc = m_shadowPassDraws[meshKey];
+					auto& dc = m_shadowPassDraws[meshKey];
 					dc.Mesh = mesh->getHandle();
 					dc.SubmeshIndex = submeshIndex;
 					// TODO: is the IsRigged correctly used?
 					dc.ModelMat = isRigged ? transform.mat() : transform.mat() * submeshes[submeshIndex].Transform;
 					dc.IsRigged = isRigged;
-					dc.State.DepthTest = DepthTest::Common();					
-					dc.State.Cull = CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front);					
+					dc.State.DepthTest = DepthTest::Common();
+					dc.State.Cull = CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front);
 					dc.State.Blend = Blend::Disable();
-					dc.State.Stencil = StencilTest::Disable();					
+					dc.State.Stencil = StencilTest::Disable();
 				}
 			}
 		}
 	}
 
-	void SceneRenderer::submitSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state)
+	void SceneRenderer::submitSprite(const AssetHandle& quadMesh, const AssetHandle& texture, const RenderState& state)
 	{
 		MeshKey meshKey{ quadMesh, 0 };
 
 		{
-			auto &dc = m_spriteDraws[meshKey];
+			auto& dc = m_spriteDraws[meshKey];
 			dc.QuadMesh = quadMesh;
 			dc.Texture = texture;
 			dc.State = state;
@@ -514,100 +514,104 @@ namespace pio
 		m_lightPass->setState(state);
 	}
 
-	void SceneRenderer::flushDrawList(const Scene &scene)
+	void SceneRenderer::flushDrawList(const Scene& scene)
 	{
 		RenderStrategy strategy = Renderer::GetConfig().Strategy;
 		switch (strategy)
 		{
-			case RenderStrategy::Forward:
-			{
-				forwardRendering(scene);
-				break;
-			}
-			case RenderStrategy::Deferred:
-			{
-				deferredRendering(scene);
-				break;
-			}
-			default:
-				LOGE("render strategy[%u] is not implemented", strategy);
-				break;
+		case RenderStrategy::Forward:
+		{
+			forwardRendering(scene);
+			break;
+		}
+		case RenderStrategy::Deferred:
+		{
+			deferredRendering(scene);
+			break;
+		}
+		default:
+			LOGE("render strategy[%u] is not implemented", strategy);
+			break;
 		}
 		onScreenRendering(scene);
 	}
 
-	void SceneRenderer::forwardRendering(const Scene &scene)
+	void SceneRenderer::forwardRendering(const Scene& scene)
 	{
 		// TODO: support mutiple point lights in forward rendering
 		return;
 
-		auto &s = const_cast<RenderState &>(m_forwardPass->getState());
-		s.Clear.Color = Renderer::GetConfig().ClearColor;	
+		auto& s = const_cast<RenderState&>(m_forwardPass->getState());
+		s.Clear.Color = Renderer::GetConfig().ClearColor;
 
 		shadowPass(scene);
 		geometryPass(scene);
 		m_compositeTexture = m_forwardPass->getSpecification().FrameBuffer->getColorBuffer(ColorAttachment::Attach0);
 	}
 
-	void SceneRenderer::geometryPass(const Scene &scene)
+	void SceneRenderer::geometryPass(const Scene& scene)
 	{
 		Ref<RenderPass> fp = m_forwardPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
 		// TODO: support mutiple point light in forward pass
 		Ref<RenderPass> sp;
-		std::map<MeshKey, DrawCommand> &cmd = m_meshDraws;
+		std::map<MeshKey, DrawCommand>& cmd = m_meshDraws;
 
 		Renderer::SubmitRC([fp, ubs, sp, cmd]() mutable
-		{
-			Renderer::BeginRenderPass(fp);
-			for (auto &it : cmd)
 			{
-				auto &dc = it.second;
-				Renderer::RenderSubmesh(dc.Mesh, dc.SubmeshIndex, dc.MaterialTb, sp, ubs, dc.ModelMat, dc.State);
-			}
+				Renderer::BeginRenderPass(fp);
+				for (auto& it : cmd)
+				{
+					auto& dc = it.second;
+					Renderer::RenderSubmesh(dc.Mesh, dc.SubmeshIndex, dc.MaterialTb, sp, ubs, dc.ModelMat, dc.State);
+				}
 
-			Renderer::EndRenderPass(fp);
-		});
+				Renderer::EndRenderPass(fp);
+			});
 	}
 
-	void SceneRenderer::shadowPass(const Scene &scene)
+	void SceneRenderer::shadowPass(const Scene& scene)
 	{
-		const LightEnvironment &env = scene.m_lightEnv;
+		const LightEnvironment& env = scene.m_lightEnv;
 		Ref<RenderPass> distsp = m_distantLightShadowPass;
 		Ref<RenderPass> ptsp = m_pointLightShadowPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
-		std::map<MeshKey, DrawCommand> &cmd = m_shadowPassDraws;
+		std::map<MeshKey, DrawCommand>& cmd = m_shadowPassDraws;
 
 		// [TODO]: Only the light that can cast shadow will update shadow map.
 
 		Renderer::SubmitRC([env, distsp, ubs, cmd]() mutable
-		{
-			Renderer::BeginRenderPass(distsp);
-			if (env.DirectionalLight.CastShadow)
 			{
-				for (auto &it : cmd)
+				uint64_t start{ PROFILER_TIME };
+				Renderer::BeginRenderPass(distsp);
+				if (env.DirectionalLight.CastShadow)
 				{
-					auto &dc = it.second;
-					Renderer::RenderDistantLightShadow(dc.Mesh, dc.SubmeshIndex, dc.IsRigged, dc.MaterialTb, distsp, ubs, dc.ModelMat, dc.State);
+					for (auto& it : cmd)
+					{
+						auto& dc = it.second;
+						Renderer::RenderDistantLightShadow(dc.Mesh, dc.SubmeshIndex, dc.IsRigged, dc.MaterialTb, distsp, ubs, dc.ModelMat, dc.State);
+					}
 				}
-			}			
-			Renderer::EndRenderPass(distsp);
-		});
+				Renderer::EndRenderPass(distsp);
+				PROFILERD_DURATION(start, "Directional Light Shadow");
+			});
 
 		// [NOTE] Frame buffer for mutiple point lights contains a cubemap array
 		Renderer::SubmitRC([env, ptsp, ubs, cmd]() mutable
-		{
-			Renderer::BeginRenderPass(ptsp);
-			for (auto &it : cmd)
 			{
-				auto &dc = it.second;
-				Renderer::RenderPointLightShadow(dc.Mesh, dc.SubmeshIndex, dc.IsRigged, dc.MaterialTb, ptsp, ubs, dc.ModelMat, dc.State);
-			}
-			Renderer::EndRenderPass(ptsp);
-		});
+				uint64_t start{ PROFILER_TIME };
+				Renderer::BeginRenderPass(ptsp);
+				for (auto& it : cmd)
+				{
+					auto& dc = it.second;
+					Renderer::RenderPointLightShadow(dc.Mesh, dc.SubmeshIndex, dc.IsRigged, dc.MaterialTb, ptsp, ubs, dc.ModelMat, dc.State);
+				}
+				Renderer::EndRenderPass(ptsp);
+				PROFILERD_DURATION(start, "Point Light Shadow");
+			});
 	}
 
-	void SceneRenderer::deferredRendering(const Scene &scene)
+	void SceneRenderer::deferredRendering(const Scene& scene)
 	{
 		shadowPass(scene);
 		geometryPass_deferred(scene);
@@ -615,29 +619,29 @@ namespace pio
 		m_compositeTexture = m_lightPass->getFramebuffer()->getColorBuffer(ColorAttachment::Attach0);
 	}
 
-	void SceneRenderer::geometryPass_deferred(const Scene &scene)
+	void SceneRenderer::geometryPass_deferred(const Scene& scene)
 	{
 		Ref<RenderPass> gp = m_GBufferPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
-		std::map<MeshKey, DrawCommand> &cmd = m_meshDraws;
+		std::map<MeshKey, DrawCommand>& cmd = m_meshDraws;
 
 		Renderer::SubmitRC([gp, ubs, cmd]() mutable
-		{
-			uint64_t start{ PROFILER_TIME };
-			Renderer::BeginRenderPass(gp);
-			for (auto &it : cmd)
 			{
-				auto &dc = it.second;
-				Renderer::RenderSubmesh_Deferred(dc.Mesh, dc.SubmeshIndex, dc.MaterialTb, ubs, dc.ModelMat, dc.State);
-			}
-			Renderer::EndRenderPass(gp);
-			PROFILERD_DURATION(start, "GeoPass");
-		});
+				uint64_t start{ PROFILER_TIME };
+				Renderer::BeginRenderPass(gp);
+				for (auto& it : cmd)
+				{
+					auto& dc = it.second;
+					Renderer::RenderSubmesh_Deferred(dc.Mesh, dc.SubmeshIndex, dc.MaterialTb, ubs, dc.ModelMat, dc.State);
+				}
+				Renderer::EndRenderPass(gp);
+				PROFILERD_DURATION(start, "GeoPass");
+			});
 	}
 
-	void SceneRenderer::lightingPass_deferred(const Scene &scene)
+	void SceneRenderer::lightingPass_deferred(const Scene& scene)
 	{
-		const LightEnvironment &env = scene.m_lightEnv;
+		const LightEnvironment& env = scene.m_lightEnv;
 		Ref<Skybox> sk = scene.m_skybox;
 		Ref<RenderPass> gp = m_GBufferPass;
 		Ref<RenderPass> lp = m_lightPass;
@@ -646,45 +650,45 @@ namespace pio
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
 
 		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs]() mutable
-		{				
-			uint64_t start{ PROFILER_TIME };
-			Renderer::BeginRenderPass(lp);
-			// Copy depth buffer from G-Buffer into Lighting pass
-			Renderer::FramebufferBlockTransfer(gp->getFramebuffer()->getId(), lp->getFramebuffer()->getId(),
-											   glm::ivec2(0), glm::ivec2(gp->getFramebuffer()->getWidth(), gp->getFramebuffer()->getHeight()),
-											   glm::ivec2(0), glm::ivec2(lp->getFramebuffer()->getWidth(), lp->getFramebuffer()->getHeight()),
-											   FB_DepthBuffer_Bit, TextureFilterMag::Nearest);
-			RenderPass::RenderLightingEffect_Deferred(env, sk, gp, dlsp, plsp, ubs);
+			{
+				uint64_t start{ PROFILER_TIME };
+				Renderer::BeginRenderPass(lp);
+				// Copy depth buffer from G-Buffer into Lighting pass
+				Renderer::FramebufferBlockTransfer(gp->getFramebuffer()->getId(), lp->getFramebuffer()->getId(),
+					glm::ivec2(0), glm::ivec2(gp->getFramebuffer()->getWidth(), gp->getFramebuffer()->getHeight()),
+					glm::ivec2(0), glm::ivec2(lp->getFramebuffer()->getWidth(), lp->getFramebuffer()->getHeight()),
+					FB_DepthBuffer_Bit, TextureFilterMag::Nearest);
+				RenderPass::RenderLightingEffect_Deferred(env, sk, gp, dlsp, plsp, ubs);
 
-			RenderState skState;
-			skState.Blend = Blend::Disable();
-			skState.Cull = CullFace::Common();
-			skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
-			skState.Stencil.Enable = false;
-			Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);
+				RenderState skState;
+				skState.Blend = Blend::Disable();
+				skState.Cull = CullFace::Common();
+				skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
+				skState.Stencil.Enable = false;
+				Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);
 
-			Renderer::EndRenderPass(lp);	
-			PROFILERD_DURATION(start, "LightingPass");
-		});
+				Renderer::EndRenderPass(lp);
+				PROFILERD_DURATION(start, "LightingPass");
+			});
 	}
 
-	void SceneRenderer::onScreenRendering(const Scene &scene)
+	void SceneRenderer::onScreenRendering(const Scene& scene)
 	{
 		Ref<RenderPass> scpss = m_screenPass;
-		const LayoutViewport &vp = scene.m_layoutParam.Viewport;
-		const AssetHandle &handle = scene.m_screenQuad;		
+		const LayoutViewport& vp = scene.m_layoutParam.Viewport;
+		const AssetHandle& handle = scene.m_screenQuad;
 		Ref<Texture2D> composite = m_compositeTexture;
 		std::map<MeshKey, SpriteCommand>& spCmd = m_spriteDraws;
 
 		// No pass to bind, render on the default framebuffer
 		Renderer::SubmitRC([scpss, vp, handle, composite, spCmd]() mutable
-		{
-			uint64_t start{ PROFILER_TIME };
-			Renderer::BeginScreenPass(scpss, Viewport(vp.X, vp.Y, vp.Width, vp.Height));
-			RenderPass::Postprocessing(handle, composite);	
-			RenderPass::RenderSprites(spCmd);
-			Renderer::EndScreenPass(scpss);
-			PROFILERD_DURATION(start, "Composite");
-		});
+			{
+				uint64_t start{ PROFILER_TIME };
+				Renderer::BeginScreenPass(scpss, Viewport(vp.X, vp.Y, vp.Width, vp.Height));
+				RenderPass::Postprocessing(handle, composite);
+				RenderPass::RenderSprites(spCmd);
+				Renderer::EndScreenPass(scpss);
+				PROFILERD_DURATION(start, "On Screen Rendering");
+			});
 	}
 }

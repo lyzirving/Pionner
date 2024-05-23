@@ -231,6 +231,10 @@ namespace pio
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderDistantLightShadow fail!!");
 
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
+
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
 
@@ -297,6 +301,10 @@ namespace pio
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderPointLightShadow fail!!");
 
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
+
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
 
@@ -333,6 +341,10 @@ namespace pio
 
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderLightVolume fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
@@ -428,6 +440,10 @@ namespace pio
 
 		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderPointLightQuad_Deferred fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		quadMesh->IndexBuffer->unbind();
 		quadMesh->VertexArray->unbind();
@@ -531,6 +547,10 @@ namespace pio
 		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderDistantLightingQuad_Deferred fail!!");
 
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
+
 		quadMesh->IndexBuffer->unbind();
 		quadMesh->VertexArray->unbind();
 
@@ -577,6 +597,10 @@ namespace pio
 		glDrawElements(GL_LINES, lineMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderLineSegment fail!!");
 
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
+
 		lineMesh->IndexBuffer->unbind();
 		lineMesh->VertexArray->unbind();
 
@@ -608,6 +632,10 @@ namespace pio
 
 		glDrawElements(GL_LINES, lineMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderLine fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		lineMesh->IndexBuffer->unbind();
 		lineMesh->VertexArray->unbind();
@@ -641,6 +669,10 @@ namespace pio
 
 		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderTextureQuad2D fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		quadMesh->IndexBuffer->unbind();
 		quadMesh->VertexArray->unbind();
@@ -676,6 +708,10 @@ namespace pio
 
 		glDrawElements(GL_TRIANGLES, mesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderSprite fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		mesh->IndexBuffer->unbind();
 		mesh->VertexArray->unbind();
@@ -716,6 +752,10 @@ namespace pio
 
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderSkybox fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
@@ -758,7 +798,10 @@ namespace pio
 			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 			if (GLHelper::CheckError("renderHDRToEnvMap fail at light dir[%u]!!", i))
 				LOGD("succeed to render HDR to cube face[%s]", LightDirStr(LightDir(i)));
-		}		
+		}	
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
@@ -815,6 +858,9 @@ namespace pio
 			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 			if (GLHelper::CheckError("renderDiffuseConvolution fail at light dir[%u]!!", i))
 				LOGD("succeed to render diffuse convolution to cube face[%s]", LightDirStr(LightDir(i)));
+#ifdef PIO_PROFILER_ON
+			glFinish();
+#endif // PIO_PROFILER_ON
 
 			submesh.IndexBuffer->unbind();
 			submesh.VertexArray->unbind();
@@ -884,6 +930,10 @@ namespace pio
 				if (GLHelper::CheckError("renderPrefilterConvolution fail at light dir[%u]!", i))
 					LOGD("succeed to render prefiler map convolution, cube[%s], mip[%u]", LightDirStr(LightDir(i)), mip);
 
+#ifdef PIO_PROFILER_ON
+				glFinish();
+#endif // PIO_PROFILER_ON
+
 				submesh.VertexArray->unbind();
 				submesh.IndexBuffer->unbind();
 			}			
@@ -917,6 +967,10 @@ namespace pio
 		if (GLHelper::CheckError("renderBrdfConvolution fail!!"))
 			LOGD("succeed to create brdf lut texture");
 
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
+
 		mesh->IndexBuffer->unbind();
 		mesh->VertexArray->unbind();
 
@@ -946,6 +1000,10 @@ namespace pio
 
 		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("postprocessing fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		quadMesh->IndexBuffer->unbind();
 		quadMesh->VertexArray->unbind();
@@ -1171,6 +1229,10 @@ namespace pio
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("drawPBRSubMesh fail!!");
 
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
+
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
 
@@ -1255,6 +1317,10 @@ namespace pio
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("drawMatPreview fail!!");
 
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
+
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();		
 		cameraUB->unbind();
@@ -1334,6 +1400,10 @@ namespace pio
 
 		glDrawElements(GL_LINE_STRIP, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("drawWireframe fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
@@ -1415,6 +1485,10 @@ namespace pio
 
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("drawSubmesh_deferred fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
@@ -1522,6 +1596,10 @@ namespace pio
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("onOutlining fail!!");
 
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
+
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
 
@@ -1591,6 +1669,10 @@ namespace pio
 
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("onOutlining_deferred fail!!");
+
+#ifdef PIO_PROFILER_ON
+		glFinish();
+#endif // PIO_PROFILER_ON
 
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
