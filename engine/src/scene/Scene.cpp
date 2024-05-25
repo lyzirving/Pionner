@@ -379,8 +379,10 @@ namespace pio
 
 		EventBus::Get()->submit([]()
 		{
-			AssimpMeshImporter importer("werewolf", AssetFmt::GLTF);
+			AssimpMeshImporter importer("werewolf", AssetFmt::GLTF);		
 			//AssimpMeshImporter importer("Car", AssetFmt::GLTF);
+			//[NOTE] model 'demon' has some feature to be understood to use
+			//AssimpMeshImporter importer("demon", AssetFmt::GLTF);
 			auto meshSource = importer.importToMeshSource();		
 			EventBus::Get()->notify(EventBusArg(PioEvent::UnzipAsset, meshSource));
 		});
