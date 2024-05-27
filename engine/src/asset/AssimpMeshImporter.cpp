@@ -270,8 +270,10 @@ namespace pio
 		if (!scene || !meshSource)
 			return;
 
-		glm::vec3 albedoColor{ 0.8f }, emission{ 0.f };
-		float roughness{ 0.5f }, metalness{ 0.f };
+		glm::vec3 albedoColor{ 0.8f }, emission{ 0.f }, specular{ 0.f };
+		float roughness{ 0.5f }, metalness{ 0.f }, specularFactor{ 0.f }, anisotropic{ 0.f };
+		// 1 means opaque, and 0 means transparancy
+		float opacity{ 1.f };
 
 		Ref<Texture2D> whiteTexture = Renderer::GetWhiteTexture();
 
@@ -303,6 +305,21 @@ namespace pio
 
 				if (aiMaterial->Get(AI_MATKEY_METALLIC_FACTOR, aiFloat) == AI_SUCCESS)
 					metalness = aiFloat;
+
+				//[TODO] assemble specular into shader
+				if (aiMaterial->Get(AI_MATKEY_COLOR_SPECULAR, aiColor) == AI_SUCCESS)
+					specular = { aiColor.r, aiColor.g, aiColor.b };
+
+				if (aiMaterial->Get(AI_MATKEY_SPECULAR_FACTOR, aiFloat) == AI_SUCCESS)
+					specularFactor = aiFloat;
+
+				if (aiMaterial->Get(AI_MATKEY_ANISOTROPY_FACTOR, aiFloat) == AI_SUCCESS)
+					anisotropic = aiFloat;
+
+				if (aiMaterial->Get(AI_MATKEY_OPACITY, aiFloat) == AI_SUCCESS)
+					opacity = aiFloat;
+				// -----------------------------------
+
 
 				aiString aiTexPath;
 				bool hasAlbedoMap = aiMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
@@ -434,9 +451,9 @@ namespace pio
 
 					if (metallicRoughnessTex)
 					{
-						// Read R channel for metallic
-						uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, 1);
-						fallback = !(data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 1));
+						// Read b channel for metallic, 3 stands for b channel
+						uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, 3);
+						fallback = !(data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 3));
 						if (!fallback)
 						{
 							mi->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
@@ -473,7 +490,7 @@ namespace pio
 
 					if (metallicRoughnessTex)
 					{
-						// Read G channel for roughness
+						// Read g channel for roughness, 2 stands for g channel
 						uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, 2);
 						fallback = !(data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 2));
 						if (!fallback)

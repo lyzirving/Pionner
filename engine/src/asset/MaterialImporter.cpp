@@ -131,9 +131,9 @@ namespace pio
 				AssetsManager::Get()->addPackedAsset(metalRoughnessName, metallicRoughnessTex);
 			}
 
-			// Read R channel for metallic
-			uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, component == 1 ? 0 : 1);
-			if (data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 1))
+			// Read b channel for metallic
+			uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, component == 1 ? 0 : 3);
+			if (data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 3))
 			{
 				material->set(MaterialAttrs::MU_MetallicRoughnessTexture, metallicRoughnessTex);
 				material->set(MaterialAttrs::MU_Metalness, 1.f);
@@ -168,7 +168,7 @@ namespace pio
 				AssetsManager::Get()->addPackedAsset(metalRoughnessName, metallicRoughnessTex);
 			}
 
-			// Read G channel for roughness
+			// Read g channel for roughness
 			uint8_t *data = stbi_load(path.c_str(), &width, &height, &component, component == 1 ? 0 : 2);
 			if (data && ImageUtils::FillChannelData(data, metallicRoughnessTex->getBuffer()->as<uint8_t>(), width, height, 3, 2))
 			{

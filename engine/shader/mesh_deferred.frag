@@ -43,9 +43,10 @@ void main() {
     // w is type component, 2 for mesh
     gNormal = vec4(calcNormal(), 2.f);
     gAlbedoAlpha = vec4(albedoColor.rgb * u_material.AlbedoColor, albedoColor.a);
+    // In metallic-roughness flow, g channel is roughness factor, b is metallic factor
     gMaterial.x = texture(u_material.MetallicRoughnessTexture, v_texCoord).g * u_material.Roughness;
     gMaterial.x = max(gMaterial.x, 0.05f);// Minimum roughness of 0.05 to keep specular highlight
-    gMaterial.y = texture(u_material.MetallicRoughnessTexture, v_texCoord).r * u_material.Metalness;
+    gMaterial.y = texture(u_material.MetallicRoughnessTexture, v_texCoord).b * u_material.Metalness;
     gMaterial.z = texture(u_material.AOTexture, v_texCoord).r * u_material.AO;
     gEmission = texture(u_material.EmissionTexture, v_texCoord).rgb * u_material.Emission;
 }
