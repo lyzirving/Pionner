@@ -93,6 +93,27 @@ namespace pio
 		m_geo = geoStream.str();
 	}
 
+	GLShader::GLShader(const char* path) : Shader(), m_path(path)
+	{
+		if (!m_path.empty())
+		{
+			size_t pos0 = m_path.find_last_of('/');
+			size_t pos1 = m_path.find_last_of('.');
+			if (pos0 != std::string::npos && pos1 != std::string::npos)
+			{
+				m_name = m_path.substr(pos0 + 1, pos1 - pos0);
+			}
+			else
+			{
+				LOGE("invalid path[%s]", m_path.c_str());
+			}
+		}
+		else
+		{
+			LOGE("empty path");
+		}
+	}
+
 	GLShader::~GLShader()
 	{
 		destroy();

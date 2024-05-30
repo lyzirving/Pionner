@@ -34,6 +34,7 @@ namespace pio
 
 		virtual uint32_t getProgram() const = 0;
 		virtual const std::string &getName() const = 0;
+		virtual const std::string &getPath() const = 0;
 		virtual bool isInit() const = 0;
 
 	public:
