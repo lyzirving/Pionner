@@ -10,15 +10,14 @@
 
 namespace pio
 {
-
-	Ref<ShaderCompiler> ShaderCompiler::Create(const Ref<Shader>& shader)
+	Ref<Shader> ShaderCompiler::Compile(const std::string& path)
 	{
 		switch (RenderAPI::CurrentType())
 		{
 		case RenderAPI::Type::OpenGL:
-			return CreateRef<GLShaderCompiler>(shader);
+			return GLShaderCompiler::DoCompile(path);
 		default:
-			return Ref<ShaderCompiler>();
+			return Ref<Shader>();
 		}
 	}
 

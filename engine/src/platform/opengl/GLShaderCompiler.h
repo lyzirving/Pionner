@@ -8,14 +8,25 @@ namespace pio
 	class GLShaderCompiler : public ShaderCompiler
 	{
 	public:
-		GLShaderCompiler(const Ref<Shader> &shader);
+		GLShaderCompiler();
 		~GLShaderCompiler() = default;
 
+	protected:
 		virtual bool preprocess() override;
 
+	public:
+		static Ref<Shader> DoCompile(const std::string& path);
+
 	private:
-		Ref<Shader> m_shader;
-		std::string m_shaderSource;
+		void parseMetadata();
+
+		bool preprocessGLSL();
+		bool preprocessShader(std::map<ShaderUtils::ShaderStageFlagBits, std::string>& stageSource);
+
+	private:
+		std::string m_path{};
+		std::string m_source{}, m_name{};
+		ShaderUtils::SourceLang m_lang{ ShaderUtils::SourceLang::NONE };
 	};
 }
 

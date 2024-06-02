@@ -410,7 +410,7 @@ namespace pio
 				std::string metalRoughnessTexName{ aiMaterialName.C_Str() }; metalRoughnessTexName += "_metallicRoughness";
 				Ref<Texture2D> metallicRoughnessTex{};
 				bool hasMetallicMap = aiMaterial->GetTexture(AI_MATKEY_METALLIC_TEXTURE, &aiTexPath) == AI_SUCCESS;
-				bool hasMetallicRoughness = hasMetallicMap && StringUtil::contains(aiTexPath.C_Str(), "roughness");				
+				bool hasMetallicRoughness = hasMetallicMap && StringUtil::Contains(aiTexPath.C_Str(), "roughness");				
 				fallback = !hasMetallicMap && !hasMetallicRoughness;				
 				if (hasMetallicRoughness)
 				{			

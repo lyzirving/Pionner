@@ -10,7 +10,6 @@ namespace pio
 	public:
 		GLShader(const char *name, const char *vert, const char *frag);
 		GLShader(const char *name, const char *vert, const char *frag, const char *geo);
-		GLShader(const char* path);
 		virtual ~GLShader();
 
 		virtual void setFloat(const std::string &name, float val) override;
@@ -37,11 +36,9 @@ namespace pio
 
 		virtual uint32_t getProgram() const override { return m_program; };
 		virtual const std::string &getName() const override { return m_name; };
-		virtual const std::string &getPath() const override { return m_path; };
 		virtual bool isInit() const override { return m_program > 0; };
 
 	private:
-		std::string m_path{};
 		std::string m_name{};
 		std::string m_vert{}, m_frag{}, m_geo{};
 		uint32_t m_program{ 0 };

@@ -13,7 +13,11 @@ namespace pio
 		* @param target: target string
 		* @return true means the src contains target, otherwise, not.
 		*/
-		bool contains(const std::string &src, const std::string &target);
+		bool Contains(const std::string &src, const std::string &target);
+		// Keeps delimiters except for spaces, used for shaders
+		std::vector<std::string> SplitStringAndKeepDelims(const std::string &str);
+		void ToLower(std::string& string);
+		std::string ToLower(const std::string& string);
 	}
 }
 

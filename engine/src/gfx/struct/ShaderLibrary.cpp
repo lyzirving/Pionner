@@ -1,5 +1,7 @@
 #include "ShaderLibrary.h"
 
+#include "gfx/rhi/ShaderCompiler.h"
+
 namespace pio
 {
 	PIO_SINGLETON_IMPL(ShaderLibrary)
@@ -15,6 +17,7 @@ namespace pio
 	void ShaderLibrary::Init()
 	{
 		ShaderLibrary::Get();
+		//ShaderCompiler::Compile("shader/TestCompile.glsl");
 	}
 
 	void ShaderLibrary::Shutdown()

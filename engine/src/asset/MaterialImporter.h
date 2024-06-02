@@ -24,11 +24,11 @@ namespace pio
 	private:
 		static void Parse(Ref<Material> &material, const std::string &materialName, const std::string &parentDir, const std::string &fileName);
 		
-		static bool IsAlbedo(const std::string &fileName) {	return StringUtil::contains(fileName, "albedo") || StringUtil::contains(fileName, "baseColor") || StringUtil::contains(fileName, "diffuse"); }
-		static bool IsNormal(const std::string &fileName) { return StringUtil::contains(fileName, "normal"); }
-		static bool IsMetalness(const std::string &fileName) { return StringUtil::contains(fileName, "metallic"); }
-		static bool IsRoughness(const std::string &fileName) { return StringUtil::contains(fileName, "roughness"); }
-		static bool IsAO(const std::string &fileName) { return StringUtil::contains(fileName, "ao"); }
+		static bool IsAlbedo(const std::string &fileName) {	return StringUtil::Contains(fileName, "albedo") || StringUtil::Contains(fileName, "baseColor") || StringUtil::Contains(fileName, "diffuse"); }
+		static bool IsNormal(const std::string &fileName) { return StringUtil::Contains(fileName, "normal"); }
+		static bool IsMetalness(const std::string &fileName) { return StringUtil::Contains(fileName, "metallic"); }
+		static bool IsRoughness(const std::string &fileName) { return StringUtil::Contains(fileName, "roughness"); }
+		static bool IsAO(const std::string &fileName) { return StringUtil::Contains(fileName, "ao"); }
 
 		static bool ValidPostfix(const char *postfix) { return std::strcmp(postfix, ".png") == 0 || std::strcmp(postfix, ".jpg") == 0 || std::strcmp(postfix, ".jpeg") == 0; }
 
