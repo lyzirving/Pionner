@@ -5,9 +5,34 @@
 
 namespace pio
 {
-	class ShaderUtils
+	struct IncludeData
 	{
-	public:
+		std::string FilePath{};
+		std::size_t LineStart{}, LineEnd{};
+
+		bool operator==(const IncludeData& other) const noexcept
+		{
+			return this->FilePath == other.FilePath;
+		}
+	};
+}
+
+namespace std
+{
+	template<>
+	struct hash<pio::IncludeData>
+	{
+		size_t operator()(const pio::IncludeData& data) const noexcept
+		{
+			return std::hash<std::string>()(data.FilePath);
+		}
+	};
+}
+
+namespace pio
+{
+	namespace ShaderUtils
+	{
 		enum class SourceLang
 		{
 			NONE, GLSL, HLSL
@@ -16,16 +41,20 @@ namespace pio
 		enum ShaderStageFlagBits
 		{
 			SHADER_STAGE_VERTEX_BIT = 1,
-			SHADER_STAGE_TESSELLATION_CONTROL_BIT = 2,
-			SHADER_STAGE_TESSELLATION_EVALUATION_BIT = 4,
-			SHADER_STAGE_GEOMETRY_BIT = 8,
-			SHADER_STAGE_FRAGMENT_BIT = 16,
-			SHADER_STAGE_COMPUTE_BIT = 32,
-			SHADER_STAGE_ALL_GRAPHICS = 0x0000001F,
+			SHADER_STAGE_GEOMETRY_BIT = 2,
+			SHADER_STAGE_FRAGMENT_BIT = 4,
+			SHADER_STAGE_COMPUTE_BIT = 8,
 			SHADER_STAGE_ALL = 0x7FFFFFFF
 		};
 
-		static SourceLang LanguageFromExtension(const std::string& type)
+		struct StageData
+		{
+			ShaderStageFlagBits Stage{ SHADER_STAGE_ALL };
+			std::string Source{};
+			std::unordered_set<IncludeData> Includers{};
+		};
+
+		inline SourceLang LanguageFromExtension(const std::string& type)
 		{
 			if (type == ".glsl") return SourceLang::GLSL;
 			if (type == ".hlsl") return SourceLang::HLSL;
@@ -33,7 +62,7 @@ namespace pio
 			return SourceLang::NONE;
 		}
 
-		static const char* LanguageToString(SourceLang lang)
+		inline const char* LanguageToString(SourceLang lang)
 		{
 			switch (lang)
 			{
@@ -44,7 +73,7 @@ namespace pio
 			}
 		}
 
-		static ShaderStageFlagBits ShaderStageFromString(const std::string_view &type)
+		inline ShaderStageFlagBits ShaderStageFromString(const std::string_view& type)
 		{
 			if (type == "vert")	return SHADER_STAGE_VERTEX_BIT;
 			if (type == "geo")	return SHADER_STAGE_GEOMETRY_BIT;
@@ -53,8 +82,6 @@ namespace pio
 
 			return SHADER_STAGE_ALL;
 		}
-
-		static std::string ReadShaderSource(const std::string& path);
 	};
 }
 

@@ -21,7 +21,9 @@ namespace pio
 		void parseMetadata();
 
 		bool preprocessGLSL();
-		bool preprocessShader(std::map<ShaderUtils::ShaderStageFlagBits, std::string>& stageSource);
+		bool preprocessShader(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
+		bool preprocessIncluders(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
+		void expandIncluders(const IncludeData &data, std::string &source);
 
 	private:
 		std::string m_path{};

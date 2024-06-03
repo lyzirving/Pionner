@@ -8,7 +8,9 @@ namespace pio
 
 	namespace ShaderProcessor
 	{
-		static const char* MACRO_PRAGMA = "pragma";
+		static const char* MACRO_PRAGMA  = "pragma";
+		static const char* MACRO_VERSION = "version";
+		static const char* MACRO_INCLUDE = "include";
 
 		static const char* MACRO_PROCESSOR_STAGE = "stage";
 		static const char* MACRO_PROCESSOR_COLON = ":";

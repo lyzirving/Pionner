@@ -1,7 +1,14 @@
 #include "StringUtil.h"
-#include <regex>
 
-#include "StringUtil.h"
+#include <regex>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "StringUtil"
 
 namespace pio
 {
@@ -41,6 +48,26 @@ namespace pio
 			std::string src = string;
 			std::transform(src.begin(), src.end(), src.begin(), [](const unsigned char c) { return std::tolower(c); });
 			return src;
+		}
+
+		std::string StringUtil::ReadFileSource(const std::string& path)
+		{
+			std::ifstream file;
+			std::stringstream ss;
+			std::string source;
+
+			file.open(path);
+			if (file.is_open())
+			{
+				ss << file.rdbuf();
+				file.close();
+				source = ss.str();
+			}
+			else
+			{
+				LOGE("fail to open shader file[%s]", path.c_str());
+			}
+			return source;
 		}
 	}
 }

@@ -30,7 +30,7 @@ namespace pio
 	{
 		GLShaderCompiler compiler{};
 		compiler.m_path = path;
-		compiler.m_source = ShaderUtils::ReadShaderSource(path);
+		compiler.m_source = StringUtil::ReadFileSource(path);
 		compiler.parseMetadata();
 		LOGD("begin to compile shader[%s, %s] from[%s]", compiler.m_name.c_str(), 
 			ShaderUtils::LanguageToString(compiler.m_lang), compiler.m_path.c_str());
@@ -55,16 +55,17 @@ namespace pio
 
 	bool GLShaderCompiler::preprocessGLSL()
 	{
-		std::map<ShaderUtils::ShaderStageFlagBits, std::string> stageSource;
+		std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData> stageSource;
 		if (!preprocessShader(stageSource))
 		{
 			LOGE("err! preprocess shader failed!");
 			return false;
 		}
+		preprocessIncluders(stageSource);
 		return true;
 	}
 
-	bool GLShaderCompiler::preprocessShader(std::map<ShaderUtils::ShaderStageFlagBits, std::string>& stageSource)
+	bool GLShaderCompiler::preprocessShader(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource)
 	{
 		std::stringstream sourceStream;
 		// clear comments in shader
@@ -77,13 +78,15 @@ namespace pio
 		}
 
 		std::vector<std::pair<ShaderUtils::ShaderStageFlagBits, size_t>> stagePositions;
+		std::map<ShaderUtils::ShaderStageFlagBits, std::unordered_set<IncludeData>> stageIncluders;		
 		size_t startOfStage = 0;
 		size_t pos = newSource.find('#');
+		ShaderUtils::ShaderStageFlagBits curStage{ ShaderUtils::SHADER_STAGE_ALL };
 
 		//Check first #version
 		const size_t endOfLine = newSource.find_first_of("\r\n", pos) + 1;
 		const std::vector<std::string> tokens = StringUtil::SplitStringAndKeepDelims(newSource.substr(pos, endOfLine - pos));
-		if (!(tokens.size() >= 3 && tokens[1] == "version"))
+		if (!(tokens.size() >= 3 && tokens[1] == ShaderProcessor::MACRO_VERSION))
 		{
 			LOGE("err! Invalid #version encountered or #version is NOT encounted first.");
 			return false;
@@ -118,11 +121,19 @@ namespace pio
 						LOGE("err! Invalid stage[%s] for shader[%s]", stage.data(), m_name.c_str());
 						break;
 					}
-					ShaderUtils::ShaderStageFlagBits shaderStage = ShaderUtils::ShaderStageFromString(stage);
-					stagePositions.emplace_back(shaderStage, startOfStage);
+					curStage = ShaderUtils::ShaderStageFromString(stage);
+					stagePositions.emplace_back(curStage, startOfStage);
 				}
 			}
-			else if (tokens[index] == "version")// start pos for next shader stage
+			else if (tokens[index] == ShaderProcessor::MACRO_INCLUDE)// start pos for next shader stage
+			{		
+				IncludeData data;
+				data.FilePath = tokens[index + 1] + "." + tokens[index + 2];
+				data.LineStart = pos;
+				data.LineEnd = endOfLine;
+				stageIncluders[curStage].insert(data);
+			}
+			else if (tokens[index] == ShaderProcessor::MACRO_VERSION)// start pos for next shader stage
 			{
 				++index;
 				startOfStage = pos;
@@ -145,7 +156,9 @@ namespace pio
 			//Get first stage
 			const std::string firstStageStr = newSource.substr(0, stagePositions[1].second);
 			size_t lineCount = std::count(firstStageStr.begin(), firstStageStr.end(), '\n') + 1;
-			stageSource[stageFlag] = firstStageStr;
+			stageSource[stageFlag].Source = firstStageStr;
+			stageSource[stageFlag].Stage = stageFlag;
+			stageSource[stageFlag].Includers = stageIncluders[stageFlag];
 
 			//Get stages in the middle
 			for (size_t i = 1; i < stagePositions.size() - 1; ++i)
@@ -156,7 +169,9 @@ namespace pio
 				std::string stageStr = newSource.substr(stagePos, stagePositions[i + 1].second - stagePos);
 				const size_t secondLinePos = stageStr.find_first_of('\n', 1) + 1;
 				stageStr.insert(secondLinePos, fmt::format("#line {}\n", lineCount));
-				stageSource[stageFlag] = stageStr;
+				stageSource[stageFlag].Source = stageStr;
+				stageSource[stageFlag].Stage = stageFlag;
+				stageSource[stageFlag].Includers = stageIncluders[stageFlag];
 				lineCount += std::count(stageStr.begin(), stageStr.end(), '\n') + 1;
 			}
 
@@ -166,9 +181,27 @@ namespace pio
 			std::string lastStageStr = newSource.substr(stagePos);
 			const size_t secondLinePos = lastStageStr.find_first_of('\n', 1) + 1;
 			lastStageStr.insert(secondLinePos, fmt::format("#line {}\n", lineCount + 1));
-			stageSource[stageFlag] = lastStageStr;
+			stageSource[stageFlag].Source = lastStageStr;
+			stageSource[stageFlag].Stage = stageFlag;
+			stageSource[stageFlag].Includers = stageIncluders[stageFlag];
 		}
 
 		return true;
+	}
+
+	bool GLShaderCompiler::preprocessIncluders(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource)
+	{
+		for (auto& [stage, stageData] : stageSource)
+		{
+			for (auto &includer : stageData.Includers)
+			{
+				expandIncluders(includer, stageData.Source);
+			}
+		}
+		return true;
+	}
+
+	void GLShaderCompiler::expandIncluders(const IncludeData& data, std::string& source)
+	{	
 	}
 }

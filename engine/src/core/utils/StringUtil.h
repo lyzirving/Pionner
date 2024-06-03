@@ -16,8 +16,11 @@ namespace pio
 		bool Contains(const std::string &src, const std::string &target);
 		// Keeps delimiters except for spaces, used for shaders
 		std::vector<std::string> SplitStringAndKeepDelims(const std::string &str);
+
 		void ToLower(std::string& string);
 		std::string ToLower(const std::string& string);
+
+		std::string ReadFileSource(const std::string& path);
 	}
 }
 
