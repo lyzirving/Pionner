@@ -23,7 +23,8 @@ namespace pio
 		bool preprocessGLSL();
 		bool preprocessShader(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
 		bool preprocessIncluders(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
-		void expandIncluders(const IncludeData &data, std::string &source);
+				
+		void expandIncluder(const IncludeData &data, std::string &source, std::unordered_map<std::string, bool> &expanded);
 
 	private:
 		std::string m_path{};

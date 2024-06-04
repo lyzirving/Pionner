@@ -21,6 +21,11 @@ namespace pio
 		std::string ToLower(const std::string& string);
 
 		std::string ReadFileSource(const std::string& path);
+
+		inline std::string DeleteSubStr(const std::string &content, std::size_t start, std::size_t end)
+		{
+			return content.substr(0, start) + content.substr(end);
+		}
 	}
 }
 
