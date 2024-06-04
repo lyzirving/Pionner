@@ -25,6 +25,7 @@
 #include <bitset>
 
 #include <typeinfo>
+#include <cassert>
 
 #include "core/BaseType.h"
 #include "core/LogSystem.h"

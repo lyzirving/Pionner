@@ -1,0 +1,14 @@
+#pragma once
+
+#include <Common.glslh>
+
+struct PBRParameters
+{
+	vec3 Albedo;
+	float Roughness;
+	float Metalness;
+
+	vec3 Normal;
+	vec3 View;
+	float NdotV;
+} m_params;

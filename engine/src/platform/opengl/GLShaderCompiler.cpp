@@ -32,7 +32,7 @@ namespace pio
 		compiler.m_path = path;
 		compiler.m_source = StringUtil::ReadFileSource(path);
 		compiler.parseMetadata();
-		LOGD("begin to compile shader[%s, %s] from[%s]", compiler.m_name.c_str(), 
+		LOGD("begin to compile shader[%s, %s] from[%s]", compiler.m_name.c_str(),
 			ShaderUtils::LanguageToString(compiler.m_lang), compiler.m_path.c_str());
 
 		if (!compiler.preprocess())
@@ -78,7 +78,7 @@ namespace pio
 		}
 
 		std::vector<std::pair<ShaderUtils::ShaderStageFlagBits, size_t>> stagePositions;
-		std::map<ShaderUtils::ShaderStageFlagBits, std::unordered_set<IncludeData>> stageIncluders;		
+		std::map<ShaderUtils::ShaderStageFlagBits, std::unordered_set<IncludeData>> stageIncluders;
 		size_t startOfStage = 0;
 		size_t versionPos = newSource.find('#');
 		size_t pos = versionPos;
@@ -126,10 +126,10 @@ namespace pio
 					stagePositions.emplace_back(curStage, startOfStage);
 				}
 				// Delete current macro
-				newSource = StringUtil::DeleteSubStr(newSource, pos, endOfLine);	
+				newSource = StringUtil::DeleteSubstr(newSource, pos, endOfLine);
 			}
 			else if (tokens[index] == ShaderProcessor::MACRO_INCLUDE)// start pos for next shader stage
-			{		
+			{
 				IncludeData data;
 				data.FilePath = std::string("shader/include/") + tokens[index + 1] + "." + tokens[index + 2];
 				data.LineStart = pos;
@@ -182,7 +182,7 @@ namespace pio
 			stageFlag = stagePositions[stagePositions.size() - 1].first;
 			stagePos = stagePositions[stagePositions.size() - 1].second;
 			std::string lastStageStr = newSource.substr(stagePos);
-			const size_t secondLinePos = lastStageStr.find_first_of('\n', 1) + 1;		
+			const size_t secondLinePos = lastStageStr.find_first_of('\n', 1) + 1;
 			stageSource[stageFlag].Source = lastStageStr;
 			stageSource[stageFlag].Stage = stageFlag;
 			stageSource[stageFlag].Includers = stageIncluders[stageFlag];
@@ -195,46 +195,57 @@ namespace pio
 	bool GLShaderCompiler::preprocessIncluders(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource)
 	{
 		for (auto& [stage, stageData] : stageSource)
-		{	
+		{
 			std::unordered_map<std::string, bool> expanded{};
-			std::string &source = stageData.Source;
+			std::string& source = stageData.Source;
 
-			for(auto &data : stageData.Includers)
+			for (auto& data : stageData.Includers)
 			{
-				//expandIncluder(data, source, expanded);
+				expandIncluder(data, source, expanded);
 			}
 		}
 		return true;
-	}	
+	}
 
-	void GLShaderCompiler::expandIncluder(const IncludeData &data, std::string &source, std::unordered_map<std::string, bool> &expanded)
-	{		
+	void GLShaderCompiler::expandIncluder(const IncludeData& data, std::string& source, std::unordered_map<std::string, bool>& expanded)
+	{
 		auto it = expanded.find(data.FilePath);
-		if(it != expanded.end())// the include file has already been expanded
+		if (it != expanded.end())// the include file has already been expanded
+		{
+			source = StringUtil::DeleteSubstr(source, data.LineStart, data.LineEnd);
 			return;
+		}
 
 		std::string includerSource = StringUtil::ReadFileSource(data.FilePath);
-		if(includerSource.empty())
+		if (includerSource.empty())
 		{
 			LOGE("include file[%s] is invalid", data.FilePath.c_str());
-			source = StringUtil::DeleteSubStr(source, data.LineStart, data.LineEnd);	
+			source = StringUtil::DeleteSubstr(source, data.LineStart, data.LineEnd);
 			return;
 		}
-
 		size_t pos = includerSource.find('#');
-		while(pos != std::string::npos)
+		while (pos != std::string::npos)
 		{
-			const size_t endOfLine = includerSource.find_first_of("\r\n", pos) + 1;
+			size_t endOfLine = includerSource.find_first_of("\r\n", pos);
+			endOfLine = (endOfLine == std::string::npos) ? includerSource.size() : (endOfLine + 1);
 			const std::vector<std::string> tokens = StringUtil::SplitStringAndKeepDelims(includerSource.substr(pos, endOfLine - pos));
-			if(tokens.size() >= 2 && tokens[1] == ShaderProcessor::MACRO_INCLUDE)
+			if (tokens.size() >= 2 && tokens[1] == ShaderProcessor::MACRO_INCLUDE)
 			{
-				IncludeData data;
-				data.FilePath = std::string("shader/include/") + tokens[2] + "." + tokens[3];
-				data.LineStart = pos;  
-				data.LineEnd = endOfLine; 
-				expandIncluder(data, includerSource, expanded);
+				IncludeData newData;
+				newData.FilePath = std::string("shader/include/") + tokens[2] + "." + tokens[3];
+				newData.LineStart = pos;
+				newData.LineEnd = endOfLine;
+				expandIncluder(newData, includerSource, expanded);
 			}
-			pos = includerSource.find('#', pos + 1);
+			else
+			{
+				includerSource = StringUtil::DeleteSubstr(includerSource, pos, endOfLine);
+			}			
+			pos = includerSource.find('#', pos);
 		}
+		source = StringUtil::DeleteSubstr(source, data.LineStart, data.LineEnd);
+		source.insert(source.begin() + data.LineStart, includerSource.begin(), includerSource.end());
+		source.insert(source.begin() + data.LineStart + includerSource.size(), '\n');
+		expanded[data.FilePath] = true;
 	}
 }

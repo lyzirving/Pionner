@@ -22,8 +22,9 @@ namespace pio
 
 		std::string ReadFileSource(const std::string& path);
 
-		inline std::string DeleteSubStr(const std::string &content, std::size_t start, std::size_t end)
+		inline std::string DeleteSubstr(const std::string &content, std::size_t start, std::size_t end)
 		{
+			assert((!content.empty() && (start < end)), "err! invalid input for DeleteSubstr");
 			return content.substr(0, start) + content.substr(end);
 		}
 	}
