@@ -8,6 +8,7 @@ namespace pio
 	class GLShader : public Shader
 	{
 	public:
+		GLShader();
 		GLShader(const char *name, const char *vert, const char *frag);
 		GLShader(const char *name, const char *vert, const char *frag, const char *geo);
 		virtual ~GLShader();
@@ -43,6 +44,9 @@ namespace pio
 		std::string m_vert{}, m_frag{}, m_geo{};
 		uint32_t m_program{ 0 };
 		std::bitset<PIO_UINT8(TextureSampler::MaxSlotNum)> m_occupiedSlots;
+
+	private:
+		friend class GLShaderCompiler;
 	};
 }
 

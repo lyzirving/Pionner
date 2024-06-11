@@ -35,7 +35,7 @@ namespace pio
 	{
 		enum class SourceLang
 		{
-			NONE, GLSL, HLSL
+			NONE, GLSL, HLSL, GLSLH
 		};
 
 		enum ShaderStageFlagBits
@@ -56,8 +56,9 @@ namespace pio
 
 		inline SourceLang LanguageFromExtension(const std::string& type)
 		{
-			if (type == ".glsl") return SourceLang::GLSL;
-			if (type == ".hlsl") return SourceLang::HLSL;
+			if (type == ".glsl")  return SourceLang::GLSL;
+			if (type == ".hlsl")  return SourceLang::HLSL;
+			if (type == ".glslh") return SourceLang::GLSLH;
 
 			return SourceLang::NONE;
 		}
@@ -66,8 +67,9 @@ namespace pio
 		{
 			switch (lang)
 			{
-			case SourceLang::GLSL: return "glsl";
-			case SourceLang::HLSL: return "hlsl";
+			case SourceLang::GLSL:  return "glsl";
+			case SourceLang::HLSL:  return "hlsl";
+			case SourceLang::GLSLH: return "glslh";
 			default:
 				return "none";
 			}

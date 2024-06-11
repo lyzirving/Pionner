@@ -60,6 +60,128 @@ namespace pio
 		return success;
 	}
 
+	uint32_t GLHelper::CreateSimpleProgram(const uint32_t stageNum, const std::initializer_list<std::string>& stageSource)
+	{
+		if (stageNum <= 1)
+		{
+			LOGE("Err! Invalid stage source, stage num is 0");
+			return 0;
+		}
+		const char* vert{ nullptr }, *frag{ nullptr }, *geo{ nullptr };
+		auto it = stageSource.begin();
+		uint32_t stageIdx{ 0 };
+		bool next{ true };
+		while (it != stageSource.end() && next)
+		{
+			switch (stageIdx)
+			{
+			case 0:
+			{
+				next = !it->empty() && (vert = it->c_str());
+				if (next) { stageIdx++; }
+				break;
+			}
+			case 1:
+			{
+				next = !it->empty() && (frag = it->c_str());
+				if (next) { stageIdx++; } 
+				break;
+			}
+			case 2:
+			{
+				next = !it->empty() && (geo = it->c_str());
+				if (next) { stageIdx++; }
+				break;
+			}
+			default:
+				LOGE("invalid stage idx[%u]", stageIdx);
+				assert(0);
+				break;
+			}			
+			it++;
+		}
+
+		if (stageNum != stageIdx)
+		{
+			LOGE("fail to acquire stage source, current[%u], required[%u]", stageIdx - 1, stageNum);
+			return 0;
+		}
+
+		GLuint vertShader{ 0 }, fragShader{ 0 }, geoShader{ 0 }, program{ 0 };
+		GLint linkStatus{ GL_FALSE };
+		bool needGeo = stageIdx > 2;
+
+		if (!vert || !CreateShader(GL_VERTEX_SHADER, vert, vertShader))
+		{
+			LOGE("fail to create vertex shader:\n %s", vert);
+			goto err;
+		}
+
+		if (!frag || !CreateShader(GL_FRAGMENT_SHADER, frag, fragShader))
+		{
+			LOGE("fail to create fragment shader:\n %s", frag);
+			goto err;
+		}
+
+		if (needGeo && (!geo || !CreateShader(GL_GEOMETRY_SHADER, geo, geoShader)))
+		{
+			LOGE("fail to create geometry shader:\n %s", geo);
+			goto err;
+		}
+
+		program = glCreateProgram();
+		if (!program)
+		{
+			CheckError("fail to create program");
+			goto err;
+		}
+
+		glAttachShader(program, vertShader);
+		if (!CheckError("fail to attach vertex shader"))
+			goto err;
+
+		glAttachShader(program, fragShader);
+		if (!CheckError("fail to attach fragment shader"))
+			goto err;
+
+		if (needGeo)
+		{
+			glAttachShader(program, geoShader);
+			if (!CheckError("fail to attach geometry shader"))
+				goto err;
+		}
+
+		glLinkProgram(program);
+		glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+		if (linkStatus != GL_TRUE)
+		{
+			LOGE("fail to link program[%u]", program);
+			LogLinkStatus(program);
+			goto err;
+		}
+
+		// work is done, delete created shaders
+		glDeleteShader(vertShader);
+		glDeleteShader(fragShader);
+		if (geoShader) { glDeleteShader(geoShader); }
+		return program;
+
+	err:
+		if (program)
+			glDeleteProgram(program);
+
+		if (vertShader)
+			glDeleteShader(vertShader);
+
+		if (fragShader)
+			glDeleteShader(fragShader);
+
+		if (geoShader)
+			glDeleteShader(geoShader);
+
+		return 0;
+	}
+
 	uint32_t GLHelper::CreateShaderProgram(const char *vert, const char *frag)
 	{
 		GLuint vertShader{ 0 };

@@ -1,5 +1,6 @@
 #include "GLShaderCompiler.h"
 #include "GLShader.h"
+#include "GLHelper.h"
 
 #include <spdlog/fmt/fmt.h>
 
@@ -26,7 +27,62 @@ namespace pio
 		return false;
 	}
 
-	Ref<Shader> GLShaderCompiler::DoCompile(const std::string& path)
+	Ref<Shader> GLShaderCompiler::doCompile()
+	{
+		if (m_stageSource.empty())
+		{
+			LOGE("stage source is empty");
+			return Ref<Shader>();
+		}
+		std::string vertSource, fragSource, geoSource;
+		uint32_t program{ 0 };
+		for (auto& [stage, stageData] : m_stageSource)
+		{
+			switch (stage)
+			{
+			case ShaderUtils::SHADER_STAGE_VERTEX_BIT:
+			{
+				vertSource = stageData.Source;
+				break;
+			}
+			case ShaderUtils::SHADER_STAGE_GEOMETRY_BIT:
+			{
+				geoSource = stageData.Source;
+				break;
+			}
+			case ShaderUtils::SHADER_STAGE_FRAGMENT_BIT:
+			{
+				fragSource = stageData.Source;
+				break;
+			}
+			default:
+				break;
+			}
+		}
+
+		program = GLHelper::CreateSimpleProgram(m_stageSource.size(), { vertSource, fragSource, geoSource });
+
+		Ref<Shader> shader;
+		if (program > 0)
+		{
+			Ref<Shader> shader = CreateRef<GLShader>();
+			auto* p = static_cast<GLShader*>(shader.get());
+			p->m_name = m_name;
+			p->m_vert = vertSource;
+			p->m_frag = fragSource;
+			p->m_geo  = geoSource;
+			p->m_program = program;
+			LOGD("succeed to compile shader[%s]", m_name.c_str());
+		}
+		else
+		{
+			LOGE("err! fail to compile shader[%s]", m_path.c_str());
+		}
+
+		return shader;
+	}
+
+	Ref<Shader> GLShaderCompiler::DoExecute(const std::string& path)
 	{
 		GLShaderCompiler compiler{};
 		compiler.m_path = path;
@@ -41,7 +97,7 @@ namespace pio
 			return Ref<Shader>();
 		}
 
-		return Ref<Shader>();
+		return compiler.doCompile();
 	}
 
 	void GLShaderCompiler::parseMetadata()
@@ -55,17 +111,16 @@ namespace pio
 
 	bool GLShaderCompiler::preprocessGLSL()
 	{
-		std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData> stageSource;
-		if (!preprocessShader(stageSource))
+		if (!preprocessStages(m_stageSource))
 		{
 			LOGE("err! preprocess shader failed!");
 			return false;
 		}
-		preprocessIncluders(stageSource);
+		preprocessIncluders(m_stageSource);
 		return true;
 	}
 
-	bool GLShaderCompiler::preprocessShader(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource)
+	bool GLShaderCompiler::preprocessStages(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource)
 	{
 		std::stringstream sourceStream;
 		// clear comments in shader
@@ -104,10 +159,10 @@ namespace pio
 			if (tokens[index] == ShaderProcessor::MACRO_PRAGMA) // Parse stage. example: #pragma stage : vert
 			{
 				++index;
-				if (tokens[index] == ShaderProcessor::MACRO_PROCESSOR_STAGE)
+				if (tokens[index] == ShaderProcessor::MACRO_PRAGMA_STAGE)
 				{
 					++index;// Jump over ':'
-					if (tokens[index] != ShaderProcessor::MACRO_PROCESSOR_COLON)
+					if (tokens[index] != ShaderProcessor::MACRO_PRAGMA_COLON)
 					{
 						LOGE("err! Stage pragma is invalid for shader[%s]", m_name.c_str());
 						break;
@@ -124,9 +179,15 @@ namespace pio
 					}
 					curStage = ShaderUtils::ShaderStageFromString(stage);
 					stagePositions.emplace_back(curStage, startOfStage);
+					// Delete current macro
+					newSource = StringUtil::DeleteSubstr(newSource, pos, endOfLine);
+					pos = (pos == 0) ? 0 : pos - 1;
 				}
-				// Delete current macro
-				newSource = StringUtil::DeleteSubstr(newSource, pos, endOfLine);
+				else
+				{
+					LOGE("Invalid param[%s] in macro pragma when parse stage", tokens[index].c_str());
+					assert(0);
+				}
 			}
 			else if (tokens[index] == ShaderProcessor::MACRO_INCLUDE)// start pos for next shader stage
 			{
@@ -229,23 +290,42 @@ namespace pio
 			size_t endOfLine = includerSource.find_first_of("\r\n", pos);
 			endOfLine = (endOfLine == std::string::npos) ? includerSource.size() : (endOfLine + 1);
 			const std::vector<std::string> tokens = StringUtil::SplitStringAndKeepDelims(includerSource.substr(pos, endOfLine - pos));
-			if (tokens.size() >= 2 && tokens[1] == ShaderProcessor::MACRO_INCLUDE)
+			bool deleteSource{ false };
+			if (tokens.size() >= 2)
 			{
-				IncludeData newData;
-				newData.FilePath = std::string("shader/include/") + tokens[2] + "." + tokens[3];
-				newData.LineStart = pos;
-				newData.LineEnd = endOfLine;
-				expandIncluder(newData, includerSource, expanded);
-			}
+				if (tokens[1] == ShaderProcessor::MACRO_INCLUDE)
+				{
+					// tokens[0] = #, tokens[1] = include, tokens[2] = file name, tokens[3] = file format 
+					assert(tokens[3] == "glslh", "includer format err, %s should be glslh", data.FilePath.c_str());
+					IncludeData newData;
+					newData.FilePath = std::string("shader/include/") + tokens[2] + "." + tokens[3];
+					newData.LineStart = pos;
+					newData.LineEnd = endOfLine;
+					expandIncluder(newData, includerSource, expanded);
+				}
+				else if (tokens[1] == ShaderProcessor::MACRO_PRAGMA && tokens[2] == ShaderProcessor::MACRO_PRAGMA_ONECE)
+				{
+					deleteSource = true;
+					expanded[data.FilePath] = true;
+				}
+			}	
 			else
 			{
+				deleteSource = true;
+			}
+			if (deleteSource)
+			{
 				includerSource = StringUtil::DeleteSubstr(includerSource, pos, endOfLine);
-			}			
+			}
 			pos = includerSource.find('#', pos);
 		}
 		source = StringUtil::DeleteSubstr(source, data.LineStart, data.LineEnd);
 		source.insert(source.begin() + data.LineStart, includerSource.begin(), includerSource.end());
 		source.insert(source.begin() + data.LineStart + includerSource.size(), '\n');
-		expanded[data.FilePath] = true;
+	}
+
+	bool GLShaderCompiler::initShader(Ref<Shader>& shader)
+	{
+		return false;
 	}
 }

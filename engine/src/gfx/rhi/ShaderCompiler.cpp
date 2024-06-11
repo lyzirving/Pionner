@@ -15,7 +15,7 @@ namespace pio
 		switch (RenderAPI::CurrentType())
 		{
 		case RenderAPI::Type::OpenGL:
-			return GLShaderCompiler::DoCompile(path);
+			return GLShaderCompiler::DoExecute(path);
 		default:
 			return Ref<Shader>();
 		}

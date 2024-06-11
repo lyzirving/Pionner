@@ -14,6 +14,13 @@ namespace pio
 		static uint32_t BufferUsageToGLUsage(BufferUsage usage);
 		static bool CheckError(const char *fmt, ...);
 		static bool CheckFrameBufferStatus(const char *fmt, ...);
+		/*
+		* @brief: Create OpenGL shader program.
+		*         If stageNum is 2, stage source is vertex, fragment.
+		*         If stageNum is 3, stage source is vertex, fragment, geometry.
+		*         If compie stage contains tessellation or computation, reference to other specific APIs.
+		*/
+		static uint32_t CreateSimpleProgram(const uint32_t stageNum, const std::initializer_list<std::string> &stageSource);
 		static uint32_t CreateShaderProgram(const char *vert, const char *frag);
 		static uint32_t CreateShaderProgram(const char *vert, const char *frag, const char *geo);
 		static uint32_t ShaderDataTypeToGLBaseType(ShaderDataType type);

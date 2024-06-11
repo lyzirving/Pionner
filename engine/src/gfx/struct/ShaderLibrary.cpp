@@ -16,8 +16,8 @@ namespace pio
 
 	void ShaderLibrary::Init()
 	{
-		ShaderLibrary::Get();
-		//ShaderCompiler::Compile("shader/TestCompile.glsl");
+		auto* p = ShaderLibrary::Get();
+		//p->add(ShaderProgram::PBR, ShaderCompiler::Compile("shader/TestCompile.glsl"));
 	}
 
 	void ShaderLibrary::Shutdown()
@@ -153,9 +153,23 @@ namespace pio
 	{
 		for (auto &item : m_shaders)
 		{
-			if (item)
-				item->destroy();
 			item.reset();
+		}
+
+		for (auto& item : m_shaderPrograms)
+		{
+			item.reset(); 
+		}
+	}
+
+	const char* ShaderLibrary::ToStr(ShaderProgram type)
+	{
+		switch (type)
+		{
+		case ShaderProgram::PBR:
+			return "PBR";
+		default:
+			return "Default Shader Program";
 		}
 	}
 }

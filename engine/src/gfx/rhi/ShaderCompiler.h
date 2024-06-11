@@ -12,8 +12,9 @@ namespace pio
 		static const char* MACRO_VERSION = "version";
 		static const char* MACRO_INCLUDE = "include";
 
-		static const char* MACRO_PROCESSOR_STAGE = "stage";
-		static const char* MACRO_PROCESSOR_COLON = ":";
+		static const char* MACRO_PRAGMA_STAGE = "stage";
+		static const char* MACRO_PRAGMA_COLON = ":";
+		static const char* MACRO_PRAGMA_ONECE = "once";
 
 		static const char* MACRO_STAGE_VERT = "vert";
 		static const char* MACRO_STAGE_FRAG = "frag";
@@ -73,6 +74,7 @@ namespace pio
 
 	protected:
 		virtual bool preprocess() = 0;
+		virtual Ref<Shader> doCompile() = 0;
 
 	public:
 		static Ref<Shader> Compile(const std::string &path);

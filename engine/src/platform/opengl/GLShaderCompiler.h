@@ -13,23 +13,26 @@ namespace pio
 
 	protected:
 		virtual bool preprocess() override;
+		virtual Ref<Shader> doCompile() override;
 
 	public:
-		static Ref<Shader> DoCompile(const std::string& path);
+		static Ref<Shader> DoExecute(const std::string& path);
 
 	private:
 		void parseMetadata();
 
 		bool preprocessGLSL();
-		bool preprocessShader(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
+		bool preprocessStages(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
 		bool preprocessIncluders(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
 				
 		void expandIncluder(const IncludeData &data, std::string &source, std::unordered_map<std::string, bool> &expanded);
+		bool initShader(Ref<Shader> &shader);
 
 	private:
 		std::string m_path{};
 		std::string m_source{}, m_name{};
 		ShaderUtils::SourceLang m_lang{ ShaderUtils::SourceLang::NONE };
+		std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData> m_stageSource{};
 	};
 }
 

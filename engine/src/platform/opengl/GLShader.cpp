@@ -12,6 +12,10 @@
 
 namespace pio
 {
+	GLShader::GLShader() : Shader()
+	{
+	}
+
 	GLShader::GLShader(const char *name, const char *vert, const char *frag) : Shader(), m_name(name)
 	{
 		std::ifstream vertFile, fragFile;
