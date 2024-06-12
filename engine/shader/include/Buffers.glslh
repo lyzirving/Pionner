@@ -1,0 +1,10 @@
+#pragma once
+
+layout (std140) uniform Matrices
+{
+	mat4 ViewMat;
+	mat4 PrjMat;
+	mat4 Ortho;
+    vec3 CameraPosition;
+    float FrustumFar;
+} u_matrices;

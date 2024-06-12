@@ -51,7 +51,7 @@ namespace pio
 		{
 			ShaderStageFlagBits Stage{ SHADER_STAGE_ALL };
 			std::string Source{};
-			std::unordered_set<IncludeData> Includers{};
+			std::vector<IncludeData> Includers{};
 		};
 
 		inline SourceLang LanguageFromExtension(const std::string& type)

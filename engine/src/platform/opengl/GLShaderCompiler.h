@@ -25,7 +25,7 @@ namespace pio
 		bool preprocessStages(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
 		bool preprocessIncluders(std::map<ShaderUtils::ShaderStageFlagBits, ShaderUtils::StageData>& stageSource);
 				
-		void expandIncluder(const IncludeData &data, std::string &source, std::unordered_map<std::string, bool> &expanded);
+		void expandIncluder(IncludeData &data, std::string &source, std::unordered_map<std::string, bool> &expanded);
 		bool initShader(Ref<Shader> &shader);
 
 	private:

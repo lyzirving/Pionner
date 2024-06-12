@@ -133,7 +133,7 @@ namespace pio
 		}
 
 		std::vector<std::pair<ShaderUtils::ShaderStageFlagBits, size_t>> stagePositions;
-		std::map<ShaderUtils::ShaderStageFlagBits, std::unordered_set<IncludeData>> stageIncluders;
+		std::map<ShaderUtils::ShaderStageFlagBits, std::vector<IncludeData>> stageIncluders;
 		size_t startOfStage = 0;
 		size_t versionPos = newSource.find('#');
 		size_t pos = versionPos;
@@ -195,7 +195,7 @@ namespace pio
 				data.FilePath = std::string("shader/include/") + tokens[index + 1] + "." + tokens[index + 2];
 				data.LineStart = pos;
 				data.LineEnd = endOfLine;
-				stageIncluders[curStage].insert(data);
+				stageIncluders[curStage].push_back(std::move(data));
 			}
 			else if (tokens[index] == ShaderProcessor::MACRO_VERSION)// start pos for next shader stage
 			{
@@ -260,15 +260,23 @@ namespace pio
 			std::unordered_map<std::string, bool> expanded{};
 			std::string& source = stageData.Source;
 
-			for (auto& data : stageData.Includers)
+			for (int32_t i = 0; i < stageData.Includers.size(); i++)
 			{
-				expandIncluder(data, source, expanded);
+				auto& cur = stageData.Includers[i];
+				expandIncluder(cur, source, expanded);
+				if (i < stageData.Includers.size() - 1)
+				{
+					auto &next = stageData.Includers[i + 1];
+					size_t len = next.LineEnd - next.LineStart;
+					next.LineStart = cur.LineEnd - 1;
+					next.LineEnd = next.LineStart + len;
+				}
 			}
 		}
 		return true;
 	}
 
-	void GLShaderCompiler::expandIncluder(const IncludeData& data, std::string& source, std::unordered_map<std::string, bool>& expanded)
+	void GLShaderCompiler::expandIncluder(IncludeData& data, std::string& source, std::unordered_map<std::string, bool> &expanded)
 	{
 		auto it = expanded.find(data.FilePath);
 		if (it != expanded.end())// the include file has already been expanded
@@ -322,6 +330,7 @@ namespace pio
 		source = StringUtil::DeleteSubstr(source, data.LineStart, data.LineEnd);
 		source.insert(source.begin() + data.LineStart, includerSource.begin(), includerSource.end());
 		source.insert(source.begin() + data.LineStart + includerSource.size(), '\n');
+		data.LineEnd = data.LineStart + includerSource.size() + 2;
 	}
 
 	bool GLShaderCompiler::initShader(Ref<Shader>& shader)
