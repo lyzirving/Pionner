@@ -2,13 +2,23 @@
 
 #include <Common.glslh>
 
-struct PBRParameters
-{
-	vec3 Albedo;
-	float Roughness;
-	float Metalness;
+const int ShadowMode_Hard = 0;
+const int ShadowMode_Soft = 1;
+const int ShadowMode_Soft_2X = 2;
+const int ShadowMode_Soft_4X = 3;
 
-	vec3 Normal;
-	vec3 View;
-	float NdotV;
-} m_params;
+layout (std140) uniform SdMatrices
+{
+	mat4 ViewMat;
+	mat4 PrjMat;
+} u_sdMatrices;
+
+layout (std140) uniform DirectionalLight
+{
+	vec3 Direction;
+    vec3 Radiance;
+    float Intensity;
+    float Bias;
+    int SdMode;
+    bool CastShadow;
+} u_distantLight;

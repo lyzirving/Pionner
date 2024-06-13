@@ -1,0 +1,18 @@
+#pragma once
+
+struct MaterialAttributes 
+{
+    vec3 AlbedoColor;
+    vec3 Emission;
+    float Roughness;
+    float Metalness;
+    float AO;
+    float Alpha;
+    bool UseNormalMap;
+
+    sampler2D AlbedoTexture;
+    sampler2D EmissionTexture;
+    sampler2D MetallicRoughnessTexture;
+    sampler2D NormalTexture;
+    sampler2D AOTexture;
+};

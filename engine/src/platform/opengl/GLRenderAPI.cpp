@@ -1420,9 +1420,9 @@ namespace pio
 	{
 		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
 		PIO_ASSERT_RETURN(mesh.use_count() != 0, "fail to find mesh base from asset handle[%u]", (uint32_t)meshHandle);
-
-		auto shader = ShaderLibrary::Get()->find(ShaderType::Mesh_Deferred);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "Mesh_Deferred shader is invalid");
+		
+		auto shader = ShaderLibrary::Get()->find(ShaderProgram::GeometryPass);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "GeometryPass shader is invalid");
 
 		auto &meshSource = mesh->getMeshSource();
 		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];

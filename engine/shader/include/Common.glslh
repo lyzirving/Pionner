@@ -1,4 +1,23 @@
 #pragma once
 
-const float PI = 3.141592;
+// NOTE: should not use 1 for type, because component's default value might be 1
+const int FRAG_TYPE_MESH    = 2;
+const int FRAG_TYPE_OUTLINE = 3;
+
 const float Epsilon = 0.00001;
+
+const float PI = 3.14159265359;
+const float MAX_REFLECTION_LOD = 4.f;
+
+// SRGB to Linear Space
+vec3 Mon2Lin(vec3 x)
+{
+    return vec3(pow(x[0], 2.2), pow(x[1], 2.2), pow(x[2], 2.2));
+}
+
+// Nearest int value
+int NeInt(float val)
+{
+    float index = floor(val + 0.5f);
+	return int(index);
+}

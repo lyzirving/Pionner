@@ -9,14 +9,14 @@ namespace pio
 	{
 		PBR_Mesh, DistantLight_ShadowData, PointLight_ShadowData, MaterialPreview, Wireframe, LightVolume,
 		LineSegment, Color_Line, Outline, TextureQuad, Sprite,
-		Mesh_Deferred, DistantLighting_Deferred, PointLightEffect_Deferred, Outline_Deferred,
+		DistantLighting_Deferred, PointLightEffect_Deferred, Outline_Deferred,
 		Equirectangular_To_Cube, Diffuse_Convolution, PrefilterMap_Convolution, Brdf_Convolution, 
 		Skybox, Postprocessing, Num
 	};
 
 	enum class ShaderProgram : uint8_t
 	{
-		PBR, Num
+		GeometryPass, LightingPass, Num
 	};
 
 	class ShaderLibrary

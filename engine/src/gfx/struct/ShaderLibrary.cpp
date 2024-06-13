@@ -17,7 +17,7 @@ namespace pio
 	void ShaderLibrary::Init()
 	{
 		auto* p = ShaderLibrary::Get();
-		//p->add(ShaderProgram::PBR, ShaderCompiler::Compile("shader/TestCompile.glsl"));
+		p->add(ShaderProgram::GeometryPass, ShaderCompiler::Compile("shader/GeometryPass.glsl"));
 	}
 
 	void ShaderLibrary::Shutdown()
@@ -67,11 +67,6 @@ namespace pio
 			case ShaderType::LightVolume:
 			{
 				m_shaders[index] = Shader::Create("LightVolume", "mesh_light_volume", "mesh_empty");
-				return m_shaders[index];
-			}
-			case ShaderType::Mesh_Deferred:
-			{
-				m_shaders[index] = Shader::Create("Mesh_Deferred", "mesh", "mesh_deferred");
 				return m_shaders[index];
 			}
 			case ShaderType::DistantLighting_Deferred:
@@ -166,8 +161,8 @@ namespace pio
 	{
 		switch (type)
 		{
-		case ShaderProgram::PBR:
-			return "PBR";
+		case ShaderProgram::GeometryPass:
+			return "GeometryPass";
 		default:
 			return "Default Shader Program";
 		}

@@ -48,8 +48,37 @@ void main() {
 #pragma stage : frag 
 precision mediump float;
 
-out vec4 o_color;
+#include <Materials.glslh>
+#include <Normal.glslh>
+
+uniform bool u_useNormalMap;
+uniform MaterialAttributes u_material;
+
+in VsOut {
+    vec3 v_worldPos;
+    vec3 v_normal;
+    vec2 v_texCoord;
+    flat mat3 v_TBN;
+}; 
+
+// Different render target for G-Buffer
+layout (location = 0) out vec3 gPosition;
+layout (location = 1) out vec4 gNormal;      // normal(3) + type(1)
+layout (location = 2) out vec4 gAlbedoAlpha;
+layout (location = 3) out vec3 gMaterial;    // roughness + metalness + ao
+layout (location = 4) out vec3 gEmission;
 
 void main() {
-    o_color = vec4(1.f, 0.f, 0.f, 1.f);
+    vec4 albedoColor = texture(u_material.AlbedoTexture, v_texCoord);
+
+    gPosition = v_worldPos;
+    // w is type component, 2 for mesh
+    gNormal = vec4(normalize(v_TBN * (u_useNormalMap ? FetchNormal(u_material.NormalTexture, v_texCoord) : v_normal)), 2.f);
+    gAlbedoAlpha = vec4(albedoColor.rgb * u_material.AlbedoColor, albedoColor.a);
+    // In metallic-roughness flow, g channel is roughness factor, b is metallic factor
+    gMaterial.x = texture(u_material.MetallicRoughnessTexture, v_texCoord).g * u_material.Roughness;
+    gMaterial.x = max(gMaterial.x, 0.05f);// Minimum roughness of 0.05 to keep specular highlight
+    gMaterial.y = texture(u_material.MetallicRoughnessTexture, v_texCoord).b * u_material.Metalness;
+    gMaterial.z = texture(u_material.AOTexture, v_texCoord).r * u_material.AO;
+    gEmission = texture(u_material.EmissionTexture, v_texCoord).rgb * u_material.Emission;
 }

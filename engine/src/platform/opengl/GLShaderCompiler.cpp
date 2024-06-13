@@ -65,7 +65,7 @@ namespace pio
 		Ref<Shader> shader;
 		if (program > 0)
 		{
-			Ref<Shader> shader = CreateRef<GLShader>();
+			shader = CreateRef<GLShader>();
 			auto* p = static_cast<GLShader*>(shader.get());
 			p->m_name = m_name;
 			p->m_vert = vertSource;
@@ -193,8 +193,8 @@ namespace pio
 			{
 				IncludeData data;
 				data.FilePath = std::string("shader/include/") + tokens[index + 1] + "." + tokens[index + 2];
-				data.LineStart = pos;
-				data.LineEnd = endOfLine;
+				data.LineStart = pos - startOfStage;
+				data.LineEnd = endOfLine - startOfStage;
 				stageIncluders[curStage].push_back(std::move(data));
 			}
 			else if (tokens[index] == ShaderProcessor::MACRO_VERSION)// start pos for next shader stage
