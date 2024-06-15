@@ -1,3 +1,7 @@
+/*// -- Pionner Engine Geometry pass shader --
+// -------------------------------------------
+// Filling the G-Buffer
+*/
 #version 430 core
 #pragma stage : vert
 precision mediump float;

@@ -18,6 +18,7 @@ namespace pio
 	{
 		auto* p = ShaderLibrary::Get();
 		p->add(ShaderProgram::GeometryPass, ShaderCompiler::Compile("shader/GeometryPass.glsl"));
+		p->add(ShaderProgram::LightingPass, ShaderCompiler::Compile("shader/LightingPass.glsl"));
 	}
 
 	void ShaderLibrary::Shutdown()

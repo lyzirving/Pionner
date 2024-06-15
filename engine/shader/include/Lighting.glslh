@@ -1,11 +1,36 @@
 #pragma once
 
 #include <Common.glslh>
+#include <Buffers.glslh>
+#include <PBR.glslh>
 
 const int ShadowMode_Hard = 0;
 const int ShadowMode_Soft = 1;
 const int ShadowMode_Soft_2X = 2;
 const int ShadowMode_Soft_4X = 3;
+
+const int POINT_LIGHT_LIMIT = 10;
+
+const vec3 SPL_DIR[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
+struct PointLight
+{
+    vec3 Position;
+    vec3 Radiance;
+    float Intensity;
+	float MinRadius;
+	float Radius;
+	float Falloff;
+	float SourceSize;
+    bool CastShadow;
+};
 
 layout (std140) uniform SdMatrices
 {
@@ -22,3 +47,78 @@ layout (std140) uniform DirectionalLight
     int SdMode;
     bool CastShadow;
 } u_distantLight;
+
+layout(std140) uniform PointLightData
+{
+	int LightCount;
+	PointLight Lights[POINT_LIGHT_LIMIT];
+} u_pointLightData;
+
+void CalculateAttrs()
+{
+    m_PBRParams.V = normalize(u_matrices.CameraPosition - m_PBRParams.FragPos);
+    m_PBRParams.R = reflect(-m_PBRParams.V, m_PBRParams.N);
+    m_PBRParams.NdotV = max(dot(m_PBRParams.N, m_PBRParams.V), 0.f);
+    m_PBRParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);
+}
+
+vec3 CalculateDirLightsEffect()
+{
+    // Negate the direction to expect a direction from the fragment towards the light source
+    vec3 Li = normalize(-u_distantLight.Direction);
+    vec3 Lh = normalize(Li + m_PBRParams.V);
+	vec3 Lradiance = u_distantLight.Radiance * u_distantLight.Intensity;
+
+    // Calculate angles between surface normal and light vector.
+	float NdotL = max(0.f, dot(m_PBRParams.N, Li));
+	float NdotH = max(0.f, dot(m_PBRParams.N, Lh));
+
+    vec3  F = FresnelSchlickRoughness(max(0.f, dot(Lh, m_PBRParams.V)), m_PBRParams.F0, m_PBRParams.Roughness);
+    float D = NdfGGX(NdotH, m_PBRParams.Roughness);
+    float G = GaSchlickGGX(NdotL, m_PBRParams.NdotV, m_PBRParams.Roughness);
+
+    vec3 kd = (vec3(1.0) - F) * (1.0 - m_PBRParams.Metalness);
+	vec3 diffuseBRDF = kd * m_PBRParams.Albedo;
+
+    // Cook-Torrance
+	vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * NdotL * m_PBRParams.NdotV);
+	specularBRDF = clamp(specularBRDF, vec3(0.0f), vec3(10.0f));
+    return (diffuseBRDF + specularBRDF) * NdotL * Lradiance;
+}
+
+vec3 CalculatePointLightsEffect()
+{
+    vec3 Lo = vec3(0.f);
+    for(int i = 0; i < u_pointLightData.LightCount; i++)
+    {
+        float lightDistance = distance(m_PBRParams.FragPos, u_pointLightData.Lights[i].Position);
+        // Out of range
+        if(lightDistance > u_pointLightData.Lights[i].Radius)
+            continue;
+        
+        vec3 L = normalize(u_pointLightData.Lights[i].Position - m_PBRParams.FragPos);
+        vec3 H = normalize(m_PBRParams.V + L);
+        float NdotL = max(dot(m_PBRParams.N, L), 0.f); 
+        float NdotH = max(dot(m_PBRParams.N, H), 0.f);   
+        float attenuation = clamp(1.0 - (lightDistance * lightDistance) / (u_pointLightData.Lights[i].Radius * u_pointLightData.Lights[i].Radius), 0.f, 1.f);
+        attenuation *= mix(attenuation, 1.0, u_pointLightData.Lights[i].Falloff);
+
+        // light radiance
+        vec3 radiance = u_pointLightData.Lights[i].Radiance * u_pointLightData.Lights[i].Intensity * attenuation;
+
+        vec3 F = FresnelSchlickRoughness(max(0.f, dot(H, m_PBRParams.V)), m_PBRParams.F0, m_PBRParams.Roughness);
+        float NDF = NdfGGX(NdotH, m_PBRParams.Roughness);  
+        float G = GaSchlickGGX(NdotL, m_PBRParams.NdotV, m_PBRParams.Roughness);
+
+        // Cook-Torrance specular
+        vec3 specular = (NDF * G * F) / max(Epsilon, 4.0 * NdotL * m_PBRParams.NdotV);
+        specular = clamp(specular, vec3(0.0f), vec3(10.0f));
+
+        vec3 ks = F;
+        vec3 kd = (vec3(1.0) - ks) * (1.0 - m_PBRParams.Metalness);// For energy conservation
+        vec3 diffuse = kd * m_PBRParams.Albedo;
+
+        Lo += (diffuse + specular) * radiance * NdotL;
+    }
+    return vec4(Lo.rgb, m_PBRParams.Alpha);
+}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Common.glslh>
+
 // U_F0 is surface reflection at zero incidence(light directly hits the surface)
 // We make the simplifying assumption that most dielectric surfaces 
 // look visually correct with a constant U_F0 of 0.04.
@@ -20,4 +22,34 @@ struct PBRParameters
     vec3 R;
     vec3 F0;
     float NdotV;
-} m_params;
+} m_PBRParams;
+
+vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+} 
+
+// GGX/Towbridge-Reitz normal distribution function.
+// Uses Disney's reparametrization of alpha = roughness^2
+float NdfGGX(float NdotH, float roughness)
+{
+	float alpha = roughness * roughness;
+	float alphaSq = alpha * alpha;
+
+	float denom = (NdotH * NdotH) * (alphaSq - 1.0) + 1.0;
+	return alphaSq / (PI * denom * denom);
+}
+
+// Single term for separable Schlick-GGX below.
+float GaSchlickG1(float cosTheta, float k)
+{
+	return cosTheta / (cosTheta * (1.0 - k) + k);
+}
+
+// Schlick-GGX approximation of geometric attenuation function using Smith's method.
+float GaSchlickGGX(float NdotL, float NdotV, float roughness)
+{
+	float r = roughness + 1.0;
+	float k = (r * r) / 8.0; // Epic suggests using this roughness remapping for analytic lights.
+	return GaSchlickG1(NdotL, k) * GaSchlickG1(NdotV, k);
+}
