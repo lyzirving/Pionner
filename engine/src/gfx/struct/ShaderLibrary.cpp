@@ -70,16 +70,6 @@ namespace pio
 				m_shaders[index] = Shader::Create("LightVolume", "mesh_light_volume", "mesh_empty");
 				return m_shaders[index];
 			}
-			case ShaderType::DistantLighting_Deferred:
-			{
-				m_shaders[index] = Shader::Create("DistantLighting_Deferred", "quad2d", "lighting_distant_deferred");
-				return m_shaders[index];
-			}
-			case ShaderType::PointLightEffect_Deferred:
-			{
-				m_shaders[index] = Shader::Create("PointLightEffect_Deferred", "quad2d", "pointLight_effect_deferred");
-				return m_shaders[index];
-			}
 			case ShaderType::LineSegment:
 			{
 				m_shaders[index] = Shader::Create("LineSegment", "line_segment", "line_segment");

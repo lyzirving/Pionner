@@ -370,28 +370,43 @@ namespace pio
 		}
 	}
 
-	void GLRenderAPI::renderPointLightQuad_Deferred(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
+	void GLRenderAPI::renderLightEffect_Deffered(AssetHandle& meshHandle, Ref<Skybox>& skybox, Ref<UniformBufferSet>& ubs, const Ref<RenderPass>& GBufferPass, const Ref<RenderPass>& shadowPass, const Ref<RenderPass>& ptShadowPass, const RenderState& state)
 	{
 		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
-		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderPointLightQuad_Deferred: Quad Mesh is invalid");
+		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderLightEffect_Deffered: Quad Mesh is invalid");
 
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::PointLightEffect_Deferred);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "PointLightEffect_Deferred shader is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::LightingPass);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "LightingPass shader is invalid");
 
 		PIO_ASSERT_RETURN(GBufferPass.use_count() != 0, "GBuffer pass is invalid");
-		Ref<FrameBuffer> gBuffer = GBufferPass->getSpecification().FrameBuffer;
+		Ref<FrameBuffer> gBuffer = GBufferPass->getFramebuffer();
 
-		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
-		auto pointLightDataUB = uniformBufferSet->get(PIO_UINT(UBBindings::PointLightData));
+		PIO_ASSERT_RETURN(shadowPass.use_count() != 0, "shadow pass is invalid");
+		Ref<Texture> shadowBuffer = shadowPass->getFramebuffer()->getDepthBuffer();
+
+		PIO_ASSERT_RETURN(skybox.use_count() != 0, "skybox is invalid");
+		// TODO: add case when IBL is invalid
+		Ref<CubeTexture> diffuseMap = skybox->getDiffuseMap();
+		Ref<CubeTexture> prefilterMap = skybox->getPrefilterMap();
+		Ref<Texture2D> brdfLUT = skybox->getBrdfLUT();
+
+		auto cameraUB = ubs->get(PIO_UINT(UBBindings::Camera));
+		auto dirLightUB = ubs->get(PIO_UINT(UBBindings::DistantLight));
+		auto dirLightSdUB = ubs->get(PIO_UINT(UBBindings::DistantLightShadowData));
+		auto pointLightDataUB = ubs->get(PIO_UINT(UBBindings::PointLightData));
 
 		compareAndUpdateRenderState(m_globalState, state);
 
 		shader->bind(true);
 
 		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
+		UniformBuffer::Binding(shader, "DirectionalLight", dirLightUB->getBinding());
+		UniformBuffer::Binding(shader, "SdMatrices", dirLightSdUB->getBinding());
 		UniformBuffer::Binding(shader, "PointLightData", pointLightDataUB->getBinding());
 
 		cameraUB->bind();
+		dirLightUB->bind();
+		dirLightSdUB->bind();
 		pointLightDataUB->bind();
 
 		auto positionBuf = gBuffer->getColorBuffer(ColorAttachment::Attach0);
@@ -420,110 +435,8 @@ namespace pio
 		emissionBuf->active(PIO_UINT(TextureSampler::Slot4));
 		emissionBuf->bind();
 
-		TextureSampler depthSlot;
-		Ref<Texture> depthBuffer;
-		if (shadowPass)
-		{
-			depthBuffer = shadowPass->getSpecification().FrameBuffer->getDepthBuffer();
-			if (depthBuffer && shader->getAvailableSampler(depthSlot))
-			{
-				shader->setTextureSampler("u_pointLightDepthBuffer", depthSlot);
-				depthBuffer->active(PIO_UINT(depthSlot));
-				depthBuffer->bind();
-			}
-		}
-
-		shader->setVec4("u_bgColor", Renderer::GetConfig().ClearColor);
-
-		quadMesh->VertexArray->bind();
-		quadMesh->IndexBuffer->bind();
-
-		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("renderPointLightQuad_Deferred fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		quadMesh->IndexBuffer->unbind();
-		quadMesh->VertexArray->unbind();
-
-		cameraUB->unbind();
-		pointLightDataUB->unbind();
-		positionBuf->unbind();
-		normalBuf->unbind();
-		albedoBuf->unbind();
-		matBuf->unbind();
-		emissionBuf->unbind();
-		if (depthBuffer) { depthBuffer->unbind(); }
-
-		shader->bind(false);
-	}
-
-	void GLRenderAPI::renderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<Skybox> &skybox, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
-	{
-		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
-		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderDistantLightingQuad_Deferred: Quad Mesh is invalid");
-
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::DistantLighting_Deferred);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "DistantLighting_Deferred shader is invalid");
-
-		PIO_ASSERT_RETURN(GBufferPass.use_count() != 0, "GBuffer pass is invalid");
-		Ref<FrameBuffer> gBuffer = GBufferPass->getFramebuffer();
-
-		PIO_ASSERT_RETURN(shadowPass.use_count() != 0, "shadow pass is invalid");
-		Ref<Texture> shadowBuffer = shadowPass->getFramebuffer()->getDepthBuffer();
-
-		PIO_ASSERT_RETURN(skybox.use_count() != 0, "skybox is invalid");
-		// TODO: add case when IBL is invalid
-		Ref<CubeTexture> diffuseMap = skybox->getDiffuseMap();
-		Ref<CubeTexture> prefilterMap = skybox->getPrefilterMap();
-		Ref<Texture2D> brdfLUT = skybox->getBrdfLUT();
-
-		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
-		auto dirLightUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLight));
-		auto dirLightSdUB = uniformBufferSet->get(PIO_UINT(UBBindings::DistantLightShadowData));
-
-		compareAndUpdateRenderState(m_globalState, state);
-
-		shader->bind(true);
-
-		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-		UniformBuffer::Binding(shader, "DirectionalLight", dirLightUB->getBinding());
-		UniformBuffer::Binding(shader, "SdMatrices", dirLightSdUB->getBinding());
-
-		cameraUB->bind();
-		dirLightUB->bind();
-		dirLightSdUB->bind();
-
-		auto positionBuf = gBuffer->getColorBuffer(ColorAttachment::Attach0);
-		auto normalBuf = gBuffer->getColorBuffer(ColorAttachment::Attach1);
-		auto albedoBuf = gBuffer->getColorBuffer(ColorAttachment::Attach2);
-		auto matBuf = gBuffer->getColorBuffer(ColorAttachment::Attach3);
-		auto emissionBuf = gBuffer->getColorBuffer(ColorAttachment::Attach4);
-
-		shader->setTextureSampler("u_GPosition", TextureSampler::Slot0);
-		positionBuf->active(PIO_UINT(TextureSampler::Slot0));
-		positionBuf->bind();
-
-		shader->setTextureSampler("u_GNormal", TextureSampler::Slot1);
-		normalBuf->active(PIO_UINT(TextureSampler::Slot1));
-		normalBuf->bind();
-
-		shader->setTextureSampler("u_GAlbedoAlpha", TextureSampler::Slot2);
-		albedoBuf->active(PIO_UINT(TextureSampler::Slot2));
-		albedoBuf->bind();
-
-		shader->setTextureSampler("u_GMaterial", TextureSampler::Slot3);
-		matBuf->active(PIO_UINT(TextureSampler::Slot3));
-		matBuf->bind();
-
-		shader->setTextureSampler("u_GEmission", TextureSampler::Slot4);
-		emissionBuf->active(PIO_UINT(TextureSampler::Slot4));
-		emissionBuf->bind();
-
 		shader->setTextureSampler("u_shadowMap", TextureSampler::Slot5);
-		shadowBuffer->active(PIO_UINT(TextureSampler::Slot5));
+		shadowBuffer->active(PIO_UINT(TextureSampler::Slot5)); 
 		shadowBuffer->bind();
 
 		shader->setTextureSampler("u_irradianceMap", TextureSampler::Slot6);
@@ -541,11 +454,24 @@ namespace pio
 		shader->setVec4("u_bgColor", Renderer::GetConfig().ClearColor);
 		shader->setFloat("u_envMapIntensity", skybox->getIntensity());
 
+		Ref<Texture> ptShadowBuffer;
+		if (ptShadowPass)
+		{
+			TextureSampler ptShadowSlot;
+			ptShadowBuffer = ptShadowPass->getSpecification().FrameBuffer->getDepthBuffer();
+			if (ptShadowBuffer && shader->getAvailableSampler(ptShadowSlot))
+			{
+				shader->setTextureSampler("u_pointLightDepthBuffer", ptShadowSlot);
+				ptShadowBuffer->active(PIO_UINT(ptShadowSlot));
+				ptShadowBuffer->bind();
+			}
+		}
+
 		quadMesh->VertexArray->bind();
 		quadMesh->IndexBuffer->bind();
 
 		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("renderDistantLightingQuad_Deferred fail!!");
+		GLHelper::CheckError("renderLightEffect_Deffered fail!!");
 
 #ifdef PIO_PROFILER_ON
 		glFinish();
@@ -557,6 +483,7 @@ namespace pio
 		cameraUB->unbind();
 		dirLightUB->unbind();
 		dirLightSdUB->unbind();
+		pointLightDataUB->unbind();
 
 		positionBuf->unbind();
 		normalBuf->unbind();
@@ -564,10 +491,11 @@ namespace pio
 		matBuf->unbind();
 		emissionBuf->unbind();
 
-		shadowBuffer->unbind();
 		diffuseMap->unbind();
 		prefilterMap->unbind();
 		brdfLUT->unbind();
+		shadowBuffer->unbind();
+		if (ptShadowBuffer) { ptShadowBuffer->unbind(); }
 
 		shader->bind(false);
 	}

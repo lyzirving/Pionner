@@ -178,14 +178,9 @@ namespace pio
 		s_API->renderSubmesh_deferred(meshHandle, submeshIndex, materialTable, uniformBufferSet, modelMat, state);
 	}
 
-	void Renderer::RenderPointLightQuad_Deferred(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
+	void Renderer::RenderLightEffect_Deffered(AssetHandle& meshHandle, Ref<Skybox>& skybox, Ref<UniformBufferSet>& ubs, const Ref<RenderPass>& GBufferPass, const Ref<RenderPass>& shadowPass, const Ref<RenderPass>& ptShadowPass, const RenderState& state)
 	{
-		s_API->renderPointLightQuad_Deferred(meshHandle, uniformBufferSet, GBufferPass, shadowPass, state);
-	}
-
-	void Renderer::RenderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<Skybox> &skybox, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state)
-	{
-		s_API->renderDistantLightingQuad_Deferred(meshHandle, skybox, uniformBufferSet, GBufferPass, shadowPass, state);
+		s_API->renderLightEffect_Deffered(meshHandle, skybox, ubs, GBufferPass, shadowPass, ptShadowPass, state);
 	}
 
 	void Renderer::RenderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)

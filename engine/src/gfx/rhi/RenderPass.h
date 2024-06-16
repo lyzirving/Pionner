@@ -40,7 +40,6 @@ namespace pio
 	public:
 		static Ref<RenderPass> Create(const RenderPassSpecification &spec);
 
-		static void RenderLightingEffect_Deferred(const LightEnvironment &lightEnv, Ref<Skybox> &skybox, Ref<RenderPass> &GBufferPass, Ref<RenderPass> &distantLightShadowPass, Ref<RenderPass> &pointLightShadowPass, Ref<UniformBufferSet> &uniformBufferSet);
 		static void RenderSprites(std::map<MeshKey, SpriteCommand> &cmd);
 		static void Postprocessing(const AssetHandle &quadMesh, Ref<Texture2D> &composite);
 	};

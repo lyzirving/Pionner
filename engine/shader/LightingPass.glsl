@@ -13,7 +13,6 @@ out vec2 v_texcoord;
 
 void main() {
 	v_texcoord = a_texcoord;
-	// TODO: use window coordinate??
 	gl_Position = vec4(a_pos, 1.f);
 }
 
@@ -30,7 +29,7 @@ uniform sampler2D u_GMaterial;   // vec3 roughness + metalness + ao
 uniform sampler2D u_GEmission;   // vec3
 
 uniform sampler2D        u_shadowMap;
-uniform samplerCubeArray u_pointLightDepthBuffer;
+uniform samplerCubeArray u_ptShadowMap;
 
 uniform sampler2D   u_brdfLUT;
 uniform samplerCube u_irradianceMap;
@@ -45,8 +44,16 @@ out vec4 o_color;
 vec4 LightingMeshColor()
 {
     vec3 lightContribution = vec3(0.f);
-    lightContribution += CalculateDirLightsEffect();
+
+    CalculateAttrs();
+    lightContribution += (CalculateDirLightsEffect() * (u_distantLight.CastShadow ? (1.f - CalcDirLightShadow(u_distantLight.SdMode, u_shadowMap)) : 1.f));
+    //[NOTE]: No point light shadow for current impl
     lightContribution += CalculatePointLightsEffect();
+
+    vec3 iblContribution = IBL(u_brdfLUT, u_irradianceMap, u_prefilterMap) * u_envMapIntensity * m_PBRParams.AO;
+    lightContribution += iblContribution;
+    lightContribution += (m_PBRParams.Albedo * m_PBRParams.Emission);
+
     return vec4(lightContribution.rgb, m_PBRParams.Alpha);
 }
 
@@ -64,6 +71,6 @@ void main() {
     m_PBRParams.AO = surface.b;
     m_PBRParams.Emission = texture(u_GEmission, v_texcoord).rgb;
 
-    int type = NeInt(nt.w);
-    o_color = LightingMeshColor();
+    int type = NeInt(nt.w);    
+    o_color = (type == FRAG_TYPE_MESH) ? LightingMeshColor() : ((type == FRAG_TYPE_OUTLINE) ? baseColor : u_bgColor);
 }

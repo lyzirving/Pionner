@@ -519,11 +519,6 @@ namespace pio
 		RenderStrategy strategy = Renderer::GetConfig().Strategy;
 		switch (strategy)
 		{
-		case RenderStrategy::Forward:
-		{
-			forwardRendering(scene);
-			break;
-		}
 		case RenderStrategy::Deferred:
 		{
 			deferredRendering(scene);
@@ -531,43 +526,10 @@ namespace pio
 		}
 		default:
 			LOGE("render strategy[%u] is not implemented", strategy);
+			assert(0);
 			break;
 		}
 		onScreenRendering(scene);
-	}
-
-	void SceneRenderer::forwardRendering(const Scene& scene)
-	{
-		// TODO: support mutiple point lights in forward rendering
-		return;
-
-		auto& s = const_cast<RenderState&>(m_forwardPass->getState());
-		s.Clear.Color = Renderer::GetConfig().ClearColor;
-
-		shadowPass(scene);
-		geometryPass(scene);
-		m_compositeTexture = m_forwardPass->getSpecification().FrameBuffer->getColorBuffer(ColorAttachment::Attach0);
-	}
-
-	void SceneRenderer::geometryPass(const Scene& scene)
-	{
-		Ref<RenderPass> fp = m_forwardPass;
-		Ref<UniformBufferSet> ubs = m_uniformBuffers;
-		// TODO: support mutiple point light in forward pass
-		Ref<RenderPass> sp;
-		std::map<MeshKey, DrawCommand>& cmd = m_meshDraws;
-
-		Renderer::SubmitRC([fp, ubs, sp, cmd]() mutable
-			{
-				Renderer::BeginRenderPass(fp);
-				for (auto& it : cmd)
-				{
-					auto& dc = it.second;
-					Renderer::RenderSubmesh(dc.Mesh, dc.SubmeshIndex, dc.MaterialTb, sp, ubs, dc.ModelMat, dc.State);
-				}
-
-				Renderer::EndRenderPass(fp);
-			});
 	}
 
 	void SceneRenderer::shadowPass(const Scene& scene)
@@ -579,7 +541,6 @@ namespace pio
 		std::map<MeshKey, DrawCommand>& cmd = m_shadowPassDraws;
 
 		// [TODO]: Only the light that can cast shadow will update shadow map.
-
 		Renderer::SubmitRC([env, distsp, ubs, cmd]() mutable
 			{
 				uint64_t start{ PROFILER_TIME };
@@ -658,8 +619,9 @@ namespace pio
 					glm::ivec2(0), glm::ivec2(gp->getFramebuffer()->getWidth(), gp->getFramebuffer()->getHeight()),
 					glm::ivec2(0), glm::ivec2(lp->getFramebuffer()->getWidth(), lp->getFramebuffer()->getHeight()),
 					FB_DepthBuffer_Bit, TextureFilterMag::Nearest);
-				RenderPass::RenderLightingEffect_Deferred(env, sk, gp, dlsp, plsp, ubs);
-
+				RenderState lightState{ Blend::Disable(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable() };
+				Renderer::RenderLightEffect_Deffered(Renderer::GetConfig().FullScreenQuad, sk, ubs, gp, dlsp, plsp, lightState);
+				
 				RenderState skState;
 				skState.Blend = Blend::Disable();
 				skState.Cull = CullFace::Common();

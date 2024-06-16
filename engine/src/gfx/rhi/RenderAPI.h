@@ -61,8 +61,8 @@ namespace pio
 		// ---------------------------- Deferring shading ----------------------------
 		virtual void renderSubmesh_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable,
 											Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state) = 0;
-		virtual void renderPointLightQuad_Deferred(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state) = 0;
-		virtual void renderDistantLightingQuad_Deferred(AssetHandle &meshHandle, Ref<Skybox>& skybox, Ref<UniformBufferSet> &uniformBufferSet, const Ref<RenderPass> &GBufferPass, const Ref<RenderPass> &shadowPass, const RenderState &state) = 0;
+		virtual void renderLightEffect_Deffered(AssetHandle& meshHandle, Ref<Skybox>& skybox, Ref<UniformBufferSet>& ubs, const Ref<RenderPass>& GBufferPass,
+			                                    const Ref<RenderPass>& shadowPass, const Ref<RenderPass>& ptShadowPass, const RenderState& state) = 0;
 		// ---------------------------------------------------------------------------
 
 		// ------------------------------ 2D Rendering -------------------------------

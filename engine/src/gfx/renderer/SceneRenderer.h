@@ -49,10 +49,6 @@ namespace pio
 		void flushDrawList(const Scene &scene);
 
 		void shadowPass(const Scene &scene);
-
-		// --------- forward pass -----------
-		void forwardRendering(const Scene &scene);
-		void geometryPass(const Scene &scene);
 		// ----------------------------------
 
 		// --------- deferred pass ----------

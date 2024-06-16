@@ -9,7 +9,7 @@ namespace pio
 	{
 		PBR_Mesh, DistantLight_ShadowData, PointLight_ShadowData, MaterialPreview, Wireframe, LightVolume,
 		LineSegment, Color_Line, Outline, TextureQuad, Sprite,
-		DistantLighting_Deferred, PointLightEffect_Deferred, Outline_Deferred,
+		Outline_Deferred,
 		Equirectangular_To_Cube, Diffuse_Convolution, PrefilterMap_Convolution, Brdf_Convolution, 
 		Skybox, Postprocessing, Num
 	};
