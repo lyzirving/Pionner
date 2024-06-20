@@ -19,6 +19,8 @@ namespace pio
 		auto* p = ShaderLibrary::Get();
 		p->add(ShaderProgram::GeometryPass, ShaderCompiler::Compile("shader/GeometryPass.glsl"));
 		p->add(ShaderProgram::LightingPass, ShaderCompiler::Compile("shader/LightingPass.glsl"));
+		p->add(ShaderProgram::Sprite, ShaderCompiler::Compile("shader/Sprite.glsl"));
+		p->add(ShaderProgram::SkyBox, ShaderCompiler::Compile("shader/SkyBox.glsl"));
 	}
 
 	void ShaderLibrary::Shutdown()
@@ -119,12 +121,7 @@ namespace pio
 			{
 				m_shaders[index] = Shader::Create("brdf_convolution", "quad2d", "brdf_convolution");
 				return m_shaders[index];
-			}
-			case ShaderType::Skybox:
-			{
-				m_shaders[index] = Shader::Create("skybox", "skybox", "skybox");
-				return m_shaders[index];
-			}
+			}	
 			case ShaderType::Postprocessing:
 			{
 				m_shaders[index] = Shader::Create("postprocessing", "quad2d", "postprocessing");

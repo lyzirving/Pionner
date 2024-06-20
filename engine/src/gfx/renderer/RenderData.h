@@ -92,7 +92,14 @@ namespace pio
 	{
 		AssetHandle QuadMesh{ NullAsset };
 		AssetHandle Texture{ NullAsset };
-		RenderState State{};
+		RenderState State{};	
+		bool bGammaCorrect{ false };
+
+		SpriteCommand() {}
+		SpriteCommand(const AssetHandle &h, const AssetHandle &t, const RenderState &state, bool gamma)
+			: QuadMesh(h), Texture(h), State(state), bGammaCorrect(gamma)
+		{
+		}
 	};
 }
 

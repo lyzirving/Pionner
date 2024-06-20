@@ -481,6 +481,8 @@ namespace pio
 		colorBufSpec.WrapT = TextureWrap::ClampEdge;
 		colorBufSpec.WrapR = TextureWrap::ClampEdge;
 		colorBufSpec.AType = AssetType::Texture2D;
+		colorBufSpec.SRGB = true;
+		colorBufSpec.AddToAssets = true;
 
 		TextureSpecification depthBufferSpec;
 		depthBufferSpec.Name = "LightDepthStencilBuffer";
@@ -622,11 +624,7 @@ namespace pio
 				RenderState lightState{ Blend::Disable(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable() };
 				Renderer::RenderLightEffect_Deffered(Renderer::GetConfig().FullScreenQuad, sk, ubs, gp, dlsp, plsp, lightState);
 				
-				RenderState skState;
-				skState.Blend = Blend::Disable();
-				skState.Cull = CullFace::Common();
-				skState.DepthTest = DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite);
-				skState.Stencil.Enable = false;
+				RenderState skState{ Blend::Disable(), DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite), CullFace::Common(), StencilTest::Disable() };				
 				Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);
 
 				Renderer::EndRenderPass(lp);
@@ -647,8 +645,14 @@ namespace pio
 			{
 				uint64_t start{ PROFILER_TIME };
 				Renderer::BeginScreenPass(scpss, Viewport(vp.X, vp.Y, vp.Width, vp.Height));
+				//std::vector<SpriteCommand> cmds{};
+				//cmds.reserve(spCmd.size() + 1);
+				//// Screen texture should be the first sprite to be rendered
+				//cmds.emplace_back(handle, composite->getHandle(), RenderState(Blend::Disable(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable()), true);
+				//for(auto it : spCmd) { cmds.emplace_back(it.second); }
+				//Renderer::RenderSprite(cmds);
 				RenderPass::Postprocessing(handle, composite);
-				RenderPass::RenderSprites(spCmd);
+				RenderPass::RenderSprites(spCmd); 
 				Renderer::EndScreenPass(scpss);
 				PROFILERD_DURATION(start, "On Screen Rendering");
 			});

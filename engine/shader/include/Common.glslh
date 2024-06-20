@@ -21,3 +21,11 @@ int NeInt(float val)
     float index = floor(val + 0.5f);
 	return int(index);
 }
+
+vec3 GammaCorrect(vec3 color)
+{
+    // HDR tonemapping
+	vec3 result = color / (color + vec3(1.0));
+	// gamma correct
+	return pow(result, vec3(1.0 / 2.2)); 
+}

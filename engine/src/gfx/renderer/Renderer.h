@@ -133,6 +133,7 @@ namespace pio
 		static void RenderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state);
 		static void RenderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state);
 		static void RenderSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state);
+		static void RenderSprite(const std::vector<SpriteCommand> &cmds);
 		// ---------------------------------------------------------------------------
 
 		// ------------------------------- Tools -------------------------------------

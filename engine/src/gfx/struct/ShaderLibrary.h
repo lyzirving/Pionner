@@ -11,12 +11,12 @@ namespace pio
 		LineSegment, Color_Line, Outline, TextureQuad, Sprite,
 		Outline_Deferred,
 		Equirectangular_To_Cube, Diffuse_Convolution, PrefilterMap_Convolution, Brdf_Convolution, 
-		Skybox, Postprocessing, Num
+		Postprocessing, Num
 	};
 
 	enum class ShaderProgram : uint8_t
 	{
-		GeometryPass, LightingPass, Num
+		GeometryPass, LightingPass, Sprite, SkyBox, Num
 	};
 
 	class ShaderLibrary

@@ -2,6 +2,8 @@
 
 #include "GLHelper.h"
 
+#include "asset/AssetsManager.h"
+
 #include "gfx/rhi/Texture.h"
 #include "gfx/rhi/RenderBuffer.h"
 #include "gfx/renderer/RenderData.h"
@@ -29,11 +31,19 @@ namespace pio
 				case AssetType::Texture2D:
 				{
 					m_colorBuffers[i] = Texture2D::Create(spec);
+					if(spec.AddToAssets)
+					{
+						AssetsManager::Get()->addRuntimeAsset(m_colorBuffers[i]);
+					}
 					break;
 				}
 				case AssetType::CubeTexture:
 				{
 					m_colorBuffers[i] = CubeTexture::Create(spec);
+					if(spec.AddToAssets)
+					{
+						AssetsManager::Get()->addRuntimeAsset(m_colorBuffers[i]);
+					}
 					break;
 				}
 				default:

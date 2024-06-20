@@ -203,6 +203,11 @@ namespace pio
 		s_API->renderSprite(quadMesh, texture, state);
 	}
 
+	void Renderer::RenderSprite(const std::vector<SpriteCommand> &cmds)
+	{
+		s_API->renderSprite(cmds);
+	}
+
 	void Renderer::RenderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state)
 	{
 		s_API->renderSkybox(meshHandle, submeshIndex, uniformBufferSet, cubeTexture, state);

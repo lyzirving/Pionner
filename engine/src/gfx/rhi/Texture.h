@@ -27,6 +27,7 @@ namespace pio
 		bool SRGB{ false };// if true, use sRGB color space in shader
 		bool Storage{ false };
 		bool FlipVerticalWhenLoad{ false };
+		bool AddToAssets{ false };
 	};
 
 	class Texture : public Asset

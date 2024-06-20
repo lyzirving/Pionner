@@ -649,13 +649,57 @@ namespace pio
 		shader->bind(false);
 	}
 
+	void GLRenderAPI::renderSprite(const std::vector<SpriteCommand> &cmds)
+	{		
+		PIO_ASSERT_RETURN(!cmds.empty(), "renderSprite: empty cmds");
+
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::Sprite);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderSprite: Sprite shader is invalid");
+
+		// Reduce shader switch, which is the most consuming
+		shader->bind(true);
+		
+		for(auto &item : cmds)
+		{
+			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(item.QuadMesh);			
+			Ref<Texture2D> texture = AssetsManager::GetRuntimeAsset<Texture2D>(item.Texture);
+			PIO_ASSERT_CONTINUE(mesh.use_count() != 0, "renderSprite: Quad mesh is invalid");
+			PIO_ASSERT_CONTINUE(texture.use_count() != 0, "renderSprite: texture is invalid");
+
+			compareAndUpdateRenderState(m_globalState, item.State);
+			texture->active(PIO_UINT(TextureSampler::Slot0));
+			texture->bind();
+
+			shader->setTextureSampler("u_texture", TextureSampler::Slot0);
+			shader->setBool("u_bSRGB", texture->SRGB());
+			shader->setBool("u_bGammaCorrect", item.bGammaCorrect);
+
+			mesh->VertexArray->bind();
+			mesh->IndexBuffer->bind();
+
+			glDrawElements(GL_TRIANGLES, mesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+			GLHelper::CheckError("renderSprite fail!!");
+
+			mesh->IndexBuffer->unbind();
+			mesh->VertexArray->unbind();
+
+			texture->unbind();
+		}
+
+	#ifdef PIO_PROFILER_ON
+		glFinish();
+	#endif // PIO_PROFILER_ON
+
+		shader->bind(false);
+	}
+
 	void GLRenderAPI::renderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state)
 	{
 		Ref<MeshBase> cubeMesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
 		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderSkybox: Cube Mesh is invalid");
 
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Skybox);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "Skybox shader is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::SkyBox);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "SkyBox shader is invalid");
 
 		PIO_ASSERT_RETURN(cubeTexture.use_count() != 0, "renderSkybox: cubeTexture is invalid");
 

@@ -113,6 +113,7 @@ namespace pio
 
 	#define PIO_ASSERT(check, fmt, ...)   { if(!(check)) { LOGE(fmt, __VA_ARGS__) } }
 	#define PIO_ASSERT_RETURN(check, fmt, ...) { if(!(check)) { LOGE(fmt, __VA_ARGS__) return; } }
+	#define PIO_ASSERT_CONTINUE(check, fmt, ...) { if(!(check)) { LOGW(fmt, __VA_ARGS__) continue; } }
 
 	#define PIO_BIND_EVT_FN(fn)  std::bind(&fn, this, std::placeholders::_1)
 
