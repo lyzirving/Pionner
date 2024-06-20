@@ -52,7 +52,7 @@ namespace pio
 		operator uint32_t () { return m_UUID; }
 		operator const uint32_t() const { return m_UUID; }
 
-		inline std::string toString() const
+		std::string toString() const
 		{
 			std::stringstream ss;
 			ss << "UUID32: " << m_UUID;

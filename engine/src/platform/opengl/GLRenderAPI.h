@@ -48,8 +48,7 @@ namespace pio
 		virtual void renderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state) override;
 		virtual void renderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state) override;
 		virtual void renderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state) override;
-		virtual void renderSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state) override;
-		virtual void renderSprite(const std::vector<SpriteCommand> &cmds) override;
+		virtual void renderSprites(const std::vector<SpriteCommand> &cmds) override;
 		// -----------------------------------------------------------------------------
 
 		// ------------------------------- Tools -------------------------------------
@@ -57,8 +56,7 @@ namespace pio
 		virtual void renderHDRToEnvMap(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment envMapAttachment, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &fbo) override;
 		virtual void renderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo) override;
 		virtual void renderPrefilterConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment prefilterMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo) override;
-		virtual void renderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo) override;
-		virtual void postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state) override;
+		virtual void renderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo) override;		
 		// ---------------------------------------------------------------------------
 
 		virtual void beginRenderPass(Ref<RenderPass> &pass) override;

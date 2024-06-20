@@ -198,14 +198,9 @@ namespace pio
 		s_API->renderTextureQuad2D(meshHandle, texture, state);
 	}
 
-	void Renderer::RenderSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state)
+	void Renderer::RenderSprites(const std::vector<SpriteCommand> &cmds)
 	{
-		s_API->renderSprite(quadMesh, texture, state);
-	}
-
-	void Renderer::RenderSprite(const std::vector<SpriteCommand> &cmds)
-	{
-		s_API->renderSprite(cmds);
+		s_API->renderSprites(cmds);
 	}
 
 	void Renderer::RenderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state)
@@ -231,11 +226,6 @@ namespace pio
 	void Renderer::RenderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo)
 	{
 		s_API->renderBrdfConvolution(quadMesh, state, fbo);
-	}
-
-	void Renderer::Postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)
-	{
-		s_API->postprocessing(meshHandle, composite, state);
 	}
 
 	void Renderer::BeginRenderPass(Ref<RenderPass> &pass)

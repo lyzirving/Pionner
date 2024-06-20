@@ -10,8 +10,7 @@ namespace pio
 		PBR_Mesh, DistantLight_ShadowData, PointLight_ShadowData, MaterialPreview, Wireframe, LightVolume,
 		LineSegment, Color_Line, Outline, TextureQuad, Sprite,
 		Outline_Deferred,
-		Equirectangular_To_Cube, Diffuse_Convolution, PrefilterMap_Convolution, Brdf_Convolution, 
-		Postprocessing, Num
+		Equirectangular_To_Cube, Diffuse_Convolution, PrefilterMap_Convolution, Brdf_Convolution, Num
 	};
 
 	enum class ShaderProgram : uint8_t

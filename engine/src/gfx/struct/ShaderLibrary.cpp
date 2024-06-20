@@ -121,11 +121,6 @@ namespace pio
 			{
 				m_shaders[index] = Shader::Create("brdf_convolution", "quad2d", "brdf_convolution");
 				return m_shaders[index];
-			}	
-			case ShaderType::Postprocessing:
-			{
-				m_shaders[index] = Shader::Create("postprocessing", "quad2d", "postprocessing");
-				return m_shaders[index];
 			}
 			default:
 				return Ref<Shader>();

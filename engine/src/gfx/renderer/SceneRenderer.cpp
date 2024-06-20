@@ -645,14 +645,12 @@ namespace pio
 			{
 				uint64_t start{ PROFILER_TIME };
 				Renderer::BeginScreenPass(scpss, Viewport(vp.X, vp.Y, vp.Width, vp.Height));
-				//std::vector<SpriteCommand> cmds{};
-				//cmds.reserve(spCmd.size() + 1);
-				//// Screen texture should be the first sprite to be rendered
-				//cmds.emplace_back(handle, composite->getHandle(), RenderState(Blend::Disable(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable()), true);
-				//for(auto it : spCmd) { cmds.emplace_back(it.second); }
-				//Renderer::RenderSprite(cmds);
-				RenderPass::Postprocessing(handle, composite);
-				RenderPass::RenderSprites(spCmd); 
+				std::vector<SpriteCommand> cmdList{};
+				cmdList.reserve(spCmd.size() + 1);
+				// Screen texture should be the first sprite to be rendered
+				cmdList.emplace_back(handle, composite->getHandle(), RenderState(Blend::Disable(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable()), true);				
+				for(auto it : spCmd) { cmdList.emplace_back(it.second); }
+				Renderer::RenderSprites(cmdList);
 				Renderer::EndScreenPass(scpss);
 				PROFILERD_DURATION(start, "On Screen Rendering");
 			});

@@ -40,12 +40,12 @@ namespace pio
 		virtual AssetType getAssetType() const { return GetStaticType(); }
 
 	public:
-		inline AssetHandle getHandle() { return m_assetHandle; }
-		inline const AssetHandle &getHandle() const { return m_assetHandle; }
-		inline const AssetHandle &getParentHandle() const { return m_parentHandle; }
-		inline const std::string &getName() const { return m_name; }
-		inline void setParentHandle(const AssetHandle &handle) { m_parentHandle = handle; }
-		inline void setName(const std::string &name) { m_name = name; }
+		AssetHandle getHandle() { return m_assetHandle; }
+		const AssetHandle &getHandle() const { return m_assetHandle; }
+		const AssetHandle &getParentHandle() const { return m_parentHandle; }
+		const std::string &getName() const { return m_name; }
+		void setParentHandle(const AssetHandle &handle) { m_parentHandle = handle; }
+		void setName(const std::string &name) { m_name = name; }
 
 	public:
 		template<typename T>

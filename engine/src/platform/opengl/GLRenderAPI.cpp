@@ -610,51 +610,12 @@ namespace pio
 		shader->bind(false);
 	}
 
-	void GLRenderAPI::renderSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state)
-	{
-		Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(quadMesh);
-		PIO_ASSERT_RETURN(mesh.use_count() != 0, "renderSprite: Quad Mesh is invalid");
-
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Sprite);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderSprite: Sprite shader is invalid");
-
-		Ref<Texture2D> sprite = AssetsManager::GetRuntimeAsset<Texture2D>(texture);
-		PIO_ASSERT_RETURN(sprite.use_count() != 0, "renderSprite: texture is invalid");
-
-		compareAndUpdateRenderState(m_globalState, state);
-
-		shader->bind(true);
-
-		sprite->active(PIO_UINT(TextureSampler::Slot0));
-		sprite->bind(); 
-
-		shader->setTextureSampler("u_quadTexture", TextureSampler::Slot0);
-		shader->setBool("u_bSRGB", sprite->SRGB());
-
-		mesh->VertexArray->bind();
-		mesh->IndexBuffer->bind();
-
-		glDrawElements(GL_TRIANGLES, mesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("renderSprite fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		mesh->IndexBuffer->unbind();
-		mesh->VertexArray->unbind();
-
-		sprite->unbind();
-
-		shader->bind(false);
-	}
-
-	void GLRenderAPI::renderSprite(const std::vector<SpriteCommand> &cmds)
+	void GLRenderAPI::renderSprites(const std::vector<SpriteCommand> &cmds)
 	{		
-		PIO_ASSERT_RETURN(!cmds.empty(), "renderSprite: empty cmds");
+		PIO_ASSERT_RETURN(!cmds.empty(), "renderSprites: empty cmds");
 
 		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::Sprite);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderSprite: Sprite shader is invalid");
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderSprites: Sprite shader is invalid");
 
 		// Reduce shader switch, which is the most consuming
 		shader->bind(true);
@@ -663,8 +624,8 @@ namespace pio
 		{
 			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(item.QuadMesh);			
 			Ref<Texture2D> texture = AssetsManager::GetRuntimeAsset<Texture2D>(item.Texture);
-			PIO_ASSERT_CONTINUE(mesh.use_count() != 0, "renderSprite: Quad mesh is invalid");
-			PIO_ASSERT_CONTINUE(texture.use_count() != 0, "renderSprite: texture is invalid");
+			PIO_ASSERT_CONTINUE(mesh.use_count() != 0, "renderSprites: Quad mesh is invalid");
+			PIO_ASSERT_CONTINUE(texture.use_count() != 0, "renderSprites: texture is invalid");
 
 			compareAndUpdateRenderState(m_globalState, item.State);
 			texture->active(PIO_UINT(TextureSampler::Slot0));
@@ -678,7 +639,7 @@ namespace pio
 			mesh->IndexBuffer->bind();
 
 			glDrawElements(GL_TRIANGLES, mesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-			GLHelper::CheckError("renderSprite fail!!");
+			GLHelper::CheckError("renderSprites fail!!");
 
 			mesh->IndexBuffer->unbind();
 			mesh->VertexArray->unbind();
@@ -945,40 +906,6 @@ namespace pio
 
 		mesh->IndexBuffer->unbind();
 		mesh->VertexArray->unbind();
-
-		shader->bind(false);
-	}
-
-	void GLRenderAPI::postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state)
-	{
-		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
-		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "postprocessing: Quad Mesh is invalid");
-
-		PIO_ASSERT_RETURN(composite.use_count() != 0, "postprocessing: composite texture is invalid");
-
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Postprocessing);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "postprocessing: shader is invalid");
-
-		compareAndUpdateRenderState(m_globalState, state);
-
-		shader->bind(true);
-
-		composite->active(PIO_UINT(TextureSampler::Slot0));
-		composite->bind();
-		shader->setTextureSampler("u_composite", TextureSampler::Slot0);
-
-		quadMesh->VertexArray->bind();
-		quadMesh->IndexBuffer->bind();
-
-		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("postprocessing fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		quadMesh->IndexBuffer->unbind();
-		quadMesh->VertexArray->unbind();
 
 		shader->bind(false);
 	}

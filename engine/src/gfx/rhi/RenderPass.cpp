@@ -29,23 +29,4 @@ namespace pio
 				return Ref<RenderPass>();
 		}
 	}
-
-	void RenderPass::RenderSprites(std::map<MeshKey, SpriteCommand> &cmd)
-	{
-		for (auto &it : cmd)
-		{			
-			SpriteCommand &d = it.second;			
-			Renderer::RenderSprite(d.QuadMesh, d.Texture, d.State);
-		}
-	}
-
-	void RenderPass::Postprocessing(const AssetHandle &quadMesh, Ref<Texture2D> &composite)
-	{
-		RenderState state;
-		state.Blend = Blend::Disable();
-		state.DepthTest = DepthTest::Disable();
-		state.Cull = CullFace::Common();
-		state.Stencil.Enable = false;
-		Renderer::Postprocessing(quadMesh, composite, state);
-	}
 }

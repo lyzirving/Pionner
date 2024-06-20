@@ -11,10 +11,10 @@ namespace pio
 
 	namespace SceneDataAttr
 	{
-		static const char *U_FrustumNear = "u_frustumNear";
-		static const char *U_FrustumFar = "u_frustumFar";
-		static const char *U_PointLightPosition = "u_pointLightPos";
-		static const char *U_PointLightMat = "u_pointLightMat";
+		static const char* U_FrustumNear = "u_frustumNear";
+		static const char* U_FrustumFar = "u_frustumFar";
+		static const char* U_PointLightPosition = "u_pointLightPos";
+		static const char* U_PointLightMat = "u_pointLightMat";
 	}
 
 	// NOTE: definition order should not be changed
@@ -29,24 +29,24 @@ namespace pio
 		LightDir_Num
 	};
 
-	static const char *LightDirStr(LightDir dir)
+	static const char* LightDirStr(LightDir dir)
 	{
 		switch (dir)
 		{
-			case LightDir_PositiveX:
-				return "Right";
-			case LightDir_NegativeX:
-				return "Left";
-			case LightDir_PositiveY:
-				return "Top";
-			case LightDir_NegativeY:
-				return "Bottom";
-			case LightDir_NegativeZ:
-				return "Back";
-			case LightDir_PositiveZ:
-				return "Front";
-			default:
-				return "Invalid Light Direction";
+		case LightDir_PositiveX:
+			return "Right";
+		case LightDir_NegativeX:
+			return "Left";
+		case LightDir_PositiveY:
+			return "Top";
+		case LightDir_NegativeY:
+			return "Bottom";
+		case LightDir_NegativeZ:
+			return "Back";
+		case LightDir_PositiveZ:
+			return "Front";
+		default:
+			return "Invalid Light Direction";
 		}
 	}
 
@@ -55,7 +55,7 @@ namespace pio
 		AssetHandle MeshHandle{ 0 };
 		uint32_t SubmeshIndex{ 0 };
 
-		bool operator<(const MeshKey &other) const
+		bool operator<(const MeshKey& other) const
 		{
 			if (MeshHandle < other.MeshHandle)
 				return true;
@@ -73,7 +73,7 @@ namespace pio
 		Ref<UniformBufferSet> UBSet;
 
 		DrawParam() {}
-		DrawParam(const Timestep &ts, const Ref<UniformBufferSet> &ubs) : Step(ts), UBSet(ubs) 
+		DrawParam(const Timestep& ts, const Ref<UniformBufferSet>& ubs) : Step(ts), UBSet(ubs)
 		{
 		}
 	};
@@ -92,12 +92,12 @@ namespace pio
 	{
 		AssetHandle QuadMesh{ NullAsset };
 		AssetHandle Texture{ NullAsset };
-		RenderState State{};	
+		RenderState State{};
 		bool bGammaCorrect{ false };
 
 		SpriteCommand() {}
-		SpriteCommand(const AssetHandle &h, const AssetHandle &t, const RenderState &state, bool gamma)
-			: QuadMesh(h), Texture(h), State(state), bGammaCorrect(gamma)
+		SpriteCommand(const AssetHandle& h, const AssetHandle& t, const RenderState& state, bool gamma)
+			: QuadMesh(h), Texture(t), State(state), bGammaCorrect(gamma)
 		{
 		}
 	};

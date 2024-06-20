@@ -132,8 +132,7 @@ namespace pio
 		static void RenderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state);
 		static void RenderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state);
 		static void RenderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state);
-		static void RenderSprite(const AssetHandle &quadMesh, const AssetHandle &texture, const RenderState &state);
-		static void RenderSprite(const std::vector<SpriteCommand> &cmds);
+		static void RenderSprites(const std::vector<SpriteCommand> &cmds);
 		// ---------------------------------------------------------------------------
 
 		// ------------------------------- Tools -------------------------------------
@@ -141,8 +140,7 @@ namespace pio
 		static void RenderHDRToEnvMap(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment envMapAttachment, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &fbo);
 		static void RenderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo);
 		static void RenderPrefilterMapConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment prefilterMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo);
-		static void RenderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo);
-		static void Postprocessing(const AssetHandle &meshHandle, Ref<Texture2D> &composite, const RenderState &state);
+		static void RenderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo);		
 		// ---------------------------------------------------------------------------
 
 		static void BeginRenderPass(Ref<RenderPass> &pass);

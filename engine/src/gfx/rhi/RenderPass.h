@@ -39,9 +39,6 @@ namespace pio
 
 	public:
 		static Ref<RenderPass> Create(const RenderPassSpecification &spec);
-
-		static void RenderSprites(std::map<MeshKey, SpriteCommand> &cmd);
-		static void Postprocessing(const AssetHandle &quadMesh, Ref<Texture2D> &composite);
 	};
 }
 
