@@ -21,6 +21,7 @@ namespace pio
 		p->add(ShaderProgram::LightingPass, ShaderCompiler::Compile("shader/LightingPass.glsl"));
 		p->add(ShaderProgram::Sprite, ShaderCompiler::Compile("shader/Sprite.glsl"));
 		p->add(ShaderProgram::SkyBox, ShaderCompiler::Compile("shader/SkyBox.glsl"));
+		p->add(ShaderProgram::DistLightShadowMap, ShaderCompiler::Compile("shader/DistLightShadowMap.glsl"));
 	}
 
 	void ShaderLibrary::Shutdown()
@@ -46,12 +47,7 @@ namespace pio
 			{
 				m_shaders[index] = Shader::Create("PBR_Mesh", "mesh", "mesh_pbr");
 				return m_shaders[index];
-			}
-			case ShaderType::DistantLight_ShadowData:
-			{
-				m_shaders[index] = Shader::Create("DistantLight_ShadowData", "mesh_shadow_distant_light", "mesh_shadow_distant_light");
-				return m_shaders[index];
-			}
+			}			
 			case ShaderType::PointLight_ShadowData:
 			{
 				m_shaders[index] = Shader::Create("PointLight_ShadowData", "mesh_shadow_point_light", "mesh_shadow_point_light", "mesh_shadow_point_light");
@@ -146,6 +142,14 @@ namespace pio
 		{
 		case ShaderProgram::GeometryPass:
 			return "GeometryPass";
+		case ShaderProgram::LightingPass:
+			return "LightingPass";
+		case ShaderProgram::Sprite:
+			return "Sprite";
+		case ShaderProgram::SkyBox:
+			return "SkyBox";
+		case ShaderProgram::DistLightShadowMap:
+			return "DistLightShadowMap";
 		default:
 			return "Default Shader Program";
 		}

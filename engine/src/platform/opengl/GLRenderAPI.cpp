@@ -182,8 +182,8 @@ namespace pio
 		Ref<MeshBase> meshBase = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
 		PIO_ASSERT_RETURN(meshBase.use_count() != 0, "renderDistantLightShadow: fail to get mesh from[%u]", (uint32_t)meshHandle);
 
-		auto shader = ShaderLibrary::Get()->find(ShaderType::DistantLight_ShadowData);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "DistantLight_ShadowData shader is invalid");
+		auto shader = ShaderLibrary::Get()->find(ShaderProgram::DistLightShadowMap);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "DistLightShadowMap shader is invalid");
 
 		Ref<MeshSource> meshSource = meshBase->getMeshSource();
 

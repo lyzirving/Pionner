@@ -9,7 +9,7 @@ layout (std140) uniform BoneMatrices
 	mat4 Transform[MAX_BONES];
 } u_bones;
 
-mat4 gpuSkeleton(int frame, int boneNum, int boneId, samplerBuffer animBuffer)
+mat4 GpuSkeleton(int frame, int boneNum, int boneId, samplerBuffer animBuffer)
 {
     // bone mat(3x4)
     int start = 4 * boneNum * frame + 4 * boneId;
@@ -40,4 +40,13 @@ mat4 gpuSkeleton(int frame, int boneNum, int boneId, samplerBuffer animBuffer)
     boneMat[3].w = 1.f;
 
     return boneMat;
+}
+
+mat4 CalcBoneTransform(bool bAnimOn, bool bGpuAnimOn, vec4 boneWeights, uvec4 boneIds, int frameIdx, int boneNum, samplerBuffer gpuAnimBuffer)
+{
+    mat4 boneTransform = bAnimOn ? boneWeights[0] * (bGpuAnimOn ? (GpuSkeleton(frameIdx, boneNum, int(boneIds[0]), gpuAnimBuffer)) : (u_bones.Transform[boneIds[0]])) : mat4(1.f);
+	boneTransform += bAnimOn ? boneWeights[1] * (bGpuAnimOn ? (GpuSkeleton(frameIdx, boneNum, int(boneIds[1]), gpuAnimBuffer)) : (u_bones.Transform[boneIds[1]])) : mat4(0.f);
+	boneTransform += bAnimOn ? boneWeights[2] * (bGpuAnimOn ? (GpuSkeleton(frameIdx, boneNum, int(boneIds[2]), gpuAnimBuffer)) : (u_bones.Transform[boneIds[2]])) : mat4(0.f);
+	boneTransform += bAnimOn ? boneWeights[3] * (bGpuAnimOn ? (GpuSkeleton(frameIdx, boneNum, int(boneIds[3]), gpuAnimBuffer)) : (u_bones.Transform[boneIds[3]])) : mat4(0.f);
+    return boneTransform;
 }

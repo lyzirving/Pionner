@@ -35,10 +35,7 @@ out VsOut {
 }; 
 
 void main() {
-	mat4 boneTransform = u_playAnimation ? a_weights[0] * (u_bGpuAnimated ? (gpuSkeleton(u_frameIndex, u_boneNum, int(a_boneIds[0]), u_gpuAnimBuffer)) : (u_bones.Transform[a_boneIds[0]])) : mat4(1.f);
-	boneTransform += u_playAnimation ? a_weights[1] * (u_bGpuAnimated ? (gpuSkeleton(u_frameIndex, u_boneNum, int(a_boneIds[1]), u_gpuAnimBuffer)) : (u_bones.Transform[a_boneIds[1]])) : mat4(0.f);
-	boneTransform += u_playAnimation ? a_weights[2] * (u_bGpuAnimated ? (gpuSkeleton(u_frameIndex, u_boneNum, int(a_boneIds[2]), u_gpuAnimBuffer)) : (u_bones.Transform[a_boneIds[2]])) : mat4(0.f);
-	boneTransform += u_playAnimation ? a_weights[3] * (u_bGpuAnimated ? (gpuSkeleton(u_frameIndex, u_boneNum, int(a_boneIds[3]), u_gpuAnimBuffer)) : (u_bones.Transform[a_boneIds[3]])) : mat4(0.f);
+    mat4 boneTransform = CalcBoneTransform(u_playAnimation, u_bGpuAnimated, a_weights, a_boneIds, u_frameIndex, u_boneNum, u_gpuAnimBuffer);	
 
 	vec4 pos = boneTransform * vec4(a_pos, 1.f);
 	v_worldPos = vec3(u_modelMat * pos);
