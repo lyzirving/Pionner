@@ -2,6 +2,11 @@
 
 #include "gfx/rhi/ShaderCompiler.h"
 
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "ShaderLibrary"
+
 namespace pio
 {
 	PIO_SINGLETON_IMPL(ShaderLibrary)
@@ -16,12 +21,17 @@ namespace pio
 
 	void ShaderLibrary::Init()
 	{
+		auto start = TimeUtil::CurrentTimeMs();
 		auto* p = ShaderLibrary::Get();
+		p->add(ShaderProgram::MaterialPreview, ShaderCompiler::Compile("shader/MterialPreview.glsl"));
 		p->add(ShaderProgram::GeometryPass, ShaderCompiler::Compile("shader/GeometryPass.glsl"));
 		p->add(ShaderProgram::LightingPass, ShaderCompiler::Compile("shader/LightingPass.glsl"));
 		p->add(ShaderProgram::Sprite, ShaderCompiler::Compile("shader/Sprite.glsl"));
 		p->add(ShaderProgram::SkyBox, ShaderCompiler::Compile("shader/SkyBox.glsl"));
 		p->add(ShaderProgram::DistLightShadowMap, ShaderCompiler::Compile("shader/DistLightShadowMap.glsl"));
+		p->add(ShaderProgram::PtLightShadowMap, ShaderCompiler::Compile("shader/PtLightShadowMap.glsl"));
+		auto end = TimeUtil::CurrentTimeMs();
+		LOGD("take [%lu]ms time", (end - start));
 	}
 
 	void ShaderLibrary::Shutdown()
@@ -42,32 +52,7 @@ namespace pio
 			return m_shaders[index];
 
 		switch (type)
-		{
-			case ShaderType::PBR_Mesh:
-			{
-				m_shaders[index] = Shader::Create("PBR_Mesh", "mesh", "mesh_pbr");
-				return m_shaders[index];
-			}			
-			case ShaderType::PointLight_ShadowData:
-			{
-				m_shaders[index] = Shader::Create("PointLight_ShadowData", "mesh_shadow_point_light", "mesh_shadow_point_light", "mesh_shadow_point_light");
-				return m_shaders[index];
-			}
-			case ShaderType::MaterialPreview:
-			{
-				m_shaders[index] = Shader::Create("MaterialPreview", "mesh", "mesh_material_preview");
-				return m_shaders[index];
-			}
-			case ShaderType::Wireframe:
-			{
-				m_shaders[index] = Shader::Create("Wireframe", "mesh", "mesh_wireframe");
-				return m_shaders[index];
-			}
-			case ShaderType::LightVolume:
-			{
-				m_shaders[index] = Shader::Create("LightVolume", "mesh_light_volume", "mesh_empty");
-				return m_shaders[index];
-			}
+		{		
 			case ShaderType::LineSegment:
 			{
 				m_shaders[index] = Shader::Create("LineSegment", "line_segment", "line_segment");
@@ -78,24 +63,9 @@ namespace pio
 				m_shaders[index] = Shader::Create("ColorLine", "color_line", "color_line");
 				return m_shaders[index];
 			}
-			case ShaderType::Outline:
-			{
-				m_shaders[index] = Shader::Create("Outline", "outline", "outline");
-				return m_shaders[index];
-			}
 			case ShaderType::TextureQuad:
 			{
 				m_shaders[index] = Shader::Create("TextureQuad", "quad2d", "quad2d");
-				return m_shaders[index];
-			}
-			case ShaderType::Sprite:
-			{
-				m_shaders[index] = Shader::Create("Sprite", "quad2d", "sprite");
-				return m_shaders[index];
-			}
-			case ShaderType::Outline_Deferred:
-			{
-				m_shaders[index] = Shader::Create("Outline_Deferred", "outline", "outline_deferred");
 				return m_shaders[index];
 			}
 			case ShaderType::Equirectangular_To_Cube:
@@ -140,6 +110,8 @@ namespace pio
 	{
 		switch (type)
 		{
+		case ShaderProgram::MaterialPreview:
+			return "MaterialPreview";
 		case ShaderProgram::GeometryPass:
 			return "GeometryPass";
 		case ShaderProgram::LightingPass:
@@ -150,8 +122,10 @@ namespace pio
 			return "SkyBox";
 		case ShaderProgram::DistLightShadowMap:
 			return "DistLightShadowMap";
+		case ShaderProgram::PtLightShadowMap:
+			return "PtLightShadowMap";
 		default:
-			return "Default Shader Program";
+			return "Unknown Shader Program";
 		}
 	}
 }

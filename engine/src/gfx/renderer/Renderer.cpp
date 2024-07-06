@@ -168,11 +168,6 @@ namespace pio
 		s_API->renderPointLightShadow(meshHandle, submeshIndex, isRigged, materialTable, shadowPass, uniformBufferSet, modelMat, state);
 	}
 
-	void Renderer::RenderLightVolume(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &modelMat, Ref<UniformBufferSet> &uniformBufferSet, const RenderState &state)
-	{
-		s_API->renderLightVolume(meshHandle, submeshIndex, modelMat, uniformBufferSet, state);
-	}
-
 	void Renderer::RenderSubmesh_Deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
 	{
 		s_API->renderSubmesh_deferred(meshHandle, submeshIndex, materialTable, uniformBufferSet, modelMat, state);

@@ -541,8 +541,7 @@ namespace pio
 		Ref<RenderPass> ptsp = m_pointLightShadowPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
 		std::map<MeshKey, DrawCommand>& cmd = m_shadowPassDraws;
-
-		// [TODO]: Only the light that can cast shadow will update shadow map.
+		
 		Renderer::SubmitRC([env, distsp, ubs, cmd]() mutable
 			{
 				uint64_t start{ PROFILER_TIME };

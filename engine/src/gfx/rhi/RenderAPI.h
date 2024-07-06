@@ -54,9 +54,7 @@ namespace pio
 		virtual void renderDistantLightShadow(AssetHandle &meshHandle, uint32_t submeshIndex, bool isRigged, Ref<MaterialTable> &materialTable, Ref<RenderPass> &shadowPass,
 											  Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state) = 0;
 		virtual void renderPointLightShadow(AssetHandle &meshHandle, uint32_t submeshIndex, bool isRigged, Ref<MaterialTable> &materialTable, Ref<RenderPass> &shadowPass,
-									        Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state) = 0;
-
-		virtual void renderLightVolume(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &modelMat, Ref<UniformBufferSet> &uniformBufferSet, const RenderState &state) = 0;
+									        Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state) = 0;	
 
 		// ---------------------------- Deferring shading ----------------------------
 		virtual void renderSubmesh_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable,

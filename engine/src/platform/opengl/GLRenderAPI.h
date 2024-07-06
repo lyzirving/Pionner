@@ -35,7 +35,6 @@ namespace pio
 											  Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state) override;
 		virtual void renderPointLightShadow(AssetHandle &meshHandle, uint32_t submeshIndex, bool isRigged, Ref<MaterialTable> &materialTable, Ref<RenderPass> &shadowPass,
 											Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state) override;
-		virtual void renderLightVolume(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &modelMat, Ref<UniformBufferSet> &uniformBufferSet, const RenderState &state) override;
 
 		// ---------------------------- Deferred shading -------------------------------
 		virtual void renderSubmesh_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable,
@@ -75,12 +74,11 @@ namespace pio
 		void saveViewport(const Viewport &viewport);
 		Viewport restoreViewport();
 
-		void drawPBRSubMesh(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<RenderPass> &shadowPass,
-						    Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state);
+		// ----------------------------- Forward shading -------------------------------
 		void drawMatPreview(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, 
-							Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state);
-		void drawWireframe(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable,
-						   Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state);
+							Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state, 
+							DrawMode drawMode = DrawMode::Triangles);	
+		// -----------------------------------------------------------------------------
 
 		// ---------------------------- Deferred shading -------------------------------
 		void drawSubmesh_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable,
@@ -91,8 +89,9 @@ namespace pio
 		void compareAndUpdateRenderState(RenderState &old, const RenderState &input);
 
 		void onPreOutlining();
-		void onOutlining(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat);
-		void onOutlining_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat);
+
+	private:
+		static uint32_t GetDrawMode(DrawMode mode);
 
 	private:		
 		const RenderState m_defaultState{ Clear::Common(glm::vec4(0.f, 0.f, 0.f, 1.f)),

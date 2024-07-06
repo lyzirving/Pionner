@@ -153,24 +153,21 @@ namespace pio
 	void GLRenderAPI::renderSubmesh(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<RenderPass> &shadowPass, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
 	{
 		switch (state.Mode)
-		{
-			case RenderMode::PBR:
-			{
-				drawPBRSubMesh(meshHandle, submeshIndex, materialTable, shadowPass, uniformBufferSet, modelMat, state);
-				break;
-			}
+		{			
 			case RenderMode::MaterialPreview:
 			{
-				drawMatPreview(meshHandle, submeshIndex, materialTable, uniformBufferSet, modelMat, state);
+				drawMatPreview(meshHandle, submeshIndex, materialTable, uniformBufferSet, modelMat, state, DrawMode::Triangles);
 				break;
 			}
 			case RenderMode::Wireframe:
 			{
-				drawWireframe(meshHandle, submeshIndex, materialTable, uniformBufferSet, modelMat, state);
+				drawMatPreview(meshHandle, submeshIndex, materialTable, uniformBufferSet, modelMat, state, DrawMode::Line_Strip);
 				break;
 			}
+			case RenderMode::PBR:				
 			default:
-				LOGE("render mode[%u] has not been implemented", state.Mode);
+				LOGE("Err, RenderMode[%u] has not been implemented yet", state.Mode);
+				std::abort();
 				break;
 		}
 	}
@@ -252,8 +249,8 @@ namespace pio
 		Ref<MeshBase> meshBase = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
 		PIO_ASSERT_RETURN(meshBase.use_count() != 0, "renderPointLightShadow: fail to get mesh from[%u]", (uint32_t)meshHandle);	
 
-		auto shader = ShaderLibrary::Get()->find(ShaderType::PointLight_ShadowData);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "PointLight_ShadowData shader is invalid");
+		auto shader = ShaderLibrary::Get()->find(ShaderProgram::PtLightShadowMap);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "PtLightShadowMap shader is invalid");
 
 		Ref<MeshSource> meshSource = meshBase->getMeshSource();
 
@@ -312,46 +309,7 @@ namespace pio
 		if (boneTransformUB) boneTransformUB->unbind();
 		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
 		shader->bind(false);
-	}
-
-	void GLRenderAPI::renderLightVolume(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &modelMat, Ref<UniformBufferSet> &uniformBufferSet, const RenderState &state)
-	{
-		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-		PIO_ASSERT_RETURN(mesh.use_count() != 0, "renderLightVolume: fail to find mesh base from asset handle[%u]", (uint32_t)meshHandle);
-
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::LightVolume);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderLightVolume: fail to shader [LightVolume]");
-
-		Ref<MeshSource> meshSource = mesh->getMeshSource();
-		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
-		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
-
-		compareAndUpdateRenderState(m_globalState, state);
-
-		shader->bind(true);
-
-		Ref<UniformBuffer> cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
-		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-		cameraUB->bind();
-
-		shader->setMat4("u_modelMat", modelMat);
-
-		submesh.VertexArray->bind();
-		submesh.IndexBuffer->bind();
-
-		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("renderLightVolume fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		submesh.IndexBuffer->unbind();
-		submesh.VertexArray->unbind();
-
-		cameraUB->unbind();
-		shader->bind(false);
-	}
+	}	
 
 	void GLRenderAPI::renderSubmesh_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
 	{
@@ -366,6 +324,7 @@ namespace pio
 			case RenderMode::Wireframe:
 			default:
 				LOGE("render mode[%u] has not been implemented", state.Mode);
+				abort();
 				break;
 		}
 	}
@@ -1041,117 +1000,12 @@ namespace pio
 		return ret;
 	}
 
-	void GLRenderAPI::drawPBRSubMesh(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<RenderPass> &shadowPass, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
-	{
-		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-		PIO_ASSERT_RETURN(mesh.use_count() != 0, "drawPBRSubMesh: fail to find mesh base from asset handle[%u]", (uint32_t)meshHandle);
-
-		auto shader = ShaderLibrary::Get()->find(ShaderType::PBR_Mesh);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "PBR_Mesh shader is invalid");
-
-		auto &meshSource = mesh->getMeshSource();
-		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
-
-		auto boneTransformUB = meshSource->getBoneTransformUB();
-		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
-		auto pointLightDataUB = uniformBufferSet->get(PIO_UINT(UBBindings::PointLightData));
-
-		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
-
-		compareAndUpdateRenderState(m_globalState, state);
-		if (state.Selected) { onPreOutlining(); }
-		
-		shader->bind(true);
-
-		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-		UniformBuffer::Binding(shader, "PointLightData", pointLightDataUB->getBinding());
-
-		cameraUB->bind();
-		pointLightDataUB->bind();
-
-		bool useNormalMap{ false };
-		Ref<Material> material;
-		if (submesh.MaterialIndex != NullIndex)
-		{
-			Ref<MaterialAsset> mtAsset = AssetsManager::GetRuntimeAsset<MaterialAsset>((*materialTable)[submesh.MaterialIndex]);
-			if (mtAsset && (material = mtAsset->getMaterial()))
-			{
-				material->bind(shader);
-				useNormalMap = material->getBool(MaterialAttrs::MU_UseNormalMap);
-			}
-		}
-
-		TextureSampler depthSlot;
-		Ref<Texture> depthBuffer;
-		if (shadowPass)
-		{
-			depthBuffer = shadowPass->getSpecification().FrameBuffer->getDepthBuffer();
-			if (depthBuffer && shader->getAvailableSampler(depthSlot))
-			{
-				shader->setTextureSampler("u_pointLightDepthBuffer", depthSlot);
-				depthBuffer->active(PIO_UINT(depthSlot));
-				depthBuffer->bind();
-			}
-		}
-
-		Ref<BufferTexture> gpuAnimBuffer;
-		if (boneTransformUB)
-		{
-			const BoneTransformUD &boneUD = meshSource->getBoneTransformUD();
-			shader->setBool("u_bGpuAnimated", boneUD.GPUAnimated);
-			if (boneUD.GPUAnimated)
-			{
-				shader->setInt("u_boneNum", boneUD.GPUTransform.BoneNum);
-				shader->setInt("u_frameIndex", boneUD.GPUTransform.CurrentFrame);
-				TextureSampler sampler{ TextureSampler::Slot0 };
-				shader->getAvailableSampler(sampler);
-				gpuAnimBuffer = boneUD.GPUTransform.BufferTexture;
-				gpuAnimBuffer->active(PIO_UINT(sampler));
-				gpuAnimBuffer->bind();
-				shader->setInt("u_gpuAnimBuffer", PIO_INT(sampler));
-			}
-			else
-			{
-				UniformBuffer::Binding(shader, "BoneMatrices", boneTransformUB->getBinding());
-				boneTransformUB->setData(boneUD.Block.getBuffer()->as<void *>(), boneUD.Block.getByteUsed());
-				boneTransformUB->bind();
-			}
-		}
-
-		shader->setMat4("u_modelMat", modelMat);
-		shader->setBool("u_playAnimation", boneTransformUB.get());
-		shader->setBool("u_useNormalMap", useNormalMap);
-
-		submesh.VertexArray->bind();
-		submesh.IndexBuffer->bind();
-
-		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("drawPBRSubMesh fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		submesh.IndexBuffer->unbind();
-		submesh.VertexArray->unbind();
-
-		cameraUB->unbind();
-		if (material) material->unbind();
-		if (depthBuffer) depthBuffer->unbind();
-		if (boneTransformUB) { boneTransformUB->unbind(); }
-		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
-
-		shader->bind(false);
-
-		if (state.Selected) { onOutlining(meshHandle, submeshIndex, uniformBufferSet, modelMat); }
-	}
-
-	void GLRenderAPI::drawMatPreview(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
+	void GLRenderAPI::drawMatPreview(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state, DrawMode drawMode)
 	{
 		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
 		PIO_ASSERT_RETURN(mesh.use_count() != 0, "drawMatPreview: fail to find mesh base from asset handle[%u]", (uint32_t)meshHandle);
 
-		auto shader = ShaderLibrary::Get()->find(ShaderType::MaterialPreview);
+		auto shader = ShaderLibrary::Get()->find(ShaderProgram::MaterialPreview);
 		PIO_ASSERT_RETURN(shader.use_count() != 0, "MaterialPreview shader is invalid");
 
 		auto &meshSource = mesh->getMeshSource();
@@ -1210,15 +1064,41 @@ namespace pio
 		shader->setBool("u_playAnimation", boneTransformUB.get());
 		shader->setBool("u_useNormalMap", useNormalMap);
 
+		shader->setBool("u_bOutline", false);
+		shader->setBool("u_bStatic", mesh->is<StaticMesh>());
+		shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
+		shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
+
 		submesh.VertexArray->bind();
 		submesh.IndexBuffer->bind();
 
-		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GetDrawMode(drawMode), submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("drawMatPreview fail!!");
 
 #ifdef PIO_PROFILER_ON
 		glFinish();
 #endif // PIO_PROFILER_ON
+
+		if(state.Selected)
+		{
+			StencilTest stencil;
+			stencil.Enable = true;
+			stencil.setMask(0x00);
+			stencil.setFunc(StencilFunc{ FuncAttr::Notequal, 1, 0xff });
+			GLState::SetStencilTest(stencil);
+
+			shader->setBool("u_bOutline", true);
+
+			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+			GLHelper::CheckError("drawMatPreview outline fail!!");
+
+		#ifdef PIO_PROFILER_ON
+			glFinish();
+		#endif // PIO_PROFILER_ON
+
+			//restore stencil test
+			GLState::SetStencilTest(m_globalState.Stencil);
+		}
 
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();		
@@ -1226,93 +1106,7 @@ namespace pio
 		if (material) material->unbind();
 		if (boneTransformUB) boneTransformUB->unbind();
 		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
-		shader->bind(false);
-
-		if (state.Selected) { onOutlining(meshHandle, submeshIndex, uniformBufferSet, modelMat); } 
-	}
-
-	void GLRenderAPI::drawWireframe(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
-	{
-		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-		PIO_ASSERT_RETURN(mesh.use_count() != 0, "drawWireframe: fail to find mesh base from asset handle[%u]", (uint32_t)meshHandle);
-
-		auto shader = ShaderLibrary::Get()->find(ShaderType::Wireframe);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "Wireframe shader is invalid");
-
-		auto &meshSource = mesh->getMeshSource();
-		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
-
-		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
-		auto boneTransformUB = meshSource->getBoneTransformUB();
-
-		compareAndUpdateRenderState(m_globalState, state);
-
-		if (meshSource->is<Geometry>()) { meshSource->as<Geometry>()->flush(); }
-
-		shader->bind(true);
-
-		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-		cameraUB->bind();
-
-		bool useNormalMap{ false };
-		Ref<Material> material;
-		if (submesh.MaterialIndex != NullIndex)
-		{
-			Ref<MaterialAsset> mtAsset = AssetsManager::GetRuntimeAsset<MaterialAsset>((*materialTable)[submesh.MaterialIndex]);
-			if (mtAsset && (material = mtAsset->getMaterial()))
-			{
-				material->bind(shader);
-				useNormalMap = material->getBool(MaterialAttrs::MU_UseNormalMap);
-			}
-		}
-
-		Ref<BufferTexture> gpuAnimBuffer;
-		if (boneTransformUB)
-		{
-			const BoneTransformUD &boneUD = meshSource->getBoneTransformUD();
-			shader->setBool("u_bGpuAnimated", boneUD.GPUAnimated);
-			if (boneUD.GPUAnimated)
-			{
-				shader->setInt("u_boneNum", boneUD.GPUTransform.BoneNum);
-				shader->setInt("u_frameIndex", boneUD.GPUTransform.CurrentFrame);
-				TextureSampler sampler{ TextureSampler::Slot0 };
-				shader->getAvailableSampler(sampler);
-				gpuAnimBuffer = boneUD.GPUTransform.BufferTexture;
-				gpuAnimBuffer->active(PIO_UINT(sampler));
-				gpuAnimBuffer->bind();
-				shader->setInt("u_gpuAnimBuffer", PIO_INT(sampler));
-			}
-			else
-			{
-				UniformBuffer::Binding(shader, "BoneMatrices", boneTransformUB->getBinding());
-				boneTransformUB->setData(boneUD.Block.getBuffer()->as<void *>(), boneUD.Block.getByteUsed());
-				boneTransformUB->bind();
-			}
-		}
-
-		shader->setMat4("u_modelMat", modelMat);
-		shader->setBool("u_playAnimation", boneTransformUB.get());
-		shader->setBool("u_useNormalMap", useNormalMap);
-
-		submesh.VertexArray->bind();
-		submesh.IndexBuffer->bind();
-
-		glDrawElements(GL_LINE_STRIP, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("drawWireframe fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		submesh.IndexBuffer->unbind();
-		submesh.VertexArray->unbind();
-
-		cameraUB->unbind();
-		if (material) material->unbind();		
-		if (boneTransformUB) boneTransformUB->unbind();
-		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
-
-		shader->bind(false);
+		shader->bind(false);		
 	}
 
 	void GLRenderAPI::drawSubmesh_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<MaterialTable> &materialTable, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat, const RenderState &state)
@@ -1379,15 +1173,41 @@ namespace pio
 		shader->setBool("u_playAnimation", boneTransformUB.get());
 		shader->setBool("u_useNormalMap", useNormalMap);
 
+		shader->setBool("u_bOutline", false);
+		shader->setBool("u_bStatic", mesh->is<StaticMesh>());
+		shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
+		shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
+
 		submesh.VertexArray->bind();
 		submesh.IndexBuffer->bind();
 
 		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("drawSubmesh_deferred fail!!");
 
-#ifdef PIO_PROFILER_ON
+	#ifdef PIO_PROFILER_ON
 		glFinish();
-#endif // PIO_PROFILER_ON
+	#endif // PIO_PROFILER_ON
+
+		if(state.Selected)
+		{
+			StencilTest stencil;
+			stencil.Enable = true;
+			stencil.setMask(0x00);
+			stencil.setFunc(StencilFunc{ FuncAttr::Notequal, 1, 0xff });
+			GLState::SetStencilTest(stencil);
+
+			shader->setBool("u_bOutline", true);
+			
+			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+			GLHelper::CheckError("drawSubmesh_deferred outline fail!!");
+
+		#ifdef PIO_PROFILER_ON
+			glFinish();
+		#endif // PIO_PROFILER_ON
+
+			//restore stencil test
+			GLState::SetStencilTest(m_globalState.Stencil);
+		}
 
 		submesh.IndexBuffer->unbind();
 		submesh.VertexArray->unbind();
@@ -1397,9 +1217,7 @@ namespace pio
 		cameraUB->unbind();
 		if (boneTransformUB) boneTransformUB->unbind();
 		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
-		shader->bind(false);
-
-		if (state.Selected) { onOutlining_deferred(meshHandle, submeshIndex, uniformBufferSet, modelMat); }
+		shader->bind(false);		
 	}
 
 	void GLRenderAPI::submitRenderState(const RenderState &state)
@@ -1449,139 +1267,25 @@ namespace pio
 		GLState::SetStencilTest(stencil);
 	}
 
-	void GLRenderAPI::onOutlining(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat)
+	uint32_t GLRenderAPI::GetDrawMode(DrawMode mode)
 	{
-		// 2nd. render pass for outline, draw slightly scaled versions of the objects
-		// Now stencil buffer is filled with 1s. 
-		// The parts of the buffer that are 1 are not drawn, thus only drawing 
-		// the objects' size differences, making it look like borders.
-		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-		auto shader = ShaderLibrary::Get()->find(ShaderType::Outline);
-
-		auto &meshSource = mesh->getMeshSource();
-		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
-
-		auto boneTransformUB = meshSource->getBoneTransformUB();
-		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
-
-		StencilTest stencil;
-		stencil.Enable = true;
-		stencil.setMask(0x00);
-		stencil.setFunc(StencilFunc{ FuncAttr::Notequal, 1, 0xff });
-		GLState::SetStencilTest(stencil);
-
-		shader->bind(true);
-
-		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-		cameraUB->bind();
-
-		if (boneTransformUB)
+		switch(mode)
 		{
-			UniformBuffer::Binding(shader, "BoneMatrices", boneTransformUB->getBinding());
-			const BoneTransformUD &boneUD = meshSource->getBoneTransformUD();
-			boneTransformUB->setData(boneUD.Block.getBuffer()->as<void *>(), boneUD.Block.getByteUsed());
-			boneTransformUB->bind();
+			case DrawMode::Lines:
+				return GL_LINES;
+			case DrawMode::Line_Strip:
+				return GL_LINE_STRIP;
+			case DrawMode::Line_Loop:
+				return GL_LINE_LOOP;
+			case DrawMode::Triangles:
+				return GL_TRIANGLES;
+			case DrawMode::Triangle_Strip:
+				return GL_TRIANGLE_STRIP;
+			case DrawMode::Triangle_Fan:
+				return GL_TRIANGLE_FAN;
+			default:
+				LOGE("Err! DrawMode[%u] has not been implemented yet", mode);
+				std::abort();
 		}
-
-		shader->setMat4("u_modelMat", modelMat);
-		shader->setBool("u_playAnimation", boneTransformUB.get());
-		shader->setBool("u_bStatic", mesh->is<StaticMesh>());
-		shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
-		shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
-
-		submesh.VertexArray->bind();
-		submesh.IndexBuffer->bind();
-
-		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("onOutlining fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		submesh.IndexBuffer->unbind();
-		submesh.VertexArray->unbind();
-
-		cameraUB->unbind();
-		if (boneTransformUB) boneTransformUB->unbind();
-
-		shader->bind(false);
-
-		//restore stencil test
-		GLState::SetStencilTest(m_globalState.Stencil);
-	}
-
-	void GLRenderAPI::onOutlining_deferred(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &modelMat) 
-	{
-		Ref<MeshBase> mesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-		auto shader = ShaderLibrary::Get()->find(ShaderType::Outline_Deferred);
-
-		auto &meshSource = mesh->getMeshSource();
-		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
-
-		auto boneTransformUB = meshSource->getBoneTransformUB();
-		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
-
-		StencilTest stencil;
-		stencil.Enable = true;
-		stencil.setMask(0x00);
-		stencil.setFunc(StencilFunc{ FuncAttr::Notequal, 1, 0xff });
-		GLState::SetStencilTest(stencil);
-
-		shader->bind(true);
-
-		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-		cameraUB->bind();
-
-		Ref<BufferTexture> gpuAnimBuffer;
-		if (boneTransformUB)
-		{
-			const BoneTransformUD &boneUD = meshSource->getBoneTransformUD();
-			shader->setBool("u_bGpuAnimated", boneUD.GPUAnimated);
-			if (boneUD.GPUAnimated)
-			{
-				shader->setInt("u_boneNum", boneUD.GPUTransform.BoneNum);
-				shader->setInt("u_frameIndex", boneUD.GPUTransform.CurrentFrame);
-				TextureSampler sampler{ TextureSampler::Slot0 };
-				shader->getAvailableSampler(sampler);
-				gpuAnimBuffer = boneUD.GPUTransform.BufferTexture;
-				gpuAnimBuffer->active(PIO_UINT(sampler));
-				gpuAnimBuffer->bind();
-				shader->setInt("u_gpuAnimBuffer", PIO_INT(sampler));
-			}
-			else
-			{
-				UniformBuffer::Binding(shader, "BoneMatrices", boneTransformUB->getBinding());
-				boneTransformUB->setData(boneUD.Block.getBuffer()->as<void *>(), boneUD.Block.getByteUsed());
-				boneTransformUB->bind();
-			}
-		}
-
-		shader->setMat4("u_modelMat", modelMat);
-		shader->setBool("u_playAnimation", boneTransformUB.get());
-		shader->setBool("u_bStatic", mesh->is<StaticMesh>());
-		shader->setFloat("u_outlineScale", Renderer::GetConfig().Debugger.OutlineScale);
-		shader->setVec4("u_outlineColor", ColorSpace::sRGBToLinearRGB(Renderer::GetConfig().Debugger.OutlineColor));
-
-		submesh.VertexArray->bind();
-		submesh.IndexBuffer->bind();
-
-		glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("onOutlining_deferred fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		submesh.IndexBuffer->unbind();
-		submesh.VertexArray->unbind();
-
-		cameraUB->unbind();
-		if (boneTransformUB) boneTransformUB->unbind();
-		if (gpuAnimBuffer) gpuAnimBuffer->unbind();
-		shader->bind(false);
-
-		//restore stencil test
-		GLState::SetStencilTest(m_globalState.Stencil);
 	}
 }
