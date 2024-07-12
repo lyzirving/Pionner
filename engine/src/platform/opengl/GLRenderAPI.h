@@ -53,9 +53,8 @@ namespace pio
 		// ------------------------------- Tools -------------------------------------
 		virtual void renderSkybox(AssetHandle &meshHandle, uint32_t submeshIndex, Ref<UniformBufferSet> &uniformBufferSet, Ref<CubeTexture> &cubeTexture, const RenderState &state) override;
 		virtual void renderHDRToEnvMap(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment envMapAttachment, Ref<Texture2D> &HDRTexture, Ref<FrameBuffer> &fbo) override;
-		virtual void renderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo) override;
-		virtual void renderPrefilterConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment prefilterMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo) override;
-		virtual void renderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo) override;		
+		virtual void renderDiffuseCnvl(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo) override;		
+		virtual void renderBrdfCnvl(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo) override;		
 		// ---------------------------------------------------------------------------
 
 		virtual void beginRenderPass(Ref<RenderPass> &pass) override;

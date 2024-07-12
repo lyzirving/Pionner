@@ -39,8 +39,7 @@ namespace pio
 		inline Ref<Texture2D> getCompositeTexture() { return m_compositeTexture; }
 
 	private:				
-		void createShadowPass(uint32_t w, uint32_t h);
-		void createForwardPass(uint32_t w, uint32_t h);
+		void createShadowPass(uint32_t w, uint32_t h);		
 		void createDeferredPass(uint32_t w, uint32_t h);
 		void createGBufferPass(uint32_t w, uint32_t h);
 		void createLightPass(uint32_t w, uint32_t h);
@@ -70,8 +69,7 @@ namespace pio
 		Ref<RenderPass> m_distantLightShadowPass;
 		Ref<RenderPass> m_pointLightShadowPass;
 
-		Ref<Texture2D> m_compositeTexture;
-		Ref<RenderPass> m_forwardPass;
+		Ref<Texture2D> m_compositeTexture;		
 		// -------------- deferred shading -----------------
 		Ref<RenderPass> m_GBufferPass;
 		Ref<RenderPass> m_lightPass;

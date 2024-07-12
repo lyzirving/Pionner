@@ -1,7 +1,28 @@
-#version 330 core
+/*// -- Pionner Engine IBL Diffuse Convolution Shader --
+// ------------------------------------------------------------
+*/
+#version 430 core
+#pragma stage : vert
 precision mediump float;
 
-const float PI = 3.14159265359;
+layout (location = 0) in vec3 a_pos;
+
+uniform mat4 u_viewMat;
+uniform mat4 u_prjMat;
+
+out vec3 v_localPos;
+
+void main()
+{
+    v_localPos  = a_pos;
+    gl_Position = u_prjMat * u_viewMat * vec4(a_pos, 1.0);
+}
+
+#version 430 core 
+#pragma stage : frag 
+precision mediump float;
+
+#include <Common.glslh>
 
 uniform samplerCube u_envMap;
 
@@ -36,4 +57,3 @@ void main()
 	irradiance = PI * irradiance * (1.0 / float(nrSamples));
 	o_fragColor = vec4(irradiance, 1.0);
 }
-

@@ -1,4 +1,4 @@
-/*// -- Pionner Engine sky box shader --
+/*// -- Pionner Engine Sky Box Shader --
 // -------------------------------------
 */
 #version 430 core

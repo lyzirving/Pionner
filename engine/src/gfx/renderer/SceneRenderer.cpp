@@ -75,8 +75,7 @@ namespace pio
 		m_colorBufferSize.x = Tiering::GetColorResolution(Tiering::ColorResolutionSetting::Low);
 		m_colorBufferSize.y = float(m_colorBufferSize.x) / aspectRatio;
 
-		createShadowPass(m_shadowBufferSize.x, m_shadowBufferSize.y);
-		createForwardPass(m_colorBufferSize.x, m_colorBufferSize.y);
+		createShadowPass(m_shadowBufferSize.x, m_shadowBufferSize.y);		
 		createDeferredPass(m_colorBufferSize.x, m_colorBufferSize.y);
 		createScreenPass();
 
@@ -216,53 +215,7 @@ namespace pio
 			dc.Texture = texture;
 			dc.State = state;
 		}
-	}
-
-	void SceneRenderer::createForwardPass(uint32_t w, uint32_t h)
-	{
-		TextureSpecification colorBufSpec;
-		colorBufSpec.Name = "ColorBuffer";
-		colorBufSpec.Format = ImageInternalFormat::RGBA16F;
-		colorBufSpec.Width = w;
-		colorBufSpec.Height = h;
-		colorBufSpec.MinFilter = TextureFilterMin::Nearest;
-		colorBufSpec.MaxFilter = TextureFilterMag::Nearest;
-		colorBufSpec.WrapS = TextureWrap::ClampEdge;
-		colorBufSpec.WrapT = TextureWrap::ClampEdge;
-		colorBufSpec.WrapR = TextureWrap::ClampEdge;
-		colorBufSpec.AType = AssetType::Texture2D;
-
-		// depth + stencil
-		TextureSpecification depthBufferSpec;
-		depthBufferSpec.Name = "DepthStencilBuffer";
-		depthBufferSpec.Format = ImageInternalFormat::DEPTH24STENCIL8;
-		depthBufferSpec.Width = w;
-		depthBufferSpec.Height = h;
-		depthBufferSpec.AType = AssetType::RenderBuffer;
-
-		FrameBufferSpecification fpFboSpec;
-		fpFboSpec.Name = "ForwardPassFrameBuffer";
-		fpFboSpec.Width = w;
-		fpFboSpec.Height = h;
-		fpFboSpec.FrameBufferUsage = FrameBufferUsage::ColorBuffer;
-		fpFboSpec.DepthBufferSpec = depthBufferSpec;
-		fpFboSpec.DepthAttachment = DepthAttachment::DepthStencil;
-		fpFboSpec.ColorBufferSpec.push_back(colorBufSpec);
-		Ref<FrameBuffer> frameBuffer = FrameBuffer::Create(fpFboSpec);
-
-		RenderPassSpecification fpSpec;
-		fpSpec.Name = "ForwardPass";
-		fpSpec.FrameBuffer = frameBuffer;
-		m_forwardPass = RenderPass::Create(fpSpec);
-
-		RenderState state;
-		state.Blend = Blend::Disable();
-		state.Cull = CullFace::Common();
-		state.DepthTest = DepthTest::Common();
-		state.Clear = Clear::Common(Renderer::TRANSPARENT_COLOR);
-		state.Stencil.Enable = true;
-		m_forwardPass->setState(state);
-	}
+	}	
 
 	void SceneRenderer::createShadowPass(uint32_t w, uint32_t h)
 	{
@@ -528,7 +481,7 @@ namespace pio
 		}
 		default:
 			LOGE("render strategy[%u] is not implemented", strategy);
-			assert(0);
+			abort();
 			break;
 		}
 		onScreenRendering(scene);

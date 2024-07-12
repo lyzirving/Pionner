@@ -662,8 +662,8 @@ namespace pio
 		Ref<MeshBase> cubeMesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
 		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderHDRToEnvMap: Cube Mesh is invalid");
 
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Equirectangular_To_Cube);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "Equirectangular_To_Cube shader is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::IBL_EquirecToCube);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "IBL_EquirecToCube shader is invalid");
 
 		PIO_ASSERT_RETURN(HDRTexture.use_count() != 0, "renderHDRToEnvMap: HDRTexture is invalid");
 		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderHDRToEnvMap: fbo is invalid");
@@ -702,23 +702,23 @@ namespace pio
 		shader->bind(false);
 	}
 
-	void GLRenderAPI::renderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
+	void GLRenderAPI::renderDiffuseCnvl(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
 	{
 		Ref<MeshBase> cubeMesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderDiffuseConvolution: Cube Mesh is invalid");
+		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderDiffuseCnvl: Cube Mesh is invalid");
 
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Diffuse_Convolution);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "Diffuse_Convolution shader is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::IBL_DiffuseCnvl);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "IBL_DiffuseCnvl shader is invalid");
 
-		PIO_ASSERT_RETURN(envMap.use_count() != 0, "renderDiffuseConvolution: envMap is invalid");
-		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderDiffuseConvolution: fbo is invalid");
+		PIO_ASSERT_RETURN(envMap.use_count() != 0, "renderDiffuseCnvl: envMap is invalid");
+		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderDiffuseCnvl: fbo is invalid");
 
 		Ref<Texture2D> diffuseMap = fbo->getColorBuffer(diffuseMapAttachment);
-		PIO_ASSERT_RETURN(diffuseMap.use_count() != 0, "renderDiffuseConvolution: prefilter map is invalid");
+		PIO_ASSERT_RETURN(diffuseMap.use_count() != 0, "renderDiffuseCnvl: prefilter map is invalid");
 		Ref<Texture> depthBuf = fbo->getDepthBuffer();
-		PIO_ASSERT_RETURN(depthBuf.use_count() != 0, "renderDiffuseConvolution: depth buffer is invalid");
+		PIO_ASSERT_RETURN(depthBuf.use_count() != 0, "renderDiffuseCnvl: depth buffer is invalid");
 		RenderBuffer *renderBuf = depthBuf->as<RenderBuffer>();
-		PIO_ASSERT_RETURN(renderBuf != nullptr, "renderDiffuseConvolution: render buffer is invalid");
+		PIO_ASSERT_RETURN(renderBuf != nullptr, "renderDiffuseCnvl: render buffer is invalid");
 		const uint32_t width  = diffuseMap->getWidth();
 		const uint32_t height = diffuseMap->getHeight();
 
@@ -748,7 +748,7 @@ namespace pio
 			submesh.IndexBuffer->bind();
 
 			glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-			if (GLHelper::CheckError("renderDiffuseConvolution fail at light dir[%u]!!", i))
+			if (GLHelper::CheckError("renderDiffuseCnvl fail at light dir[%u]!!", i))
 				LOGD("succeed to render diffuse convolution to cube face[%s]", LightDirStr(LightDir(i)));
 #ifdef PIO_PROFILER_ON
 			glFinish();
@@ -764,91 +764,15 @@ namespace pio
 		m_viewport = restoreViewport();
 	}
 
-	void GLRenderAPI::renderPrefilterConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment prefilterMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
-	{
-		Ref<MeshBase> cubeMesh = AssetsManager::GetRuntimeAsset<MeshBase>(meshHandle);
-		PIO_ASSERT_RETURN(cubeMesh.use_count() != 0, "renderPrefilterConvolution: Cube Mesh is invalid");
-
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::PrefilterMap_Convolution);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "PrefilterMap_Convolution shader is invalid");
-
-		PIO_ASSERT_RETURN(envMap.use_count() != 0, "renderPrefilterConvolution: envMap is invalid");
-		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderPrefilterConvolution: fbo is invalid");
-		
-		Ref<Texture2D> prefilterMap = fbo->getColorBuffer(prefilterMapAttachment);
-		PIO_ASSERT_RETURN(prefilterMap.use_count() != 0, "renderPrefilterConvolution: prefilter map is invalid");
-		Ref<Texture> depthBuf = fbo->getDepthBuffer();
-		PIO_ASSERT_RETURN(depthBuf.use_count() != 0, "renderPrefilterConvolution: depth buffer is invalid");
-		RenderBuffer *renderBuf = depthBuf->as<RenderBuffer>();
-		PIO_ASSERT_RETURN(renderBuf != nullptr, "renderPrefilterConvolution: render buffer is invalid");
-
-		const uint32_t mipLevel = prefilterMap->getMipLevelCount();
-		const uint32_t texWidth = prefilterMap->getWidth();
-		const uint32_t texHeight = prefilterMap->getHeight();
-
-		Ref<MeshSource> meshSource = cubeMesh->getMeshSource();
-		const Submesh &submesh = meshSource->getSubmeshes()[submeshIndex];
-
-		saveViewport(m_viewport);
-
-		shader->bind(true);
-
-		shader->setMat4("u_prjMat", prjMat);
-
-		envMap->active(PIO_UINT(TextureSampler::Slot0));
-		envMap->bind();
-		shader->setTextureSampler("u_envMap", TextureSampler::Slot0);		
-
-		for (uint32_t mip = 0; mip < mipLevel; ++mip)
-		{
-			uint32_t mipWidth  = static_cast<uint32_t>(texWidth * std::pow(0.5, mip));
-			uint32_t mipHeight = static_cast<uint32_t>(texHeight * std::pow(0.5, mip));
-			commitViewport(0, 0, mipWidth, mipHeight);
-			renderBuf->bind(mipWidth, mipHeight);
-
-			float roughness = float(mip) / float(mipLevel - 1);
-			shader->setFloat("u_roughness", roughness);			
-
-			for (uint8_t i = 0; i < LightDir_Num; i++)
-			{				
-				shader->setMat4("u_viewMat", viewMat[i]);
-				fbo->bindTarget(prefilterMapAttachment, LightDir(i), mip);
-				GLState::SetClear(Clear::Common());
-
-				submesh.VertexArray->bind();
-				submesh.IndexBuffer->bind();
-
-				glDrawElements(GL_TRIANGLES, submesh.IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-				if (GLHelper::CheckError("renderPrefilterConvolution fail at light dir[%u]!", i))
-					LOGD("succeed to render prefiler map convolution, cube[%s], mip[%u]", LightDirStr(LightDir(i)), mip);
-
-#ifdef PIO_PROFILER_ON
-				glFinish();
-#endif // PIO_PROFILER_ON
-
-				submesh.VertexArray->unbind();
-				submesh.IndexBuffer->unbind();
-			}			
-		}
-
-		envMap->unbind();
-		shader->bind(false);
-		m_viewport = restoreViewport();
-	}
-
-	void GLRenderAPI::renderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo)
+	void GLRenderAPI::renderBrdfCnvl(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo)
 	{
 		Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(quadMesh);
-		PIO_ASSERT_RETURN(mesh.use_count() != 0, "renderBrdfConvolution: Quad Mesh is invalid");
+		PIO_ASSERT_RETURN(mesh.use_count() != 0, "renderBrdfCnvl: Quad Mesh is invalid");
 
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Brdf_Convolution);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderBrdfConvolution: Brdf_Convolution shader is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::IBL_BrdfConvl);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderBrdfCnvl: IBL_BrdfConvl shader is invalid");
 
-		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderBrdfConvolution: fbo is invalid");
-		/*Ref<Texture> depthBuf = fbo->getDepthBuffer();
-		PIO_ASSERT_RETURN(depthBuf.use_count() != 0, "renderBrdfConvolution: depth buf is invalid");
-		RenderBuffer *buf = depthBuf->as<RenderBuffer>();
-		PIO_ASSERT_RETURN(buf != nullptr, "renderBrdfConvolution: render buf is invalid");*/
+		PIO_ASSERT_RETURN(fbo.use_count() != 0, "renderBrdfCnvl: fbo is invalid");
 
 		shader->bind(true);
 
@@ -856,7 +780,7 @@ namespace pio
 		mesh->IndexBuffer->bind();
 
 		glDrawElements(GL_TRIANGLES, mesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		if (GLHelper::CheckError("renderBrdfConvolution fail!!"))
+		if (GLHelper::CheckError("renderBrdfCnvl fail!!"))
 			LOGD("succeed to create brdf lut texture");
 
 #ifdef PIO_PROFILER_ON

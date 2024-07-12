@@ -323,15 +323,15 @@ namespace pio
 		Renderer::EndRenderPass(m_hdrPass);
 
 		Renderer::BeginRenderPass(m_diffuseConvPass);
-		Renderer::RenderDiffuseConvolution(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_diffuseMapAttachment, envMap, m_diffuseConvPass->getFramebuffer());
+		Renderer::RenderDiffuseCnvl(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_diffuseMapAttachment, envMap, m_diffuseConvPass->getFramebuffer());
 		Renderer::EndRenderPass(m_diffuseConvPass);
 
 		Renderer::BeginRenderPass(m_prefilterMapConvPass);
-		Renderer::RenderDiffuseConvolution(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_prefilterMapAttachment, envMap, m_prefilterMapConvPass->getFramebuffer());
+		Renderer::RenderDiffuseCnvl(m_cubeMesh, 0, m_prjMat, m_viewMat, RenderState{}, m_prefilterMapAttachment, envMap, m_prefilterMapConvPass->getFramebuffer());
 		Renderer::EndRenderPass(m_prefilterMapConvPass);
 
 		Renderer::BeginRenderPass(m_brdfConvPass);		
-		Renderer::RenderBrdfConvolution(m_quad, RenderState{}, m_brdfConvPass->getFramebuffer());
+		Renderer::RenderBrdfCnvl(m_quad, RenderState{}, m_brdfConvPass->getFramebuffer());
 		Renderer::EndRenderPass(m_brdfConvPass);
 	}
 }

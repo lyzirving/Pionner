@@ -7,13 +7,13 @@ namespace pio
 {
 	enum class ShaderType : uint8_t
 	{
-		LineSegment, Color_Line, TextureQuad,		
-		Equirectangular_To_Cube, Diffuse_Convolution, PrefilterMap_Convolution, Brdf_Convolution, Num
+		LineSegment, Color_Line, TextureQuad, Num
 	};
 
 	enum class ShaderProgram : uint8_t
 	{
-		MaterialPreview, GeometryPass, LightingPass, Sprite, SkyBox, DistLightShadowMap, PtLightShadowMap, Num
+		MaterialPreview, GeometryPass, LightingPass, Sprite, SkyBox, DistLightShadowMap, PtLightShadowMap, 
+		IBL_EquirecToCube, IBL_DiffuseCnvl, IBL_BrdfConvl, Num
 	};
 
 	class ShaderLibrary

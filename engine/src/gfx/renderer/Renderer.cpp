@@ -208,19 +208,14 @@ namespace pio
 		s_API->renderHDRToEnvMap(meshHandle, submeshIndex, prjMat, viewMat, state, envMapAttachment, HDRTexture, fbo);
 	}
 
-	void Renderer::RenderDiffuseConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
+	void Renderer::RenderDiffuseCnvl(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment diffuseAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
 	{
-		s_API->renderDiffuseConvolution(meshHandle, submeshIndex, prjMat, viewMat, state, diffuseAttachment, envMap, fbo);
-	}
+		s_API->renderDiffuseCnvl(meshHandle, submeshIndex, prjMat, viewMat, state, diffuseAttachment, envMap, fbo);
+	}	
 
-	void Renderer::RenderPrefilterMapConvolution(AssetHandle &meshHandle, uint32_t submeshIndex, const glm::mat4 &prjMat, const glm::mat4 viewMat[LightDir_Num], const RenderState &state, ColorAttachment prefilterMapAttachment, Ref<CubeTexture> &envMap, Ref<FrameBuffer> &fbo)
+	void Renderer::RenderBrdfCnvl(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo)
 	{
-		s_API->renderPrefilterConvolution(meshHandle, submeshIndex, prjMat, viewMat, state, prefilterMapAttachment, envMap, fbo);
-	}
-
-	void Renderer::RenderBrdfConvolution(AssetHandle &quadMesh, const RenderState &state, Ref<FrameBuffer> &fbo)
-	{
-		s_API->renderBrdfConvolution(quadMesh, state, fbo);
+		s_API->renderBrdfCnvl(quadMesh, state, fbo);
 	}
 
 	void Renderer::BeginRenderPass(Ref<RenderPass> &pass)

@@ -30,6 +30,9 @@ namespace pio
 		p->add(ShaderProgram::SkyBox, ShaderCompiler::Compile("shader/SkyBox.glsl"));
 		p->add(ShaderProgram::DistLightShadowMap, ShaderCompiler::Compile("shader/DistLightShadowMap.glsl"));
 		p->add(ShaderProgram::PtLightShadowMap, ShaderCompiler::Compile("shader/PtLightShadowMap.glsl"));
+		p->add(ShaderProgram::IBL_EquirecToCube, ShaderCompiler::Compile("shader/IBL_EquirectangularToCube.glsl"));
+		p->add(ShaderProgram::IBL_DiffuseCnvl, ShaderCompiler::Compile("shader/IBL_DiffuseCnvl.glsl"));		
+		p->add(ShaderProgram::IBL_BrdfConvl, ShaderCompiler::Compile("shader/IBL_BrdfCnvl.glsl"));
 		auto end = TimeUtil::CurrentTimeMs();
 		LOGD("take [%lu]ms time", (end - start));
 	}
@@ -66,26 +69,6 @@ namespace pio
 			case ShaderType::TextureQuad:
 			{
 				m_shaders[index] = Shader::Create("TextureQuad", "quad2d", "quad2d");
-				return m_shaders[index];
-			}
-			case ShaderType::Equirectangular_To_Cube:
-			{
-				m_shaders[index] = Shader::Create("equirectangular_to_cube", "cube", "equirectangular_to_cube");
-				return m_shaders[index];
-			}
-			case ShaderType::Diffuse_Convolution:
-			{
-				m_shaders[index] = Shader::Create("diffuse_convolution", "cube", "diffuse_convolution");
-				return m_shaders[index];
-			}
-			case ShaderType::PrefilterMap_Convolution:
-			{
-				m_shaders[index] = Shader::Create("prefilter_map_convolution", "cube", "prefilter_map_convolution");
-				return m_shaders[index];
-			}
-			case ShaderType::Brdf_Convolution:
-			{
-				m_shaders[index] = Shader::Create("brdf_convolution", "quad2d", "brdf_convolution");
 				return m_shaders[index];
 			}
 			default:
