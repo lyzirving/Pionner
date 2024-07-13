@@ -31,9 +31,6 @@ namespace pio
 
 		virtual HitShapeType getShapeType() const { return HitShapeType::None; }
 
-		const Ref<LineMesh> &getOutline() { return m_outline; }
-		const Ref<LineMesh> &getOutline() const { return m_outline; }
-
 		template<class T>
 		bool is() { return false; }
 
@@ -42,7 +39,6 @@ namespace pio
 
 	protected:
 		HitShapeType  m_type{ HitShapeType::None };
-		Ref<LineMesh> m_outline;
 	};
 }
 

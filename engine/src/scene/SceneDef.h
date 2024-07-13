@@ -54,15 +54,6 @@ namespace pio
 			: V0(v0), V1(v1), V2(v2) {}
 	};
 
-	struct LineVertex
-	{
-		glm::vec3 Position{ 0.f };
-		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
-
-		LineVertex() {}
-		LineVertex(const glm::vec3 &pos, const glm::vec4 &color) : Position(pos), Color(color) {}
-	};
-
 	struct QuadVertex
 	{
 		glm::vec3 Position{ 0.f };

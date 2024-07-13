@@ -14,13 +14,6 @@ namespace pio
 		Geometry2D::clear();
 	}
 
-	void LineMesh::clear()
-	{
-		Vertex.clear();
-		Indices.clear();
-		Geometry2D::clear();
-	}
-
 	void QuadMesh::clear()
 	{
 		Vertex.clear();
@@ -30,9 +23,6 @@ namespace pio
 
 	template<>
 	bool Asset::is<LineSegment>() const { return this->getAssetType() == AssetType::LineSegment; }
-
-	template<>
-	bool Asset::is<LineMesh>() const { return this->getAssetType() == AssetType::LineMesh; }
 
 	template<>
 	bool Asset::is<QuadMesh>() const { return this->getAssetType() == AssetType::QuadMesh; }	

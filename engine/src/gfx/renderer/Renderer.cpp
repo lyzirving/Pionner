@@ -178,22 +178,17 @@ namespace pio
 		s_API->renderLightEffect_Deffered(meshHandle, skybox, ubs, GBufferPass, shadowPass, ptShadowPass, state);
 	}
 
-	void Renderer::RenderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
+	void Renderer::RenderLineSegment(const AssetHandle &h, const glm::vec4 &color, const Ref<UniformBufferSet> &ubs, const glm::mat4 &trans, const RenderState &state)
 	{
-		s_API->renderLineSegment(meshHandle, uniformBufferSet, trans, state);
-	}
-
-	void Renderer::RenderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
-	{
-		s_API->renderLine(meshHandle, uniformBufferSet, trans, state);
-	}
-
-	void Renderer::RenderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state)
-	{
-		s_API->renderTextureQuad2D(meshHandle, texture, state);
-	}
+		s_API->renderLineSegment(h, color, ubs, trans, state);
+	}	
 
 	void Renderer::RenderSprites(const std::vector<SpriteCommand> &cmds)
+	{
+		s_API->renderSprites(cmds);
+	}
+
+	void Renderer::RenderSprites(const std::vector<TextureCmd> &cmds)
 	{
 		s_API->renderSprites(cmds);
 	}

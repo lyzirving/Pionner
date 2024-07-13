@@ -5,15 +5,12 @@
 
 namespace pio
 {
-	enum class ShaderType : uint8_t
-	{
-		LineSegment, Color_Line, TextureQuad, Num
-	};
-
 	enum class ShaderProgram : uint8_t
 	{
-		MaterialPreview, GeometryPass, LightingPass, Sprite, SkyBox, DistLightShadowMap, PtLightShadowMap, 
-		IBL_EquirecToCube, IBL_DiffuseCnvl, IBL_BrdfConvl, Num
+		MaterialPreview, GeometryPass, LightingPass, Sprite, SkyBox, 
+		DistLightShadowMap, PtLightShadowMap, 
+		IBL_EquirecToCube, IBL_DiffuseCnvl, IBL_BrdfConvl,
+		Line, Num
 	};
 
 	class ShaderLibrary
@@ -23,8 +20,6 @@ namespace pio
 		static const char* ToStr(ShaderProgram type);
 
 	public:
-		Ref<Shader> find(ShaderType type);
-		
 		void add(ShaderProgram type, const Ref<Shader>& shader) { m_shaderPrograms[PIO_UINT8(type)] = shader; }
 		Ref<Shader> find(ShaderProgram type)
 		{
@@ -35,7 +30,6 @@ namespace pio
 		void release();
 
 	private:
-		Ref<Shader> m_shaders[PIO_UINT(ShaderType::Num)];
 		Ref<Shader> m_shaderPrograms[PIO_UINT(ShaderProgram::Num)];
 	};
 }

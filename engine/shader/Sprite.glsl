@@ -1,4 +1,4 @@
-/*// -- Pionner Engine sprite shader --
+/*// -- Pionner Engine Sprite Shader --
 // -------------------------------------
 */
 #version 430 core

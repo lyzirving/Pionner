@@ -5,8 +5,6 @@
 
 namespace pio
 {
-	class LineMesh;
-
 	/*
 	 * Point layout of a AABB
 	 *       v7 ----------- v6
@@ -57,7 +55,6 @@ namespace pio
 
 	private:
 		glm::vec3     m_points[8]{ glm::vec3(0.f) };
-		Ref<LineMesh> m_outline;
 	};
 }
 

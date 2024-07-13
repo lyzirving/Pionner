@@ -241,7 +241,7 @@ namespace pio
 
 	UiDistantLight::UiDistantLight(float radius, float lightLen, const glm::vec4 &color) : Color(color)
 	{
-		Ref<LineMesh> lightMesh = CreateLightMesh(radius, lightLen, color);
+		auto lightMesh = CreateLightMesh(radius, lightLen);
 
 		Mesh = Registry::Get()->create<C3dUIComponent>();
 		C3dUIComponent &uiComp = Mesh->getComponent<C3dUIComponent>();
@@ -254,10 +254,10 @@ namespace pio
 		uiComp.State.DepthTest = DepthTest::Always();
 	}
 
-	Ref<LineMesh> UiDistantLight::CreateLightMesh(float radius, float lightLen, const glm::vec4 &color)
+	Ref<LineSegment> UiDistantLight::CreateLightMesh(float radius, float lightLen)
 	{
-		auto lineMesh = AssetsManager::CreateRuntimeAssets<LineMesh>("DistantLight");
-		std::vector<LineVertex> &vertexArray = lineMesh->Vertex;
+		auto lineMesh = AssetsManager::CreateRuntimeAssets<LineSegment>("DistantLight");
+		std::vector<SimpleVertex> &vertexArray = lineMesh->Vertex;
 		std::vector<uint32_t> &indice = lineMesh->Indices;
 
 		const uint32_t itr = 8;
@@ -265,23 +265,23 @@ namespace pio
 		float angle{ 0.f };
 
 		vertexArray.reserve(17);
-		vertexArray.emplace_back(glm::vec3(0.f), color);
+		vertexArray.emplace_back(glm::vec3(0.f), glm::vec2(0.f));
 
-		for (uint32_t i = 0; i < itr; i++)
+		for(uint32_t i = 0; i < itr; i++)
 		{
 			angle = glm::radians(i * span);
-			vertexArray.emplace_back(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), 0.f), color);
-			vertexArray.emplace_back(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), lightLen), color);
+			vertexArray.emplace_back(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), 0.f), glm::vec2(0.f));
+			vertexArray.emplace_back(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), lightLen), glm::vec2(0.f));
 		}
 
-		for (uint32_t i = 0; i < itr; i++)
+		for(uint32_t i = 0; i < itr; i++)
 		{
 			// radial edge
 			indice.push_back(0);
 			indice.push_back(2 * i + 1);
 
 			// subtense
-			if (i == itr - 1)
+			if(i == itr - 1)
 			{
 				indice.push_back(2 * i + 1);
 				indice.push_back(1);
@@ -297,8 +297,8 @@ namespace pio
 			indice.push_back(2 * i + 2);
 		}
 
-		lineMesh->VertexBuffer = VertexBuffer::Create(vertexArray.data(), vertexArray.size() * sizeof(LineVertex));
-		lineMesh->VertexBuffer->setLayout(VertexBuffer::To<LineVertex>());
+		lineMesh->VertexBuffer = VertexBuffer::Create(vertexArray.data(), vertexArray.size() * sizeof(SimpleVertex));
+		lineMesh->VertexBuffer->setLayout(VertexBuffer::To<SimpleVertex>());
 
 		lineMesh->IndexBuffer = IndexBuffer::Create(indice.data(), indice.size() * sizeof(uint32_t), indice.size());
 
@@ -312,7 +312,7 @@ namespace pio
 
 	UiPointLight::UiPointLight(float radius, const glm::vec4 &color) : Radius(radius), Color(color)
 	{
-		Ref<LineMesh> lightMesh = CreatePointLightMesh(radius, color);
+		Ref<LineSegment> lightMesh = CreatePointLightMesh(radius);
 
 		Mesh = Registry::Get()->create<C3dUIComponent>();
 		C3dUIComponent &uiComp = Mesh->getComponent<C3dUIComponent>();
@@ -330,8 +330,8 @@ namespace pio
 		if (!Math::Equal(r, Radius))
 		{
 			Radius = r;
-			auto lineMesh = AssetsManager::GetRuntimeAsset<LineMesh>(Mesh->getComponent<C3dUIComponent>().Handle);
-			MakeGeometry(lineMesh->Vertex, lineMesh->Indices, s_PointLightItr, Radius, Color);
+			auto lineMesh = AssetsManager::GetRuntimeAsset<LineSegment>(Mesh->getComponent<C3dUIComponent>().Handle);
+			MakeGeometry(lineMesh->Vertex, lineMesh->Indices, s_PointLightItr, Radius);
 			return true;
 		}
 		return false;
@@ -339,21 +339,21 @@ namespace pio
 
 	void UiPointLight::upload()
 	{
-		auto lineMesh = AssetsManager::GetRuntimeAsset<LineMesh>(Mesh->getComponent<C3dUIComponent>().Handle);
-		lineMesh->VertexBuffer->setData(lineMesh->Vertex.data(), lineMesh->Vertex.size() * sizeof(LineVertex));
+		auto lineMesh = AssetsManager::GetRuntimeAsset<LineSegment>(Mesh->getComponent<C3dUIComponent>().Handle);
+		lineMesh->VertexBuffer->setData(lineMesh->Vertex.data(), lineMesh->Vertex.size() * sizeof(SimpleVertex));
 		lineMesh->IndexBuffer->setData(lineMesh->Indices.data(), lineMesh->Indices.size() * sizeof(uint32_t), lineMesh->Indices.size());
 	}
 
-	Ref<LineMesh> UiPointLight::CreatePointLightMesh(float radius, const glm::vec4 &color)
+	Ref<LineSegment> UiPointLight::CreatePointLightMesh(float radius)
 	{
-		auto lineMesh = AssetsManager::CreateRuntimeAssets<LineMesh>("PointLight");
-		std::vector<LineVertex> &vertexArray = lineMesh->Vertex;
+		auto lineMesh = AssetsManager::CreateRuntimeAssets<LineSegment>("PointLight");
+		std::vector<SimpleVertex> &vertexArray = lineMesh->Vertex;
 		std::vector<uint32_t> &indice = lineMesh->Indices;
-		
-		MakeGeometry(vertexArray, indice, s_PointLightItr, radius, color);
 
-		lineMesh->VertexBuffer = VertexBuffer::Create(vertexArray.data(), vertexArray.size() * sizeof(LineVertex));
-		lineMesh->VertexBuffer->setLayout(VertexBuffer::To<LineVertex>());
+		MakeGeometry(vertexArray, indice, s_PointLightItr, radius);
+
+		lineMesh->VertexBuffer = VertexBuffer::Create(vertexArray.data(), vertexArray.size() * sizeof(SimpleVertex));
+		lineMesh->VertexBuffer->setLayout(VertexBuffer::To<SimpleVertex>());
 
 		lineMesh->IndexBuffer = IndexBuffer::Create(indice.data(), indice.size() * sizeof(uint32_t), indice.size());
 
@@ -363,7 +363,7 @@ namespace pio
 		return lineMesh;
 	}
 
-	void UiPointLight::MakeGeometry(std::vector<LineVertex> &vertexArray, std::vector<uint32_t> &indice, uint32_t itr, float radius, const glm::vec4 &color)
+	void UiPointLight::MakeGeometry(std::vector<SimpleVertex> &vertexArray, std::vector<uint32_t> &indice, const uint32_t itr, const float radius)
 	{
 		const float span = 360.f / float(itr);
 		float angle{ 0.f };
@@ -380,8 +380,8 @@ namespace pio
 		for (uint32_t i = 0; i < itr; i++)
 		{
 			angle = glm::radians(i * span);
-			vertexArray[i] = LineVertex(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), 0.f), color);
-			vertexArray[i + itr] = LineVertex(glm::vec3(radius * std::cos(angle), 0.f, radius * std::sin(angle)), color);
+			vertexArray[i] = SimpleVertex(glm::vec3(radius * std::cos(angle), radius * std::sin(angle), 0.f), glm::vec2(0.f));
+			vertexArray[i + itr] = SimpleVertex(glm::vec3(radius * std::cos(angle), 0.f, radius * std::sin(angle)), glm::vec2(0.f));
 
 			if (i == itr - 1)
 			{

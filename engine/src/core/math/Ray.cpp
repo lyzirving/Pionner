@@ -53,7 +53,7 @@ namespace pio
 			glm::vec3 dstPos = camPt;
 			pos = pos - camera.getFrontAxis() * near;
 			dstPos = dstPos - camera.getFrontAxis() * near;
-			GDebugger::Get()->drawLine(Ray(pos, glm::normalize(dstPos - pos)));
+			GDebugger::Get()->addLine(Ray(pos, glm::normalize(dstPos - pos)));
 		}
 
 		return Ray(camPos, glm::normalize(camPt - camPos), camPt);

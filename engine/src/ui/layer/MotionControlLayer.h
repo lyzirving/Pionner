@@ -21,6 +21,7 @@ namespace pio
 	struct DirectionalLightComponent;
 	struct PointLightComponent;
 	struct TransformComponent;
+	struct TextureCmd;
 
 	class MotionControlLayer : public Layer, public EventHandler
 	{
@@ -91,6 +92,7 @@ namespace pio
 
 		Ref<View> m_views[MotionCtl_Num];
 		LayoutRect m_viewIconsRect;
+		std::vector<TextureCmd> m_viewDrawCmds;
 
 		uint64_t  m_downTime{ 0 };//ms
 		glm::vec2 m_winCursor{ -1.f };

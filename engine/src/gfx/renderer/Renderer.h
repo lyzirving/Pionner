@@ -127,10 +127,9 @@ namespace pio
 		// ---------------------------------------------------------------------------
 
 		// ------------------------------ 2D Rendering -------------------------------
-		static void RenderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state);
-		static void RenderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state);
-		static void RenderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state);
+		static void RenderLineSegment(const AssetHandle &h, const glm::vec4 &color, const Ref<UniformBufferSet> &ubs, const glm::mat4 &trans, const RenderState &state);
 		static void RenderSprites(const std::vector<SpriteCommand> &cmds);
+		static void RenderSprites(const std::vector<TextureCmd> &cmds);
 		// ---------------------------------------------------------------------------
 
 		// ------------------------------- Tools -------------------------------------

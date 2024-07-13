@@ -8,6 +8,7 @@ namespace pio
 {
 	class MaterialTable;
 	class UniformBufferSet;
+	class Texture2D;
 
 	namespace SceneDataAttr
 	{
@@ -97,6 +98,20 @@ namespace pio
 
 		SpriteCommand() {}
 		SpriteCommand(const AssetHandle& h, const AssetHandle& t, const RenderState& state, bool gamma)
+			: QuadMesh(h), Texture(t), State(state), bGammaCorrect(gamma)
+		{
+		}
+	};
+
+	struct TextureCmd
+	{
+		AssetHandle QuadMesh{ NullAsset };
+		Ref<Texture2D> Texture{};
+		RenderState State{};
+		bool bGammaCorrect{ false };
+
+		TextureCmd() {}
+		TextureCmd(const AssetHandle &h, const Ref<Texture2D> &t, const RenderState &state, bool gamma)
 			: QuadMesh(h), Texture(t), State(state), bGammaCorrect(gamma)
 		{
 		}

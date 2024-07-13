@@ -378,16 +378,7 @@ namespace pio
 				break;
 		}
 
-		if (GDebugger::Get()->any(GDebug_Line))
-		{
-			Renderer::SubmitRC([ubSet]() mutable
-			{
-				GDebugger::Get()->flush();
-				AssetHandle h = GDebugger::Get()->getLineMesh()->getHandle();
-				RenderState state{ Blend::Disable(), DepthTest::Disable(), CullFace::Disable(), StencilTest::Disable() };
-				Renderer::RenderLine(h, ubSet, glm::mat4(1.f), state);
-			});
-		}
+		GDebugger::Get()->drawLine(ubSet, RenderState(Blend::Disable(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable()));
 	}
 
 	void MotionControlLayer::onDrawMotionView(const Timestep &ts)
@@ -400,21 +391,23 @@ namespace pio
 		{
 			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
 		});
-
+		
+		m_viewDrawCmds.clear();
+		m_viewDrawCmds.reserve(MotionCtl_Num);
 		RenderState s{ Blend::Disable(), DepthTest::Always(), CullFace::Common(), StencilTest::Disable() };
 		for (uint8_t i = 0; i < MotionCtl_Num; i++)
 		{
 			if (!m_views[i]) continue;
 
-			Ref<View> v = m_views[i];
-			if (v->needUpdate())
-				Renderer::SubmitTask([v]() mutable { v->upload(); });
-
-			Renderer::SubmitRC([v, s]() mutable
-			{
-				Renderer::RenderTextureQuad2D(v->getMesh(), v->getTexture(), s);
-			});
+			m_views[i]->upload();
+			m_viewDrawCmds.emplace_back(m_views[i]->getMesh(), m_views[i]->getTexture(), s, false);
 		}
+
+		std::vector<TextureCmd> &cmds = m_viewDrawCmds;
+		Renderer::SubmitRC([cmds]() mutable
+		{
+			Renderer::RenderSprites(cmds);
+		});
 	}
 
 	void MotionControlLayer::onDrawMoveMode(const Timestep &ts)
@@ -478,19 +471,20 @@ namespace pio
 	void MotionControlLayer::onDrawUIDistantLight(DirectionalLightComponent &lightComp, TransformComponent &transComp)
 	{
 		const glm::vec3 &pos = transComp.Transform.Position;
-		Ref<UniformBufferSet> ubSet = m_motionUBSet;
+		Ref<UniformBufferSet> ubs = m_motionUBSet;
 
 		auto &uiComp = m_uiDistantLight->Mesh->getComponent<C3dUIComponent>();
 
 		AssetHandle h = uiComp.Handle;
+		glm::vec4 &c = m_uiDistantLight->Color;
 		RenderState &state = uiComp.State;
 		glm::vec3 dest = glm::normalize(transComp.Transform.Euler.mat() * glm::vec4(lightComp.Direction, 0.f));
 		glm::quat rot = quaternion::RotationToQuat(AXIS_Z, dest);
 		glm::mat4 trans = glm::translate(glm::mat4(1.f), pos) * glm::toMat4(rot);
 
-		Renderer::SubmitRC([ubSet, h, state, trans]() mutable
-		{
-			Renderer::RenderLine(h, ubSet, trans, state);
+		Renderer::SubmitRC([h, c, ubs, state, trans]() mutable
+		{			
+			Renderer::RenderLineSegment(h, c, ubs, trans, state);
 		});
 	}
 
@@ -498,20 +492,21 @@ namespace pio
 	{
 		const glm::vec3 &pos = lightComp.Position;
 		Ref<UiPointLight> ui = m_uiPointLight;
-		Ref<UniformBufferSet> ubSet = m_motionUBSet;
+		glm::vec4 &c = ui->Color;
+		Ref<UniformBufferSet> ubs = m_motionUBSet;
 
 		auto &uiComp = ui->Mesh->getComponent<C3dUIComponent>();
 		AssetHandle h = uiComp.Handle;
-		RenderState &state = uiComp.State;
+		RenderState &state = uiComp.State;		
 
 		if (ui->setRadius(lightComp.Radius))
 		{
 			Renderer::SubmitTask([ui]() { ui->upload(); });
 		}
 
-		Renderer::SubmitRC([ubSet, h, state, pos]() mutable
-		{
-			Renderer::RenderLine(h, ubSet, glm::translate(glm::mat4(1.f), pos), state);
+		Renderer::SubmitRC([h, c, ubs, state, pos]() mutable
+		{			
+			Renderer::RenderLineSegment(h, c, ubs, glm::translate(glm::mat4(1.f), pos), state);
 		});
 	}
 

@@ -33,6 +33,7 @@ namespace pio
 		TextureSpecification spec;
 		spec.Name = "move_normal";
 		spec.Format = ImageInternalFormat::FROM_FILE;
+		spec.SRGB = true;
 		std::string path = IconAbsPath("move_normal", AssetFmt::PNG);
 		AssetsManager::GetOrCreatePackedAsset<Texture2D>(path, spec);
 

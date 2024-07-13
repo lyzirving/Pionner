@@ -43,11 +43,10 @@ namespace pio
 			                                    const Ref<RenderPass>& shadowPass, const Ref<RenderPass>& ptShadowPass, const RenderState& state) override;
 		// -----------------------------------------------------------------------------
 
-		// ------------------------------ 2D Rendering ---------------------------------
-		virtual void renderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state) override;
-		virtual void renderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state) override;
-		virtual void renderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state) override;
+		// ------------------------------ 2D Rendering ---------------------------------		
+		virtual void renderLineSegment(const AssetHandle &h, const glm::vec4 &color, const Ref<UniformBufferSet> &ubs, const glm::mat4 &trans, const RenderState &state) override;		
 		virtual void renderSprites(const std::vector<SpriteCommand> &cmds) override;
+		virtual void renderSprites(const std::vector<TextureCmd> &cmds) override;
 		// -----------------------------------------------------------------------------
 
 		// ------------------------------- Tools -------------------------------------

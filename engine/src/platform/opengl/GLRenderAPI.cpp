@@ -459,14 +459,14 @@ namespace pio
 		shader->bind(false);
 	}
 
-	void GLRenderAPI::renderLineSegment(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
+	void GLRenderAPI::renderLineSegment(const AssetHandle &h, const glm::vec4 &color, const Ref<UniformBufferSet> &ubs, const glm::mat4 &trans, const RenderState &state)
 	{
-		Ref<LineSegment> lineMesh = AssetsManager::GetRuntimeAsset<LineSegment>(meshHandle);
+		Ref<LineSegment> lineMesh = AssetsManager::GetRuntimeAsset<LineSegment>(h);
 		PIO_ASSERT_RETURN(lineMesh.use_count() != 0, "renderLineSegment: LineSegment is invalid");
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::LineSegment);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderLineSegment: LineSegment shader is invalid");
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::Line);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderLineSegment: Line shader is invalid");
 
-		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
+		auto cameraUB = ubs->get(PIO_UINT(UBBindings::Camera));
 
 		compareAndUpdateRenderState(m_globalState, state);
 
@@ -476,7 +476,7 @@ namespace pio
 		cameraUB->bind();
 
 		shader->setMat4("u_modelMat", trans);
-		shader->setVec4("u_color", lineMesh->Color);
+		shader->setVec4("u_color", color);
 
 		lineMesh->VertexArray->bind();
 		lineMesh->IndexBuffer->bind();
@@ -484,87 +484,14 @@ namespace pio
 		glDrawElements(GL_LINES, lineMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
 		GLHelper::CheckError("renderLineSegment fail!!");
 
-#ifdef PIO_PROFILER_ON
+	#ifdef PIO_PROFILER_ON
 		glFinish();
-#endif // PIO_PROFILER_ON
+	#endif // PIO_PROFILER_ON
 
 		lineMesh->IndexBuffer->unbind();
 		lineMesh->VertexArray->unbind();
 
 		cameraUB->unbind();
-
-		shader->bind(false);
-	}
-
-	void GLRenderAPI::renderLine(AssetHandle &meshHandle, Ref<UniformBufferSet> &uniformBufferSet, const glm::mat4 &trans, const RenderState &state)
-	{
-		Ref<LineMesh> lineMesh = AssetsManager::GetRuntimeAsset<LineMesh>(meshHandle);
-		PIO_ASSERT_RETURN(lineMesh.use_count() != 0, "Line Mesh is invalid");
-
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::Color_Line);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "ColorLine shader is invalid");
-
-		auto cameraUB = uniformBufferSet->get(PIO_UINT(UBBindings::Camera));
-
-		compareAndUpdateRenderState(m_globalState, state);
-
-		shader->bind(true);
-	
-		UniformBuffer::Binding(shader, "Matrices", cameraUB->getBinding());
-		cameraUB->bind();
-		shader->setMat4("u_modelMat", trans);
-
-		lineMesh->VertexArray->bind();
-		lineMesh->IndexBuffer->bind();
-
-		glDrawElements(GL_LINES, lineMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("renderLine fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		lineMesh->IndexBuffer->unbind();
-		lineMesh->VertexArray->unbind();
-
-		cameraUB->unbind();
-
-		shader->bind(false);
-	}
-
-	void GLRenderAPI::renderTextureQuad2D(AssetHandle &meshHandle, Ref<Texture2D> &texture, const RenderState &state)
-	{
-		Ref<QuadMesh> quadMesh = AssetsManager::GetRuntimeAsset<QuadMesh>(meshHandle);
-		PIO_ASSERT_RETURN(quadMesh.use_count() != 0, "renderTextureQuad2D: Quad Mesh is invalid");
-
-		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderType::TextureQuad);
-		PIO_ASSERT_RETURN(shader.use_count() != 0, "TextureQuad shader is invalid");
-
-		PIO_ASSERT_RETURN(texture.use_count() != 0, "renderTextureQuad2D: texture is invalid");
-
-		compareAndUpdateRenderState(m_globalState, state);
-
-		shader->bind(true);
-
-		texture->active(PIO_UINT(TextureSampler::Slot0));
-		texture->bind();
-
-		shader->setTextureSampler("u_quadTexture", TextureSampler::Slot0);
-
-		quadMesh->VertexArray->bind();
-		quadMesh->IndexBuffer->bind();
-
-		glDrawElements(GL_TRIANGLES, quadMesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
-		GLHelper::CheckError("renderTextureQuad2D fail!!");
-
-#ifdef PIO_PROFILER_ON
-		glFinish();
-#endif // PIO_PROFILER_ON
-
-		quadMesh->IndexBuffer->unbind();
-		quadMesh->VertexArray->unbind();
-
-		texture->unbind();
 
 		shader->bind(false);
 	}
@@ -583,6 +510,50 @@ namespace pio
 		{
 			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(item.QuadMesh);			
 			Ref<Texture2D> texture = AssetsManager::GetRuntimeAsset<Texture2D>(item.Texture);
+			PIO_ASSERT_CONTINUE(mesh.use_count() != 0, "renderSprites: Quad mesh is invalid");
+			PIO_ASSERT_CONTINUE(texture.use_count() != 0, "renderSprites: texture is invalid");
+
+			compareAndUpdateRenderState(m_globalState, item.State);
+			texture->active(PIO_UINT(TextureSampler::Slot0));
+			texture->bind();
+
+			shader->setTextureSampler("u_texture", TextureSampler::Slot0);
+			shader->setBool("u_bSRGB", texture->SRGB());
+			shader->setBool("u_bGammaCorrect", item.bGammaCorrect);
+
+			mesh->VertexArray->bind();
+			mesh->IndexBuffer->bind();
+
+			glDrawElements(GL_TRIANGLES, mesh->IndexBuffer->getCount(), GL_UNSIGNED_INT, nullptr);
+			GLHelper::CheckError("renderSprites fail!!");
+
+			mesh->IndexBuffer->unbind();
+			mesh->VertexArray->unbind();
+
+			texture->unbind();
+		}
+
+	#ifdef PIO_PROFILER_ON
+		glFinish();
+	#endif // PIO_PROFILER_ON
+
+		shader->bind(false);
+	}
+
+	void GLRenderAPI::renderSprites(const std::vector<TextureCmd> &cmds)
+	{
+		PIO_ASSERT_RETURN(!cmds.empty(), "renderSprites: empty texture cmds");
+
+		Ref<Shader> shader = ShaderLibrary::Get()->find(ShaderProgram::Sprite);
+		PIO_ASSERT_RETURN(shader.use_count() != 0, "renderSprites: Sprite shader is invalid");
+
+		// Reduce shader switch, which is the most consuming
+		shader->bind(true);
+
+		for(auto &item : cmds)
+		{
+			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(item.QuadMesh);
+			Ref<Texture2D> texture = item.Texture;
 			PIO_ASSERT_CONTINUE(mesh.use_count() != 0, "renderSprites: Quad mesh is invalid");
 			PIO_ASSERT_CONTINUE(texture.use_count() != 0, "renderSprites: texture is invalid");
 

@@ -6,9 +6,11 @@
 
 namespace pio
 {
+	class UniformBufferSet;
+	struct RenderState;
+	
 	enum GDebugType : uint8_t
 	{
-		/*Line = 0, Num*/
 		GDebug_Line, GDebug_Num
 	};
 
@@ -16,18 +18,21 @@ namespace pio
 	{
 		PIO_SINGLETON_DECLARE(GDebugger)
 	public:
-		void drawLine(const Ray &r, float len = 30.f, const glm::vec4 &color = glm::vec4(1.f, 0.f, 0.f, 1.f));
-		void drawLine(const glm::vec3 &start, const glm::vec3 &end, const glm::vec4 &color);
+		void addLine(const Ray &r, float len = 30.f);
+		void addLine(const glm::vec3 &start, const glm::vec3 &end);
+		void clear(GDebugType type);
 
-		bool any(GDebugType type);
-		void clear(GDebugType type);		
-		void flush();
-
-	public:
-		inline Ref<LineMesh> getLineMesh() { return m_lineMesh; }
+		void drawLine(const Ref<UniformBufferSet> &ubs, const RenderState &state);		
 
 	private:
-		Ref<LineMesh> m_lineMesh;
+		bool any(GDebugType type);				
+		void flush(GDebugType type);
+
+	public:
+		static glm::vec4 Color;
+
+	private:
+		Ref<LineSegment> m_lines;
 		std::bitset<GDebug_Num> m_dirty;
 	};
 }

@@ -33,6 +33,7 @@ namespace pio
 		p->add(ShaderProgram::IBL_EquirecToCube, ShaderCompiler::Compile("shader/IBL_EquirectangularToCube.glsl"));
 		p->add(ShaderProgram::IBL_DiffuseCnvl, ShaderCompiler::Compile("shader/IBL_DiffuseCnvl.glsl"));		
 		p->add(ShaderProgram::IBL_BrdfConvl, ShaderCompiler::Compile("shader/IBL_BrdfCnvl.glsl"));
+		p->add(ShaderProgram::Line, ShaderCompiler::Compile("shader/Line.glsl"));
 		auto end = TimeUtil::CurrentTimeMs();
 		LOGD("take [%lu]ms time", (end - start));
 	}
@@ -48,41 +49,8 @@ namespace pio
 		}
 	}
 
-	Ref<Shader> ShaderLibrary::find(ShaderType type)
-	{
-		uint32_t index = (uint32_t)type;
-		if (m_shaders[index])
-			return m_shaders[index];
-
-		switch (type)
-		{		
-			case ShaderType::LineSegment:
-			{
-				m_shaders[index] = Shader::Create("LineSegment", "line_segment", "line_segment");
-				return m_shaders[index];
-			}
-			case ShaderType::Color_Line:
-			{
-				m_shaders[index] = Shader::Create("ColorLine", "color_line", "color_line");
-				return m_shaders[index];
-			}
-			case ShaderType::TextureQuad:
-			{
-				m_shaders[index] = Shader::Create("TextureQuad", "quad2d", "quad2d");
-				return m_shaders[index];
-			}
-			default:
-				return Ref<Shader>();
-		}
-	}
-
 	void ShaderLibrary::release()
 	{
-		for (auto &item : m_shaders)
-		{
-			item.reset();
-		}
-
 		for (auto& item : m_shaderPrograms)
 		{
 			item.reset(); 

@@ -46,8 +46,7 @@ namespace pio
 		m_shape[EditorAxis_Y]->setLocalRotation(EulerAngle(90.f, 0.f, 0.f));
 
 		m_pendingVertex.reserve(2);
-		m_direction = AssetsManager::CreateRuntimeAssets<LineSegment>("Rotate Direction");
-		m_direction->Color = glm::vec4(1.f);
+		m_direction = AssetsManager::CreateRuntimeAssets<LineSegment>("Rotate Direction");		
 		m_direction->Vertex.reserve(2);
 		m_direction->Indices.reserve(2);
 
@@ -103,9 +102,8 @@ namespace pio
 			Renderer::SubmitRC([ubs, mesh, color]() mutable
 			{
 				RenderState state{ Blend::Common(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable(), RenderMode::MaterialPreview };
-				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(SimpleVertex));
-				mesh->Color = color;
-				Renderer::RenderLineSegment(mesh->getHandle(), ubs, glm::mat4(1.f), state);
+				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(SimpleVertex));		
+				Renderer::RenderLineSegment(mesh->getHandle(), color, ubs, glm::mat4(1.f), state);
 			});
 		}
 	}

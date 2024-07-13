@@ -101,9 +101,6 @@ namespace pio
 	VertexBufferLayout VertexBuffer::To<SimpleVertex>();
 
 	template<>
-	VertexBufferLayout VertexBuffer::To<LineVertex>();
-
-	template<>
 	VertexBufferLayout VertexBuffer::To<QuadVertex>();
 }
 

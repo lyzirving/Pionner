@@ -64,15 +64,6 @@ namespace pio
 	}
 
 	template<>
-	VertexBufferLayout VertexBuffer::To<LineVertex>()
-	{
-		VertexBufferElement pos{ "Position", ShaderDataType::Float3, false };
-		VertexBufferElement color{ "Color", ShaderDataType::Float4, false };
-		VertexBufferLayout  layout{ pos, color };
-		return layout;
-	}
-
-	template<>
 	VertexBufferLayout VertexBuffer::To<QuadVertex>()
 	{
 		VertexBufferElement pos{ "Position", ShaderDataType::Float3, false };
