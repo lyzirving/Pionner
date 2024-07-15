@@ -140,17 +140,17 @@ namespace pio
 		virtual ~MeshSource();
 
 	public:
-		inline bool hasSkeleton() const { return m_skeleton.get() != nullptr; }
-		inline bool hasAnimation() const { return !m_animations.empty(); }
-		inline const std::vector<Submesh> &getSubmeshes() const { return m_submeshes; }
-		inline const std::vector<Ref<Animation>> &getAnimation() const { return m_animations; }
-		inline const std::vector<MeshNode> &getMeshNodes() const { return m_nodes; }
-		inline const Ref<Skeleton> &getSkeleton() const { return m_skeleton; }
-		inline const BoneTransformUD &getBoneTransformUD() const { return m_boneTransform; }
-		inline const Ref<UniformBuffer> &getBoneTransformUB() const { return m_boneTransformUB; }
-		inline const AABB &getAABB() const { return m_boundingBox; }
-		inline uint32_t getSubmeshNum() const { return m_submeshes.size(); }
-		inline uint32_t getAnimationNum() const { return m_animations.size(); }
+		bool hasSkeleton() const { return m_skeleton.get() != nullptr; }
+		bool hasAnimation() const { return !m_animations.empty(); }
+		const std::vector<Submesh> &getSubmeshes() const { return m_submeshes; }
+		const std::vector<Ref<Animation>> &getAnimation() const { return m_animations; }
+		const std::vector<MeshNode> &getMeshNodes() const { return m_nodes; }
+		const Ref<Skeleton> &getSkeleton() const { return m_skeleton; }
+		const BoneTransformUD &getBoneTransformUD() const { return m_boneTransform; }
+		const Ref<UniformBuffer> &getBoneTransformUB() const { return m_boneTransformUB; }
+		const AABB &getAABB() const { return m_boundingBox; }
+		uint32_t getSubmeshNum() const { return m_submeshes.size(); }
+		uint32_t getAnimationNum() const { return m_animations.size(); }
 
 	public:
 		Transform GlobalPose{};

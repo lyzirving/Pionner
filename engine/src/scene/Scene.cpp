@@ -89,7 +89,8 @@ namespace pio
 
 	static void CreatePointLightComponent(uint32_t index, PointLight &light, Ref<PhysicsScene> physicsScene, Ref<Entity> sceneRoot, Ref<Texture2D> icon)
 	{
-		Ref<Entity> ent = Registry::Get()->create<PointLightComponent, RelationshipComponent, SpriteComponent>(NodeType::PointLight);
+		Ref<Entity> ent = Registry::Get()->create<PointLightComponent, RelationshipComponent, SpriteComponent>(EntityClass::PointLight, light.Name);
+
 		auto &ptComp = ent->getComponent<PointLightComponent>();
 		ptComp.Index = index;
 		ptComp.Position = light.Position;
@@ -102,14 +103,13 @@ namespace pio
 		ptComp.CastShadow = light.CastShadow;
 
 		auto &rlComp = ent->getComponent<RelationshipComponent>();
-		PIO_RELATION_SET_TAG(ent, light.Name);
 		PIO_RELATION_SET_SELF(ent);
 		PIO_RELATION_SET_PARENT(ent, sceneRoot);
 		PIO_RELATION_SET_CHILD(sceneRoot, ent);
 
 		auto &spriteComp = ent->getComponent<SpriteComponent>();
 		spriteComp.Visible = true;
-		spriteComp.Name = rlComp.Tag;
+		spriteComp.Name = ent->getName();
 		spriteComp.QuadMesh = MeshFactory::CreateScreenQuad(0, 0, 1, 1, 1, 1)->getHandle();
 		spriteComp.Texture = icon->getHandle();
 		spriteComp.State.DepthTest = DepthTest::Disable();
@@ -155,6 +155,8 @@ namespace pio
 		Camera &sceneCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
 		sceneCam.flush();
 
+		//[TODO] use a pixed rate for physics simulation, 
+		//       maybe i need use another thread
 		simulate(ts);		
 
 		// Process Animation
@@ -289,8 +291,7 @@ namespace pio
 	void Scene::createData()
 	{
 		// Scene and Physics
-		m_sceneRoot = s_registry->create<SceneComponent, RelationshipComponent>(NodeType::Scene);
-		PIO_RELATION_SET_TAG(m_sceneRoot, "MyScene");
+		m_sceneRoot = s_registry->create<SceneComponent, RelationshipComponent>(EntityClass::Scene, "Scene");
 		PIO_RELATION_SET_SELF(m_sceneRoot);
 		auto &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
 		sceneComp.Primary = true;
@@ -305,7 +306,10 @@ namespace pio
 		sceneComp.Skybox = m_skybox->getHandle();
 
 		// Main Camera
-		m_mainCameraEnt = s_registry->create<CameraComponent>();
+		m_mainCameraEnt = s_registry->create<CameraComponent, RelationshipComponent>(EntityClass::Camera, "Camera");
+		PIO_RELATION_SET_SELF(m_mainCameraEnt);
+		PIO_RELATION_SET_CHILD(m_sceneRoot, m_mainCameraEnt);
+		PIO_RELATION_SET_PARENT(m_mainCameraEnt, m_sceneRoot);
 		auto &cameraComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		cameraComp.Camera.setPosition(72.f, 341.f, 10.f);
 		cameraComp.Camera.setLookAt(glm::vec3(0.f));
@@ -315,7 +319,8 @@ namespace pio
 		{
 			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-4.5f, 3.8f, -1.f), glm::vec3(0.f), glm::vec3(3.f), 0.12f);
 
-			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent, TransformComponent>(NodeType::DistantLight);
+			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent, TransformComponent>(EntityClass::DistantLight, "DirectionalLight");
+
 			auto &transComp = ent->getComponent<TransformComponent>();
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 			transComp.Transform.Position = m_lightEnv.DirectionalLight.Position;
@@ -324,7 +329,6 @@ namespace pio
 			lightComp.Intensity = m_lightEnv.DirectionalLight.Intensity;
 
 			auto &rlComp = ent->getComponent<RelationshipComponent>();
-			PIO_RELATION_SET_TAG(ent, "Sun");
 			PIO_RELATION_SET_SELF(ent);
 			PIO_RELATION_SET_PARENT(ent, m_sceneRoot);
 			PIO_RELATION_SET_CHILD(m_sceneRoot, ent);
@@ -338,7 +342,7 @@ namespace pio
 
 			auto &spriteComp = ent->getComponent<SpriteComponent>();
 			spriteComp.Visible = true;
-			spriteComp.Name = rlComp.Tag;	
+			spriteComp.Name = ent->getName();
 			spriteComp.QuadMesh = MeshFactory::CreateScreenQuad(0, 0, 1, 1, 1, 1)->getHandle(); 
 			spriteComp.Texture = icon->getHandle();
 			spriteComp.State = RenderState(Blend::Common(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable());

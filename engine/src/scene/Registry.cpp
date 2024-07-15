@@ -11,6 +11,8 @@ namespace pio
 {
 	PIO_SINGLETON_IMPL(Registry);
 
+	uint32_t Registry::k_entNum = 0;
+
 	Registry::Registry()
 	{
 	}

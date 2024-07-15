@@ -29,7 +29,6 @@
 
 #include "core/BaseType.h"
 #include "core/LogSystem.h"
-#include "core/math/MathLib.h"
 #include "core/math/QuatUtil.h"
 #include "core/UUID.h"
 

@@ -512,7 +512,8 @@ namespace pio
 			});
 
 		// [NOTE] Frame buffer for mutiple point lights contains a cubemap array
-		Renderer::SubmitRC([env, ptsp, ubs, cmd]() mutable
+		// [NOTE] No point light shadow for current implementation
+		/*Renderer::SubmitRC([env, ptsp, ubs, cmd]() mutable
 			{
 				uint64_t start{ PROFILER_TIME };
 				Renderer::BeginRenderPass(ptsp);
@@ -523,7 +524,7 @@ namespace pio
 				}
 				Renderer::EndRenderPass(ptsp);
 				PROFILERD_DURATION(start, "Point Light Shadow");
-			});
+			});*/
 	}
 
 	void SceneRenderer::deferredRendering(const Scene& scene)

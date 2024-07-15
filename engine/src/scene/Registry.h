@@ -23,12 +23,17 @@ namespace pio
 		Ref<Entity> mainSceneEnt();
 		void destroy(Entity &entity);
 
+	private:
+		static uint32_t k_entNum;
+
+		#define PIO_BUILD_ENT_NAME ((std::stringstream() << "Entity" << Registry::k_entNum++).str())
+
 	public:
 		template <typename ... Comp>
-		Ref<Entity> create(NodeType type = NodeType::None)
+		Ref<Entity> create(EntityClass type = EntityClass::None, const std::string &name = "")
 		{
 			decs::EntityID index = m_ECSImpl.new_entity();
-			Ref<Entity> entity = CreateRef<Entity>(index, type);
+			Ref<Entity> entity = CreateRef<Entity>(type, index, name.empty() ? PIO_BUILD_ENT_NAME : name);
 			uint32_t cnt = sizeof...(Comp);
 			if (cnt != 0)
 			{
@@ -129,7 +134,7 @@ namespace pio
 			return view;
 		}
 
-		inline Ref<Entity> getCachedEntity(uint32_t index)
+		Ref<Entity> getCachedEntity(uint32_t index)
 		{
 			if (m_entities.size() > index) { return m_entities[index]; }
 			LOGE("index[%u] out of bounds[%u]", index, m_entities.size());

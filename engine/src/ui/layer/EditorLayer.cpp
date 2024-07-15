@@ -17,6 +17,7 @@
 #include "gfx/debug/GDebugger.h"
 
 #include "ui/ImGuiUtils.h"
+#include "ui/panel/UiPanel.h"
 #include "ui/MotionController.h"
 
 #include "core/math/SphereCoord.h"
@@ -32,12 +33,12 @@ namespace pio
 {
 	static void DealSelectionChange(Ref<Entity> &cur, Ref<Entity> &last)
 	{
-		NodeType type(NodeType::None);
+		EntityClass type(EntityClass::None);
 
 		if (last)
 		{
-			type = last->getNodeType();
-			if (type == NodeType::Mesh || type == NodeType::MeshSource)
+			type = last->getClass();
+			if (type == EntityClass::Mesh || type == EntityClass::MeshSource)
 			{
 				MotionController::SelectObj3D(nullptr);
 				last->setSelection(false);
@@ -50,8 +51,8 @@ namespace pio
 
 		if (cur)
 		{
-			type = cur->getNodeType();
-			if (type == NodeType::Mesh || type == NodeType::MeshSource)
+			type = cur->getClass();
+			if (type == EntityClass::Mesh || type == EntityClass::MeshSource)
 			{
 				MotionController::SelectObj3D(cur);
 				cur->setSelection(true);
@@ -123,22 +124,25 @@ namespace pio
 					DealSelectionChange(select, lastSelect);
 					lastSelect = select;
 				}
-				switch (select->getNodeType())
+				switch (select->getClass())
 				{
-					case NodeType::Scene:
+					case EntityClass::Scene:
 						onDrawScenePanel(select);
 						break;
-					case NodeType::DistantLight:
+					case EntityClass::DistantLight:
 						onDrawDistantLightPanel(select);
 						break;
-					case NodeType::PointLight:
+					case EntityClass::PointLight:
 						onDrawPointLightPanel(select);
 						break;
-					case NodeType::MeshSource:
+					case EntityClass::MeshSource:
 						onDrawMeshSourcePanel(select);
 						break;
-					case NodeType::Mesh:
+					case EntityClass::Mesh:
 						onDrawMeshPanel(select);
+						break;
+					case EntityClass::Camera:
+						onDrawCameraPanel(select);
 						break;
 					default:
 						break;
@@ -156,14 +160,14 @@ namespace pio
 
 	void EditorLayer::onDrawScenePanel(Ref<Entity> &ent)
 	{
-		if (ent && ent->hasComponent<SceneComponent>() && ent->hasComponent<RelationshipComponent>())
+		if (ent && ent->hasComponent<SceneComponent>())
 		{
 			auto &sceneComp = ent->getComponent<SceneComponent>();
-			auto &rlComp = ent->getComponent<RelationshipComponent>();
+			const std::string &name = ent->getName();
 			const float rowWidth = m_layoutParam.Viewport.Width;
 			
 			ImGui::PushItemWidth(rowWidth);
-			ImGui::InputText("##scene_name", const_cast<char *>(rlComp.Tag.data()), rlComp.Tag.size(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputText("##scene_name", const_cast<char *>(name.c_str()), name.size(), ImGuiInputTextFlags_ReadOnly);
 			ImGui::PopItemWidth();
 
 			if (ImGui::CollapsingHeader("Physics##Scene", ImGuiUtils::Flag_Collapse_Header))
@@ -198,40 +202,29 @@ namespace pio
 	void EditorLayer::onDrawDistantLightPanel(Ref<Entity> &ent)
 	{
 		if (ent && ent->hasComponent<DirectionalLightComponent>())
-		{
+		{			
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
-			auto &rlComp = ent->getComponent<RelationshipComponent>();
 			auto &transComp = ent->getComponent<TransformComponent>();
 
 			const float rowWidth = m_layoutParam.Viewport.Width;
-			ImGui::PushItemWidth(rowWidth);
-			ImGui::InputText("##MainLight_Name", const_cast<char *>(rlComp.Tag.data()),
-							 rlComp.Tag.size(), ImGuiInputTextFlags_ReadOnly);
-			ImGui::PopItemWidth();
+			bool bVisible{ true };
+			UiPanel::DrawNamePanel("##DirectionalLight_name", ent->getName(), "##DirectionalLight_visibility", bVisible, rowWidth);
+			UiPanel::DrawTransformPanel(ent);
 
-			if (ImGui::CollapsingHeader("DistantLight##Scene", ImGuiUtils::Flag_Collapse_Header))
-			{						
-				ImGui::Checkbox("CastShadow##DistantLight", &lightComp.CastShadow);
-				ImGui::Combo("PCF", &lightComp.SdMode, ShadowModeNames, ShadowMode_Num, 3);
-				ImGui::DragFloat("Bias##DistantLight", &lightComp.Bias, 0.00001f, 0.0001f, 0.1f, "%.5f");
+			ImGui::Checkbox("CastShadow##DistantLight", &lightComp.CastShadow);
+			ImGui::Combo("PCF", &lightComp.SdMode, ShadowModeNames, ShadowMode_Num, 3);
+			ImGui::DragFloat("Bias##DistantLight", &lightComp.Bias, 0.00001f, 0.0001f, 0.1f, "%.5f");
 
-				ImGui::DragFloat3("Position##DirectionalLight", glm::value_ptr(transComp.Transform.Position), 0.1f, -1000.f, 1000.f, "%.1f");
-				
-				glm::vec3 angle = transComp.Transform.Euler.angle();
-				ImGui::DragFloat3("Rotation##DirectionalLight", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
-				transComp.Transform.Euler = angle;
-
-				glm::vec3 dir = lightComp.Direction;
-				ImGui::DragFloat3("Direction##DirectionalLight", &dir.x, 0.01f, -1.f, 1.f, "%.2f");
-				if (dir != lightComp.Direction) 
-				{ 
-					transComp.Transform.Euler.invalidate();
-					lightComp.Direction = glm::normalize(dir); 
-				}
-
-				ImGui::DragFloat3("Radiance##DirectionalLight", glm::value_ptr(lightComp.Radiance), 0.1f, 0.f, 1000.f, "%.1f");			
-				ImGui::SliderFloat("Intensity##DirectionalLight", &lightComp.Intensity, 0.01f, 2.f, "%.2f", 0);				
+			glm::vec3 dir = lightComp.Direction;
+			ImGui::DragFloat3("Direction##DirectionalLight", &dir.x, 0.01f, -1.f, 1.f, "%.2f");
+			if (dir != lightComp.Direction)
+			{
+				transComp.Transform.Euler.invalidate();
+				lightComp.Direction = glm::normalize(dir);
 			}
+
+			ImGui::DragFloat3("Radiance##DirectionalLight", glm::value_ptr(lightComp.Radiance), 0.1f, 0.f, 1000.f, "%.1f");
+			ImGui::SliderFloat("Intensity##DirectionalLight", &lightComp.Intensity, 0.01f, 2.f, "%.2f", 0);
 		}
 	}
 
@@ -239,17 +232,14 @@ namespace pio
 	{
 		if (ent && ent->hasComponent<PointLightComponent>())
 		{
-			auto &lightComp = ent->getComponent<PointLightComponent>();
-			auto &rlComp = ent->getComponent<RelationshipComponent>();
-
-			std::string name = std::string("PointLight") + std::to_string(lightComp.Index);
-			std::string panelName = std::string("##PointLight") + std::to_string(lightComp.Index) + "_Name";
+			auto& lightComp = ent->getComponent<PointLightComponent>();	
+			const auto& name = ent->getName();
+			std::string nLabel = (std::stringstream() << "##" << ent->getName() << "_name").str();
+			std::string vLabel = (std::stringstream() << "##" << ent->getName() << "_visibility").str();
 
 			const float rowWidth = m_layoutParam.Viewport.Width;
-			ImGui::PushItemWidth(rowWidth);			
-			ImGui::InputText(panelName.c_str(), const_cast<char *>(rlComp.Tag.data()),
-							 rlComp.Tag.size(), ImGuiInputTextFlags_ReadOnly);
-			ImGui::PopItemWidth();
+			bool bVisible{ true };//TODO
+			UiPanel::DrawNamePanel(nLabel.c_str(), name, vLabel.c_str(), bVisible, rowWidth);
 
 			std::string posName = "Position##" + name;
 			if (ImGui::CollapsingHeader(posName.c_str(), ImGuiUtils::Flag_Collapse_Header))
@@ -290,70 +280,39 @@ namespace pio
 			if (meshSrc)
 			{
 				const float rowWidth = m_layoutParam.Viewport.Width;
-				
-				// Visibility and Name
+				bool bVisible = meshSrcComp.Visible;
+				UiPanel::DrawNamePanel("##meshSource_name", meshSrc->getName(), "##meshSource_visibility", bVisible, rowWidth);
+				if (meshSrcComp.Visible != bVisible)
 				{
-					float cbWidth = 0.2f * rowWidth;
-					float inTextWidth = 0.8f * rowWidth;
-					// Visibility checkbox
-					ImGui::PushItemWidth(cbWidth);
-					ImGui::Checkbox("##meshSource_visibility", &this->m_UiVal.MeshSrcVisible);
-					ImGui::PopItemWidth();
-
-					ImGui::SameLine();
-
-					ImGui::PushItemWidth(inTextWidth);
-					ImGui::InputText("##meshSource_name", const_cast<char *>(meshSrc->getName().c_str()),
-									 meshSrc->getName().size(), ImGuiInputTextFlags_ReadOnly);
-					ImGui::PopItemWidth();
-
-					if (this->m_UiVal.MeshSrcVisible != meshSrcComp.Visible)
+					meshSrcComp.Visible = bVisible;
+					const std::vector<Submesh>& submeshes = meshSrc->getSubmeshes();
+					for (uint32_t i = 0; i < submeshes.size(); i++)
 					{
-						meshSrcComp.Visible = this->m_UiVal.MeshSrcVisible;
-						const std::vector<Submesh> &submeshes = meshSrc->getSubmeshes();
-						for (uint32_t i = 0; i < submeshes.size(); i++)
+						if (submeshes[i].Ent->hasComponent<MeshComponent>())
 						{
-							if (submeshes[i].Ent->hasComponent<MeshComponent>())
-							{
-								submeshes[i].Ent->getComponent<MeshComponent>().Visible = meshSrcComp.Visible;
-							}
-							else if (submeshes[i].Ent->hasComponent<StaticMeshComponent>())
-							{
-								submeshes[i].Ent->getComponent<StaticMeshComponent>().Visible = meshSrcComp.Visible;
-							}
+							submeshes[i].Ent->getComponent<MeshComponent>().Visible = meshSrcComp.Visible;
+						}
+						else if (submeshes[i].Ent->hasComponent<StaticMeshComponent>())
+						{
+							submeshes[i].Ent->getComponent<StaticMeshComponent>().Visible = meshSrcComp.Visible;
 						}
 					}
 				}
-
-				// Global Pose
-				{									
-					if (ImGui::CollapsingHeader("GlobalPose##MeshSource", ImGuiUtils::Flag_Collapse_Header))
-					{														
-						ImGui::DragFloat3("Position##meshSource", glm::value_ptr(meshSrc->GlobalPose.Position), 0.05f, -100.f, 100.f, "%.1f");
-						glm::vec3 angle = meshSrc->GlobalPose.Euler.angle();
-						ImGui::DragFloat3("Rotation##meshSource", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
-						meshSrc->GlobalPose.Euler = angle;
-						ImGui::DragFloat3("Scale##meshSource", glm::value_ptr(meshSrc->GlobalPose.Scale), 0.1f, 0.f, 10.f, "%.1f");													
-					}
-				}
-
-				//Animation
+				UiPanel::DrawTransformPanel(meshSrc->GlobalPose);			
+				if (ent->hasComponent<AnimationComponent>() && meshSrc->hasAnimation())
 				{
-					if (ent->hasComponent<AnimationComponent>() && meshSrc->hasAnimation())
-					{
-						auto &comp = ent->getComponent<AnimationComponent>();
-						const std::vector<Ref<Animation>> &animations = meshSrc->getAnimation();
+					auto& comp = ent->getComponent<AnimationComponent>();
+					const std::vector<Ref<Animation>>& animations = meshSrc->getAnimation();
 
-						uint32_t animCnt = animations.size();
-						std::vector<const char *> aniNames;
-						aniNames.reserve(animCnt);
-						for (uint32_t i = 0; i < animCnt; i++)
-							aniNames.emplace_back(animations[i]->getName().c_str());												
-						if (ImGui::CollapsingHeader("Animation##MeshSource", ImGuiUtils::Flag_Collapse_Header) && animCnt > 0)
-						{		
-							ImGui::Checkbox("GPU Skinning##MeshSource", &comp.GPUSkinning);
-							ImGui::Combo("##AnimationMeshSource", &comp.Selection, aniNames.data(), animCnt, 3);							
-						}
+					uint32_t animCnt = animations.size();
+					std::vector<const char*> aniNames;
+					aniNames.reserve(animCnt);
+					for (uint32_t i = 0; i < animCnt; i++)
+						aniNames.emplace_back(animations[i]->getName().c_str());
+					if (ImGui::CollapsingHeader("Animation##MeshSource", ImGuiUtils::Flag_Collapse_Header) && animCnt > 0)
+					{
+						ImGui::Checkbox("GPU Skinning##MeshSource", &comp.GPUSkinning);
+						ImGui::Combo("##AnimationMeshSource", &comp.Selection, aniNames.data(), animCnt, 3);
 					}
 				}
 			}
@@ -387,32 +346,8 @@ namespace pio
 		{
 			const Submesh &submesh = meshBase->getMeshSource()->getSubmeshes()[submeshIdx];
 			const float rowWidth = m_layoutParam.Viewport.Width;
-			float cbWidth = 0.2f * rowWidth;
-			float inTextWidth = 0.8f * rowWidth;
-			// Visibility checkbox
-			ImGui::PushItemWidth(cbWidth);
-			ImGui::Checkbox("##mesh_visibility", &bVisibleUI);
-			ImGui::PopItemWidth();
-
-			ImGui::SameLine();
-			// Mesh name
-			ImGui::PushItemWidth(inTextWidth);
-			ImGui::InputText("##submesh_name", const_cast<char *>(submesh.MeshName.c_str()),
-							 submesh.MeshName.size(), ImGuiInputTextFlags_ReadOnly);
-			ImGui::PopItemWidth();
-
-			if (ent->hasComponent<TransformComponent>())
-			{
-				TransformComponent &comp = ent->getComponent<TransformComponent>();
-				if (ImGui::CollapsingHeader("Transform##Mesh", ImGuiUtils::Flag_Collapse_Header))
-				{
-					ImGui::DragFloat3("Position##mesh", glm::value_ptr(comp.Transform.Position), 0.05f, -100.f, 100.f, "%.1f");
-					glm::vec3 angle = comp.Transform.Euler.angle();
-					ImGui::DragFloat3("Rotation##mesh", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
-					comp.Transform.Euler = angle;
-					ImGui::DragFloat3("Scale##mesh", glm::value_ptr(comp.Transform.Scale), 0.1f, 0.f, 10.f, "%.1f");
-				}
-			}
+			UiPanel::DrawNamePanel("##submesh_name", submesh.MeshName, "##mesh_visibility", bVisibleUI, rowWidth);
+			UiPanel::DrawTransformPanel(ent);
 
 			Ref<MaterialTable> mt = meshBase->getMaterialTable();
 			Ref<MaterialAsset> ma = AssetsManager::GetRuntimeAsset<MaterialAsset>((*mt)[submesh.MaterialIndex]);
@@ -507,5 +442,17 @@ namespace pio
 				meshComp.Visible = bVisibleUI;
 			}
 		}
+	}
+
+	void EditorLayer::onDrawCameraPanel(Ref<Entity>& ent)
+	{
+		if (!ent || !ent->hasComponent<CameraComponent>())
+			return;
+
+		auto& comp = ent->getComponent<CameraComponent>();
+		const float rowWidth = m_layoutParam.Viewport.Width;
+		bool visible{ true };// always be visible
+
+		UiPanel::DrawNamePanel("##camera_name", ent->getName(), "##camera_visibility", visible, rowWidth);
 	}
 }

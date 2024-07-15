@@ -12,12 +12,9 @@
 namespace pio
 {
 	struct RelationshipComponent
-	{
-		//[NOTE] Decs use memcpy to transfer data, so if we use std::string,
-		//       string which is allocated on heap will be empty pointer
-		std::string_view Tag{};
+	{		
 		uint32_t Self{ NullIndex };
-		uint32_t ParentIndex{ NullIndex };
+		uint32_t Parent{ NullIndex };
 		std::vector<uint32_t> Children{};
 
 		RelationshipComponent() = default;
@@ -186,26 +183,19 @@ namespace pio
 		uint32_t SelectedEntIndex{ NullIndex };
 	};
 
-	#define PIO_RELATION_SET_TAG(pEnt, tag) if(pEnt && pEnt->hasComponent<RelationshipComponent>()) { pEnt->getComponent<RelationshipComponent>().Tag = tag; }
+	#define PIO_RELATION_SET_SELF(pEnt) pEnt->getComponent<RelationshipComponent>().Self = pEnt->getIndex();
 
-	#define PIO_RELATION_SET_SELF(pEnt) if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
-										{ pEnt->getComponent<RelationshipComponent>().Self = pEnt->getCacheIndex(); }
-
-	#define PIO_RELATION_SET_PARENT(pEnt, pParent) if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
-												   { pEnt->getComponent<RelationshipComponent>().ParentIndex = pParent->getCacheIndex(); }
+	#define PIO_RELATION_SET_PARENT(pEnt, pParent) pEnt->getComponent<RelationshipComponent>().Parent = pParent->getIndex();
 
 	//[BugFix]vector:_orphan_range_unlocked crash, if we don't call shrink_to_fit, 
 	//        the push_back will crash at debug mode
-	#define PIO_RELATION_SET_CHILD(pEnt, pChild)  if(pEnt && pEnt->hasComponent<RelationshipComponent>())\
+	#define PIO_RELATION_SET_CHILD(pEnt, pChild)  auto &comp = pEnt->getComponent<RelationshipComponent>();\
+												  auto &children = comp.Children;\
+												  auto it = std::find(children.begin(), children.end(), pChild->getIndex());\
+												  if(it == children.end())\
 												  {\
-												     auto &comp = pEnt->getComponent<RelationshipComponent>();\
-												     auto &children = comp.Children;\
-												     auto it = std::find(children.begin(), children.end(), pChild->getCacheIndex());\
-												     if(it == children.end())\
-													 {\
-														 children.push_back(pChild->getCacheIndex());\
-                                                         children.shrink_to_fit();\
-													 }\
+													children.push_back(pChild->getIndex());\
+                                                    children.shrink_to_fit();\
 												  }
 }
 

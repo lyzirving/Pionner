@@ -10,9 +10,9 @@ namespace pio
 	class Registry;
 	class PhysicsActor;
 
-	enum class NodeType : uint8_t
+	enum class EntityClass : uint8_t
 	{
-		None = 0, Scene, 
+		None = 0, Scene, Camera,
 		MeshSource, Mesh,
 		DistantLight, PointLight
 	};
@@ -21,8 +21,8 @@ namespace pio
 	{
 		friend class Registry;
 	public:
-		Entity(NodeType type = NodeType::None);
-		Entity(const decs::EntityID &index, NodeType type = NodeType::None);
+		Entity(EntityClass clazz = EntityClass::None);
+		Entity(EntityClass clazz, const decs::EntityID& index, const std::string& name);
 
 		Entity(const Entity &rhs);
 		Entity(Entity &&rhs) noexcept;
@@ -46,6 +46,7 @@ namespace pio
 	public:
 		void attachActor(const Ref<PhysicsActor> &actor) { m_actor = actor; }
 		bool acquireActor(Ref<PhysicsActor> &out) { out = m_actor.lock(); return out.get() != nullptr; }
+		bool isClass(EntityClass clazz) const { return m_class == clazz; }
 
 	public:
 		template<typename Comp>
@@ -111,20 +112,23 @@ namespace pio
 		}
 
 	public:
-		inline const UUID32 &getUid() const { return m_uid; }
-		inline uint32_t getCacheIndex() const { return m_handle.index; }
-		inline NodeType getNodeType() const { return m_nodeType; }
+		const UUID32 &getUid() const { return m_uid; }
+		uint32_t getIndex() const { return m_handle.index; }
+		EntityClass getClass() const { return m_class; }
+		const std::string &getName() const { return m_name; }
 
-		inline void setNodeType(NodeType type) { m_nodeType = type; }
+		void setClass(EntityClass clazz) { m_class = clazz; }
+		void setName(const std::string& name) { m_name = name; }
 
 	private:
 		static Registry *s_registry;
 
 	private:
-		decs::EntityID m_handle;
 		UUID32 m_uid;
+		decs::EntityID m_handle;
+		EntityClass m_class{ EntityClass::None };
+		std::string m_name{};
 		WeakRef<PhysicsActor> m_actor;
-		NodeType m_nodeType{ NodeType::None };
 	};
 
 	class EntityView

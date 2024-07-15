@@ -30,7 +30,7 @@ namespace pio
 			tnFlags |= (selected == relation.Self) ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
 			bool hasChild = relation.Children.size() != 0;
 			if (!hasChild) { tnFlags |= ImGuiUtils::Flag_TreeLeaf; }
-			bool bOpen = ImGui::TreeNodeEx(relation.Tag.data(), tnFlags);
+			bool bOpen = ImGui::TreeNodeEx(child->getName().c_str(), tnFlags);
 			if (ImGuiUtils::bItemClicked()) { curSelect = relation.Self; }
 			if (bOpen && hasChild)
 			{
@@ -91,7 +91,7 @@ namespace pio
 			ImGuiTreeNodeFlags tnFlags = ImGuiUtils::Flag_Selected_TreeNode;
 			tnFlags |= (selected == rtRelation.Self) ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
 			uint32_t curSelect{ NullIndex };
-			bool bOpen = ImGui::TreeNodeEx(rtRelation.Tag.data(), tnFlags);
+			bool bOpen = ImGui::TreeNodeEx(rt->getName().c_str(), tnFlags);
 			if (ImGuiUtils::bItemClicked()) { curSelect = rtRelation.Self; }
 			if (bOpen)
 			{

@@ -42,6 +42,7 @@ namespace pio
 		void onDrawPointLightPanel(Ref<Entity> &ent);
 		void onDrawMeshSourcePanel(Ref<Entity> &ent);
 		void onDrawMeshPanel(Ref<Entity> &ent);
+		void onDrawCameraPanel(Ref<Entity>& ent);
 
 	private:
 		Ref<Entity> m_mainCameraEnt;

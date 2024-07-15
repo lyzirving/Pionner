@@ -31,10 +31,9 @@ namespace pio
 		Ref<MeshSource> meshSrc = param.meshSrc;
 		Ref<PhysicsScene> physicsScene = param.physicWorld;
 
-		Ref<Entity> hostEnt = Registry::Get()->create<RelationshipComponent, MeshSourceComponent>(NodeType::MeshSource);
+		Ref<Entity> hostEnt = Registry::Get()->create<RelationshipComponent, MeshSourceComponent>(EntityClass::MeshSource, meshSrc->getName());
 		hostEnt->getComponent<MeshSourceComponent>().SourceHandle = meshSrc->getHandle();
 
-		PIO_RELATION_SET_TAG(hostEnt, meshSrc->getName());
 		PIO_RELATION_SET_SELF(hostEnt);
 		if (param.Parent) 
 		{	
@@ -59,10 +58,9 @@ namespace pio
 		auto &submeshes = const_cast<std::vector<Submesh> &>(meshSrc->getSubmeshes());
 		for (uint32_t i = 0; i < submeshes.size(); i++)
 		{
-			Ref<Entity> ent = Registry::Get()->create<RelationshipComponent, TransformComponent, MeshCompT, Comps...>(NodeType::Mesh);	
+			Ref<Entity> ent = Registry::Get()->create<RelationshipComponent, TransformComponent, MeshCompT, Comps...>(EntityClass::Mesh, submeshes[i].MeshName);
 			submeshes[i].Ent = ent;
 
-			PIO_RELATION_SET_TAG(ent, submeshes[i].MeshName);
 			PIO_RELATION_SET_SELF(ent);
 			PIO_RELATION_SET_CHILD(hostEnt, ent);
 			PIO_RELATION_SET_PARENT(ent, hostEnt);			
