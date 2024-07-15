@@ -18,9 +18,9 @@ namespace pio
 	class SphereCoord
 	{
 	public:
-		SphereCoord();
-		SphereCoord(float theta, float phi, float radius);
-		~SphereCoord();
+		SphereCoord() {}
+		SphereCoord(float theta, float phi, float radius) : m_theta(theta), m_phi(phi), m_radius(radius) {}
+		~SphereCoord() = default;
 
 		bool operator==(const SphereCoord &rhs);
 		bool operator==(const SphereCoord &rhs) const;
@@ -28,28 +28,42 @@ namespace pio
 		bool operator!=(const SphereCoord &rhs);
 		bool operator!=(const SphereCoord &rhs) const;
 
-		inline void setTheta(float val)  { m_theta = val; }
-		inline void setPhi(float val)    { m_phi = val; }
-		inline void setRadius(float val) { m_radius = val; }
-		inline void set(float theta, float phi, float r) { m_theta = theta; m_phi = phi; m_radius = r; }
+		SphereCoord operator+(const SphereCoord& rhs);
+		SphereCoord &operator+=(const SphereCoord& rhs);
 
-		inline float getTheta() const  { return m_theta; }
-		inline float getPhi() const    { return m_phi; }
-		inline float getRadius() const { return m_radius; }
+		SphereCoord operator-(const SphereCoord& rhs);
+		SphereCoord& operator-=(const SphereCoord& rhs);
 
-		inline float *ptrTheta()  { return &m_theta; }
-		inline float *ptrPhi() { return &m_phi; }
-		inline float *ptrRadius() { return &m_radius; }
+		SphereCoord operator*(const SphereCoord& rhs);
+		SphereCoord& operator*=(const SphereCoord& rhs);
+
+		SphereCoord operator/(const SphereCoord& rhs);
+		SphereCoord& operator/=(const SphereCoord& rhs);
+
+		void setTheta(float val)  { m_theta = val; }
+		void setPhi(float val)    { m_phi = val; }
+		void setRadius(float val) { m_radius = val; }
+		void set(float theta, float phi, float r) { m_theta = theta; m_phi = phi; m_radius = r; }
+
+		float getTheta() const  { return m_theta; }
+		float getPhi() const    { return m_phi; }
+		float getRadius() const { return m_radius; }
+
+		float *ptrTheta()  { return &m_theta; }
+		float *ptrPhi() { return &m_phi; }
+		float *ptrRadius() { return &m_radius; }
 
 		/*
-		* @brief: Transform input cartesian coordinate into Sphere coordinate
-		* @param ccs: input position based on cartesian coordinate system.
+		* @brief     Apply input position
+		* @param ccs Input position based on cartesian coordinate system.
 		*/
-		void applyCartesian(const glm::vec3 &ccs);
-		glm::vec3 toCartesian() const;
-
+		void apply(const glm::vec3 &ccs);
+		/*
+		* @brief   Transform spherical position to cartesian coordinate system.
+		* @return  Position in  cartesian coordinate system
+		*/
+		glm::vec3 to() const;
 		void checkRange();
-		bool test(float theta, float phi, float r);
 
 	public:
 		// Transform spherical coordinate system to cartesian.

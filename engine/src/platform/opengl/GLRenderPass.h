@@ -4,8 +4,8 @@
 #include "GLDef.h"
 
 #include "core/Buffer.h"
+#include "core/math/Camera.h"
 
-#include "gfx/struct/Camera.h"
 #include "gfx/rhi/RenderPass.h"
 
 #ifdef LOCAL_TAG

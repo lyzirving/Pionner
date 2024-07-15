@@ -1,6 +1,6 @@
 #include "Ray.h"
+#include "Camera.h"
 
-#include "gfx/struct/Camera.h"
 #include "gfx/renderer/Renderer.h"
 #include "gfx/debug/GDebugger.h"
 

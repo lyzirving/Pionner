@@ -1,11 +1,7 @@
 #include "Renderer.h"
-#include "Renderer.h"
-#include "Renderer.h"
-#include "Renderer.h"
-#include "Renderer.h"
-#include "Renderer.h"
 #include "RenderThread.h"
 
+#include "core/math/Camera.h"
 #include "asset/AssetsManager.h"
 #include "platform/opengl/GLRenderAPI.h"
 
@@ -16,7 +12,6 @@
 
 #include "gfx/struct/ShaderLibrary.h"
 #include "gfx/struct/MeshFactory.h"
-#include "gfx/struct/Camera.h"
 #include "gfx/struct/Geometry2D.h"
 
 #ifdef LOCAL_TAG

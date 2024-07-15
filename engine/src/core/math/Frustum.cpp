@@ -38,10 +38,6 @@ namespace pio
 		return *this;
 	}
 
-	Frustum::~Frustum()
-	{
-	}
-
 	Frustum::State Frustum::acquireState()
 	{
 		State state{};

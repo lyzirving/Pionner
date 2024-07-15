@@ -6,7 +6,8 @@
 
 #include "asset/Asset.h"
 #include "core/math/Transform.h"
-#include "gfx/struct/Camera.h"
+#include "core/math/Camera.h"
+
 #include "physics/PhysicsDef.h"
 
 namespace pio

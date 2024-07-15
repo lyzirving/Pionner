@@ -1,7 +1,8 @@
 #ifndef __PIONNER_CORE_MATH_TRANSFORM_H__
 #define __PIONNER_CORE_MATH_TRANSFORM_H__
 
-#include "core/math/EulerAngle.h"
+#include "EulerAngle.h"
+#include "CPosition.h"
 
 namespace pio
 {
@@ -20,6 +21,7 @@ namespace pio
 		glm::vec3  Position{ 0.f };
 		glm::vec3  Scale{ 1.f };	
 		EulerAngle Euler;
+		CPosition  CPos{};
 	};
 }
 

@@ -117,7 +117,7 @@ namespace pio
 		m_camPosSpherical.set(theta, phi, r);
 		m_camPosSpherical.checkRange();
 
-		m_camPos = m_camPosSpherical.toCartesian();
+		m_camPos = m_camPosSpherical.to();
 	}
 
 	void Camera::CameraImpl::addRadiusDiff(float delta)
@@ -131,7 +131,7 @@ namespace pio
 		m_camPosSpherical.set(theta, phi, r);
 		m_camPosSpherical.checkRange();
 
-		m_camPos = m_camPosSpherical.toCartesian();
+		m_camPos = m_camPosSpherical.to();
 	}
 
 	void Camera::CameraImpl::setPosition(float theta, float phi, float r)
@@ -139,7 +139,7 @@ namespace pio
 		m_camPosSpherical.set(theta, phi, r);
 		m_camPosSpherical.checkRange();
 
-		m_camPos = m_camPosSpherical.toCartesian();
+		m_camPos = m_camPosSpherical.to();
 	}
 
 	void Camera::CameraImpl::setPosition(const SphereCoord &position)
@@ -147,13 +147,13 @@ namespace pio
 		m_camPosSpherical = position;
 		m_camPosSpherical.checkRange();
 
-		m_camPos = m_camPosSpherical.toCartesian();
+		m_camPos = m_camPosSpherical.to();
 	}
 
 	void Camera::CameraImpl::setPosition(const glm::vec3 &pos)
 	{
 		m_camPos = pos;
-		m_camPosSpherical.applyCartesian(pos);
+		m_camPosSpherical.apply(pos);
 	}
 
 	void Camera::CameraImpl::setLookAt(const glm::vec3 &lookAt)
@@ -174,7 +174,7 @@ namespace pio
 
 	glm::mat4 Camera::CameraImpl::CalcViewMat(const SphereCoord &position, const glm::vec3 &lookAt)
 	{
-		glm::vec3 pos = position.toCartesian();
+		glm::vec3 pos = position.to();
 		glm::vec3 viewDir = glm::normalize(lookAt - pos);
 		// compute the right and up vector by view direction and world up
 		glm::vec3 right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));

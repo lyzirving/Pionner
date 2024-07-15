@@ -15,6 +15,7 @@ namespace pio
 	class Frustum
 	{
 		friend class Camera;
+		friend class Camera2;
 	public:
 		struct State
 		{
@@ -28,7 +29,7 @@ namespace pio
 		Frustum();
 		Frustum(const Frustum &rhs);
 		Frustum &operator=(const Frustum &rhs);
-		~Frustum();
+		~Frustum() = default;
 
 	private:
 		State acquireState();
@@ -41,15 +42,15 @@ namespace pio
 		void calcPrj();
 		void calcOrtho();
 
-		inline float near() const { return m_near; }
-		inline float far() const { return m_far; }
-		inline float fov() const { return m_fov; }
-		inline float aspect() const { return m_aspect; };
+		float near() const { return m_near; }
+		float far() const { return m_far; }
+		float fov() const { return m_fov; }
+		float aspect() const { return m_aspect; };
 
-		inline float top() const { return m_near * std::tan(glm::radians(m_fov * 0.5f)); }
-		inline float bottom() const { return -top(); }
-		inline float right() const { return top() * m_aspect; }
-		inline float left() const { return -right(); }
+		float top() const { return m_near * std::tan(glm::radians(m_fov * 0.5f)); }
+		float bottom() const { return -top(); }
+		float right() const { return top() * m_aspect; }
+		float left() const { return -right(); }
 
 		const glm::mat4 &getPerspectMat() const { return m_perspectMat; }
 		const glm::mat4 &getOrthoMat() const { return m_orthoMat; }

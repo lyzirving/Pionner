@@ -7,17 +7,6 @@
 
 namespace pio
 {
-	SphereCoord::SphereCoord()
-	{
-	}
-
-	SphereCoord::SphereCoord(float theta, float phi, float radius)
-		: m_theta(theta), m_phi(phi), m_radius(radius)
-	{
-	}
-
-	SphereCoord::~SphereCoord() = default;
-
 	bool SphereCoord::operator==(const SphereCoord &rhs)
 	{
 		if (this == &rhs)
@@ -48,7 +37,83 @@ namespace pio
 		return !((*this) == rhs);
 	}
 
-	void SphereCoord::applyCartesian(const glm::vec3 &ccs)
+	SphereCoord SphereCoord::operator+(const SphereCoord& rhs)
+	{
+		SphereCoord s;
+		s.m_theta = this->m_theta + rhs.m_theta;
+		s.m_phi = this->m_phi + rhs.m_phi;
+		s.m_radius = this->m_radius + rhs.m_radius;
+		s.checkRange();
+		return s;
+	}
+
+	SphereCoord& SphereCoord::operator+=(const SphereCoord& rhs)
+	{
+		this->m_theta += rhs.m_theta;
+		this->m_phi += rhs.m_phi;
+		this->m_radius += rhs.m_radius;
+		this->checkRange();
+		return *this;
+	}
+
+	SphereCoord SphereCoord::operator-(const SphereCoord& rhs)
+	{
+		SphereCoord s;
+		s.m_theta = this->m_theta - rhs.m_theta;
+		s.m_phi = this->m_phi - rhs.m_phi;
+		s.m_radius = this->m_radius - rhs.m_radius;
+		s.checkRange();
+		return s;
+	}
+
+	SphereCoord& SphereCoord::operator-=(const SphereCoord& rhs)
+	{
+		this->m_theta -= rhs.m_theta;
+		this->m_phi -= rhs.m_phi;
+		this->m_radius -= rhs.m_radius;
+		this->checkRange();
+		return *this;
+	}
+
+	SphereCoord SphereCoord::operator*(const SphereCoord& rhs)
+	{
+		SphereCoord s;
+		s.m_theta = this->m_theta * rhs.m_theta;
+		s.m_phi = this->m_phi * rhs.m_phi;
+		s.m_radius = this->m_radius * rhs.m_radius;
+		s.checkRange();
+		return s;
+	}
+
+	SphereCoord& SphereCoord::operator*=(const SphereCoord& rhs)
+	{
+		this->m_theta *= rhs.m_theta;
+		this->m_phi *= rhs.m_phi;
+		this->m_radius *= rhs.m_radius;
+		this->checkRange();
+		return *this;
+	}
+
+	SphereCoord SphereCoord::operator/(const SphereCoord& rhs)
+	{
+		SphereCoord s;
+		s.m_theta = this->m_theta / rhs.m_theta;
+		s.m_phi = this->m_phi / rhs.m_phi;
+		s.m_radius = this->m_radius / rhs.m_radius;
+		s.checkRange();
+		return s;
+	}
+
+	SphereCoord& SphereCoord::operator/=(const SphereCoord& rhs)
+	{
+		this->m_theta /= rhs.m_theta;
+		this->m_phi /= rhs.m_phi;
+		this->m_radius /= rhs.m_radius;
+		this->checkRange();
+		return *this;
+	}
+
+	void SphereCoord::apply(const glm::vec3 &ccs)
 	{
 		SphereCoord ret = SphereCoord::ToSCS(ccs);
 		m_theta = ret.m_theta;
@@ -56,7 +121,7 @@ namespace pio
 		m_radius = ret.m_radius;
 	}
 
-	glm::vec3 SphereCoord::toCartesian() const
+	glm::vec3 SphereCoord::to() const
 	{
 		return SphereCoord::ToCCS(m_theta, m_phi, m_radius);
 	}
@@ -97,13 +162,6 @@ namespace pio
 		{
 			m_radius = 20.f;
 		}
-	}
-
-	bool SphereCoord::test(float theta, float phi, float r)
-	{
-		return !Math::Equal(m_theta, theta) ||
-			   !Math::Equal(m_phi, phi) ||
-			   !Math::Equal(m_radius, r);
 	}
 
 	glm::vec3 SphereCoord::ToCCS(float theta, float phi, float radius)
