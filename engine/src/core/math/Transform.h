@@ -14,14 +14,13 @@ namespace pio
 
 		Transform operator*(const Transform &rhs);
 
-		glm::mat4 mat() const { return glm::translate(glm::mat4(1.f),  Position) * 
+		glm::mat4 mat() const { return glm::translate(glm::mat4(1.f), Position.ccs()) * 
 								       Euler.mat() *
 								       glm::scale(glm::mat4(1.f), Scale); }
 	public:
-		glm::vec3  Position{ 0.f };
 		glm::vec3  Scale{ 1.f };	
 		EulerAngle Euler;
-		CPosition  CPos{};
+		CPosition  Position{};
 	};
 }
 

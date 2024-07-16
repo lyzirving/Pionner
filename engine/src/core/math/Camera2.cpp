@@ -39,14 +39,14 @@ namespace pio
 	{
 		if (m_dirty)
 		{			
-			m_pose.ViewMat = glm::lookAt(m_transform.Position, m_pose.LookAt, m_pose.Up);
+			m_pose.ViewMat = glm::lookAt(m_transform.Position.ccs(), m_pose.LookAt, m_pose.Up);
 			m_dirty = false;
 		}
 	}
 
 	void Camera2::calcCameraPose()
 	{
-		glm::vec3 viewDir = glm::normalize(m_pose.LookAt - m_transform.Position);
+		glm::vec3 viewDir = glm::normalize(m_pose.LookAt - m_transform.Position.ccs());
 		// compute the right and up vector by view direction and world up
 		m_pose.Right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
 		m_pose.Up = glm::normalize(glm::cross(m_pose.Right, viewDir));

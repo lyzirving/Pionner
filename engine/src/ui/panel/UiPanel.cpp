@@ -28,7 +28,7 @@ namespace pio
 	{
 		if (ImGui::CollapsingHeader("Transform", ImGuiUtils::Flag_Collapse_Header))
 		{
-			ImGui::DragFloat3("Position##Transform", glm::value_ptr(transform.Position), 0.05f, -100.f, 100.f, "%.1f");
+			ImGui::DragFloat3("Position##Transform", glm::value_ptr(transform.Position.ccs()), 0.05f, -100.f, 100.f, "%.1f");
 			glm::vec3 angle = transform.Euler.angle();
 			ImGui::DragFloat3("Rotation##Transform", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
 			transform.Euler = angle;
