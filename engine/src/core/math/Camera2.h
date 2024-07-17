@@ -36,19 +36,30 @@ namespace pio
 		float far() const { return m_frustum.far(); }
 		float fov() const { return m_frustum.fov(); }
 
-		float top() const { return m_frustum.top(); }
-		float bottom() const { return m_frustum.bottom(); }
-		float right() const { return m_frustum.right(); }
-		float left() const { return m_frustum.left(); }
+		float topEdge() const { return m_frustum.top(); }
+		float bottomEdge() const { return m_frustum.bottom(); }
+		float leftEdge() const { return m_frustum.left(); }
+		float rightEdge() const { return m_frustum.right(); }
 
-		const glm::mat4& getViewMat() const { return m_pose.ViewMat; }
-		const glm::mat4& getPrjMat() const { return m_frustum.getPerspectMat(); }
-		const glm::mat4& getOrthoMat() const { return m_frustum.getOrthoMat(); }
-		const Viewport& getViewport() const { return m_viewport; }
+		const glm::mat4& viewMat() const { return m_pose.ViewMat; }
+		const glm::mat4& prjMat() const { return m_frustum.getPerspectMat(); }
+		const glm::mat4& orthoMat() const { return m_frustum.getOrthoMat(); }
+		const Viewport&  viewport() const { return m_viewport; }
 
-		const glm::vec3& getRight() const { return m_pose.Right; }
-		const glm::vec3& getUp()    const { return m_pose.Up; }
-		const glm::vec3& getFront() const { return m_pose.Front; }
+		const glm::vec3& right() const { return m_pose.Right; }
+		const glm::vec3& up()    const { return m_pose.Up; }
+		const glm::vec3& front() const { return m_pose.Front; }
+
+		const CPosition &position() const { return m_transform.Position; }
+
+	public:
+		/*
+		* @brief: calculate view matrix by specific input
+		*/
+		static glm::mat4 GetViewMat(const SphereCoord &position, const glm::vec3 &lookAt = glm::vec3(0.f));
+		static glm::mat4 GetViewMat(const glm::vec3 &position, const glm::vec3 &lookAt = glm::vec3(0.f));
+		static glm::mat4 GetOrtho(float l, float r, float b, float t);
+		static glm::mat4 GetViewportMat(const Viewport &vp);
 
 	private:
 		void calcViewMat();

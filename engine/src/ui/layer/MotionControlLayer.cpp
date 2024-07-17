@@ -425,9 +425,10 @@ namespace pio
 			else if (MotionController::GetSprite()->hasComponent<PointLightComponent>())
 			{
 				auto &lightComp = MotionController::GetSprite()->getComponent<PointLightComponent>();
-				m_gizmoTransform->setTranslation(lightComp.Position);
+				auto &transComp = MotionController::GetSprite()->getComponent<TransformComponent>();
+				m_gizmoTransform->setTranslation(transComp.Transform.Position);
 				m_gizmoTransform->onDraw(DrawParam{ ts, m_motionUBSet });
-				onDrawUIPointLight(lightComp);				
+				onDrawUIPointLight(lightComp, transComp);				
 			}
 		}
 		else if (MotionController::bObj3dSelectd())
@@ -454,9 +455,10 @@ namespace pio
 			else if (MotionController::GetSprite()->hasComponent<PointLightComponent>())
 			{
 				auto &lightComp = MotionController::GetSprite()->getComponent<PointLightComponent>();
-				m_gizmoRotator->setTranslation(lightComp.Position);
+				auto &transComp = MotionController::GetSprite()->getComponent<TransformComponent>();
+				m_gizmoRotator->setTranslation(transComp.Transform.Position);
 				m_gizmoRotator->onDraw(DrawParam{ ts, m_motionUBSet });
-				onDrawUIPointLight(lightComp);				
+				onDrawUIPointLight(lightComp, transComp);				
 			}
 		}
 		else if (MotionController::bObj3dSelectd())
@@ -488,9 +490,9 @@ namespace pio
 		});
 	}
 
-	void MotionControlLayer::onDrawUIPointLight(PointLightComponent &lightComp)
+	void MotionControlLayer::onDrawUIPointLight(PointLightComponent &lightComp, TransformComponent &transComp)
 	{
-		const glm::vec3 &pos = lightComp.Position;
+		const glm::vec3 &pos = transComp.Transform.Position;
 		Ref<UiPointLight> ui = m_uiPointLight;
 		glm::vec4 &c = ui->Color;
 		Ref<UniformBufferSet> ubs = m_motionUBSet;

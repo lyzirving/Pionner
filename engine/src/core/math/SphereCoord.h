@@ -45,13 +45,9 @@ namespace pio
 		void setRadius(float val) { m_radius = val; }
 		void set(float theta, float phi, float r) { m_theta = theta; m_phi = phi; m_radius = r; }
 
-		float getTheta() const  { return m_theta; }
-		float getPhi() const    { return m_phi; }
-		float getRadius() const { return m_radius; }
-
-		float *ptrTheta()  { return &m_theta; }
-		float *ptrPhi() { return &m_phi; }
-		float *ptrRadius() { return &m_radius; }
+		float theta() const  { return m_theta; }
+		float phi() const    { return m_phi; }
+		float radius() const { return m_radius; }
 
 		/*
 		* @brief     Apply input position

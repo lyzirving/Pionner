@@ -109,7 +109,6 @@ namespace pio
 	struct PointLightComponent
 	{
 		uint32_t Index{ 0 };
-		glm::vec3 Position{ 0.f };
 		glm::vec3 Radiance{ 1.f };
 		float Intensity{ 1.f };
 		float MinRadius{ 1.f };

@@ -50,7 +50,7 @@ namespace pio
 		void onDrawRotationMode(const Timestep &ts);
 
 		void onDrawUIDistantLight(DirectionalLightComponent &lightComp, TransformComponent &transComp);
-		void onDrawUIPointLight(PointLightComponent &lightComp);	
+		void onDrawUIPointLight(PointLightComponent &lightComp, TransformComponent &transComp);
 
 		bool onHandleClick(const glm::vec2 &winCursor);
 		bool onHandleIconClick(const glm::vec2 &winCursor);

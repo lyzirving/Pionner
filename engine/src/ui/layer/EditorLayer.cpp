@@ -233,6 +233,7 @@ namespace pio
 		if (ent && ent->hasComponent<PointLightComponent>())
 		{
 			auto& lightComp = ent->getComponent<PointLightComponent>();	
+			auto &transComp = ent->getComponent<TransformComponent>();
 			const auto& name = ent->getName();
 			std::string nLabel = (std::stringstream() << "##" << ent->getName() << "_name").str();
 			std::string vLabel = (std::stringstream() << "##" << ent->getName() << "_visibility").str();
@@ -240,20 +241,8 @@ namespace pio
 			const float rowWidth = m_layoutParam.Viewport.Width;
 			bool bVisible{ true };//TODO
 			UiPanel::DrawNamePanel(nLabel.c_str(), name, vLabel.c_str(), bVisible, rowWidth);
-
-			std::string posName = "Position##" + name;
-			if (ImGui::CollapsingHeader(posName.c_str(), ImGuiUtils::Flag_Collapse_Header))
-			{
-				SphereCoord pos0, pos1;
-				pos0 = pos1 = SphereCoord::ToSCS(lightComp.Position);
-				std::string thetaName = "Theta##" + name;
-				ImGui::DragFloat(thetaName.c_str(), pos0.ptrTheta(), 0.1f, 0.f, 180.f, "%.1f");
-				std::string phiName = "Phi##" + name;
-				ImGui::DragFloat(phiName.c_str(), pos0.ptrPhi(), 0.1f, 0.f, 360.f, "%.1f");
-				std::string radiusName = "Radius##Position_" + name;
-				ImGui::DragFloat(radiusName.c_str(), pos0.ptrRadius(), 0.01f, 0.01f, 500.f, "%.2f");
-				if (pos0 != pos1) { lightComp.Position = SphereCoord::ToCCS(pos0); }
-			}
+			glm::vec3 old = transComp.Transform.Position;
+			UiPanel::DrawTransformPanel(transComp.Transform);			
 			std::string attrName = "Attrbute##" + name;
 			if (ImGui::CollapsingHeader(attrName.c_str(), ImGuiUtils::Flag_Collapse_Header))
 			{

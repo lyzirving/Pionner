@@ -70,9 +70,8 @@ namespace pio
 		UpdateSpritePosition(sceneData.Position, spriteComp, cam);
 	}
 
-	static void LightCompToSceneData(PointLightComponent &comp, SpriteComponent &spriteComp, PointLight &sceneData, Camera &cam)
-	{
-		sceneData.Position = comp.Position;
+	static void LightCompToSceneData(PointLightComponent &comp, TransformComponent &transComp, SpriteComponent &spriteComp, PointLight &sceneData, Camera &cam)
+	{		
 		sceneData.Radiance = comp.Radiance;
 		sceneData.Intensity = comp.Intensity;
 		sceneData.MinRadius = comp.MinRadius;
@@ -80,6 +79,7 @@ namespace pio
 		sceneData.Falloff = comp.Falloff;
 		sceneData.SourceSize = comp.SourceSize;
 		sceneData.CastShadow = comp.CastShadow;
+		sceneData.Position = transComp.Transform.Position;
 
 		Ref<StaticMesh> volume = AssetsManager::GetRuntimeAsset<StaticMesh>(sceneData.Volume);
 		if (volume) { volume->getMeshSource()->as<Sphere>()->setRadius(sceneData.Radius); }
@@ -89,11 +89,10 @@ namespace pio
 
 	static void CreatePointLightComponent(uint32_t index, PointLight &light, Ref<PhysicsScene> physicsScene, Ref<Entity> sceneRoot, Ref<Texture2D> icon)
 	{
-		Ref<Entity> ent = Registry::Get()->create<PointLightComponent, RelationshipComponent, SpriteComponent>(EntityClass::PointLight, light.Name);
+		Ref<Entity> ent = Registry::Get()->create<PointLightComponent, TransformComponent, RelationshipComponent, SpriteComponent>(EntityClass::PointLight, light.Name);
 
 		auto &ptComp = ent->getComponent<PointLightComponent>();
 		ptComp.Index = index;
-		ptComp.Position = light.Position;
 		ptComp.Radiance = light.Radiance;
 		ptComp.Intensity = light.Intensity;
 		ptComp.MinRadius = light.MinRadius;
@@ -101,6 +100,9 @@ namespace pio
 		ptComp.Falloff = light.Falloff;
 		ptComp.SourceSize = light.SourceSize;
 		ptComp.CastShadow = light.CastShadow;
+
+		auto &transComp = ent->getComponent<TransformComponent>();
+		transComp.Transform.Position = light.Position;
 
 		auto &rlComp = ent->getComponent<RelationshipComponent>();
 		PIO_RELATION_SET_SELF(ent);
@@ -183,9 +185,10 @@ namespace pio
 			auto it = view.begin();
 			while (it != view.end())
 			{
-				PointLightComponent &lightComp = it->second->getComponent<PointLightComponent>();
+				auto &lightComp = it->second->getComponent<PointLightComponent>();
+				auto &transComp = it->second->getComponent<TransformComponent>();
 				auto &spriteComp = it->second->getComponent<SpriteComponent>();
-				LightCompToSceneData(lightComp, spriteComp, m_lightEnv.PointLightData.Lights[lightComp.Index], sceneCam);
+				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.PointLightData.Lights[lightComp.Index], sceneCam);
 				it++;
 			}
 		}
@@ -273,12 +276,6 @@ namespace pio
 		}
 		PROFILERD_DURATION(start, "Scene:onRender");
 		renderer->endScene(*this);
-	}
-
-	void Scene::moveCamera(float viewPosDiffX, float viewPosDiffY)
-	{
-		Camera &camera = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
-		camera.addPosDiff(viewPosDiffX, viewPosDiffY);
 	}
 
 	void Scene::setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

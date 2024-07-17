@@ -106,9 +106,9 @@ namespace pio
 
 	void Camera::CameraImpl::addPosDiff(float thetaDiff, float phiDiff, float rDiff)
 	{
-		float theta = m_camPosSpherical.getTheta();
-		float phi = m_camPosSpherical.getPhi();
-		float r = m_camPosSpherical.getRadius();
+		float theta = m_camPosSpherical.theta();
+		float phi = m_camPosSpherical.phi();
+		float r = m_camPosSpherical.radius();
 
 		theta += thetaDiff;
 		phi += phiDiff;
@@ -122,9 +122,9 @@ namespace pio
 
 	void Camera::CameraImpl::addRadiusDiff(float delta)
 	{
-		float theta = m_camPosSpherical.getTheta();
-		float phi = m_camPosSpherical.getPhi();
-		float r = m_camPosSpherical.getRadius();
+		float theta = m_camPosSpherical.theta();
+		float phi = m_camPosSpherical.phi();
+		float r = m_camPosSpherical.radius();
 
 		r += delta;
 

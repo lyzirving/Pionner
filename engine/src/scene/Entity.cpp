@@ -204,8 +204,8 @@ namespace pio
 		{
 			if (hasComponent<PointLightComponent>())
 			{
-				auto& comp = getComponent<PointLightComponent>();
-				comp.Position = translation;
+				auto &transComp = getComponent<TransformComponent>();
+				transComp.Transform.Position = translation;
 				return true;
 			}
 			break;
@@ -247,8 +247,8 @@ namespace pio
 		{
 			if (hasComponent<PointLightComponent>())
 			{
-				auto& comp = getComponent<PointLightComponent>();
-				comp.Position += diff;
+				auto &transComp = getComponent<TransformComponent>();
+				transComp.Transform.Position += diff;
 				return true;
 			}
 			break;

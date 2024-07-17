@@ -32,7 +32,6 @@ namespace pio
 		// update rendering
 		virtual void onRender(Ref<SceneRenderer> &renderer, const Timestep &ts);
 
-		void moveCamera(float viewPosDiffX, float viewPosDiffY);
 		void setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 		void setLayoutParam(const WindowLayoutParams &p) { m_layoutParam = p; }
 

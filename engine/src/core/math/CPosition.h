@@ -29,6 +29,14 @@ namespace pio
 		operator glm::vec3() const { return m_cPos; }
 		operator const glm::vec3& () const { return m_cPos; }
 
+		operator SphereCoord() const { return m_sPos; }
+		operator const SphereCoord &() const { return m_sPos; }
+
+		// flush based on Cartesian coordinate system
+		void CFlush() { m_sPos = SphereCoord::ToSCS(m_cPos); }
+		// flush based on Spherical coordinate system
+		void SFlush() { m_cPos = SphereCoord::ToCCS(m_sPos); }
+
 		CPosition& operator=(const glm::vec3& rhs);
 		CPosition& operator=(const SphereCoord& rhs);
 

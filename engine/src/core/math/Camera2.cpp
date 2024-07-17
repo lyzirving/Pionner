@@ -20,6 +20,11 @@ namespace pio
 
 	void Camera2::setPosition(const SphereCoord& position)
 	{
+		if(m_transform.Position != position)
+		{
+			m_transform.Position = position;
+			m_dirty = true;
+		}
 	}
 
 	void Camera2::setLookAt(const glm::vec3& lookAt)
@@ -51,5 +56,40 @@ namespace pio
 		m_pose.Right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
 		m_pose.Up = glm::normalize(glm::cross(m_pose.Right, viewDir));
 		m_pose.Front = -viewDir;
+	}
+
+	glm::mat4 Camera2::GetViewMat(const SphereCoord &position, const glm::vec3 &lookAt)
+	{
+		glm::vec3 pos = position.to();
+		glm::vec3 viewDir = glm::normalize(lookAt - pos);
+		// compute the right and up vector by view direction and world up
+		glm::vec3 right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
+		glm::vec3 up = glm::normalize(glm::cross(right, viewDir));
+		return glm::lookAt(pos, lookAt, up);
+	}
+
+	glm::mat4 Camera2::GetViewMat(const glm::vec3 &position, const glm::vec3 &lookAt)
+	{
+		glm::vec3 viewDir = glm::normalize(lookAt - position);
+		// compute the right and up vector by view direction and world up
+		glm::vec3 right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
+		glm::vec3 up = glm::normalize(glm::cross(right, viewDir));
+		return glm::lookAt(position, lookAt, up);
+	}
+
+	glm::mat4 Camera2::GetOrtho(float l, float r, float b, float t)
+	{
+		return glm::ortho(l, r, b, t);
+	}
+
+	glm::mat4 Camera2::GetViewportMat(const Viewport &vp)
+	{
+		glm::vec4 col0 = glm::vec4(float(vp.Width) / 2.f, 0.f, 0.f, 0.f);
+		glm::vec4 col1 = glm::vec4(0.f, float(vp.Height) / 2.f, 0.f, 0.f);
+		glm::vec4 col2 = glm::vec4(0.f, 0.f, 0.5f, 0.f);
+		glm::vec4 col3 = glm::vec4(float(vp.X) + float(vp.Width) / 2.f,
+								   float(vp.Y) + float(vp.Height) / 2.f,
+								   0.5f, 1.f);
+		return glm::mat4(col0, col1, col2, col3);
 	}
 }
