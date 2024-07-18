@@ -235,7 +235,7 @@ namespace pio
 		{
 			auto *p = event.as<MouseScrolledEvent>();
 			auto &comp = m_mainCameraEnt->getComponent<CameraComponent>();
-			comp.Camera.addRadiusDiff(-p->getYOffset() * 0.5f/*scale factor*/);
+			comp.Camera.setPositionDelta(SphereCoord(0.f, 0.f, -p->getYOffset() * 0.5f/*scale factor*/));
 		}
 		return inside;
 	}
@@ -250,14 +250,14 @@ namespace pio
 		Ref<UniformBufferSet> ubSet = m_visionUBSet;
 		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
 
-		SphereCoord sceneCamPos = camComp.Camera.getCameraPosSC();
+		SphereCoord sceneCamPos = camComp.Camera.position();
 		// Make ui camera's radius remain unchange
 		sceneCamPos.setRadius(CTL_CAM_RADIUS);
 
 		cameraUD.ViewMat = Camera::GetViewMat(sceneCamPos, glm::vec3(0.f));
-		cameraUD.PrjMat = camera.getPrjMat();
-		cameraUD.OrthoMat = camera.getOrthoMat();
-		cameraUD.CameraPosition = camera.getCameraPos();
+		cameraUD.PrjMat = camera.prjMat();
+		cameraUD.OrthoMat = camera.orthoMat();
+		cameraUD.CameraPosition = camera.position();
 		cameraUD.FrustumFar = camera.far();
 		cameraUD.serialize();
 
@@ -341,16 +341,16 @@ namespace pio
 	{
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		Camera &camera = camComp.Camera;
-		const Viewport &vp = camera.getViewport();
+		const Viewport &vp = camera.viewport();
 
 		CameraUD &cameraUD = m_motionCamUD;
 		Ref<UniformBufferSet> ubSet = m_motionUBSet;
 		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
 
-		cameraUD.ViewMat = camera.getViewMat();
-		cameraUD.PrjMat = camera.getPrjMat();
-		cameraUD.OrthoMat = camera.getOrthoMat();
-		cameraUD.CameraPosition = camera.getCameraPos();
+		cameraUD.ViewMat = camera.viewMat();
+		cameraUD.PrjMat = camera.prjMat();
+		cameraUD.OrthoMat = camera.orthoMat();
+		cameraUD.CameraPosition = camera.position();
 		cameraUD.FrustumFar = camera.far();
 		cameraUD.serialize();
 
@@ -385,7 +385,7 @@ namespace pio
 	{
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
 		Camera &camera = camComp.Camera;
-		const Viewport &vp = camera.getViewport();
+		const Viewport &vp = camera.viewport();
 
 		Renderer::SubmitRC([vp]() mutable
 		{
@@ -661,7 +661,7 @@ namespace pio
 			delta.x = Math::Clamp(delta.x, -20.f, 20.f);
 			delta.y = Math::Clamp(delta.y, -20.f, 20.f);
 			auto &comp = m_mainCameraEnt->getComponent<CameraComponent>();
-			comp.Camera.addPosDiff(delta.x, delta.y);
+			comp.Camera.setPositionDelta(SphereCoord(-delta.y, -delta.x, 0.f) * 0.75f);
 			m_winCursor = winCursor;
 			return true;
 		}

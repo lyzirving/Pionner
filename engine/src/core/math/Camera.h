@@ -1,15 +1,14 @@
-#ifndef __PIONNER_GFX_STRUCT_CAMERA_H__
-#define __PIONNER_GFX_STRUCT_CAMERA_H__
+#ifndef __PIONNER_GFX_STRUCT_CAMERA_2_H__
+#define __PIONNER_GFX_STRUCT_CAMERA_2_H__
 
 #include "Frustum.h"
 
 #include "gfx/renderer/RenderState.h"
 #include "gfx/rhi/Uniform.h"
-#include "core/math/SphereCoord.h"
+#include "core/math/Transform.h"
 
 namespace pio
 {
-	enum class CameraId : uint8_t { MAIN = 0, CNT };
 	enum class ProjectionType { None = 0, Perspective, Orthographic };
 
 	struct CameraUD
@@ -23,92 +22,37 @@ namespace pio
 		float FrustumFar{ 0.f };
 	};
 
+	struct CameraPose
+	{
+		glm::vec3 LookAt{ 0.f };
+		// camera's +x/+y/+z axis
+		glm::vec3 Right{ 1.f, 0.f, 0.f }, Up{ 0.f, 1.f, 0.f }, Front{ 0.f, 0.f, 1.f };
+		glm::mat4 ViewMat{ 1.f };
+	};
+
+	enum CameraAttrBits : uint8_t
+	{
+		CameraAttrBits_Pos = 0, 
+		CameraAttrBits_Rot, 
+		CameraAttrBits_LookAt, 
+		CameraAttrBits_Num
+	};
+
+	using CameraAttrs = std::bitset<CameraAttrBits_Num>;
+
 	class Camera
 	{
-	private:
-		// ---------------------- class CameraImpl -------------------------------
-		// -----------------------------------------------------------------------
-		class CameraImpl
-		{
-			friend class Camera;
-		public:
-			struct CamState
-			{
-				glm::vec3 m_position{ 0.f };
-				glm::vec3 m_lookAt{ 0.f };
-			};
-
-			CameraImpl();
-			CameraImpl(const CameraImpl &rhs);
-			CameraImpl &operator=(const CameraImpl &rhs);
-			~CameraImpl();
-
-		private:
-			CamState acquireState();
-			void applyState(const CamState &state);
-			void addPosDiff(float thetaDiff, float phiDiff, float rDiff);
-			void addRadiusDiff(float delta);
-			void setPosition(float theta, float phi, float r);
-			void setPosition(const SphereCoord &position);
-			void setPosition(const glm::vec3 &pos);
-			void setLookAt(const glm::vec3 &lookAt);
-			void calcViewMat();
-
-			const glm::mat4 &getViewMat() const { return m_viewMat; }
-			const glm::vec3 &getCamPos() const { return m_camPos; }
-			const SphereCoord &getCamPosSC() const { return m_camPosSpherical; }
-
-		private:
-			static glm::mat4 CalcViewMat(const SphereCoord &position, const glm::vec3 &lookAt);
-			static glm::mat4 CalcViewMat(const glm::vec3 &position, const glm::vec3 &lookAt);
-
-		private:
-			glm::vec3 m_camPos{ 0.f };
-			SphereCoord m_camPosSpherical{};
-			// m_lookAt is set (0.f, 0.f, 0.f) by default
-			// -(m_lookAt - m_camPos) is camera's +z
-			glm::vec3 m_lookAt{ 0.f };
-
-			// camera's +x
-			glm::vec3 m_camRight{ 0.f };
-			// camera's +y
-			glm::vec3 m_camUp{ 0.f };
-			glm::vec3 m_camFront{ 0.f };
-			glm::mat4 m_viewMat{ 1.f };
-		};
-		// -----------------------------------------------------------------------
-		// -----------------------------------------------------------------------
-
 	public:
-		Camera();
-		Camera(CameraId id);
-		Camera(const Camera &rhs);
-		Camera &operator=(const Camera &rhs);
-		virtual ~Camera();
+		Camera() {}
+		~Camera() = default;
 
-		/*
-	     * @brief: add difference to camera's position, delta is screen coordinate.
-	     * @param: deltaX, scroll delta distance on horizontal, +x is go right on screen.
-	     *         deltaY, scroll delta distance on vertical, +y is go down on screen.
-	     */
-		void addPosDiff(float deltaX, float deltaY);
-		void addRadiusDiff(float delta);
 		void flush();
 
-		/*
-		* @brief: calculate view matrix by specific input
-		*/ 
-		static glm::mat4 GetViewMat(const SphereCoord &position, const glm::vec3 &lookAt = glm::vec3(0.f));
-		static glm::mat4 GetViewMat(const glm::vec3 &position, const glm::vec3 &lookAt = glm::vec3(0.f));
-		static glm::mat4 GetOrtho(float l, float r, float b, float t);
-		static glm::mat4 GetViewportMat(const Viewport &vp);
-
-	public:
-		void setVisible(bool b) { m_visible = b; }
-		void setPosition(float theta, float phi, float r) { m_camImpl.setPosition(theta, phi, r); }
-		void setPosition(const SphereCoord &position) { m_camImpl.setPosition(position); }
-		void setPosition(const glm::vec3 &pos) { m_camImpl.setPosition(pos); }
-		void setLookAt(const glm::vec3 &lookAt) { m_camImpl.setLookAt(lookAt); }
+		void setPosition(const glm::vec3& position);
+		void setPosition(const SphereCoord &position);
+		void setPositionDelta(const glm::vec3& delta);
+		void setPositionDelta(const SphereCoord& delta);
+		void setLookAt(const glm::vec3& lookAt);
 
 		void setFov(float fov) { m_frustum.setFov(fov); }
 		void setAspect(float aspect) { m_frustum.setAspect(aspect); }
@@ -116,36 +60,48 @@ namespace pio
 		void setOrtho(float l, float r, float b, float t) { m_frustum.setOrtho(l, r, b, t); }
 		void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) { m_viewport = Viewport{ x, y, w, h }; }
 
-		CameraId getCameraId() const { return m_id; }
-		bool     isVisible()   const { return m_visible; }
-
 		float near() const { return m_frustum.near(); }
 		float far() const { return m_frustum.far(); }
 		float fov() const { return m_frustum.fov(); }
 
-		float top() const { return m_frustum.top(); }
-		float bottom() const { return m_frustum.bottom(); }
-		float right() const { return m_frustum.right(); }
-		float left() const { return m_frustum.left(); }
+		float topEdge() const { return m_frustum.top(); }
+		float bottomEdge() const { return m_frustum.bottom(); }
+		float leftEdge() const { return m_frustum.left(); }
+		float rightEdge() const { return m_frustum.right(); }
 
-		const glm::vec3 &getCameraPos() const { return m_camImpl.getCamPos(); }
-		const SphereCoord &getCameraPosSC() const { return m_camImpl.getCamPosSC(); }
+		const glm::mat4& viewMat() const { return m_pose.ViewMat; }
+		const glm::mat4& prjMat() const { return m_frustum.getPerspectMat(); }
+		const glm::mat4& orthoMat() const { return m_frustum.orthoMat(); }
+		const Viewport&  viewport() const { return m_viewport; }
 
-		const glm::mat4 &getViewMat() const { return m_camImpl.getViewMat(); }
-		const glm::mat4 &getPrjMat() const { return m_frustum.getPerspectMat(); }
-		const glm::mat4 &getOrthoMat() const { return m_frustum.getOrthoMat(); }
-		const Viewport  &getViewport() const { return m_viewport; }
+		const glm::vec3& right() const { return m_pose.Right; }
+		const glm::vec3& up()    const { return m_pose.Up; }
+		const glm::vec3& front() const { return m_pose.Front; }
 
-		const glm::vec3 &getRightAxis() const { return m_camImpl.m_camRight; }
-		const glm::vec3 &getUpAxis()    const    { return m_camImpl.m_camUp; }
-		const glm::vec3 &getFrontAxis() const { return m_camImpl.m_camFront; }
+		void attrChange(CameraAttrBits bit) { m_attrBits.set(bit); }		
 
-	protected:
-		bool m_visible{ true };
-		CameraId m_id{ CameraId::MAIN };
-		CameraImpl m_camImpl{};
+		Transform& transform() { return m_transform; }
+		const Transform& transform() const { return m_transform; }
+		const CPosition& position() const { return m_transform.Position; }
+	public:
+		/*
+		* @brief: calculate view matrix by specific input
+		*/
+		static glm::mat4 GetViewMat(const SphereCoord &position, const glm::vec3 &lookAt = glm::vec3(0.f));
+		static glm::mat4 GetViewMat(const glm::vec3 &position, const glm::vec3 &lookAt = glm::vec3(0.f));
+		static glm::mat4 GetOrtho(float l, float r, float b, float t);
+		static glm::mat4 GetViewportMat(const Viewport &vp);
+
+	private:
+		void calcViewMat();
+		void calcCameraPose();
+
+	private:
 		Frustum m_frustum{};
 		Viewport m_viewport{};
+		Transform m_transform{};
+		CameraPose m_pose{};
+		CameraAttrs m_attrBits{};
 	};
 }
 

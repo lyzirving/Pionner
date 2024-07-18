@@ -26,8 +26,8 @@ namespace pio
 
 	static void UpdateSpritePosition(const glm::vec3 &worldPos, SpriteComponent &spriteComp, Camera &cam)
 	{
-		const Viewport &vp = cam.getViewport();
-		glm::mat4 mvp = cam.getPrjMat() * cam.getViewMat();
+		const Viewport &vp = cam.viewport();
+		glm::mat4 mvp = cam.prjMat() * cam.viewMat();
 		glm::mat4 vpMat = Camera::GetViewportMat(Viewport(0, 0, vp.Width, vp.Height));
 		glm::uvec2 vpSize{ vp.Width, vp.Height };
 
@@ -308,7 +308,7 @@ namespace pio
 		PIO_RELATION_SET_CHILD(m_sceneRoot, m_mainCameraEnt);
 		PIO_RELATION_SET_PARENT(m_mainCameraEnt, m_sceneRoot);
 		auto &cameraComp = m_mainCameraEnt->getComponent<CameraComponent>();
-		cameraComp.Camera.setPosition(72.f, 341.f, 10.f);
+		cameraComp.Camera.setPosition(SphereCoord(72.f, 341.f, 10.f));
 		cameraComp.Camera.setLookAt(glm::vec3(0.f));
 		cameraComp.Primary = true;
 

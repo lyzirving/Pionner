@@ -8,14 +8,22 @@ namespace pio
 	class Entity;
 	class Transform;
 
+	enum DataAttrBits : uint8_t
+	{
+		DataAttrBits_Pos = 0, DataAttrBits_Rot, DataAttrBits_Scale,
+		DataAttrBits_Num
+	};
+
+	using DataAttrs = std::bitset<DataAttrBits_Num>;
+
 	class UiPanel
 	{
 	public:
 		static void DrawNamePanel(const char *nLabel, const std::string &name,
 							      const char* vLabel, bool &visible, 
 								  uint32_t rowWidth);
-		static void DrawTransformPanel(Transform& transform);
-		static void DrawTransformPanel(Ref<Entity> &entity);
+		static DataAttrs DrawTransformPanel(Transform& transform);
+		static DataAttrs DrawTransformPanel(Ref<Entity> &entity);
 	};
 }
 

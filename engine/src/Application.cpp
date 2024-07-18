@@ -149,10 +149,10 @@ namespace pio
 		MaterialLibrary::Init();
 
 		// RuntimeLayer should be added at the first place
-		auto runtimeLayer = CreateRef<RuntimeLayer>(WindowLayoutParams(0.2f, 0.f, 0.8f, 1.f));
+		auto runtimeLayer = CreateRef<RuntimeLayer>(WindowLayoutParams(0.f, 0.f, 0.6f, 1.f));
 		m_layerManager.pushLayer(runtimeLayer);
 
-		auto sceneHierarchy = CreateRef<SceneHierarchyLayer>(WindowLayoutParams(0.f, 0.f, 0.2f, 1.f));
+		auto sceneHierarchy = CreateRef<SceneHierarchyLayer>(WindowLayoutParams(0.6f, 0.f, 0.8f, 1.f));
 		m_layerManager.pushLayer(sceneHierarchy);
 
 		auto editorLayer = CreateRef<EditorLayer>(WindowLayoutParams(0.8f, 0.f, 1.f, 1.f));

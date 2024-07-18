@@ -7,6 +7,28 @@
 
 namespace pio
 {
+	SphereCoord& SphereCoord::operator=(const SphereCoord& rhs)
+	{
+		if (this != &rhs)
+		{
+			this->m_theta = rhs.m_theta;
+			this->m_phi = rhs.m_phi;
+			this->m_radius = rhs.m_radius;
+		}
+		return *this;
+	}
+
+	SphereCoord& SphereCoord::operator=(SphereCoord&& rhs) noexcept
+	{
+		if (this != &rhs)
+		{
+			this->m_theta = std::move(rhs.m_theta);
+			this->m_phi = std::move(rhs.m_phi);
+			this->m_radius = std::move(rhs.m_radius);
+		}
+		return *this;
+	}
+
 	bool SphereCoord::operator==(const SphereCoord &rhs)
 	{
 		if (this == &rhs)
@@ -109,6 +131,44 @@ namespace pio
 		this->m_theta /= rhs.m_theta;
 		this->m_phi /= rhs.m_phi;
 		this->m_radius /= rhs.m_radius;
+		this->checkRange();
+		return *this;
+	}
+
+	SphereCoord SphereCoord::operator*(float rhs)
+	{
+		SphereCoord s(*this);
+		s.m_theta *= rhs;
+		s.m_phi *= rhs;
+		s.m_radius *= rhs;
+		s.checkRange();
+		return *this;
+	}
+
+	SphereCoord& SphereCoord::operator*=(float rhs)
+	{
+		this->m_theta *= rhs;
+		this->m_phi *= rhs;
+		this->m_radius *= rhs;
+		this->checkRange();
+		return *this;
+	}
+
+	SphereCoord SphereCoord::operator/(float rhs)
+	{
+		SphereCoord s(*this);
+		s.m_theta /= rhs;
+		s.m_phi /= rhs;
+		s.m_radius /= rhs;
+		s.checkRange();
+		return *this;
+	}
+
+	SphereCoord& SphereCoord::operator/=(float rhs)
+	{
+		this->m_theta /= rhs;
+		this->m_phi /= rhs;
+		this->m_radius /= rhs;
 		this->checkRange();
 		return *this;
 	}

@@ -24,27 +24,38 @@ namespace pio
 		ImGui::PopItemWidth();
 	}
 
-	void UiPanel::DrawTransformPanel(Transform& transform)
+	DataAttrs UiPanel::DrawTransformPanel(Transform& transform)
 	{
+		DataAttrs change;
 		if (ImGui::CollapsingHeader("Transform", ImGuiUtils::Flag_Collapse_Header))
 		{
-			glm::vec3 lastPos = transform.Position.ccs();
-			ImGui::DragFloat3("Position##Transform", glm::value_ptr(transform.Position.ccs()), 0.05f, -100.f, 100.f, "%.1f");
+			glm::vec3 position = transform.Position.ccs();
+			ImGui::DragFloat3("Position##Transform", glm::value_ptr(position), 0.05f, -100.f, 100.f, "%.1f");
+			if (transform.Position != position)
+			{
+				transform.Position = position;
+				change.set(DataAttrBits_Pos);
+			}
+
 			glm::vec3 angle = transform.Euler.angle();
 			ImGui::DragFloat3("Rotation##Transform", &angle.x, 0.1f, -360.f, 360.f, "%.1f");
-			transform.Euler = angle;
+			if (transform.Euler != angle)
+			{
+				transform.Euler = angle;
+				change.set(DataAttrBits_Rot);
+			}	
+
 			ImGui::DragFloat3("Scale##Transform", glm::value_ptr(transform.Scale), 0.1f, 0.f, 10.f, "%.1f");
-			if(transform.Position.ccs() != lastPos)
-				transform.Position.CFlush();
 		}
+		return change;
 	}
 
-	void UiPanel::DrawTransformPanel(Ref<Entity>& entity)
+	DataAttrs UiPanel::DrawTransformPanel(Ref<Entity>& entity)
 	{
 		if (!entity || !entity->hasComponent<TransformComponent>())
-			return;
+			return DataAttrs();
 
 		auto& comp = entity->getComponent<TransformComponent>();
-		DrawTransformPanel(comp.Transform);
+		return DrawTransformPanel(comp.Transform);
 	}
 }

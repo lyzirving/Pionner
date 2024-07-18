@@ -443,5 +443,11 @@ namespace pio
 		bool visible{ true };// always be visible
 
 		UiPanel::DrawNamePanel("##camera_name", ent->getName(), "##camera_visibility", visible, rowWidth);
+
+		auto attr = UiPanel::DrawTransformPanel(comp.Camera.transform());
+		if (attr.test(DataAttrBits_Pos))
+			comp.Camera.attrChange(CameraAttrBits_Pos);
+		if (attr.test(DataAttrBits_Rot))
+			comp.Camera.attrChange(CameraAttrBits_Rot);
 	}
 }

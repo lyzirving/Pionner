@@ -38,29 +38,6 @@ namespace pio
 		return *this;
 	}
 
-	Frustum::State Frustum::acquireState()
-	{
-		State state{};
-		state.m_fov = m_fov;
-		state.m_aspect = m_aspect;
-		state.m_near = m_near;
-		state.m_far = m_far;
-		state.m_orthoLeft = m_orthoLeft;
-		state.m_orthoRight = m_orthoRight;
-		state.m_orthoTop = m_orthoTop;
-		state.m_orthoBottom = m_orthoBottom;
-		return state;
-	}
-
-	void Frustum::applyState(const Frustum::State &state)
-	{
-		setFov(state.m_fov);
-		setAspect(state.m_aspect);
-		setNearFar(state.m_near, state.m_far);
-		setOrtho(state.m_orthoLeft, state.m_orthoRight,
-				 state.m_orthoBottom, state.m_orthoTop);
-	}
-
 	void Frustum::calcPrj()
 	{
 		if (m_dirty.test(FM_BIT_PRJ))

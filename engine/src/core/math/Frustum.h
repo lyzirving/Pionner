@@ -15,25 +15,13 @@ namespace pio
 	class Frustum
 	{
 		friend class Camera;
-		friend class Camera2;
 	public:
-		struct State
-		{
-			float m_fov{ 0.f }, m_aspect{ 0.f };
-			float m_near{ 0.f }, m_far{ 0.f };
-
-			float m_orthoLeft{ 0.f }, m_orthoRight{ 0.f };
-			float m_orthoBottom{ 0.f }, m_orthoTop{ 0.f };
-		};
-
 		Frustum();
 		Frustum(const Frustum &rhs);
 		Frustum &operator=(const Frustum &rhs);
 		~Frustum() = default;
 
 	private:
-		State acquireState();
-		void applyState(const State &state);
 		void setFov(float fov);
 		void setAspect(float aspect);
 		void setNearFar(float near, float far);
@@ -53,7 +41,7 @@ namespace pio
 		float left() const { return -right(); }
 
 		const glm::mat4 &getPerspectMat() const { return m_perspectMat; }
-		const glm::mat4 &getOrthoMat() const { return m_orthoMat; }
+		const glm::mat4 &orthoMat() const { return m_orthoMat; }
 		
 	private:
 

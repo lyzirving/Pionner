@@ -103,7 +103,7 @@ namespace pio
 		LightEnvironment& lightEnv = const_cast<LightEnvironment&>(scene.m_lightEnv);
 		CameraUD& cameraUD = m_cameraUD;
 		Camera& distLightCam = m_distantLightShadowPass->getCamera();
-		const Viewport& vp = camera.getViewport();
+		const Viewport& vp = camera.viewport();
 
 		// [NOTE]: how to set a light matrix for distant light shadow that light's postion will not effect shadow
 		distLightCam.setPosition(lightEnv.DirectionalLight.Position);
@@ -112,10 +112,10 @@ namespace pio
 		distLightCam.setNearFar(camera.near(), camera.far());
 		distLightCam.flush();
 
-		cameraUD.ViewMat = camera.getViewMat();
-		cameraUD.PrjMat = camera.getPrjMat();
-		cameraUD.OrthoMat = camera.getOrthoMat();
-		cameraUD.CameraPosition = camera.getCameraPos();
+		cameraUD.ViewMat = camera.viewMat();
+		cameraUD.PrjMat = camera.prjMat();
+		cameraUD.OrthoMat = camera.orthoMat();
+		cameraUD.CameraPosition = camera.position();
 		cameraUD.FrustumFar = camera.far();
 
 		auto cameraUB = m_uniformBuffers->get((uint32_t)UBBindings::Camera);
@@ -124,8 +124,8 @@ namespace pio
 		auto ptLightDataUB = m_uniformBuffers->get((uint32_t)UBBindings::PointLightData);
 		auto ptLightSdDataUB = m_uniformBuffers->get((uint32_t)UBBindings::PointLightShadowData);
 
-		lightEnv.DirectionalLightShadowData.ViewMat = distLightCam.getViewMat();
-		lightEnv.DirectionalLightShadowData.PrjMat = distLightCam.getOrthoMat();
+		lightEnv.DirectionalLightShadowData.ViewMat = distLightCam.viewMat();
+		lightEnv.DirectionalLightShadowData.PrjMat = distLightCam.orthoMat();
 
 		FillPointLightShadowData(camera, m_pointLightShadowPass->getFramebuffer(), lightEnv);
 

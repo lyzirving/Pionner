@@ -15,14 +15,14 @@ namespace pio
 	{
 		float far = camera.far();
 		float near = camera.near();
-		float left = camera.left();
-		float right = camera.right();
-		float top = camera.top();
-		float bottom = camera.bottom();
+		float left = camera.leftEdge();
+		float right = camera.rightEdge();
+		float top = camera.topEdge();
+		float bottom = camera.bottomEdge();
 		// camera position in world space
-		glm::vec3 camPos = camera.getCameraPos();
-		const Viewport &vp = camera.getViewport();
-		const glm::mat4 &viewMat = camera.getViewMat();
+		glm::vec3 camPos = camera.position();
+		const Viewport &vp = camera.viewport();
+		const glm::mat4 &viewMat = camera.viewMat();
 
 		// origin of OpenGL's viewport is left-bottom.
 		glm::vec2 pt = viewportPt;
@@ -51,8 +51,8 @@ namespace pio
 			// adjust the point in frustum for GDebuger visualization
 			glm::vec3 pos = camPos;
 			glm::vec3 dstPos = camPt;
-			pos = pos - camera.getFrontAxis() * near;
-			dstPos = dstPos - camera.getFrontAxis() * near;
+			pos = pos - camera.front() * near;
+			dstPos = dstPos - camera.front() * near;
 			GDebugger::Get()->addLine(Ray(pos, glm::normalize(dstPos - pos)));
 		}
 
@@ -63,14 +63,14 @@ namespace pio
 	{
 		float far = camera.far();
 		float near = camera.near();
-		float left = camera.left();
-		float right = camera.right();
-		float top = camera.top();
-		float bottom = camera.bottom();
+		float left = camera.leftEdge();
+		float right = camera.rightEdge();
+		float top = camera.topEdge();
+		float bottom = camera.bottomEdge();
 		// camera position in world space
-		glm::vec3 camPos = camera.getCameraPos();
-		const Viewport &vp = camera.getViewport();
-		const glm::mat4 &viewMat = camera.getViewMat();
+		glm::vec3 camPos = camera.position();
+		const Viewport &vp = camera.viewport();
+		const glm::mat4 &viewMat = camera.viewMat();
 
 		// origin of OpenGL's viewport is left-bottom.
 		glm::vec2 pt = viewportPt;

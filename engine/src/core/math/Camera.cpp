@@ -7,8 +7,6 @@
 #endif
 #define LOCAL_TAG "Camera"
 
-#define CHANGE_RATIO_CAM_POS (0.75f)
-
 namespace pio
 {
 	void CameraUD::serialize()
@@ -63,116 +61,91 @@ namespace pio
 		return block;
 	}
 
-	Camera::CameraImpl::CameraImpl()
+	void Camera::flush()
 	{
+		calcViewMat();
+		m_frustum.calcPrj();
+		m_frustum.calcOrtho();
 	}
 
-	Camera::CameraImpl::CameraImpl(const CameraImpl &rhs) : m_camPos(rhs.m_camPos), m_camPosSpherical(rhs.m_camPosSpherical)
-		, m_lookAt(rhs.m_lookAt), m_camRight(rhs.m_camRight), m_camUp(rhs.m_camUp), m_camFront(rhs.m_camFront)
-		, m_viewMat(rhs.m_viewMat)
+	void Camera::setPosition(const glm::vec3& position)
 	{
-	}
-
-	Camera::CameraImpl &Camera::CameraImpl::operator=(const CameraImpl &rhs)
-	{
-		if (this != &rhs)
+		if (m_transform.Position != position)
 		{
-			m_camPos = rhs.m_camPos;
-			m_camPosSpherical = rhs.m_camPosSpherical;
-			m_lookAt = rhs.m_lookAt;
-			m_camRight = rhs.m_camRight;
-			m_camUp = rhs.m_camUp;
-			m_camFront = rhs.m_camFront;
-			m_viewMat = rhs.m_viewMat;
+			m_transform.Position = position;
+			m_attrBits.set(CameraAttrBits_Pos);
 		}
-		return *this;
 	}
 
-	Camera::CameraImpl::~CameraImpl() = default;
-
-	Camera::CameraImpl::CamState Camera::CameraImpl::acquireState()
+	void Camera::setPosition(const SphereCoord& position)
 	{
-		CamState state{};
-		state.m_position = m_camPos;
-		state.m_lookAt = m_lookAt;
-		return state;
+		if(m_transform.Position != position)
+		{
+			m_transform.Position = position;
+			m_attrBits.set(CameraAttrBits_Pos);
+		}
 	}
 
-	void Camera::CameraImpl::applyState(const Camera::CameraImpl::CamState &state)
+	void Camera::setPositionDelta(const glm::vec3& delta)
 	{
-		setPosition(state.m_position);
-		setLookAt(state.m_lookAt);
+		m_transform.Position += delta;
+		m_attrBits.set(CameraAttrBits_Pos);
 	}
 
-	void Camera::CameraImpl::addPosDiff(float thetaDiff, float phiDiff, float rDiff)
+	void Camera::setPositionDelta(const SphereCoord& delta)
 	{
-		float theta = m_camPosSpherical.theta();
-		float phi = m_camPosSpherical.phi();
-		float r = m_camPosSpherical.radius();
-
-		theta += thetaDiff;
-		phi += phiDiff;
-		r += rDiff;
-
-		m_camPosSpherical.set(theta, phi, r);
-		m_camPosSpherical.checkRange();
-
-		m_camPos = m_camPosSpherical.to();
+		m_transform.Position += delta;
+		m_attrBits.set(CameraAttrBits_Pos);
 	}
 
-	void Camera::CameraImpl::addRadiusDiff(float delta)
+	void Camera::setLookAt(const glm::vec3& lookAt)
 	{
-		float theta = m_camPosSpherical.theta();
-		float phi = m_camPosSpherical.phi();
-		float r = m_camPosSpherical.radius();
-
-		r += delta;
-
-		m_camPosSpherical.set(theta, phi, r);
-		m_camPosSpherical.checkRange();
-
-		m_camPos = m_camPosSpherical.to();
+		if (m_pose.LookAt != lookAt)
+		{
+			m_pose.LookAt = lookAt;	
+			m_attrBits.set(CameraAttrBits_LookAt);
+		}
 	}
 
-	void Camera::CameraImpl::setPosition(float theta, float phi, float r)
+	void Camera::calcViewMat()
 	{
-		m_camPosSpherical.set(theta, phi, r);
-		m_camPosSpherical.checkRange();
-
-		m_camPos = m_camPosSpherical.to();
+		if (m_attrBits.any())
+		{		
+			calcCameraPose();
+			m_pose.ViewMat = glm::lookAt(m_transform.Position.ccs(), m_pose.LookAt, m_pose.Up);		
+			m_attrBits.reset();
+		}
 	}
 
-	void Camera::CameraImpl::setPosition(const SphereCoord &position)
+	void Camera::calcCameraPose()
 	{
-		m_camPosSpherical = position;
-		m_camPosSpherical.checkRange();
+		if (m_attrBits.test(CameraAttrBits_Rot))
+		{
+			float len = glm::length(m_transform.Position.ccs() - m_pose.LookAt);
+			if (Math::IsZero(len)) { len += 0.01f; }
+			glm::mat4 rotMat = m_transform.Euler.mat();
 
-		m_camPos = m_camPosSpherical.to();
+			m_pose.Right = rotMat * glm::vec4(1.f, 0.f, 0.f, 0.f);
+			m_pose.Up = rotMat * glm::vec4(0.f, 1.f, 0.f, 0.f);
+			m_pose.Front = rotMat * glm::vec4(0.f, 0.f, 1.f, 0.f);
+
+			m_pose.LookAt = m_transform.Position - m_pose.Front * len;
+		}
+		else
+		{
+			glm::vec3 viewDir = glm::normalize(m_pose.LookAt - m_transform.Position.ccs());
+			// compute the right and up vector by view direction and world up
+			m_pose.Right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
+			m_pose.Up = glm::normalize(glm::cross(m_pose.Right, viewDir));
+			m_pose.Front = -viewDir;
+
+			// camera pose axis -> rotation matrix -> quaternion -> euler angle
+			glm::quat quat = glm::toQuat(glm::mat3(m_pose.Right, m_pose.Up, m_pose.Front));
+			m_transform.Euler = glm::degrees(glm::eulerAngles(quat));
+		}
 	}
 
-	void Camera::CameraImpl::setPosition(const glm::vec3 &pos)
-	{
-		m_camPos = pos;
-		m_camPosSpherical.apply(pos);
-	}
-
-	void Camera::CameraImpl::setLookAt(const glm::vec3 &lookAt)
-	{
-		m_lookAt = lookAt;
-	}
-
-	void Camera::CameraImpl::calcViewMat()
-	{
-		glm::vec3 viewDir = glm::normalize(m_lookAt - m_camPos);
-		// compute the right and up vector by view direction and world up
-		m_camRight = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
-		m_camUp = glm::normalize(glm::cross(m_camRight, viewDir));
-		m_camFront = -viewDir;
-
-		m_viewMat = glm::lookAt(m_camPos, m_lookAt, m_camUp);
-	}
-
-	glm::mat4 Camera::CameraImpl::CalcViewMat(const SphereCoord &position, const glm::vec3 &lookAt)
+	glm::mat4 Camera::GetViewMat(const SphereCoord &position, const glm::vec3 &lookAt)
 	{
 		glm::vec3 pos = position.to();
 		glm::vec3 viewDir = glm::normalize(lookAt - pos);
@@ -182,68 +155,13 @@ namespace pio
 		return glm::lookAt(pos, lookAt, up);
 	}
 
-	glm::mat4 Camera::CameraImpl::CalcViewMat(const glm::vec3 &position, const glm::vec3 &lookAt)
+	glm::mat4 Camera::GetViewMat(const glm::vec3 &position, const glm::vec3 &lookAt)
 	{
 		glm::vec3 viewDir = glm::normalize(lookAt - position);
 		// compute the right and up vector by view direction and world up
 		glm::vec3 right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
 		glm::vec3 up = glm::normalize(glm::cross(right, viewDir));
 		return glm::lookAt(position, lookAt, up);
-	}
-
-	Camera::Camera() : m_id(CameraId::MAIN)
-	{
-	}
-
-	Camera::Camera(CameraId id) : m_id(id)
-	{
-	}
-
-	Camera::Camera(const Camera &rhs) : m_visible(rhs.m_visible), m_id(rhs.m_id), m_camImpl(rhs.m_camImpl),
-		m_frustum(rhs.m_frustum), m_viewport(rhs.m_viewport)
-	{
-	}
-
-	Camera &Camera::operator=(const Camera &rhs)
-	{
-		if (this != &rhs)
-		{
-			m_visible = rhs.m_visible;
-			m_id = rhs.m_id;
-			m_camImpl = rhs.m_camImpl;
-			m_frustum = rhs.m_frustum;
-			m_viewport = rhs.m_viewport;
-		}
-		return *this;
-	}
-
-	Camera::~Camera() = default;
-
-	void Camera::addPosDiff(float deltaX, float deltaY)
-	{
-		m_camImpl.addPosDiff(-deltaY * CHANGE_RATIO_CAM_POS, -deltaX * CHANGE_RATIO_CAM_POS, 0.f);
-	}
-
-	void Camera::addRadiusDiff(float delta)
-	{
-		m_camImpl.addRadiusDiff(delta);
-	}
-
-	void Camera::flush()
-	{
-		m_camImpl.calcViewMat();
-		m_frustum.calcPrj();
-		m_frustum.calcOrtho();
-	}
-
-	glm::mat4 Camera::GetViewMat(const SphereCoord &position, const glm::vec3 &lookAt)
-	{
-		return CameraImpl::CalcViewMat(position, lookAt);
-	}
-
-	glm::mat4 Camera::GetViewMat(const glm::vec3 &position, const glm::vec3 &lookAt)
-	{
-		return CameraImpl::CalcViewMat(position, lookAt);
 	}
 
 	glm::mat4 Camera::GetOrtho(float l, float r, float b, float t)
