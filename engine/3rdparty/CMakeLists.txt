@@ -35,7 +35,10 @@ endif()
 
 if(NOT TARGET Decs)
     add_library(Decs INTERFACE)
+    target_include_directories(Decs INTERFACE ${THIRD_PARTY_DIR}/decs)
+endif()
 
-    target_include_directories(
-        Decs INTERFACE ${THIRD_PARTY_DIR}/decs)
+if(NOT TARGET MAGIC_ENUM)
+    add_library(MAGIC_ENUM INTERFACE)
+    target_include_directories(MAGIC_ENUM INTERFACE ${THIRD_PARTY_DIR}/magic_enum)
 endif()

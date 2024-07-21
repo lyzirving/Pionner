@@ -36,6 +36,8 @@
 #include "core/utils/TimeUtil.h"
 #include "core/utils/ColorSpace.h"
 
+#include "magic_enum.hpp"
+
 namespace pio
 {
 	constexpr static const uint32_t NullIndex = ~0U;

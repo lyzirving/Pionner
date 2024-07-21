@@ -71,6 +71,7 @@ target_link_libraries(${TARGET_NAME} PUBLIC spdlog::spdlog
                                      PUBLIC stb
                                      PUBLIC assimp
                                      PUBLIC Decs
+                                     PUBLIC MAGIC_ENUM
                                      PUBLIC physx
                                      PUBLIC physx_character_kinematic
                                      PUBLIC physx_common
@@ -90,6 +91,7 @@ target_include_directories( ${TARGET_NAME} PUBLIC ${ENGINE_INCLUDE_DIR}
                                            PUBLIC glm 
                                            PUBLIC stb
                                            PUBLIC Decs
+                                           PUBLIC MAGIC_ENUM
                                            PUBLIC ${PHYSX_INCLUDE}
                                            PUBLIC ${PHYSX_FAST_XML_INCLUDE}
                                            PUBLIC ${PHYSX_FOUNDATION_INCLUDE}

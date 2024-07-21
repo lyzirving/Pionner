@@ -14,7 +14,7 @@ namespace pio
 	{
 		None = 0, Scene, Camera,
 		MeshSource, Mesh,
-		DistantLight, PointLight
+		DirectionalLight, PointLight
 	};
 
 	class Entity
@@ -115,6 +115,7 @@ namespace pio
 		const UUID32 &getUid() const { return m_uid; }
 		uint32_t getIndex() const { return m_handle.index; }
 		EntityClass getClass() const { return m_class; }
+		std::string_view getClassName() const { return magic_enum::enum_name(m_class); }
 		const std::string &getName() const { return m_name; }
 
 		void setClass(EntityClass clazz) { m_class = clazz; }

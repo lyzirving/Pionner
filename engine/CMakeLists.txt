@@ -27,7 +27,7 @@ add_executable (${TARGET_NAME} main.cpp)
 target_link_libraries(${TARGET_NAME} PRIVATE Engine)
 target_include_directories(${TARGET_NAME} PRIVATE Engine)
 
-set_property(TARGET Pionner PROPERTY CXX_STANDARD 11)
+set_property(TARGET Pionner PROPERTY CXX_STANDARD 17)
 
 add_custom_command(TARGET Pionner POST_BUILD                              # Adds a post-build event to Pionner
                    COMMAND ${CMAKE_COMMAND} -E copy_directory             # which executes "cmake - E copy_directory/copy_if_different..."

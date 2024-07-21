@@ -131,7 +131,7 @@ namespace pio
 	}
 
 	void Scene::onAttach(Ref<SceneRenderer> &renderer)
-	{
+	{		
 		createData();
 
 		m_lightEnv.DirectionalLight.obtainBlock();
@@ -316,7 +316,7 @@ namespace pio
 		{
 			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-4.5f, 3.8f, -1.f), glm::vec3(0.f), glm::vec3(3.f), 0.12f);
 
-			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent, TransformComponent>(EntityClass::DistantLight, "DirectionalLight");
+			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent, TransformComponent>(EntityClass::DirectionalLight, "DirectionalLight");
 
 			auto &transComp = ent->getComponent<TransformComponent>();
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();

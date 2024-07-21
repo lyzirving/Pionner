@@ -21,9 +21,14 @@ namespace pio
 	public:
 		static void DrawNamePanel(const char *nLabel, const std::string &name,
 							      const char* vLabel, bool &visible, 
-								  uint32_t rowWidth);
+								  uint32_t rowWidth = 0);
 		static DataAttrs DrawTransformPanel(Transform& transform);
 		static DataAttrs DrawTransformPanel(Ref<Entity> &entity);
+		static void DrawLightPanel(Ref<Entity>& entity);
+
+	private:
+		static void DrawDirectionalLightPanel(Ref<Entity>& entity);
+		static void DrawPointLightPanel(Ref<Entity>& entity);
 	};
 }
 

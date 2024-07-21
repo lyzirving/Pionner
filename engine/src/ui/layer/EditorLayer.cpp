@@ -129,7 +129,7 @@ namespace pio
 					case EntityClass::Scene:
 						onDrawScenePanel(select);
 						break;
-					case EntityClass::DistantLight:
+					case EntityClass::DirectionalLight:
 						onDrawDistantLightPanel(select);
 						break;
 					case EntityClass::PointLight:
@@ -201,6 +201,13 @@ namespace pio
 
 	void EditorLayer::onDrawDistantLightPanel(Ref<Entity> &ent)
 	{
+		/*{
+			bool bVisible = true;
+			UiPanel::DrawNamePanel("##light_name", ent->getName(), "##light_visibility", bVisible);
+			UiPanel::DrawLightPanel(ent);
+			return;
+		}*/
+
 		if (ent && ent->hasComponent<DirectionalLightComponent>())
 		{			
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();

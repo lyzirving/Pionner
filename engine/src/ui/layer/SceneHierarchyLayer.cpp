@@ -88,7 +88,8 @@ namespace pio
 			}
 
 			RelationshipComponent &rtRelation = rt->getComponent<RelationshipComponent>();
-			ImGuiTreeNodeFlags tnFlags = ImGuiUtils::Flag_Selected_TreeNode;
+			ImGuiTreeNodeFlags tnFlags = ImGuiUtils::Flag_Selected_TreeNode | ImGuiTreeNodeFlags_DefaultOpen;
+			if (selected == NullIndex) { selected = rtRelation.Self; }
 			tnFlags |= (selected == rtRelation.Self) ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
 			uint32_t curSelect{ NullIndex };
 			bool bOpen = ImGui::TreeNodeEx(rt->getName().c_str(), tnFlags);

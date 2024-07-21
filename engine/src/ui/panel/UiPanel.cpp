@@ -10,6 +10,10 @@ namespace pio
 {
 	void UiPanel::DrawNamePanel(const char* nLabel, const std::string& name, const char* vLabel, bool& visible, uint32_t rowWidth)
 	{
+		if (rowWidth == 0)
+		{
+			rowWidth = ImGui::GetItemRectSize().x;
+		}
 		float cbWidth = 0.2f * rowWidth;
 		float textWidth = 0.8f * rowWidth;
 		
@@ -57,5 +61,42 @@ namespace pio
 
 		auto& comp = entity->getComponent<TransformComponent>();
 		return DrawTransformPanel(comp.Transform);
+	}
+
+	void UiPanel::DrawLightPanel(Ref<Entity>& entity)
+	{
+		if (!entity)
+			return;
+
+		DrawTransformPanel(entity);
+
+		if (ImGui::CollapsingHeader("Light", ImGuiUtils::Flag_Collapse_Header))
+		{
+			auto itemSize = ImGui::GetItemRectSize();
+			float labelWidth = 0.2f * itemSize.x;
+			float textWidth  = 0.8f * itemSize.x;
+			std::string_view className = entity->getClassName();
+
+			ImGui::PushItemWidth(labelWidth);
+			ImGui::LabelText("##light_type_label", "Type");
+			ImGui::PopItemWidth();
+
+			ImGui::SameLine();	
+
+			ImGui::PushItemWidth(textWidth);
+			ImGui::InputText("##light_type", const_cast<char *>(className.data()), className.size(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::PopItemWidth();
+		}
+	}
+
+	void UiPanel::DrawDirectionalLightPanel(Ref<Entity>& entity)
+	{
+		if (ImGui::CollapsingHeader("Light", ImGuiUtils::Flag_Collapse_Header))
+		{
+		}
+	}
+
+	void UiPanel::DrawPointLightPanel(Ref<Entity>& entity)
+	{
 	}
 }

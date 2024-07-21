@@ -140,7 +140,8 @@ namespace pio
 			m_pose.Front = -viewDir;
 
 			// camera pose axis -> rotation matrix -> quaternion -> euler angle
-			glm::quat quat = glm::toQuat(glm::mat3(m_pose.Right, m_pose.Up, m_pose.Front));
+			glm::mat3 rotMat = glm::mat3(m_pose.Right, m_pose.Up, m_pose.Front);
+			glm::quat quat = glm::toQuat(rotMat);					
 			m_transform.Euler = glm::degrees(glm::eulerAngles(quat));
 		}
 	}
