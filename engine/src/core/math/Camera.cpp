@@ -46,6 +46,13 @@ namespace pio
 		{
 			Block.m_buffer->writeAt(&FrustumFar, sizeof(float), frustumFarUD->getAlignOffset());
 		}
+
+		auto prjTypeUD = Block.m_blockItems.get("PrjType");
+		if (prjTypeUD)
+		{
+			int32_t val = PrjType;
+			Block.m_buffer->writeAt(&val, sizeof(int32_t), prjTypeUD->getAlignOffset());
+		}
 	}
 
 	UniformBlock CameraUD::CreateBlock()
@@ -56,6 +63,7 @@ namespace pio
 		block.pushBack("OrthoMat", UniformBlock::CreateData(UniformDataType::Mat4, "OrthoMat"));
 		block.pushBack("CameraPosition", UniformBlock::CreateData(UniformDataType::Vec3, "CameraPosition"));
 		block.pushBack("FrustumFar", UniformBlock::CreateData(UniformDataType::Float, "FrustumFar"));
+		block.pushBack("PrjType", UniformBlock::CreateData(UniformDataType::Int, "PrjType"));
 		block.calculate();
 		//LOGD("block CameraUD byte used[%u]", block.getByteUsed());
 		return block;
@@ -64,8 +72,8 @@ namespace pio
 	void Camera::flush()
 	{
 		calcViewMat();
-		m_frustum.calcPrj();
-		m_frustum.calcOrtho();
+		m_persFrustum.flush();
+		m_orthoFrustum.flush();
 	}
 
 	void Camera::setPosition(const glm::vec3& position)
@@ -180,4 +188,7 @@ namespace pio
 								   0.5f, 1.f);
 		return glm::mat4(col0, col1, col2, col3);
 	}
+
+	template<>
+	bool Asset::is<Camera>() const { return getAssetType() == AssetType::Camera; }
 }

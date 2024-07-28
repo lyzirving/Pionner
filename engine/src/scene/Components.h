@@ -31,7 +31,6 @@ namespace pio
 	struct CameraComponent
 	{
 		bool Primary{ false };
-		ProjectionType PrjType{ ProjectionType::Perspective };
 		Camera Camera{};
 	};
 

@@ -79,6 +79,7 @@ namespace pio
 
 		Ref<UniformBufferSet> m_visionUBSet;
 		CameraUD m_visionCamUD;
+		Camera m_visionCam;
 
 		Ref<UniformBufferSet> m_motionUBSet;
 		CameraUD m_motionCamUD;

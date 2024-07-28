@@ -456,5 +456,7 @@ namespace pio
 			comp.Camera.attrChange(CameraAttrBits_Pos);
 		if (attr.test(DataAttrBits_Rot))
 			comp.Camera.attrChange(CameraAttrBits_Rot);
+
+		UiPanel::DrawCameraPanel(comp);
 	}
 }

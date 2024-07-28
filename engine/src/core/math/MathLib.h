@@ -8,7 +8,8 @@
 
 namespace pio
 {
-	#define PIO_PI (3.141592654f)
+	#define PIO_PI      (3.141592654f)
+	#define PIO_EPSILON (1e-4)
 
 	struct Viewport;
 	struct Rect2d;
@@ -19,16 +20,22 @@ namespace pio
 		bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale);	
 		glm::vec3 Reminder(const glm::vec3 &input, float reminder);
 
+		glm::mat4 PerspectiveMat(float fov, float aspect, float near, float far);
+		glm::mat4 OrthoMat(float left, float right, float bottom, float top, float near, float far);
+
 		inline glm::vec3 Scale(const glm::vec3 &v, float desiredLength) { return v * desiredLength / glm::length(v); }
 
-		inline bool IsZero(float val)  { return std::fabs(val) < 1e-4; }
-		inline bool IsZero(double val) { return std::fabs(val) < 1e-4; }
+		inline bool IsZero(float val)  { return std::fabs(val) < PIO_EPSILON; }
+		inline bool IsZero(double val) { return std::fabs(val) < PIO_EPSILON; }
 		inline bool IsZero(const glm::vec2 &val) { return IsZero(val.x) && IsZero(val.y); }
 		inline bool IsZero(const glm::vec3 &val) { return IsZero(val.x) && IsZero(val.y) && IsZero(val.z); }
 
 		inline bool Equal(float lhs, float rhs) { return IsZero(lhs - rhs); }
+		inline bool Equal(double lhs, double rhs) { return IsZero(lhs - rhs); }
 		inline bool Equal(const glm::vec2 &lhs, const glm::vec2 &rhs) { return IsZero(lhs - rhs); }
 		inline bool Equal(const glm::vec3 &lhs, const glm::vec3 &rhs) { return IsZero(lhs - rhs); }
+		inline bool LessEqual(float lhs, float rhs) { return Equal(lhs, rhs) || lhs < rhs; }
+		inline bool LessEqual(double lhs, double rhs) { return Equal(lhs, rhs) || lhs < rhs; }
 		inline bool LessEqual(const glm::vec3 &lhs, const glm::vec3 &rhs) { return lhs.x <= rhs.x && lhs.y <= rhs.y && lhs.z <= rhs.z; }
 		inline bool GreatEqual(const glm::vec3 &lhs, const glm::vec3 &rhs) { return lhs.x >= rhs.x && lhs.y >= rhs.y && lhs.z >= rhs.z; }
 

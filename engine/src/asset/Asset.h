@@ -19,7 +19,8 @@ namespace pio
 		GeoBegin, Geometry, Cylinder, Cone, Arrow, Sphere, Torus, GeoEnd,
 		Animation, Skeleton, Material, 
 		Texture, Texture2D, CubeTexture, CubeArrayTexture, BufferTexture, Skybox, RenderBuffer,
-		PhysicsMat, PhysicsScene
+		PhysicsMat, PhysicsScene,
+		Camera
 	};
 
 	enum class AssetFmt : uint8_t

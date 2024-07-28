@@ -13,12 +13,12 @@ namespace pio
 {
 	Ray Ray::BuildFromScreen(const glm::vec2 &viewportPt, const Camera &camera, bool bDraw)
 	{
-		float far = camera.far();
-		float near = camera.near();
-		float left = camera.leftEdge();
-		float right = camera.rightEdge();
-		float top = camera.topEdge();
-		float bottom = camera.bottomEdge();
+		float far = camera.frustFar();
+		float near = camera.frustNear();
+		float left = camera.frustLeft();
+		float right = camera.frustRight();
+		float top = camera.frustTop();
+		float bottom = camera.frustBottom();
 		// camera position in world space
 		glm::vec3 camPos = camera.position();
 		const Viewport &vp = camera.viewport();
@@ -61,12 +61,12 @@ namespace pio
 
 	glm::vec3 Ray::PointOnNearPlane(const glm::vec2 &viewportPt, const Camera &camera)
 	{
-		float far = camera.far();
-		float near = camera.near();
-		float left = camera.leftEdge();
-		float right = camera.rightEdge();
-		float top = camera.topEdge();
-		float bottom = camera.bottomEdge();
+		float far = camera.frustFar();
+		float near = camera.frustNear();
+		float left = camera.frustLeft();
+		float right = camera.frustRight();
+		float top = camera.frustTop();
+		float bottom = camera.frustBottom();
 		// camera position in world space
 		glm::vec3 camPos = camera.position();
 		const Viewport &vp = camera.viewport();

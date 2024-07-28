@@ -3,6 +3,11 @@
 
 #include "Camera.h"
 
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "Math"
+
 namespace pio
 {
 	namespace Math
@@ -93,6 +98,28 @@ namespace pio
 			result.z = calcReminder(result.z, sign.z, reminder);
 
 			return result;
+		}
+
+		glm::mat4 PerspectiveMat(float fov, float aspect, float near, float far)
+		{
+			if (LessEqual(fov, 0.f) || LessEqual(aspect, 0.f))
+			{
+				LOGE("err! invalid input, fov[%f], aspect[%f]", fov, aspect);
+				return glm::mat4(1.f);
+			}
+
+			if (LessEqual(near, 0.f) || LessEqual(far, 0.f))
+			{
+				LOGE("err! invalid input, near[%f] and far[%f]", near, far);
+				return glm::mat4(1.f);
+			}
+
+			return glm::perspective(glm::radians(fov), aspect, near, far);
+		}
+
+		glm::mat4 OrthoMat(float left, float right, float bottom, float top, float near, float far)
+		{
+			return glm::ortho(left, right, bottom, top, near, far);
 		}
 	}
 }

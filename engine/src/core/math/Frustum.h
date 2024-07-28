@@ -1,60 +1,58 @@
-#ifndef __PIONNER_GFX_STRUCT_FRUSTUM_H__
-#define __PIONNER_GFX_STRUCT_FRUSTUM_H__
+#ifndef __PIONNER_CORE_MATH_FRUSTUM_H__
+#define __PIONNER_CORE_MATH_FRUSTUM_H__
 
 #include "core/Base.h"
 
 namespace pio
 {
-	enum FrustumDataBit : uint8_t
+	enum ProjectionType : uint8_t
 	{
-		FM_BIT_PRJ,
-		FM_BIT_ORTHO,
-		FM_DATA_BITS
+		ProjectionType_Perspective,
+		ProjectionType_Orthographic,
+		ProjectionType_Num
 	};
 
 	class Frustum
 	{
-		friend class Camera;
 	public:
-		Frustum();
-		Frustum(const Frustum &rhs);
-		Frustum &operator=(const Frustum &rhs);
-		~Frustum() = default;
+		Frustum() {}
+		Frustum(ProjectionType type) : m_type(type) {}
+		virtual ~Frustum() = default;
 
-	private:
-		void setFov(float fov);
+	public:
+		void flush();
 		void setAspect(float aspect);
-		void setNearFar(float near, float far);
-		void setOrtho(float l, float r, float b, float t);
+		void setNear(float near);
+		void setFar(float far);
 
-		void calcPrj();
-		void calcOrtho();
+		void invalidate(bool invalidate = true) { m_invalidate = invalidate; }
+		bool bDirty() const { return m_invalidate; }
+		ProjectionType type() const { return m_type; }
 
-		float near() const { return m_near; }
-		float far() const { return m_far; }
-		float fov() const { return m_fov; }
+	public:
+		virtual float top()    const = 0;
+		virtual float bottom() const = 0;
+		virtual float right()  const = 0;
+		virtual float left()   const = 0;
+
+	public:
 		float aspect() const { return m_aspect; };
+		float near()   const { return m_near; }
+		float far()    const { return m_far; }
 
-		float top() const { return m_near * std::tan(glm::radians(m_fov * 0.5f)); }
-		float bottom() const { return -top(); }
-		float right() const { return top() * m_aspect; }
-		float left() const { return -right(); }
+		const glm::mat4& mat() const { return m_mat; }
 
-		const glm::mat4 &getPerspectMat() const { return m_perspectMat; }
-		const glm::mat4 &orthoMat() const { return m_orthoMat; }
-		
-	private:
+	protected:
+		virtual void calcMat() = 0;
 
-		float m_fov{ 60.f }, m_aspect{ 1.f };
+	protected:
+		ProjectionType m_type{ ProjectionType_Perspective };
+
+		float m_aspect{ 1.f };
 		float m_near{ 0.1f }, m_far{ 30.f };
 
-		float m_orthoLeft{ 0.f }, m_orthoRight{ 0.f };
-		float m_orthoBottom{ 0.f }, m_orthoTop{ 0.f };
-
-		glm::mat4 m_perspectMat{ 1.f };
-		glm::mat4 m_orthoMat{ 1.f };
-
-		std::bitset<FM_DATA_BITS> m_dirty{};
+		glm::mat4 m_mat{ 1.f };
+		bool m_invalidate{ true };
 	};
 }
 

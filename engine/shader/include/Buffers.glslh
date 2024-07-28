@@ -7,4 +7,5 @@ layout (std140) uniform Matrices
 	mat4 Ortho;
     vec3 CameraPosition;
     float FrustumFar;
+	int PrjType;
 } u_matrices;

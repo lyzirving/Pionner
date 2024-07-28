@@ -7,6 +7,7 @@ namespace pio
 {
 	class Entity;
 	class Transform;
+	struct CameraComponent;
 
 	enum DataAttrBits : uint8_t
 	{
@@ -25,6 +26,7 @@ namespace pio
 		static DataAttrs DrawTransformPanel(Transform& transform);
 		static DataAttrs DrawTransformPanel(Ref<Entity> &entity);
 		static void DrawLightPanel(Ref<Entity>& entity);
+		static void DrawCameraPanel(CameraComponent &comp);
 
 	private:
 		static void DrawDirectionalLightPanel(Ref<Entity>& entity);

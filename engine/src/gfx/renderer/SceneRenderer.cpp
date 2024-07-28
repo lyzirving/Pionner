@@ -30,8 +30,8 @@ namespace pio
 	static void FillPointLightShadowData(const Camera& camera, const Ref<FrameBuffer>& fbo, LightEnvironment& lightEnv)
 	{
 		float fov = 90.f;
-		float frustumNear = camera.near();
-		float frustumFar = camera.far();
+		float frustumNear = camera.frustNear();
+		float frustumFar = camera.frustFar();
 		glm::mat4 prjMat = glm::perspective(glm::radians(fov), float(fbo->getWidth()) / float(fbo->getHeight()), frustumNear, frustumFar);
 		for (uint32_t i = 0; i < lightEnv.PtLightShadowData.LightCount; i++)
 		{
@@ -102,21 +102,24 @@ namespace pio
 
 		LightEnvironment& lightEnv = const_cast<LightEnvironment&>(scene.m_lightEnv);
 		CameraUD& cameraUD = m_cameraUD;
-		Camera& distLightCam = m_distantLightShadowPass->getCamera();
 		const Viewport& vp = camera.viewport();
+		Camera& distLightCam = m_distantLightShadowPass->getCamera();
 
 		// [NOTE]: how to set a light matrix for distant light shadow that light's postion will not effect shadow
 		distLightCam.setPosition(lightEnv.DirectionalLight.Position);
 		distLightCam.setLookAt(lightEnv.DirectionalLight.Position + lightEnv.DirectionalLight.Direction * 5.f);// 5 is a magic value
-		distLightCam.setOrtho(-10.f, 10.f, -10.f, 10.f);// TODO:
-		distLightCam.setNearFar(camera.near(), camera.far());
+		distLightCam.setNear(camera.frustNear());
+		distLightCam.setFar(camera.frustFar());
+		distLightCam.setSize(5.f);
+		distLightCam.setAspect(1.f);
 		distLightCam.flush();
 
 		cameraUD.ViewMat = camera.viewMat();
 		cameraUD.PrjMat = camera.prjMat();
 		cameraUD.OrthoMat = camera.orthoMat();
 		cameraUD.CameraPosition = camera.position();
-		cameraUD.FrustumFar = camera.far();
+		cameraUD.FrustumFar = camera.frustFar();
+		cameraUD.PrjType = camera.prjType();
 
 		auto cameraUB = m_uniformBuffers->get((uint32_t)UBBindings::Camera);
 		auto dirLightUB = m_uniformBuffers->get((uint32_t)UBBindings::DistantLight);

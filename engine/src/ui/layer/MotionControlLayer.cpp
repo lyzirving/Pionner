@@ -75,6 +75,7 @@ namespace pio
 		m_visionCamUD.obtainBlock();
 		m_visionUBSet = UniformBufferSet::Create();
 		m_visionUBSet->create(m_visionCamUD.Block.getByteUsed(), (uint32_t)UBBindings::Camera);
+		m_visionCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
 
 		m_motionCamUD.obtainBlock();
 		m_motionUBSet = UniformBufferSet::Create();
@@ -243,22 +244,23 @@ namespace pio
 	void MotionControlLayer::onDrawVisionCtl(const Timestep &ts)
 	{
 		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
-		Camera &camera = camComp.Camera;
 		LayoutViewport &vp = m_circleLayoutParam.Viewport;
 
 		CameraUD &cameraUD = m_visionCamUD;
 		Ref<UniformBufferSet> ubSet = m_visionUBSet;
 		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
 
-		SphereCoord sceneCamPos = camComp.Camera.position();
+		SphereCoord camPos = camComp.Camera.position();
 		// Make ui camera's radius remain unchange
-		sceneCamPos.setRadius(CTL_CAM_RADIUS);
+		camPos.setRadius(CTL_CAM_RADIUS);
+		m_visionCam.setPosition(camPos);
+		m_visionCam.flush();
 
-		cameraUD.ViewMat = Camera::GetViewMat(sceneCamPos, glm::vec3(0.f));
-		cameraUD.PrjMat = camera.prjMat();
-		cameraUD.OrthoMat = camera.orthoMat();
-		cameraUD.CameraPosition = camera.position();
-		cameraUD.FrustumFar = camera.far();
+		cameraUD.ViewMat = m_visionCam.viewMat();
+		cameraUD.PrjMat = m_visionCam.prjMat();
+		cameraUD.OrthoMat = m_visionCam.orthoMat();
+		cameraUD.CameraPosition = m_visionCam.position();
+		cameraUD.FrustumFar = m_visionCam.frustFar();
 		cameraUD.serialize();
 
 		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
@@ -351,7 +353,7 @@ namespace pio
 		cameraUD.PrjMat = camera.prjMat();
 		cameraUD.OrthoMat = camera.orthoMat();
 		cameraUD.CameraPosition = camera.position();
-		cameraUD.FrustumFar = camera.far();
+		cameraUD.FrustumFar = camera.frustFar();
 		cameraUD.serialize();
 
 		showGizmo(MotionController::bSpriteSelectd() || MotionController::bObj3dSelectd());

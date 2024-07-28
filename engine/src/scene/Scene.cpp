@@ -308,9 +308,10 @@ namespace pio
 		PIO_RELATION_SET_CHILD(m_sceneRoot, m_mainCameraEnt);
 		PIO_RELATION_SET_PARENT(m_mainCameraEnt, m_sceneRoot);
 		auto &cameraComp = m_mainCameraEnt->getComponent<CameraComponent>();
-		cameraComp.Camera.setPosition(SphereCoord(72.f, 341.f, 10.f));
-		cameraComp.Camera.setLookAt(glm::vec3(0.f));
 		cameraComp.Primary = true;
+		auto& camera = cameraComp.Camera;
+		camera.setPosition(SphereCoord(72.f, 341.f, 10.f));
+		camera.setLookAt(glm::vec3(0.f));
 
 		// Distant Light
 		{
