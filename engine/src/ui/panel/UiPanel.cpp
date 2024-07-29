@@ -1,5 +1,6 @@
 #include "UiPanel.h"
 
+#include "asset/AssetsManager.h"
 #include "ui/ImGuiUtils.h"
 #include <imgui.h>
 
@@ -103,25 +104,25 @@ namespace pio
 	{
 		if (ImGui::CollapsingHeader("Camera", ImGuiUtils::Flag_Collapse_Header))
 		{
-			auto& camera = comp.Camera;
+			auto camera = AssetsManager::GetRuntimeAsset<Camera>(comp.Handle);				
 
-			float fov = camera.fov();
+			float fov = camera->fov();
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Fov       ");
 			ImGui::SameLine();
 			ImGui::DragFloat("##FOV", &fov, 1.f, 0.1, 179.f, "%.1f");
-			camera.setFov(fov);
+			camera->setFov(fov);
 
-			int prjType{ camera.prjType() };
+			int prjType{ camera->prjType() };
 			const char* items[2]{ "Perspective", "Orthographic" };
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Projection");
 			ImGui::SameLine();
 			ImGui::Combo("##Prj_type", &prjType, items, ProjectionType_Num);
-			camera.setPrjType(ProjectionType(prjType));
+			camera->setPrjType(ProjectionType(prjType));
 
-			float near = camera.frustNear();
-			float far = camera.frustFar();
+			float near = camera->frustNear();
+			float far = camera->frustFar();
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Near      ");
 			ImGui::SameLine();
@@ -130,8 +131,8 @@ namespace pio
 			ImGui::Text("Far       ");
 			ImGui::SameLine();
 			ImGui::DragFloat("##Far", &far, 1.f, 0.1, 1000.f, "%.1f");
-			camera.setNear(near);
-			camera.setFar(far);
+			camera->setNear(near);
+			camera->setFar(far);
 		}
 	}
 

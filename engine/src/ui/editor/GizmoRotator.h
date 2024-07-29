@@ -53,8 +53,7 @@ namespace pio
 		Ref<LineSegment> m_direction;
 		std::vector<SimpleVertex> m_pendingVertex;
 
-		Ref<HittableShape> m_shape[EditorAxis_Num];
-		Ref<Entity> m_cameraEnt;
+		Ref<HittableShape> m_shape[EditorAxis_Num];		
 
 		glm::vec3 m_lastHitPt{ 0.f };
 		float m_rotatedAngle{ 0.f }, m_angleDiff{ 0.f };

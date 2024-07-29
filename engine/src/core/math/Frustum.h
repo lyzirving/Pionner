@@ -19,6 +19,9 @@ namespace pio
 		Frustum(ProjectionType type) : m_type(type) {}
 		virtual ~Frustum() = default;
 
+		Frustum(const Frustum &rhs);
+		Frustum &operator=(const Frustum &rhs);
+
 	public:
 		void flush();
 		void setAspect(float aspect);

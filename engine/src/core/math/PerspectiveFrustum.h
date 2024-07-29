@@ -11,6 +11,9 @@ namespace pio
 		PerspectiveFrustum() : Frustum(ProjectionType_Perspective) {}
 		~PerspectiveFrustum() = default;
 
+		PerspectiveFrustum(const PerspectiveFrustum &rhs);
+		PerspectiveFrustum &operator=(const PerspectiveFrustum &rhs);
+
 		void setFov(float fov);
 
 	public:

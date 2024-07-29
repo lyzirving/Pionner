@@ -44,8 +44,7 @@ namespace pio
 		void onDrawMeshPanel(Ref<Entity> &ent);
 		void onDrawCameraPanel(Ref<Entity>& ent);
 
-	private:
-		Ref<Entity> m_mainCameraEnt;
+	private:		
 		Ref<Entity> m_sceneEnt;
 		Ref<Entity> m_selectedEnt;
 		UiValue m_UiVal;

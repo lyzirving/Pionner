@@ -9,6 +9,8 @@
 
 namespace pio
 {
+	Ref<Camera> Camera::Main{ nullptr };
+
 	void CameraUD::serialize()
 	{
 		if (!Block.m_buffer || Block.m_buffer->getCapacity() == 0)
@@ -67,6 +69,46 @@ namespace pio
 		block.calculate();
 		//LOGD("block CameraUD byte used[%u]", block.getByteUsed());
 		return block;
+	}
+
+	Camera::Camera(const Camera &rhs) : Asset(rhs),
+		m_viewport(rhs.m_viewport), 
+		m_transform(rhs.m_transform), m_pose(rhs.m_pose),
+		m_attrBits(rhs.m_attrBits), m_prjType(rhs.m_prjType),
+		m_persFrustum(rhs.m_persFrustum), m_orthoFrustum(rhs.m_orthoFrustum)
+	{	
+	}
+
+	Camera &Camera::operator=(const Camera &rhs)
+	{
+		if(this != &rhs)
+		{
+			Asset::operator=(rhs);
+			m_viewport = rhs.m_viewport;
+			m_transform = rhs.m_transform;
+			m_pose = rhs.m_pose;
+			m_attrBits = rhs.m_attrBits;
+			m_prjType = rhs.m_prjType;
+			m_persFrustum = rhs.m_persFrustum;
+			m_orthoFrustum = rhs.m_orthoFrustum;
+		}
+		return *this;
+	}
+
+	Camera Camera::clone()
+	{
+		Camera cam{};
+		cam.m_name = this->m_name;
+		cam.m_parentHandle = this->m_parentHandle;
+
+		cam.m_viewport = this->m_viewport;
+		cam.m_transform = this->m_transform;
+		cam.m_pose = this->m_pose;
+		cam.m_attrBits = this->m_attrBits;
+		cam.m_prjType = this->m_prjType;
+		cam.m_persFrustum = this->m_persFrustum;
+		cam.m_orthoFrustum = this->m_orthoFrustum;
+		return cam;
 	}
 
 	void Camera::flush()

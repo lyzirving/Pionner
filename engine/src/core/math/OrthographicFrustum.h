@@ -11,6 +11,9 @@ namespace pio
 		OrthographicFrustum() : Frustum(ProjectionType_Orthographic) {}
 		~OrthographicFrustum() = default;
 
+		OrthographicFrustum(const OrthographicFrustum &rhs);
+		OrthographicFrustum &operator=(const OrthographicFrustum &rhs);
+
 		void setSize(float size);
 
 	public:

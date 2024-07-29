@@ -45,9 +45,18 @@ namespace pio
 	{
 		OVERRIDE_ASSET_TYPE(AssetType::Camera)
 	public:
+		//Main Camera
+		static Ref<Camera> Main;
+
+	public:
 		Camera() {}
 		~Camera() = default;
 
+		Camera(const Camera &rhs);
+		Camera &operator=(const Camera &rhs);
+
+		// Clone a Camera except its UUID
+		Camera clone();
 		void flush();
 
 		void setPosition(const glm::vec3& position);

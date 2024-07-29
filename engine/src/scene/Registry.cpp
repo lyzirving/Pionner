@@ -44,22 +44,6 @@ namespace pio
 		}
 	}
 
-	Ref<Entity> Registry::mainCameraEnt()
-	{
-		Ref<Entity> ent;
-		EntityView views = view<CameraComponent>();
-		for (auto &v : views)
-		{
-			auto &comp = v.second->getComponent<CameraComponent>();
-			if (comp.Primary)
-			{
-				ent = v.second;
-				break;
-			}
-		}
-		return ent;
-	}
-
 	Ref<Entity> Registry::mainSceneEnt()
 	{
 		Ref<Entity> ent;

@@ -59,7 +59,6 @@ namespace pio
 														  m_layoutParam.Percentage.Right,
 														  m_layoutParam.Percentage.Top + 0.125f);
 
-		m_mainCameraEnt = s_registry->mainCameraEnt();
 		m_sceneEnt = s_registry->mainSceneEnt();
 
 		m_views[MotionCtl_Move] = CreateRef<View>("Move Ctl View");
@@ -75,7 +74,7 @@ namespace pio
 		m_visionCamUD.obtainBlock();
 		m_visionUBSet = UniformBufferSet::Create();
 		m_visionUBSet->create(m_visionCamUD.Block.getByteUsed(), (uint32_t)UBBindings::Camera);
-		m_visionCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
+		m_visionCam = Camera::Main->clone();
 
 		m_motionCamUD.obtainBlock();
 		m_motionUBSet = UniformBufferSet::Create();
@@ -234,23 +233,21 @@ namespace pio
 		bool inside = m_circleLayoutParam.Position.contain((uint32_t)cursor.x, (uint32_t)cursor.y);
 		if (inside)
 		{
-			auto *p = event.as<MouseScrolledEvent>();
-			auto &comp = m_mainCameraEnt->getComponent<CameraComponent>();
-			comp.Camera.setPositionDelta(SphereCoord(0.f, 0.f, -p->getYOffset() * 0.5f/*scale factor*/));
+			auto *p = event.as<MouseScrolledEvent>();						
+			Camera::Main->setPositionDelta(SphereCoord(0.f, 0.f, -p->getYOffset() * 0.5f/*scale factor*/));
 		}
 		return inside;
 	}
 
 	void MotionControlLayer::onDrawVisionCtl(const Timestep &ts)
-	{
-		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
+	{				
 		LayoutViewport &vp = m_circleLayoutParam.Viewport;
 
 		CameraUD &cameraUD = m_visionCamUD;
 		Ref<UniformBufferSet> ubSet = m_visionUBSet;
 		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
 
-		SphereCoord camPos = camComp.Camera.position();
+		SphereCoord camPos = Camera::Main->position();
 		// Make ui camera's radius remain unchange
 		camPos.setRadius(CTL_CAM_RADIUS);
 		m_visionCam.setPosition(camPos);
@@ -340,20 +337,18 @@ namespace pio
 	}
 
 	void MotionControlLayer::onDrawMotionCtl(const Timestep &ts)
-	{
-		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
-		Camera &camera = camComp.Camera;
-		const Viewport &vp = camera.viewport();
+	{		
+		const Viewport &vp = Camera::Main->viewport();
 
 		CameraUD &cameraUD = m_motionCamUD;
 		Ref<UniformBufferSet> ubSet = m_motionUBSet;
 		Ref<UniformBuffer> cameraUB = ubSet->get((uint32_t)UBBindings::Camera);
 
-		cameraUD.ViewMat = camera.viewMat();
-		cameraUD.PrjMat = camera.prjMat();
-		cameraUD.OrthoMat = camera.orthoMat();
-		cameraUD.CameraPosition = camera.position();
-		cameraUD.FrustumFar = camera.frustFar();
+		cameraUD.ViewMat = Camera::Main->viewMat();
+		cameraUD.PrjMat = Camera::Main->prjMat();
+		cameraUD.OrthoMat = Camera::Main->orthoMat();
+		cameraUD.CameraPosition = Camera::Main->position();
+		cameraUD.FrustumFar = Camera::Main->frustFar();
 		cameraUD.serialize();
 
 		showGizmo(MotionController::bSpriteSelectd() || MotionController::bObj3dSelectd());
@@ -384,10 +379,8 @@ namespace pio
 	}
 
 	void MotionControlLayer::onDrawMotionView(const Timestep &ts)
-	{
-		CameraComponent &camComp = m_mainCameraEnt->getComponent<CameraComponent>();
-		Camera &camera = camComp.Camera;
-		const Viewport &vp = camera.viewport();
+	{		
+		const Viewport &vp = Camera::Main->viewport();
 
 		Renderer::SubmitRC([vp]() mutable
 		{
@@ -585,7 +578,7 @@ namespace pio
 	bool MotionControlLayer::onHandleObject3dClick(const glm::vec2 &winCursor)
 	{
 		glm::ivec2 viewportPt = ScreenToViewport(winCursor, m_layoutParam);
-		Ray ray = Ray::BuildFromScreen(viewportPt, m_mainCameraEnt->getComponent<CameraComponent>().Camera, true);
+		Ray ray = Ray::BuildFromScreen(viewportPt, *Camera::Main.get(), true);
 
 		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
 		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(ray);
@@ -662,8 +655,7 @@ namespace pio
 			glm::vec2 delta = winCursor - m_winCursor;
 			delta.x = Math::Clamp(delta.x, -20.f, 20.f);
 			delta.y = Math::Clamp(delta.y, -20.f, 20.f);
-			auto &comp = m_mainCameraEnt->getComponent<CameraComponent>();
-			comp.Camera.setPositionDelta(SphereCoord(-delta.y, -delta.x, 0.f) * 0.75f);
+			Camera::Main->setPositionDelta(SphereCoord(-delta.y, -delta.x, 0.f) * 0.75f);			
 			m_winCursor = winCursor;
 			return true;
 		}

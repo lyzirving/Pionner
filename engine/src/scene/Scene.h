@@ -50,8 +50,7 @@ namespace pio
 		LightEnvironment m_lightEnv;
 		Ref<Skybox> m_skybox;
 
-		Ref<Entity> m_sceneRoot{ nullptr };
-		Ref<Entity> m_mainCameraEnt{ nullptr };		
+		Ref<Entity> m_sceneRoot{ nullptr };			
 		AssetHandle m_screenQuad{ NullAsset };
 
 	private:

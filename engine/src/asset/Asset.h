@@ -37,6 +37,22 @@ namespace pio
 	public:
 		Asset() : m_assetHandle(), m_parentHandle(0), m_name("None") {}
 		Asset(const std::string &name) : m_assetHandle(), m_parentHandle(0), m_name(name) {}
+
+		Asset(const Asset &rhs) : m_assetHandle(rhs.m_assetHandle),m_parentHandle(rhs.m_parentHandle), m_name(rhs.m_name)
+		{
+		}
+
+		Asset operator=(const Asset &rhs)
+		{
+			if(this != &rhs)
+			{
+				m_assetHandle = rhs.m_assetHandle;
+				m_parentHandle = rhs.m_parentHandle;
+				m_name = rhs.m_name;
+			}
+			return *this;
+		}
+
 		virtual ~Asset() = default;
 		virtual AssetType getAssetType() const { return GetStaticType(); }
 
@@ -59,7 +75,7 @@ namespace pio
 		static AssetType GetStaticType() { return AssetType::None; }
 
 	protected:
-		const AssetHandle m_assetHandle;
+		AssetHandle m_assetHandle;
 		AssetHandle m_parentHandle;
 		std::string m_name;
 	};

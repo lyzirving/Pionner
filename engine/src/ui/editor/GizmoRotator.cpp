@@ -27,8 +27,7 @@
 namespace pio
 {
 	GizmoRotator::GizmoRotator() : EditorUI(), Hittable() 
-	{
-		m_cameraEnt = Registry::Get()->mainCameraEnt();
+	{		
 		onCreateMesh();
 	}
 
@@ -138,10 +137,10 @@ namespace pio
 	bool GizmoRotator::onMouseButtonPressed(Event &event)
 	{
 		if (!bVisible()) return false;
-
-		auto *e = event.as<MouseButtonPressedEvent>();
+		
+		auto *e = event.as<MouseButtonPressedEvent>();		
 		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera, true));
+		HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get(), true));
 
 		if (onHit(query)) { m_lastHitPt = query.HitPt; }
 		//if (query.Hit) LOGD("Press");
@@ -169,9 +168,9 @@ namespace pio
 			auto *e = event.as<MouseMovedEvent>();
 			auto *shape = m_shape[m_selectedAxis]->as<HittableFlatCircle>();
 			const Plane &plane = shape->getPlane();
-
+			
 			glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-			HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+			HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get()));
 
 			if (Intersection(query, plane))
 			{
@@ -229,9 +228,9 @@ namespace pio
 
 		cancelHovering();
 
-		auto *e = event.as<MouseMovedEvent>();
+		auto *e = event.as<MouseMovedEvent>();		
 		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+		HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get()));
 
 		if (m_shape[EditorAxis_X]->onHit(query))
 		{

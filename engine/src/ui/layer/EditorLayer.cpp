@@ -70,8 +70,7 @@ namespace pio
 	}
 
 	void EditorLayer::onAttach()
-	{		
-		m_mainCameraEnt = s_registry->mainCameraEnt();
+	{				
 		m_sceneEnt = s_registry->mainSceneEnt();
 
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
@@ -79,8 +78,7 @@ namespace pio
 	}
 
 	void EditorLayer::onDetach()
-	{
-		m_mainCameraEnt.reset();
+	{		
 		m_sceneEnt.reset();
 	}
 
@@ -446,16 +444,17 @@ namespace pio
 			return;
 
 		auto& comp = ent->getComponent<CameraComponent>();
+		auto camera = AssetsManager::GetRuntimeAsset<Camera>(comp.Handle);
 		const float rowWidth = m_layoutParam.Viewport.Width;
 		bool visible{ true };// always be visible
 
 		UiPanel::DrawNamePanel("##camera_name", ent->getName(), "##camera_visibility", visible, rowWidth);
 
-		auto attr = UiPanel::DrawTransformPanel(comp.Camera.transform());
+		auto attr = UiPanel::DrawTransformPanel(camera->transform());
 		if (attr.test(DataAttrBits_Pos))
-			comp.Camera.attrChange(CameraAttrBits_Pos);
+			camera->attrChange(CameraAttrBits_Pos);
 		if (attr.test(DataAttrBits_Rot))
-			comp.Camera.attrChange(CameraAttrBits_Rot);
+			camera->attrChange(CameraAttrBits_Rot);
 
 		UiPanel::DrawCameraPanel(comp);
 	}

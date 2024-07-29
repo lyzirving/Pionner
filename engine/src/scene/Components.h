@@ -31,7 +31,7 @@ namespace pio
 	struct CameraComponent
 	{
 		bool Primary{ false };
-		Camera Camera{};
+		AssetHandle Handle{ NullAsset };
 	};
 
 	// ---------------- Mesh related ----------------------

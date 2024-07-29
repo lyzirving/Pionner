@@ -44,8 +44,7 @@ namespace pio
 	
 	private:
 		Ref<StaticMesh> m_arrow;
-		Ref<HittableShape> m_shape[EditorAxis_Num];
-		Ref<Entity> m_cameraEnt;
+		Ref<HittableShape> m_shape[EditorAxis_Num];		
 
 		glm::vec3  m_lastHitPt{ 0.f }, m_transferVec{ 0.f }, m_transferDist{0.f}, m_transferDiff{ 0.f };
 		EditorAxis m_selectedAxis{ EditorAxis_Num }, m_hoveringAxis{ EditorAxis_Num };

@@ -154,8 +154,7 @@ namespace pio
 	void Scene::onUpdate(const Timestep &ts)
 	{
 		uint64_t start{ PROFILER_TIME };
-		Camera &sceneCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
-		sceneCam.flush();
+		Camera::Main->flush();
 
 		//[TODO] use a pixed rate for physics simulation, 
 		//       maybe i need use another thread
@@ -188,7 +187,7 @@ namespace pio
 				auto &lightComp = it->second->getComponent<PointLightComponent>();
 				auto &transComp = it->second->getComponent<TransformComponent>();
 				auto &spriteComp = it->second->getComponent<SpriteComponent>();
-				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.PointLightData.Lights[lightComp.Index], sceneCam);
+				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.PointLightData.Lights[lightComp.Index], *Camera::Main.get());
 				it++;
 			}
 		}
@@ -202,7 +201,7 @@ namespace pio
 				auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 				auto &transComp = ent->getComponent<TransformComponent>();
 				auto &spriteComp = ent->getComponent<SpriteComponent>();
-				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.DirectionalLight, sceneCam);
+				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.DirectionalLight, *Camera::Main.get());
 			}
 			else
 			{
@@ -217,9 +216,8 @@ namespace pio
 	{
 		uint64_t start{ PROFILER_TIME };
 		// -------------------- Render 3D scene ----------------------------
-		// -----------------------------------------------------------------
-		Camera &sceneCam = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
-		renderer->beginScene(*this, sceneCam);
+		// -----------------------------------------------------------------		
+		renderer->beginScene(*this, *Camera::Main.get());
 
 		// Process dynamic mesh
 		{
@@ -279,10 +277,9 @@ namespace pio
 	}
 
 	void Scene::setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
-	{
-		Camera &camera = m_mainCameraEnt->getComponent<CameraComponent>().Camera;
-		camera.setViewport(x, y, width, height);
-		camera.setAspect(float(width) / float(height));
+	{		
+		Camera::Main->setViewport(x, y, width, height);
+		Camera::Main->setAspect(float(width) / float(height));
 	}
 
 	void Scene::createData()
@@ -303,15 +300,16 @@ namespace pio
 		sceneComp.Skybox = m_skybox->getHandle();
 
 		// Main Camera
-		m_mainCameraEnt = s_registry->create<CameraComponent, RelationshipComponent>(EntityClass::Camera, "Camera");
-		PIO_RELATION_SET_SELF(m_mainCameraEnt);
-		PIO_RELATION_SET_CHILD(m_sceneRoot, m_mainCameraEnt);
-		PIO_RELATION_SET_PARENT(m_mainCameraEnt, m_sceneRoot);
-		auto &cameraComp = m_mainCameraEnt->getComponent<CameraComponent>();
+		auto camEnt = s_registry->create<CameraComponent, RelationshipComponent>(EntityClass::Camera, "Camera");
+		Camera::Main = AssetsManager::CreateRuntimeAssets<Camera>();
+		PIO_RELATION_SET_SELF(camEnt);
+		PIO_RELATION_SET_CHILD(m_sceneRoot, camEnt);
+		PIO_RELATION_SET_PARENT(camEnt, m_sceneRoot);
+		auto &cameraComp = camEnt->getComponent<CameraComponent>();
 		cameraComp.Primary = true;
-		auto& camera = cameraComp.Camera;
-		camera.setPosition(SphereCoord(72.f, 341.f, 10.f));
-		camera.setLookAt(glm::vec3(0.f));
+		cameraComp.Handle = Camera::Main->getHandle();
+		Camera::Main->setPosition(SphereCoord(72.f, 341.f, 10.f));
+		Camera::Main->setLookAt(glm::vec3(0.f));
 
 		// Distant Light
 		{

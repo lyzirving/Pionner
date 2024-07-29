@@ -26,8 +26,7 @@ namespace pio
 {
 	GizmoTransform::GizmoTransform() : EditorUI(), Hittable()
 	{
-		onCreateMesh();
-		m_cameraEnt = Registry::Get()->mainCameraEnt();
+		onCreateMesh();		
 	}
 
 	void GizmoTransform::onCreateMesh()
@@ -125,9 +124,9 @@ namespace pio
 	{
 		if (!bVisible()) return false;
 
-		auto *e = event.as<MouseButtonPressedEvent>();
+		auto *e = event.as<MouseButtonPressedEvent>();		
 		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera, true));
+		HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get(), true));
 		
 		if (onHit(query)) { m_lastHitPt = query.R.PtOnNear; }
 		return query.Hit;
@@ -150,9 +149,9 @@ namespace pio
 
 		if (bSelected())
 		{
-			auto *e = event.as<MouseMovedEvent>();
+			auto *e = event.as<MouseMovedEvent>();			
 			glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-			glm::vec3 ptOnNearPlane = Ray::PointOnNearPlane(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera);
+			glm::vec3 ptOnNearPlane = Ray::PointOnNearPlane(vpPoint, *Camera::Main.get());
 			glm::vec3 diff = ptOnNearPlane - m_lastHitPt;
 			m_transferVec += diff;
 			m_transferDiff = EditorUI::GetAxis(m_selectedAxis) * glm::dot(diff, EditorUI::GetAxis(m_selectedAxis)) * GIZMO_TRANSM_SCALE;
@@ -187,9 +186,9 @@ namespace pio
 
 		cancelHovering();
 
-		auto *e = event.as<MouseMovedEvent>();
+		auto *e = event.as<MouseMovedEvent>();		
 		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, m_cameraEnt->getComponent<CameraComponent>().Camera));
+		HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get()));
 		
 		if (m_shape[EditorAxis_X]->onHit(query))
 		{

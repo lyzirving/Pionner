@@ -18,8 +18,7 @@ namespace pio
 	class Registry
 	{
 		PIO_SINGLETON_DECLARE(Registry);
-	public:
-		Ref<Entity> mainCameraEnt();
+	public:		
 		Ref<Entity> mainSceneEnt();
 		void destroy(Entity &entity);
 

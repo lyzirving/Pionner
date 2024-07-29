@@ -2,6 +2,27 @@
 
 namespace pio
 {
+	Frustum::Frustum(const Frustum &rhs) : 
+		m_type(rhs.m_type), m_aspect(rhs.m_aspect), 
+		m_near(rhs.m_near), m_far(rhs.m_far), 
+		m_mat(rhs.m_mat), m_invalidate(rhs.m_invalidate)
+	{
+	}
+
+	Frustum &Frustum::operator=(const Frustum &rhs)
+	{
+		if(this != &rhs)
+		{
+			m_type = rhs.m_type;
+			m_aspect = rhs.m_aspect;
+			m_near = rhs.m_near;
+			m_far = rhs.m_far;
+			m_mat = rhs.m_mat;
+			m_invalidate = rhs.m_invalidate;
+		}
+		return *this;
+	}
+
 	void Frustum::flush()
 	{
 		if (bDirty())
