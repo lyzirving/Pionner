@@ -18,7 +18,6 @@ namespace pio
 		virtual void onWindowSizeChange(uint32_t width, uint32_t height) override;
 
 	private:
-		Ref<Entity> m_sceneRoot;
 		uint32_t m_selectedNode{ NullIndex };
 	};
 }

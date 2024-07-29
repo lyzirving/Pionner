@@ -7,6 +7,9 @@ namespace pio
 {
 	class Asset;
 
+	/*
+	* @brief EventBusObject should be the first parent class in class hierarchy
+	*/
 	class EventBusObject
 	{
 	public:

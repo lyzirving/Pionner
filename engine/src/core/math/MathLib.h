@@ -22,6 +22,7 @@ namespace pio
 
 		glm::mat4 PerspectiveMat(float fov, float aspect, float near, float far);
 		glm::mat4 OrthoMat(float left, float right, float bottom, float top, float near, float far);
+		glm::mat4 ViewportMat(const Viewport& vp);
 
 		inline glm::vec3 Scale(const glm::vec3 &v, float desiredLength) { return v * desiredLength / glm::length(v); }
 

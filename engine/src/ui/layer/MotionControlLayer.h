@@ -75,8 +75,6 @@ namespace pio
 		bool m_drawCircle{ false };
 		WindowLayoutParams m_circleLayoutParam;
 
-		Ref<Entity> m_sceneEnt;
-
 		Ref<UniformBufferSet> m_visionUBSet;
 		CameraUD m_visionCamUD;
 		Camera m_visionCam;

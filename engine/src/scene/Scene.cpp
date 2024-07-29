@@ -22,13 +22,15 @@
 
 namespace pio
 {
+	Ref<Scene>  Scene::Main{ nullptr };
+	Ref<Entity> Scene::Root{ nullptr };
 	Registry *Scene::s_registry = Registry::Get();
 
 	static void UpdateSpritePosition(const glm::vec3 &worldPos, SpriteComponent &spriteComp, Camera &cam)
 	{
 		const Viewport &vp = cam.viewport();
 		glm::mat4 mvp = cam.prjMat() * cam.viewMat();
-		glm::mat4 vpMat = Camera::GetViewportMat(Viewport(0, 0, vp.Width, vp.Height));
+		glm::mat4 vpMat = Math::ViewportMat(Viewport(0, 0, vp.Width, vp.Height));
 		glm::uvec2 vpSize{ vp.Width, vp.Height };
 
 		glm::vec2 p = WorldToScreenPos(worldPos, mvp, vpMat, vpSize);
@@ -87,7 +89,7 @@ namespace pio
 		UpdateSpritePosition(sceneData.Position, spriteComp, cam);
 	}
 
-	static void CreatePointLightComponent(uint32_t index, PointLight &light, Ref<PhysicsScene> physicsScene, Ref<Entity> sceneRoot, Ref<Texture2D> icon)
+	static void CreatePointLightComponent(uint32_t index, PointLight &light, Ref<PhysicsScene> &physicsScene, Ref<Entity> &sceneRoot, Ref<Texture2D> &icon)
 	{
 		Ref<Entity> ent = Registry::Get()->create<PointLightComponent, TransformComponent, RelationshipComponent, SpriteComponent>(EntityClass::PointLight, light.Name);
 
@@ -120,15 +122,11 @@ namespace pio
 		spriteComp.State.Stencil.Enable = false;
 	}
 
-	Scene::Scene() : EventBusObject()
+	Scene::Scene(bool bMain) : EventBusObject(), m_bMain(bMain)
 	{
-		EventBus::Get()->addRegister(PioEvent::UnzipAsset, EventBusCb(this, (EventBusCbFunc)&Scene::onAssetUnzip));
 	}
 
-	Scene::~Scene()
-	{
-		EventBus::Get()->removeRegister(PioEvent::UnzipAsset, EventBusCb(this, (EventBusCbFunc)&Scene::onAssetUnzip));
-	}
+	Scene::~Scene() = default;
 
 	void Scene::onAttach(Ref<SceneRenderer> &renderer)
 	{		
@@ -144,11 +142,25 @@ namespace pio
 		m_screenQuad = MeshFactory::CreateScreenQuad(0, 0, w, h, w, h)->getHandle();
 
 		renderer->onAttach(*this);
+
+		EventBus::Get()->addRegister(PioEvent::UnzipAsset, EventBusCb(this, (EventBusCbFunc)&Scene::onAssetUnzip));
+
+		EventBus::Get()->submit([]()
+		{
+			AssimpMeshImporter importer("werewolf", AssetFmt::GLTF);
+			//AssimpMeshImporter importer("Car", AssetFmt::GLTF);
+			//AssimpMeshImporter importer("fortnite", AssetFmt::GLTF);	
+			//[NOTE] model 'demon' has some feature to be understood to use
+			//AssimpMeshImporter importer("demon", AssetFmt::GLTF);
+			auto meshSource = importer.importToMeshSource();
+			EventBus::Get()->notify(EventBusArg(PioEvent::UnzipAsset, meshSource));
+		});
 	}
 
 	void Scene::onDetach(Ref<SceneRenderer> &renderer)
 	{
 		renderer->onDetach(*this);
+		EventBus::Get()->removeRegister(PioEvent::UnzipAsset, EventBusCb(this, (EventBusCbFunc)&Scene::onAssetUnzip));
 	}
 
 	void Scene::onUpdate(const Timestep &ts)
@@ -287,17 +299,17 @@ namespace pio
 		// Scene and Physics
 		m_sceneRoot = s_registry->create<SceneComponent, RelationshipComponent>(EntityClass::Scene, "Scene");
 		PIO_RELATION_SET_SELF(m_sceneRoot);
-		auto &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
-		sceneComp.Primary = true;
-		sceneComp.Simulate = false;
 		// NOTE: create PhysicsScene should be called at last
-		auto physicsScene = CreateRef<PhysicsScene>("Main");
-		AssetsManager::Get()->addRuntimeAsset(physicsScene);
-		sceneComp.PhycisScene = physicsScene->getHandle();
+		m_physics = CreateRef<PhysicsScene>("Scene_Physics");
+		m_skybox  = CreateRef<Skybox>("default_skybox", AssetFmt::HDR);
+		auto &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
+		sceneComp.Handle = getHandle();
 
-		m_skybox = CreateRef<Skybox>("default_skybox", AssetFmt::HDR);
-		AssetsManager::Get()->addRuntimeAsset(m_skybox);
-		sceneComp.Skybox = m_skybox->getHandle();
+		if (m_bMain)
+		{
+			Scene::Main = self();
+			Scene::Root = m_sceneRoot;
+		}
 
 		// Main Camera
 		auto camEnt = s_registry->create<CameraComponent, RelationshipComponent>(EntityClass::Camera, "Camera");
@@ -363,38 +375,26 @@ namespace pio
 															 glm::vec3(3.f), 1.f, 0.001f, 2.25f, 0.5f, 0.1f, "PointLight1");
 			m_lightEnv.PointLightData.Lights[1].Volume = AssetsManager::CreateRuntimeAssets<StaticMesh>(MeshFactory::CreateSphere(m_lightEnv.PointLightData.Lights[1].Radius))->getHandle();
 			for (uint32_t i = 0; i < m_lightEnv.PointLightData.LightCount; i++)
-				CreatePointLightComponent(i, m_lightEnv.PointLightData.Lights[i], physicsScene, m_sceneRoot, icon);
+				CreatePointLightComponent(i, m_lightEnv.PointLightData.Lights[i], m_physics, m_sceneRoot, icon);
 		}
 
 		// Plane
 		{			
 			MeshBuildParam param;
 			param.meshSrc = MeshFactory::CreatePlane();
-			param.physicWorld = AssetsManager::GetRuntimeAsset<PhysicsScene>(m_sceneRoot->getComponent<SceneComponent>().PhycisScene);
+			param.physicWorld = m_physics;
 			param.State = RenderState(Blend::Disable(), DepthTest::Common(), CullFace::Common(), StencilTest::Disable());
 			param.RigidType = RigidBodyComponent::Type::Static;
 			param.Parent = m_sceneRoot;
 			CreateStaticMesh<BoxColliderComponent>(param);
 		}
-
-		EventBus::Get()->submit([]()
-		{			
-			AssimpMeshImporter importer("werewolf", AssetFmt::GLTF);	
-			//AssimpMeshImporter importer("Car", AssetFmt::GLTF);
-			//AssimpMeshImporter importer("fortnite", AssetFmt::GLTF);	
-			//[NOTE] model 'demon' has some feature to be understood to use
-			//AssimpMeshImporter importer("demon", AssetFmt::GLTF);
-			auto meshSource = importer.importToMeshSource();		
-			EventBus::Get()->notify(EventBusArg(PioEvent::UnzipAsset, meshSource));
-		});
 	}
 
 	void Scene::simulate(const Timestep &ts)
 	{
-		auto &comp = m_sceneRoot->getComponent<SceneComponent>();
-		if (comp.Simulate)
+		if (m_bSimulate)
 		{
-			AssetsManager::GetRuntimeAsset<PhysicsScene>(comp.PhycisScene)->simulate(ts);
+			m_physics->simulate(ts);
 		}
 	}
 
@@ -411,7 +411,7 @@ namespace pio
 						Ref<MeshSource> meshSrc = RefCast<Asset, MeshSource>(arg.Assets);
 						MeshBuildParam param; 
 						param.meshSrc = meshSrc;
-						param.physicWorld = AssetsManager::GetRuntimeAsset<PhysicsScene>(m_sceneRoot->getComponent<SceneComponent>().PhycisScene);
+						param.physicWorld = m_physics;
 						param.State = RenderState(Blend::Disable(), DepthTest::Common(), CullFace::Common(), StencilTest::Disable());
 						param.RigidType = RigidBodyComponent::Type::Dynamic;
 						param.Parent = m_sceneRoot;
@@ -429,4 +429,7 @@ namespace pio
 			}
 		}
 	}
+
+	template<>
+	bool Asset::is<Scene>() const { return getAssetType() == AssetType::Scene; }
 }

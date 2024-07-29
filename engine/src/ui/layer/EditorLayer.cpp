@@ -4,6 +4,7 @@
 
 #include "asset/AssetsManager.h"
 
+#include "scene/Scene.h"
 #include "scene/Components.h"
 #include "scene/Skybox.h"
 
@@ -71,15 +72,12 @@ namespace pio
 
 	void EditorLayer::onAttach()
 	{				
-		m_sceneEnt = s_registry->mainSceneEnt();
-
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
 						   Application::MainWindow()->getHeight());
 	}
 
 	void EditorLayer::onDetach()
 	{		
-		m_sceneEnt.reset();
 	}
 
 	void EditorLayer::onUpdateUI(const Timestep &ts)
@@ -160,7 +158,7 @@ namespace pio
 	{
 		if (ent && ent->hasComponent<SceneComponent>())
 		{
-			auto &sceneComp = ent->getComponent<SceneComponent>();
+			auto scene = AssetsManager::GetRuntimeAsset<Scene>(ent->getComponent<SceneComponent>().Handle);
 			const std::string &name = ent->getName();
 			const float rowWidth = m_layoutParam.Viewport.Width;
 			
@@ -170,7 +168,9 @@ namespace pio
 
 			if (ImGui::CollapsingHeader("Physics##Scene", ImGuiUtils::Flag_Collapse_Header))
 			{
-				ImGui::Checkbox("Simulate##Scene_Physics", &sceneComp.Simulate);
+				bool bSimulate = scene->bSimulate();
+				ImGui::Checkbox("Simulate##Scene_Physics", &bSimulate);
+				scene->setSimulate(bSimulate);
 				ImGui::SameLine();
 				bool raycastSwitch = Renderer::GetConfig().Debugger.Raycast;
 				ImGui::Checkbox("Raycast##Scene_Physics", &raycastSwitch);
@@ -186,7 +186,7 @@ namespace pio
 
 			if (ImGui::CollapsingHeader("Skybox##Scene", ImGuiUtils::Flag_Collapse_Header))
 			{				
-				Ref<Skybox> sk = AssetsManager::GetRuntimeAsset<Skybox>(sceneComp.Skybox);
+				Ref<Skybox> sk = scene->skybox();
 				const auto &name = sk->getName();
 				ImGui::Text("Env map: %s", name.c_str());
 

@@ -134,13 +134,12 @@ namespace pio
 		return false;
 	}
 
-	bool GizmoRotator::onMouseButtonPressed(Event &event)
+	bool GizmoRotator::onMouseButtonPressed(Event& event)
 	{
 		if (!bVisible()) return false;
-		
-		auto *e = event.as<MouseButtonPressedEvent>();		
-		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get(), true));
+
+		auto* e = event.as<MouseButtonPressedEvent>();
+		HitQuery query(Camera::Main->screenPointToRay(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam, true));
 
 		if (onHit(query)) { m_lastHitPt = query.HitPt; }
 		//if (query.Hit) LOGD("Press");
@@ -169,9 +168,7 @@ namespace pio
 			auto *shape = m_shape[m_selectedAxis]->as<HittableFlatCircle>();
 			const Plane &plane = shape->getPlane();
 			
-			glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-			HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get()));
-
+			HitQuery query(Camera::Main->screenPointToRay(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam));
 			if (Intersection(query, plane))
 			{
 				glm::vec3 n = plane.getNormal();
@@ -228,9 +225,8 @@ namespace pio
 
 		cancelHovering();
 
-		auto *e = event.as<MouseMovedEvent>();		
-		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get()));
+		auto *e = event.as<MouseMovedEvent>();				
+		HitQuery query(Camera::Main->screenPointToRay(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam));
 
 		if (m_shape[EditorAxis_X]->onHit(query))
 		{

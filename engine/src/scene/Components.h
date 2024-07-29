@@ -34,6 +34,11 @@ namespace pio
 		AssetHandle Handle{ NullAsset };
 	};
 
+	struct SceneComponent
+	{
+		AssetHandle Handle{ NullAsset };
+	};
+
 	// ---------------- Mesh related ----------------------
 	// ----------------------------------------------------
 	struct MeshSourceComponent
@@ -165,15 +170,6 @@ namespace pio
 
 	struct MeshColliderComponent
 	{
-	};
-
-	struct SceneComponent
-	{
-		// Physics Related
-		AssetHandle PhycisScene{ NullAsset };
-		AssetHandle Skybox{ NullAsset };
-		bool Simulate{ true };
-		bool Primary{ false };
 	};
 
 	// Singleton Component

@@ -20,7 +20,7 @@ namespace pio
 		Animation, Skeleton, Material, 
 		Texture, Texture2D, CubeTexture, CubeArrayTexture, BufferTexture, Skybox, RenderBuffer,
 		PhysicsMat, PhysicsScene,
-		Camera
+		Scene, Camera
 	};
 
 	enum class AssetFmt : uint8_t

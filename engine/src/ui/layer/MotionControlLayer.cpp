@@ -13,6 +13,7 @@
 #include "physics/PhysicsScene.h"
 #include "physics/PhysicsActor.h"
 
+#include "scene/Scene.h"
 #include "scene/Registry.h"
 #include "scene/Components.h"
 
@@ -58,8 +59,6 @@ namespace pio
 														  m_layoutParam.Percentage.Top + 0.015f,
 														  m_layoutParam.Percentage.Right,
 														  m_layoutParam.Percentage.Top + 0.125f);
-
-		m_sceneEnt = s_registry->mainSceneEnt();
 
 		m_views[MotionCtl_Move] = CreateRef<View>("Move Ctl View");
 		m_views[MotionCtl_Move]->setStatus(ViewCtlStatus_Selected);
@@ -577,11 +576,9 @@ namespace pio
 
 	bool MotionControlLayer::onHandleObject3dClick(const glm::vec2 &winCursor)
 	{
-		glm::ivec2 viewportPt = ScreenToViewport(winCursor, m_layoutParam);
-		Ray ray = Ray::BuildFromScreen(viewportPt, *Camera::Main.get(), true);
+		Ray ray = Camera::Main->screenPointToRay(winCursor, m_layoutParam, true);
 
-		auto &sceneComp = m_sceneEnt->getComponent<SceneComponent>();
-		HitResult result = AssetsManager::GetRuntimeAsset<PhysicsScene>(sceneComp.PhycisScene)->intersect(ray);
+		HitResult result = Scene::Main->physics()->intersect(ray);
 		if (MotionController::bObj3dSelectd()) { MotionController::GetObj3D()->setSelection(false); }
 		Ref<Entity> select3d;
 		bool consume = result.Hit && result.Actor->getEnt(select3d);

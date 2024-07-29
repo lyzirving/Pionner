@@ -2,8 +2,10 @@
 
 #include "Application.h"
 
-#include "asset/AssetsManager.h"
+#include "scene/Scene.h"
 #include "scene/Components.h"
+
+#include "asset/AssetsManager.h"
 #include "gfx/renderer/Renderer.h"
 
 #include "ui/ImGuiUtils.h"
@@ -47,23 +49,20 @@ namespace pio
 
 	void SceneHierarchyLayer::onAttach()
 	{
-		m_sceneRoot = s_registry->mainSceneEnt();
-
 		onWindowSizeChange(Application::MainWindow()->getWidth(),
 						   Application::MainWindow()->getHeight());
 	}
 
 	void SceneHierarchyLayer::onDetach()
 	{
-		m_sceneRoot.reset();
 	}
 
 	void SceneHierarchyLayer::onUpdateUI(const Timestep &ts)
 	{
-		PIO_ASSERT_RETURN(m_sceneRoot.use_count() != 0, "SceneHierarchyLayer: scene root is invalid");
+		PIO_ASSERT_RETURN(Scene::Root.use_count() != 0, "SceneHierarchyLayer: scene root is invalid");
 
 		Registry *regi = s_registry;
-		Ref<Entity> rt = m_sceneRoot;
+		Ref<Entity> rt = Scene::Root;
 		WindowLayoutParams &param = m_layoutParam;
 		uint32_t &selected = m_selectedNode;
 		s_registry->getSingleton<EditorComponent>().SelectedEntIndex = m_selectedNode;

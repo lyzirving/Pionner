@@ -19,7 +19,6 @@ namespace pio
 	{
 		PIO_SINGLETON_DECLARE(Registry);
 	public:		
-		Ref<Entity> mainSceneEnt();
 		void destroy(Entity &entity);
 
 	private:

@@ -1,6 +1,9 @@
 #include "Camera.h"
 
 #include "core/math/MathLib.h"
+#include "gfx/renderer/Renderer.h"
+#include "gfx/debug/GDebugger.h"
+#include "ui/UiDef.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -196,39 +199,94 @@ namespace pio
 		}
 	}
 
-	glm::mat4 Camera::GetViewMat(const SphereCoord &position, const glm::vec3 &lookAt)
+	Ray Camera::screenPointToRay(const glm::vec2& screenPt, const WindowLayoutParams& param, bool bDraw)
 	{
-		glm::vec3 pos = position.to();
-		glm::vec3 viewDir = glm::normalize(lookAt - pos);
-		// compute the right and up vector by view direction and world up
-		glm::vec3 right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
-		glm::vec3 up = glm::normalize(glm::cross(right, viewDir));
-		return glm::lookAt(pos, lookAt, up);
+		auto vpPoint = ScreenToViewport(screenPt, param);
+
+		float far = frustFar();
+		float near = frustNear();
+		float left = frustLeft();
+		float right = frustRight();
+		float top = frustTop();
+		float bottom = frustBottom();
+		// camera position in world space
+		glm::vec3 camPos = position();
+		const Viewport& vp = viewport();
+		const glm::mat4& vMat = viewMat();
+
+		// origin of OpenGL's viewport is left-bottom.
+		glm::vec2 pt = vpPoint;
+		// transform pt from screen to CVV
+		pt.x = (pt.x / (float)vp.Width) * 2.f - 1.f;
+		pt.y = (pt.y / (float)vp.Height) * 2.f - 1.f;
+
+		// transform pt to project plane
+		pt.x = (pt.x + 1.f) * 0.5f * (right - left) + left;
+		pt.y = (pt.y + 1.f) * 0.5f * (top - bottom) + bottom;
+
+		// pt in camera space on near plane
+		glm::vec3 camPt = glm::vec3(pt.x, pt.y, -near);
+
+		// --------------transform pt in camera space into world space-------------
+		// get rotation matrix
+		glm::mat3 rotMat = glm::mat3(vMat[0].x, vMat[0].y, vMat[0].z,
+									 vMat[1].x, vMat[1].y, vMat[1].z,
+									 vMat[2].x, vMat[2].y, vMat[2].z);
+		glm::mat3 invRot = glm::inverse(rotMat);
+		camPt = invRot * camPt;
+		camPt += camPos;
+
+		if (Renderer::GetConfig().Debugger.Raycast && bDraw)
+		{
+			// adjust the point in frustum for GDebuger visualization
+			glm::vec3 pos = camPos;
+			glm::vec3 dstPos = camPt;
+			pos = pos - front() * near;
+			dstPos = dstPos - front() * near;
+			GDebugger::Get()->addLine(Ray(pos, glm::normalize(dstPos - pos)));
+		}
+
+		return Ray(camPos, glm::normalize(camPt - camPos), camPt);
 	}
 
-	glm::mat4 Camera::GetViewMat(const glm::vec3 &position, const glm::vec3 &lookAt)
+	glm::vec3 Camera::screenPointToNearPlane(const glm::vec2& screenPt, const WindowLayoutParams& param)
 	{
-		glm::vec3 viewDir = glm::normalize(lookAt - position);
-		// compute the right and up vector by view direction and world up
-		glm::vec3 right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
-		glm::vec3 up = glm::normalize(glm::cross(right, viewDir));
-		return glm::lookAt(position, lookAt, up);
-	}
+		auto vpPoint = ScreenToViewport(screenPt, param);
 
-	glm::mat4 Camera::GetOrtho(float l, float r, float b, float t)
-	{
-		return glm::ortho(l, r, b, t);
-	}
+		float far = frustFar();
+		float near = frustNear();
+		float left = frustLeft();
+		float right = frustRight();
+		float top = frustTop();
+		float bottom = frustBottom();
+		// camera position in world space
+		glm::vec3 camPos = position();
+		const Viewport& vp = viewport();
+		const glm::mat4& vMat = viewMat();
 
-	glm::mat4 Camera::GetViewportMat(const Viewport &vp)
-	{
-		glm::vec4 col0 = glm::vec4(float(vp.Width) / 2.f, 0.f, 0.f, 0.f);
-		glm::vec4 col1 = glm::vec4(0.f, float(vp.Height) / 2.f, 0.f, 0.f);
-		glm::vec4 col2 = glm::vec4(0.f, 0.f, 0.5f, 0.f);
-		glm::vec4 col3 = glm::vec4(float(vp.X) + float(vp.Width) / 2.f,
-								   float(vp.Y) + float(vp.Height) / 2.f,
-								   0.5f, 1.f);
-		return glm::mat4(col0, col1, col2, col3);
+		// origin of OpenGL's viewport is left-bottom.
+		glm::vec2 pt = vpPoint;
+		// transform pt from screen to CVV
+		pt.x = (pt.x / (float)vp.Width) * 2.f - 1.f;
+		pt.y = (pt.y / (float)vp.Height) * 2.f - 1.f;
+
+		// transform pt to project plane
+		pt.x = (pt.x + 1.f) * 0.5f * (right - left) + left;
+		pt.y = (pt.y + 1.f) * 0.5f * (top - bottom) + bottom;
+
+		// pt in camera space on near plane
+		glm::vec3 camPt = glm::vec3(pt.x, pt.y, -near);
+
+		// --------------transform pt in camera space into world space-------------
+		// get rotation matrix
+		glm::mat3 rotMat = glm::mat3(vMat[0].x, vMat[0].y, vMat[0].z,
+			                         vMat[1].x, vMat[1].y, vMat[1].z,
+									 vMat[2].x, vMat[2].y, vMat[2].z);
+		glm::mat3 invRot = glm::inverse(rotMat);
+		camPt = invRot * camPt;
+		camPt += camPos;
+
+		return camPt;
 	}
 
 	template<>

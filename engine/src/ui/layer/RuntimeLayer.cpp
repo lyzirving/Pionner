@@ -2,6 +2,7 @@
 
 #include "Application.h"
 
+#include "asset/AssetsManager.h"
 #include "window/event/MouseEvent.h"
 
 #include "scene/Scene.h"
@@ -31,8 +32,8 @@ namespace pio
 		uint32_t w = Application::MainWindow()->getWidth();
 		uint32_t h = Application::MainWindow()->getHeight();
 		m_layoutParam.calculate(w, h);		
-
-		m_scene = CreateRef<Scene>();
+		
+		m_scene = AssetsManager::Get()->CreateRuntimeAssets<Scene>(true);
 		m_renderer = CreateRef<SceneRenderer>();							
 
 		m_scene->setLayoutParam(m_layoutParam);

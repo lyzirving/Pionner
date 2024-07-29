@@ -2,6 +2,7 @@
 
 #include "core/EventBus.h"
 #include "core/utils/Profiler.h"
+#include "core/math/Camera.h"
 
 #include "gfx/struct/MaterialLibrary.h"
 #include "gfx/debug/GDebugger.h"
@@ -10,6 +11,7 @@
 
 #include "window/event/AppEvent.h"
 
+#include "scene/Scene.h"
 #include "scene/Registry.h"
 
 #include "physics/PhysicsSystem.h"
@@ -178,6 +180,10 @@ namespace pio
 	void Application::onRenderDestroy()
 	{
 		m_layerManager.onRenderDestroy();
+
+		Scene::Main.reset();
+		Scene::Root.reset();
+		Camera::Main.reset();
 
 		m_layerManager.popAll();
 

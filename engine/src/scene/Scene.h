@@ -18,10 +18,15 @@ namespace pio
 	/*
 	* Scene is somewhere used to store logical data
 	*/
-	class Scene : public EventBusObject
+	class Scene : public EventBusObject, public Asset, public std::enable_shared_from_this<Scene>
 	{
+		OVERRIDE_ASSET_TYPE(AssetType::Scene)
 	public:
-		Scene();
+		static Ref<Scene>  Main;
+		static Ref<Entity> Root;
+
+	public:
+		Scene(bool bMain = false);
 		virtual ~Scene();
 
 		virtual void onAttach(Ref<SceneRenderer> &renderer);
@@ -34,6 +39,12 @@ namespace pio
 
 		void setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 		void setLayoutParam(const WindowLayoutParams &p) { m_layoutParam = p; }
+		void setSimulate(bool enable) { m_bSimulate = enable; }
+
+		Ref<Scene> self() { return shared_from_this(); }
+		bool bSimulate() const { return m_bSimulate; }
+		Ref<PhysicsScene> physics() const { return m_physics; }
+		Ref<Skybox> skybox() const { return m_skybox; }
 
 	private:
 		void createData();
@@ -48,6 +59,10 @@ namespace pio
 		WindowLayoutParams m_layoutParam;
 
 		LightEnvironment m_lightEnv;
+
+		bool m_bMain{ false };
+		bool m_bSimulate{ false };
+		Ref<PhysicsScene> m_physics;
 		Ref<Skybox> m_skybox;
 
 		Ref<Entity> m_sceneRoot{ nullptr };			
@@ -56,6 +71,9 @@ namespace pio
 	private:
 		friend class SceneRenderer;
 	};
+
+	template<>
+	bool Asset::is<Scene>() const;
 }
 
 #endif

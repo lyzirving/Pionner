@@ -3,6 +3,7 @@
 
 #include "PerspectiveFrustum.h"
 #include "OrthographicFrustum.h"
+#include "Ray.h"
 
 #include "asset/Asset.h"
 #include "gfx/renderer/RenderState.h"
@@ -40,6 +41,8 @@ namespace pio
 	};
 
 	using CameraAttrs = std::bitset<CameraAttrBits_Num>;
+
+	struct WindowLayoutParams;
 
 	class Camera : public Asset
 	{
@@ -89,7 +92,7 @@ namespace pio
 		const glm::mat4& viewMat()  const { return m_pose.ViewMat; }
 		const glm::mat4& prjMat()   const { return m_persFrustum.mat(); }
 		const glm::mat4& orthoMat() const { return m_orthoFrustum.mat(); }
-		const Viewport& viewport() const { return m_viewport; }
+		const Viewport&  viewport() const { return m_viewport; }
 
 		const glm::vec3& right() const { return m_pose.Right; }
 		const glm::vec3& up()    const { return m_pose.Up; }
@@ -102,14 +105,15 @@ namespace pio
 
 		const Transform& transform() const { return m_transform; }
 		const CPosition& position()  const { return m_transform.Position; }
-	public:
+
 		/*
-		* @brief: calculate view matrix by specific input
+		* @brief: Build a ray in world space by mouse event on screen.
+		*         The origin of ray is camera's position. The dest point of ray is constructed by touch point,
+		*         and touch point is re-projected back on near plane in camera space.
+		*		  The result ray is transformed into world space.
 		*/
-		static glm::mat4 GetViewMat(const SphereCoord& position, const glm::vec3& lookAt = glm::vec3(0.f));
-		static glm::mat4 GetViewMat(const glm::vec3& position, const glm::vec3& lookAt = glm::vec3(0.f));
-		static glm::mat4 GetOrtho(float l, float r, float b, float t);
-		static glm::mat4 GetViewportMat(const Viewport& vp);
+		Ray screenPointToRay(const glm::vec2& screenPt, const WindowLayoutParams &param, bool bDraw = false);
+		glm::vec3 screenPointToNearPlane(const glm::vec2& screenPt, const WindowLayoutParams& param);
 
 	private:
 		void calcViewMat();

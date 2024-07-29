@@ -125,8 +125,7 @@ namespace pio
 		if (!bVisible()) return false;
 
 		auto *e = event.as<MouseButtonPressedEvent>();		
-		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get(), true));
+		HitQuery query(Camera::Main->screenPointToRay(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam, true));
 		
 		if (onHit(query)) { m_lastHitPt = query.R.PtOnNear; }
 		return query.Hit;
@@ -141,7 +140,7 @@ namespace pio
 		return true;
 	}
 
-	bool GizmoTransform::onMouseMoved(Event &event)
+	bool GizmoTransform::onMouseMoved(Event& event)
 	{
 		if (!bVisible()) return false;
 
@@ -149,9 +148,8 @@ namespace pio
 
 		if (bSelected())
 		{
-			auto *e = event.as<MouseMovedEvent>();			
-			glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-			glm::vec3 ptOnNearPlane = Ray::PointOnNearPlane(vpPoint, *Camera::Main.get());
+			auto* e = event.as<MouseMovedEvent>();
+			glm::vec3 ptOnNearPlane = Camera::Main->screenPointToNearPlane(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
 			glm::vec3 diff = ptOnNearPlane - m_lastHitPt;
 			m_transferVec += diff;
 			m_transferDiff = EditorUI::GetAxis(m_selectedAxis) * glm::dot(diff, EditorUI::GetAxis(m_selectedAxis)) * GIZMO_TRANSM_SCALE;
@@ -187,8 +185,7 @@ namespace pio
 		cancelHovering();
 
 		auto *e = event.as<MouseMovedEvent>();		
-		glm::ivec2 vpPoint = ScreenToViewport(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam);
-		HitQuery query(Ray::BuildFromScreen(vpPoint, *Camera::Main.get()));
+		HitQuery query(Camera::Main->screenPointToRay(glm::vec2(e->getCursorX(), e->getCursorY()), m_layoutParam));
 		
 		if (m_shape[EditorAxis_X]->onHit(query))
 		{

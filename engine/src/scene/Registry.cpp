@@ -44,22 +44,6 @@ namespace pio
 		}
 	}
 
-	Ref<Entity> Registry::mainSceneEnt()
-	{
-		Ref<Entity> ent;
-		EntityView views = view<SceneComponent>();
-		for (auto &v : views)
-		{
-			auto &comp = v.second->getComponent<SceneComponent>();
-			if (comp.Primary)
-			{
-				ent = v.second;
-				break;
-			}
-		}
-		return ent;
-	}
-
 	void Registry::destroy(Entity &entity)
 	{
 		uint32_t index = entity.m_handle.index;

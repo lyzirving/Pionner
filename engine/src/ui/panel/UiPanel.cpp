@@ -104,14 +104,14 @@ namespace pio
 	{
 		if (ImGui::CollapsingHeader("Camera", ImGuiUtils::Flag_Collapse_Header))
 		{
+			//TODO: Clear Flags of camera
 			auto camera = AssetsManager::GetRuntimeAsset<Camera>(comp.Handle);				
 
-			float fov = camera->fov();
+			bool bMain = comp.Primary;
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Fov       ");
+			ImGui::Text("Main      ");
 			ImGui::SameLine();
-			ImGui::DragFloat("##FOV", &fov, 1.f, 0.1, 179.f, "%.1f");
-			camera->setFov(fov);
+			ImGui::Checkbox("##Main", &bMain);
 
 			int prjType{ camera->prjType() };
 			const char* items[2]{ "Perspective", "Orthographic" };
@@ -120,6 +120,25 @@ namespace pio
 			ImGui::SameLine();
 			ImGui::Combo("##Prj_type", &prjType, items, ProjectionType_Num);
 			camera->setPrjType(ProjectionType(prjType));
+
+			if (prjType == ProjectionType_Perspective)
+			{
+				float fov = camera->fov();
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Fov       ");
+				ImGui::SameLine();
+				ImGui::DragFloat("##FOV", &fov, 1.f, 0.1, 179.f, "%.1f");
+				camera->setFov(fov);
+			}
+			else
+			{
+				float size = camera->size();
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Size      ");
+				ImGui::SameLine();
+				ImGui::DragFloat("##Size", &size, 0.1f, 0.1, 100.f, "%.1f");
+				camera->setSize(size);
+			}
 
 			float near = camera->frustNear();
 			float far = camera->frustFar();
