@@ -4,7 +4,7 @@
 #include "GLDef.h"
 
 #include "core/Buffer.h"
-#include "core/math/Camera.h"
+#include "scene/Camera.h"
 
 #include "gfx/rhi/RenderPass.h"
 

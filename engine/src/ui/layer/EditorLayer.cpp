@@ -183,17 +183,6 @@ namespace pio
 					}
 				}
 			}
-
-			if (ImGui::CollapsingHeader("Skybox##Scene", ImGuiUtils::Flag_Collapse_Header))
-			{				
-				Ref<Skybox> sk = scene->skybox();
-				const auto &name = sk->getName();
-				ImGui::Text("Env map: %s", name.c_str());
-
-				float intensity = sk->getIntensity();
-				ImGui::SliderFloat("Intensity##Skybox", &intensity, 0.0001f, 0.3f, "%.4f");
-				sk->setIntensity(intensity);
-			}
 		}
 	}
 

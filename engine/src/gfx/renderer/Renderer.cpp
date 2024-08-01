@@ -1,7 +1,7 @@
 #include "Renderer.h"
 #include "RenderThread.h"
 
-#include "core/math/Camera.h"
+#include "scene/Camera.h"
 #include "asset/AssetsManager.h"
 #include "platform/opengl/GLRenderAPI.h"
 

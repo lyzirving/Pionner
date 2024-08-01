@@ -1,8 +1,8 @@
 #include "Camera.h"
 
-#include "core/math/MathLib.h"
 #include "gfx/renderer/Renderer.h"
 #include "gfx/debug/GDebugger.h"
+
 #include "ui/UiDef.h"
 
 #ifdef LOCAL_TAG
@@ -98,6 +98,20 @@ namespace pio
 		return *this;
 	}
 
+	void Camera::flush()
+	{
+		calcViewMat();
+		m_persFrustum.flush();
+		m_orthoFrustum.flush();
+	}
+
+	void Camera::initSkybox(const std::string& name, AssetFmt fmt)
+	{
+		m_sky = CreateRef<Skybox>(name, fmt);
+		auto sk = m_sky;
+		Renderer::SubmitTask([sk]() mutable { sk->prepare(); });
+	}
+
 	Camera Camera::clone()
 	{
 		Camera cam{};
@@ -111,14 +125,9 @@ namespace pio
 		cam.m_prjType = this->m_prjType;
 		cam.m_persFrustum = this->m_persFrustum;
 		cam.m_orthoFrustum = this->m_orthoFrustum;
-		return cam;
-	}
 
-	void Camera::flush()
-	{
-		calcViewMat();
-		m_persFrustum.flush();
-		m_orthoFrustum.flush();
+		cam.m_sky = this->m_sky;
+		return cam;
 	}
 
 	void Camera::setPosition(const glm::vec3& position)

@@ -1,5 +1,5 @@
-#ifndef __PIONNER_CORE_MATH_FRUSTUM_H__
-#define __PIONNER_CORE_MATH_FRUSTUM_H__
+#ifndef __PIONNER_SCENE_FRUSTUM_H__
+#define __PIONNER_SCENE_FRUSTUM_H__
 
 #include "core/Base.h"
 

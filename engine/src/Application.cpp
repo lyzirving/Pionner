@@ -2,7 +2,7 @@
 
 #include "core/EventBus.h"
 #include "core/utils/Profiler.h"
-#include "core/math/Camera.h"
+#include "scene/Camera.h"
 
 #include "gfx/struct/MaterialLibrary.h"
 #include "gfx/debug/GDebugger.h"

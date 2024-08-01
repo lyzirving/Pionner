@@ -11,7 +11,7 @@
 #include "Application.h"
 #include "asset/AssetsManager.h"
 #include "core/utils/Profiler.h"
-#include "core/math/Camera.h"
+#include "scene/Camera.h"
 
 #include "scene/Skybox.h"
 

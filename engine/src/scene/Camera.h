@@ -1,14 +1,17 @@
-#ifndef __PIONNER_CORE_MATH_CAMERA_H__
-#define __PIONNER_CORE_MATH_CAMERA_H__
+#ifndef __PIONNER_SCENE_CAMERA_H__
+#define __PIONNER_SCENE_CAMERA_H__
 
 #include "PerspectiveFrustum.h"
 #include "OrthographicFrustum.h"
-#include "Ray.h"
+#include "Skybox.h"
 
 #include "asset/Asset.h"
+
 #include "gfx/renderer/RenderState.h"
 #include "gfx/rhi/Uniform.h"
+
 #include "core/math/Transform.h"
+#include "core/math/Ray.h"
 
 namespace pio
 {
@@ -30,6 +33,15 @@ namespace pio
 		// camera's +x/+y/+z axis
 		glm::vec3 Right{ 1.f, 0.f, 0.f }, Up{ 0.f, 1.f, 0.f }, Front{ 0.f, 0.f, 1.f };
 		glm::mat4 ViewMat{ 1.f };
+	};
+
+	enum CameraClearFlags : uint8_t
+	{
+		CameraClearFlag_Skybox = 0,
+		CameraClearFlag_Color,
+		CameraClearFlag_DepthOnly,
+		CameraClearFlag_NoClear,
+		CameraClearFlag_Num
 	};
 
 	enum CameraAttrBits : uint8_t
@@ -58,9 +70,14 @@ namespace pio
 		Camera(const Camera &rhs);
 		Camera &operator=(const Camera &rhs);
 
-		// Clone a Camera except its UUID
-		Camera clone();
 		void flush();
+
+		void initSkybox(const std::string& name, AssetFmt fmt);
+
+		/*
+		* @brief  Shallow copy a camera except its UUID
+		*/
+		Camera clone();
 
 		void setPosition(const glm::vec3& position);
 		void setPosition(const SphereCoord& position);
@@ -76,6 +93,7 @@ namespace pio
 		void setFov(float fov) { m_persFrustum.setFov(fov); }
 		void setSize(float size) { m_orthoFrustum.setSize(size); }
 
+		void setClearFlag(CameraClearFlags f) { m_clearFlag = f; }
 		void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) { m_viewport = Viewport{ x, y, w, h }; }
 
 		ProjectionType prjType() const { return m_prjType; }
@@ -105,6 +123,8 @@ namespace pio
 
 		const Transform& transform() const { return m_transform; }
 		const CPosition& position()  const { return m_transform.Position; }
+		const Ref<Skybox>& skybox()  const { return m_sky; }
+		CameraClearFlags clearFlag() const { return m_clearFlag; }
 
 		/*
 		* @brief: Build a ray in world space by mouse event on screen.
@@ -128,6 +148,9 @@ namespace pio
 		ProjectionType m_prjType{ ProjectionType_Perspective };
 		PerspectiveFrustum m_persFrustum;
 		OrthographicFrustum m_orthoFrustum;
+
+		CameraClearFlags m_clearFlag{ CameraClearFlag_Skybox };
+		Ref<Skybox> m_sky;
 	};
 
 	template<>

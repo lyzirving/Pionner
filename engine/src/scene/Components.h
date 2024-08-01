@@ -6,7 +6,7 @@
 
 #include "asset/Asset.h"
 #include "core/math/Transform.h"
-#include "core/math/Camera.h"
+#include "scene/Camera.h"
 
 #include "physics/PhysicsDef.h"
 

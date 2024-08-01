@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include "Skybox.h"
+
 #include "Application.h"
 
 #include "gfx/renderer/SceneRenderer.h"
@@ -301,7 +301,6 @@ namespace pio
 		PIO_RELATION_SET_SELF(m_sceneRoot);
 		// NOTE: create PhysicsScene should be called at last
 		m_physics = CreateRef<PhysicsScene>("Scene_Physics");
-		m_skybox  = CreateRef<Skybox>("default_skybox", AssetFmt::HDR);
 		auto &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
 		sceneComp.Handle = getHandle();
 
@@ -322,6 +321,7 @@ namespace pio
 		cameraComp.Handle = Camera::Main->getHandle();
 		Camera::Main->setPosition(SphereCoord(72.f, 341.f, 10.f));
 		Camera::Main->setLookAt(glm::vec3(0.f));
+		Camera::Main->initSkybox("default_skybox", AssetFmt::HDR);
 
 		// Distant Light
 		{

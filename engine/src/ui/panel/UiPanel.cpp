@@ -113,6 +113,32 @@ namespace pio
 			ImGui::SameLine();
 			ImGui::Checkbox("##Main", &bMain);
 
+			int clearFlag{ camera->clearFlag() };
+			const char* flagItems[CameraClearFlag_Num]{ "Skybox", "Color", "Depth Only", "Don't Clear"};
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Clear Flag");
+			ImGui::SameLine();
+			ImGui::Combo("##Clear_Flag", &clearFlag, flagItems, CameraClearFlag_Num);
+			camera->setClearFlag(CameraClearFlags(clearFlag));
+
+			if (clearFlag == CameraClearFlag_Skybox)
+			{
+				Ref<Skybox> sk = Camera::Main->skybox();
+				float intensity = sk->getIntensity();
+				const auto& name = sk->getName();
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Name      ");
+				ImGui::SameLine();
+				ImGui::Text("%s", name.c_str());
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Intensity ");
+				ImGui::SameLine();
+				ImGui::SliderFloat("Intensity", &intensity, 0.0001f, 0.3f, "%.4f");
+				sk->setIntensity(intensity);
+			}
+
 			int prjType{ camera->prjType() };
 			const char* items[2]{ "Perspective", "Orthographic" };
 			ImGui::AlignTextToFramePadding();

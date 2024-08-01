@@ -4,7 +4,7 @@
 #include "Layer.h"
 
 #include "ui/MotionController.h"
-#include "core/math/Camera.h"
+#include "scene/Camera.h"
 #include "physics/PhysicsDef.h"
 #include "window/event/EventHandler.h"
 

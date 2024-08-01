@@ -12,7 +12,6 @@
 namespace pio
 {
 	class SceneRenderer;
-	class Skybox;
 	struct LayoutViewport;
 
 	/*
@@ -44,7 +43,6 @@ namespace pio
 		Ref<Scene> self() { return shared_from_this(); }
 		bool bSimulate() const { return m_bSimulate; }
 		Ref<PhysicsScene> physics() const { return m_physics; }
-		Ref<Skybox> skybox() const { return m_skybox; }
 
 	private:
 		void createData();
@@ -63,7 +61,6 @@ namespace pio
 		bool m_bMain{ false };
 		bool m_bSimulate{ false };
 		Ref<PhysicsScene> m_physics;
-		Ref<Skybox> m_skybox;
 
 		Ref<Entity> m_sceneRoot{ nullptr };			
 		AssetHandle m_screenQuad{ NullAsset };

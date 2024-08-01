@@ -1,7 +1,8 @@
-#include "MathLib.h"
 #include <math.h>
 
-#include "Camera.h"
+#include "MathLib.h"
+
+#include "scene/Camera.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

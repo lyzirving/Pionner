@@ -49,7 +49,8 @@ void main() {
     v_normal = a_normal;
     v_texCoord = a_texcoord;
     v_TBN = u_useNormalMap ? CalcTBN(u_modelMat, boneTransform, a_normal, a_tangent) : CalcTBN(u_modelMat, boneTransform);
-	gl_Position = ((u_matrices.PrjType == 0) ? u_matrices.PrjMat : u_matrices.Ortho) * u_matrices.ViewMat * u_modelMat * pos;
+    mat4 prjMat = (u_matrices.PrjType == 0) ? u_matrices.PrjMat : u_matrices.Ortho;
+	gl_Position = prjMat * u_matrices.ViewMat * u_modelMat * pos;
 }
 
 #version 430 core 

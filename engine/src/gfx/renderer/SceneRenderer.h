@@ -2,7 +2,7 @@
 #define __PIONNER_GFX_RENDERER_SCENE_RENDERER_H__
 
 #include "RenderData.h"
-#include "core/math/Camera.h"
+#include "scene/Camera.h"
 
 namespace pio
 {

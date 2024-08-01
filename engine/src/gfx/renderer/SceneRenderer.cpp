@@ -60,7 +60,6 @@ namespace pio
 	{
 		m_cameraUD.obtainBlock();
 		const LightEnvironment& lightEnv = scene.m_lightEnv;
-		Ref<Skybox> sk = scene.m_skybox;
 
 		m_uniformBuffers = UniformBufferSet::Create();
 		m_uniformBuffers->create(m_cameraUD.Block.getByteUsed(), PIO_UINT(UBBindings::Camera));
@@ -78,8 +77,6 @@ namespace pio
 		createShadowPass(m_shadowBufferSize.x, m_shadowBufferSize.y);		
 		createDeferredPass(m_colorBufferSize.x, m_colorBufferSize.y);
 		createScreenPass();
-
-		Renderer::SubmitTask([sk]() mutable { sk->prepare(); });
 	}
 
 	void SceneRenderer::onDetach(const Scene& scene)
@@ -561,7 +558,7 @@ namespace pio
 	void SceneRenderer::lightingPass_deferred(const Scene& scene)
 	{
 		const LightEnvironment& env = scene.m_lightEnv;
-		Ref<Skybox> sk = scene.m_skybox;
+		Ref<Skybox> sk = Camera::Main->skybox();
 		Ref<RenderPass> gp = m_GBufferPass;
 		Ref<RenderPass> lp = m_lightPass;
 		Ref<RenderPass> dlsp = m_distantLightShadowPass;
