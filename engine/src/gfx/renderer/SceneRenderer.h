@@ -24,7 +24,7 @@ namespace pio
 		SceneRenderer();
 		virtual ~SceneRenderer();
 
-		virtual void onAttach(const Scene &scene);
+		virtual void onAttach(const Scene &scene, const LayoutParams& param);
 		virtual void onDetach(const Scene &scene);
 		// Ensure to be called in render thread
 		virtual void onRenderDestroy(const Scene &scene);

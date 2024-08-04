@@ -72,5 +72,5 @@ void main() {
     m_PBRParams.Emission = texture(u_GEmission, v_texcoord).rgb;
 
     int type = NeInt(nt.w);    
-    o_color = (type == FRAG_TYPE_MESH) ? LightingMeshColor() : ((type == FRAG_TYPE_OUTLINE) ? baseColor : u_bgColor);
+    o_color = (type == FRAG_TYPE_MESH) ? LightingMeshColor() : ((type == FRAG_TYPE_OUTLINE) ? baseColor : vec4(Mon2Lin(u_bgColor.rgb), u_bgColor.a));
 }

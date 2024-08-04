@@ -784,22 +784,22 @@ namespace pio
 		std::string name = std::string("ScreenQuad") + std::to_string(s_fullScreenQuadNum++);
 		auto quad = AssetsManager::CreateRuntimeAssets<QuadMesh>(name);
 
-		glm::vec2 p = ScreenToVertex(l, t, screenWidth, screenHeight);
+		glm::vec2 p = Math::ScreenPtToVertex(l, t, screenWidth, screenHeight);
 		QuadVertex lt;
 		lt.Position = glm::vec3(p.x, p.y, 0.f);
 		lt.Texcoord = glm::vec2(0.f, 1.f);
 
-		p = ScreenToVertex(l, b, screenWidth, screenHeight);
+		p = Math::ScreenPtToVertex(l, b, screenWidth, screenHeight);
 		QuadVertex lb;
 		lb.Position = glm::vec3(p.x, p.y, 0.f);
 		lb.Texcoord = glm::vec2(0.f, 0.f);
 
-		p = ScreenToVertex(r, t, screenWidth, screenHeight);
+		p = Math::ScreenPtToVertex(r, t, screenWidth, screenHeight);
 		QuadVertex rt;
 		rt.Position = glm::vec3(p.x, p.y, 0.f);
 		rt.Texcoord = glm::vec2(1.f, 1.f);
 
-		p = ScreenToVertex(r, b, screenWidth, screenHeight);
+		p = Math::ScreenPtToVertex(r, b, screenWidth, screenHeight);
 		QuadVertex rb;
 		rb.Position = glm::vec3(p.x, p.y, 0.f);
 		rb.Texcoord = glm::vec2(1.f, 0.f);

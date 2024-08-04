@@ -109,16 +109,17 @@ namespace pio
 	void GLRenderAPI::commitViewport(const Viewport &viewport)
 	{
 		m_viewport = viewport;
-		glViewport(m_viewport.X, m_viewport.Y, m_viewport.Width, m_viewport.Height);
+		glViewport(m_viewport.x(), m_viewport.y(), m_viewport.w(), m_viewport.h());
 	}
 
 	void GLRenderAPI::commitViewport(int32_t x, int32_t y, int32_t width, int32_t height)
 	{
-		m_viewport.X = x;
-		m_viewport.Y = y;
-		m_viewport.Width = width;
-		m_viewport.Height = height;
-		glViewport(m_viewport.X, m_viewport.Y, m_viewport.Width, m_viewport.Height);
+		m_viewport.reset();
+		m_viewport.setX(x);
+		m_viewport.setY(y);
+		m_viewport.setW(width);
+		m_viewport.setH(height);
+		glViewport(m_viewport.x(), m_viewport.y(), m_viewport.w(), m_viewport.h());
 	}
 
 	void GLRenderAPI::framebufferBlockTransfer(uint32_t readBuffer, uint32_t dstBuffer, 
@@ -789,7 +790,7 @@ namespace pio
 		pass->getSpecification().FrameBuffer->unbind();
 
 		Viewport vp = restoreViewport();
-		commitViewport(vp.X, vp.Y, vp.Width, vp.Height);
+		commitViewport(vp);
 	}
 
 	void GLRenderAPI::beginScreenPass(Ref<RenderPass> &pass, const Viewport &vp)
@@ -802,7 +803,7 @@ namespace pio
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		saveViewport(m_viewport);
-		commitViewport(vp.X, vp.Y, vp.Width, vp.Height);
+		commitViewport(vp);
 
 		GLState::SetClear(state.Clear);
 		submitRenderState(state);
@@ -811,7 +812,7 @@ namespace pio
 	void GLRenderAPI::endScreenPass(Ref<RenderPass> &pass)
 	{
 		Viewport vp = restoreViewport();
-		commitViewport(vp.X, vp.Y, vp.Width, vp.Height);
+		commitViewport(vp);
 	}
 
 	bool GLRenderAPI::UI_hasFocus(UiFocus focus)

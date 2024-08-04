@@ -20,7 +20,7 @@
 
 namespace pio
 {
-	RuntimeLayer::RuntimeLayer(const WindowLayoutParams &param) : Layer(param, "Runtime Layer")
+	RuntimeLayer::RuntimeLayer(const LayoutParams &param) : Layer(param, "Runtime Layer")
 	{
 	}
 
@@ -28,7 +28,7 @@ namespace pio
 
 	void RuntimeLayer::onAttach()
 	{	
-		float aspectRatio = (m_layoutParam.Percentage.Right - m_layoutParam.Percentage.Left) / (m_layoutParam.Percentage.Bottom - m_layoutParam.Percentage.Top);
+		float aspectRatio = (m_layoutParam.Ratio.Right - m_layoutParam.Ratio.Left) / (m_layoutParam.Ratio.Bottom - m_layoutParam.Ratio.Top);
 		uint32_t w = Application::MainWindow()->getWidth();
 		uint32_t h = Application::MainWindow()->getHeight();
 		m_layoutParam.calculate(w, h);		
@@ -36,11 +36,7 @@ namespace pio
 		m_scene = AssetsManager::Get()->CreateRuntimeAssets<Scene>(true);
 		m_renderer = CreateRef<SceneRenderer>();							
 
-		m_scene->setLayoutParam(m_layoutParam);
-		m_scene->onAttach(m_renderer);
-
-		const LayoutViewport &vp = m_layoutParam.Viewport;
-		m_scene->setCameraViewport(vp.X, vp.Y, vp.Width, vp.Height);	
+		m_scene->onAttach(m_renderer, m_layoutParam);
 	}
 
 	void RuntimeLayer::onDetach()
@@ -66,8 +62,7 @@ namespace pio
 	{		
 		m_layoutParam.calculate(width, height);
 
-		const LayoutViewport &vp = m_layoutParam.Viewport;
-		m_scene->setCameraViewport(vp.X, vp.Y, vp.Width, vp.Height);
-		m_scene->setLayoutParam(m_layoutParam);
+		const Viewport &vp = m_layoutParam.Viewport;
+		m_scene->setViewport(vp.x(), vp.y(), vp.w(), vp.h());
 	}
 }

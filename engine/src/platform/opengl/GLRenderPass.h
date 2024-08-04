@@ -25,7 +25,8 @@ namespace pio
 		virtual void setState(const RenderState &state) override { m_state = state; }
 
 		const RenderPassSpecification &getSpecification() const { return m_spec; }
-		virtual const RenderState &getState() const { return m_state; }
+		virtual RenderState& getState() override { return m_state; };
+		virtual const RenderState &getState() const override { return m_state; }
 		virtual Ref<FrameBuffer> getFramebuffer() override { return m_spec.FrameBuffer; };
 		virtual Ref<UniformBuffer> getUniformBuffer() override { return m_spec.DataUB; }
 		virtual Camera &getCamera() override { return m_camera; }

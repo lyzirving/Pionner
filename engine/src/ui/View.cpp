@@ -20,17 +20,17 @@ namespace pio
 		invalidate(false);
 		if (!m_quad)
 		{
-			m_quad = MeshFactory::CreateScreenQuad(m_rect.Left, m_rect.Top, m_rect.Right, m_rect.Bottom, m_viewport.Width, m_viewport.Height);
+			m_quad = MeshFactory::CreateScreenQuad(m_rect.Left, m_rect.Top, m_rect.Right, m_rect.Bottom, m_viewport.w(), m_viewport.h());
 		}
 		else
 		{
 			QuadMesh *mesh = m_quad->as<QuadMesh>();
 			mesh->Vertex.clear();
 			mesh->Vertex.reserve(4);
-			mesh->Vertex.emplace_back(ScreenToVertex(m_rect.Left, m_rect.Top, m_viewport.Width, m_viewport.Height), glm::vec2(0.f, 1.f));
-			mesh->Vertex.emplace_back(ScreenToVertex(m_rect.Left, m_rect.Bottom, m_viewport.Width, m_viewport.Height), glm::vec2(0.f, 0.f));
-			mesh->Vertex.emplace_back(ScreenToVertex(m_rect.Right, m_rect.Top, m_viewport.Width, m_viewport.Height), glm::vec2(1.f, 1.f));
-			mesh->Vertex.emplace_back(ScreenToVertex(m_rect.Right, m_rect.Bottom, m_viewport.Width, m_viewport.Height), glm::vec2(1.f, 0.f));
+			mesh->Vertex.emplace_back(Math::ScreenPtToVertex(m_rect.Left, m_rect.Top, m_viewport.w(), m_viewport.h()), glm::vec2(0.f, 1.f));
+			mesh->Vertex.emplace_back(Math::ScreenPtToVertex(m_rect.Left, m_rect.Bottom, m_viewport.w(), m_viewport.h()), glm::vec2(0.f, 0.f));
+			mesh->Vertex.emplace_back(Math::ScreenPtToVertex(m_rect.Right, m_rect.Top, m_viewport.w(), m_viewport.h()), glm::vec2(1.f, 1.f));
+			mesh->Vertex.emplace_back(Math::ScreenPtToVertex(m_rect.Right, m_rect.Bottom, m_viewport.w(), m_viewport.h()), glm::vec2(1.f, 0.f));
 			Renderer::SubmitTask([mesh]() mutable
 			{
 				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));

@@ -74,26 +74,26 @@ namespace pio
 		return block;
 	}
 
-	Camera::Camera(const Camera &rhs) : Asset(rhs),
-		m_viewport(rhs.m_viewport), 
+	Camera::Camera(const Camera& rhs) : Asset(rhs),
 		m_transform(rhs.m_transform), m_pose(rhs.m_pose),
 		m_attrBits(rhs.m_attrBits), m_prjType(rhs.m_prjType),
-		m_persFrustum(rhs.m_persFrustum), m_orthoFrustum(rhs.m_orthoFrustum)
-	{	
+		m_persFrustum(rhs.m_persFrustum), m_orthoFrustum(rhs.m_orthoFrustum),
+		m_target(rhs.m_target)
+	{
 	}
 
-	Camera &Camera::operator=(const Camera &rhs)
+	Camera& Camera::operator=(const Camera& rhs)
 	{
-		if(this != &rhs)
+		if (this != &rhs)
 		{
 			Asset::operator=(rhs);
-			m_viewport = rhs.m_viewport;
 			m_transform = rhs.m_transform;
 			m_pose = rhs.m_pose;
 			m_attrBits = rhs.m_attrBits;
 			m_prjType = rhs.m_prjType;
 			m_persFrustum = rhs.m_persFrustum;
 			m_orthoFrustum = rhs.m_orthoFrustum;
+			m_target = rhs.m_target;
 		}
 		return *this;
 	}
@@ -118,13 +118,13 @@ namespace pio
 		cam.m_name = this->m_name;
 		cam.m_parentHandle = this->m_parentHandle;
 
-		cam.m_viewport = this->m_viewport;
 		cam.m_transform = this->m_transform;
 		cam.m_pose = this->m_pose;
 		cam.m_attrBits = this->m_attrBits;
 		cam.m_prjType = this->m_prjType;
 		cam.m_persFrustum = this->m_persFrustum;
 		cam.m_orthoFrustum = this->m_orthoFrustum;
+		cam.m_target = this->m_target;
 
 		cam.m_sky = this->m_sky;
 		return cam;
@@ -141,7 +141,7 @@ namespace pio
 
 	void Camera::setPosition(const SphereCoord& position)
 	{
-		if(m_transform.Position != position)
+		if (m_transform.Position != position)
 		{
 			m_transform.Position = position;
 			m_attrBits.set(CameraAttrBits_Pos);
@@ -164,7 +164,7 @@ namespace pio
 	{
 		if (m_pose.LookAt != lookAt)
 		{
-			m_pose.LookAt = lookAt;	
+			m_pose.LookAt = lookAt;
 			m_attrBits.set(CameraAttrBits_LookAt);
 		}
 	}
@@ -172,9 +172,9 @@ namespace pio
 	void Camera::calcViewMat()
 	{
 		if (m_attrBits.any())
-		{		
+		{
 			calcCameraPose();
-			m_pose.ViewMat = glm::lookAt(m_transform.Position.ccs(), m_pose.LookAt, m_pose.Up);		
+			m_pose.ViewMat = glm::lookAt(m_transform.Position.ccs(), m_pose.LookAt, m_pose.Up);
 			m_attrBits.reset();
 		}
 	}
@@ -203,14 +203,14 @@ namespace pio
 
 			// camera pose axis -> rotation matrix -> quaternion -> euler angle
 			glm::mat3 rotMat = glm::mat3(m_pose.Right, m_pose.Up, m_pose.Front);
-			glm::quat quat = glm::toQuat(rotMat);					
+			glm::quat quat = glm::toQuat(rotMat);
 			m_transform.Euler = glm::degrees(glm::eulerAngles(quat));
 		}
 	}
 
-	Ray Camera::screenPointToRay(const glm::vec2& screenPt, const WindowLayoutParams& param, bool bDraw)
+	Ray Camera::screenPointToRay(const glm::vec2& screenPt, const LayoutParams& param, bool bDraw)
 	{
-		auto vpPoint = ScreenToViewport(screenPt, param);
+		auto vpPoint = Math::ScreenPtToViewportPt(screenPt, param);
 
 		float far = frustFar();
 		float near = frustNear();
@@ -226,8 +226,8 @@ namespace pio
 		// origin of OpenGL's viewport is left-bottom.
 		glm::vec2 pt = vpPoint;
 		// transform pt from screen to CVV
-		pt.x = (pt.x / (float)vp.Width) * 2.f - 1.f;
-		pt.y = (pt.y / (float)vp.Height) * 2.f - 1.f;
+		pt.x = (pt.x / (float)vp.w()) * 2.f - 1.f;
+		pt.y = (pt.y / (float)vp.h()) * 2.f - 1.f;
 
 		// transform pt to project plane
 		pt.x = (pt.x + 1.f) * 0.5f * (right - left) + left;
@@ -239,8 +239,8 @@ namespace pio
 		// --------------transform pt in camera space into world space-------------
 		// get rotation matrix
 		glm::mat3 rotMat = glm::mat3(vMat[0].x, vMat[0].y, vMat[0].z,
-									 vMat[1].x, vMat[1].y, vMat[1].z,
-									 vMat[2].x, vMat[2].y, vMat[2].z);
+			vMat[1].x, vMat[1].y, vMat[1].z,
+			vMat[2].x, vMat[2].y, vMat[2].z);
 		glm::mat3 invRot = glm::inverse(rotMat);
 		camPt = invRot * camPt;
 		camPt += camPos;
@@ -258,9 +258,9 @@ namespace pio
 		return Ray(camPos, glm::normalize(camPt - camPos), camPt);
 	}
 
-	glm::vec3 Camera::screenPointToNearPlane(const glm::vec2& screenPt, const WindowLayoutParams& param)
+	glm::vec3 Camera::screenPointToNearPlane(const glm::vec2& screenPt, const LayoutParams& param)
 	{
-		auto vpPoint = ScreenToViewport(screenPt, param);
+		auto vpPoint = Math::ScreenPtToViewportPt(screenPt, param);
 
 		float far = frustFar();
 		float near = frustNear();
@@ -276,8 +276,8 @@ namespace pio
 		// origin of OpenGL's viewport is left-bottom.
 		glm::vec2 pt = vpPoint;
 		// transform pt from screen to CVV
-		pt.x = (pt.x / (float)vp.Width) * 2.f - 1.f;
-		pt.y = (pt.y / (float)vp.Height) * 2.f - 1.f;
+		pt.x = (pt.x / (float)vp.w()) * 2.f - 1.f;
+		pt.y = (pt.y / (float)vp.h()) * 2.f - 1.f;
 
 		// transform pt to project plane
 		pt.x = (pt.x + 1.f) * 0.5f * (right - left) + left;
@@ -289,8 +289,8 @@ namespace pio
 		// --------------transform pt in camera space into world space-------------
 		// get rotation matrix
 		glm::mat3 rotMat = glm::mat3(vMat[0].x, vMat[0].y, vMat[0].z,
-			                         vMat[1].x, vMat[1].y, vMat[1].z,
-									 vMat[2].x, vMat[2].y, vMat[2].z);
+			vMat[1].x, vMat[1].y, vMat[1].z,
+			vMat[2].x, vMat[2].y, vMat[2].z);
 		glm::mat3 invRot = glm::inverse(rotMat);
 		camPt = invRot * camPt;
 		camPt += camPos;

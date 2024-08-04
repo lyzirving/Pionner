@@ -42,7 +42,7 @@ namespace pio
 		}
 	}
 
-	SceneHierarchyLayer::SceneHierarchyLayer(const WindowLayoutParams &param)
+	SceneHierarchyLayer::SceneHierarchyLayer(const LayoutParams &param)
 		: Layer(param, "Scene Hierarchy Layer")
 	{
 	}
@@ -63,7 +63,7 @@ namespace pio
 
 		Registry *regi = s_registry;
 		Ref<Entity> rt = Scene::Root;
-		WindowLayoutParams &param = m_layoutParam;
+		LayoutParams &param = m_layoutParam;
 		uint32_t &selected = m_selectedNode;
 		s_registry->getSingleton<EditorComponent>().SelectedEntIndex = m_selectedNode;
 
@@ -77,7 +77,7 @@ namespace pio
 			flags |= ImGuiWindowFlags_NoTitleBar;
 
 			ImGui::SetNextWindowPos(ImVec2(param.Position.Left, param.Position.Top), ImGuiCond_Always);
-			ImGui::SetNextWindowSize(ImVec2(param.Viewport.Width + 1, param.Viewport.Height + 1), ImGuiCond_Always);
+			ImGui::SetNextWindowSize(ImVec2(param.Viewport.w() + 1, param.Viewport.h() + 1), ImGuiCond_Always);
 
 			if (!ImGui::Begin("Scene Hierarchy", nullptr, flags))
 			{

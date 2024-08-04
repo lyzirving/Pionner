@@ -34,14 +34,14 @@ namespace pio
 		void waitIfEmpty();
 
 	public:
-		inline bool checkIdle() { { std::lock_guard<std::mutex> lk{ m_taskMutex }; return m_taskStack.empty(); } }
-		inline uint32_t workLoad() { { std::lock_guard<std::mutex> lk{ m_taskMutex }; return m_taskStack.size(); } }
+		bool checkIdle() { { std::lock_guard<std::mutex> lk{ m_taskMutex }; return m_taskStack.empty(); } }
+		uint32_t workLoad() { { std::lock_guard<std::mutex> lk{ m_taskMutex }; return m_taskStack.size(); } }
 
-		inline bool isRunning() { return m_thread && m_thread->isRunning(); }
+		bool isRunning() { return m_thread && m_thread->isRunning(); }
 
-		inline void setState(State state) { m_state.store((uint8_t)state); }
-		inline State getState() { return State(m_state.load()); }
-		inline const std::string &getName() { return m_name; }
+		void setState(State state) { m_state.store((uint8_t)state); }
+		State getState() { return State(m_state.load()); }
+		const std::string &getName() { return m_name; }
 		
 	private:
 		static void Work(void *param);

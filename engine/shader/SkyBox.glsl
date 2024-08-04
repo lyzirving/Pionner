@@ -26,12 +26,14 @@ void main()
 #pragma stage : frag 
 precision mediump float;
 
+#include <Common.glslh>
+
 in vec3 v_cubePos;
 out vec4 o_color;
 
 uniform samplerCube u_envMap;
 
 void main()
-{		
-    o_color = vec4(texture(u_envMap, v_cubePos).rgb, 1.f);
+{
+    o_color = vec4(HdrToneMapping(texture(u_envMap, v_cubePos).rgb), 1.0);
 }

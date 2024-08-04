@@ -1,8 +1,11 @@
 #include "UiPanel.h"
 
-#include "asset/AssetsManager.h"
 #include "ui/ImGuiUtils.h"
 #include <imgui.h>
+
+#include "asset/AssetsManager.h"
+
+#include "gfx/renderer/Renderer.h"
 
 #include "scene/Entity.h"
 #include "scene/Components.h"
@@ -104,8 +107,9 @@ namespace pio
 	{
 		if (ImGui::CollapsingHeader("Camera", ImGuiUtils::Flag_Collapse_Header))
 		{
-			//TODO: Clear Flags of camera
-			auto camera = AssetsManager::GetRuntimeAsset<Camera>(comp.Handle);				
+			float itemWidth = ImGui::GetItemRectSize().x;
+
+			auto camera = AssetsManager::GetRuntimeAsset<Camera>(comp.Handle);
 
 			bool bMain = comp.Primary;
 			ImGui::AlignTextToFramePadding();
@@ -113,17 +117,20 @@ namespace pio
 			ImGui::SameLine();
 			ImGui::Checkbox("##Main", &bMain);
 
+			const int flagNum = 2;
 			int clearFlag{ camera->clearFlag() };
-			const char* flagItems[CameraClearFlag_Num]{ "Skybox", "Color", "Depth Only", "Don't Clear"};
+			const char* flagItems[flagNum]{ "Skybox", "Color" };
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Clear Flag");
 			ImGui::SameLine();
-			ImGui::Combo("##Clear_Flag", &clearFlag, flagItems, CameraClearFlag_Num);
+			ImGui::Combo("##Clear_Flag", &clearFlag, flagItems, flagNum);
 			camera->setClearFlag(CameraClearFlags(clearFlag));
 
-			if (clearFlag == CameraClearFlag_Skybox)
+			switch (clearFlag)
 			{
-				Ref<Skybox> sk = Camera::Main->skybox();
+			case CameraClearFlag_Skybox:
+			{
+				Ref<Skybox> sk = camera->skybox();
 				float intensity = sk->getIntensity();
 				const auto& name = sk->getName();
 
@@ -137,6 +144,20 @@ namespace pio
 				ImGui::SameLine();
 				ImGui::SliderFloat("Intensity", &intensity, 0.0001f, 0.3f, "%.4f");
 				sk->setIntensity(intensity);
+				break;
+			}
+			case CameraClearFlag_Color:
+			{
+				auto& color = Renderer::GetConfig().ClearColor;
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Color     ");
+				ImGui::SameLine();
+				ImGui::ColorEdit4("##Bg Color", &color.r);
+				break;
+			}
+			default:
+				break;
 			}
 
 			int prjType{ camera->prjType() };
@@ -172,12 +193,47 @@ namespace pio
 			ImGui::Text("Near      ");
 			ImGui::SameLine();
 			ImGui::DragFloat("##Near", &near, 1.f, 0.1, 100.f, "%.1f");
-			ImGui::AlignTextToFramePadding(); 
+			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Far       ");
 			ImGui::SameLine();
 			ImGui::DragFloat("##Far", &far, 1.f, 0.1, 1000.f, "%.1f");
 			camera->setNear(near);
 			camera->setFar(far);
+
+			auto& vp = camera->viewport();
+			float x{ vp.offsetX() }, y{ vp.offsetY() };
+			float w{ vp.ratioW() },  h{ vp.ratioH() };
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Viewport Rect");
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("X");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(itemWidth * 0.4f);
+			ImGui::DragFloat("##Viewport_X", &x, 0.01f, 0.f, 1.f, "%.2f");
+			ImGui::PopItemWidth();
+			ImGui::SameLine();
+			ImGui::Text("Y");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(itemWidth * 0.4f);
+			ImGui::DragFloat("##Viewport_Y", &y, 0.01f, 0.f, 1.f, "%.2f");
+			ImGui::PopItemWidth();
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("W");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(itemWidth * 0.4f);
+			ImGui::DragFloat("##Viewport_W", &w, 0.01f, 0.f, 1.f, "%.2f");
+			ImGui::PopItemWidth();
+			ImGui::SameLine();
+			ImGui::Text("H");
+			ImGui::SameLine();
+			ImGui::PushItemWidth(itemWidth * 0.4f);
+			ImGui::DragFloat("##Viewport_H", &h, 0.01f, 0.f, 1.f, "%.2f");
+			ImGui::PopItemWidth();
+
+			vp.setOffsetX(x); vp.setOffsetY(y);
+			vp.setRatioW(w);  vp.setRatioH(h);
 		}
 	}
 

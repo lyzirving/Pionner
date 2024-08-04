@@ -30,25 +30,25 @@ namespace pio
 	{
 		const Viewport &vp = cam.viewport();
 		glm::mat4 mvp = cam.prjMat() * cam.viewMat();
-		glm::mat4 vpMat = Math::ViewportMat(Viewport(0, 0, vp.Width, vp.Height));
-		glm::uvec2 vpSize{ vp.Width, vp.Height };
+		glm::mat4 vpMat = Math::ViewportMat(Viewport(0, 0, vp.w(), vp.h()));
+		glm::uvec2 vpSize{ vp.w(), vp.h()};
 
-		glm::vec2 p = WorldToScreenPos(worldPos, mvp, vpMat, vpSize);
+		glm::vec2 p = Math::WorldPosToScreenPt(worldPos, mvp, vpMat, vpSize);
 		if (p != spriteComp.Position)
 		{
 			spriteComp.Position = p;
 			const uint32_t w = spriteComp.ScreenWidth;
 			const uint32_t h = spriteComp.ScreenHeight;
-			spriteComp.Rect.LeftTop = glm::vec2(p.x - w / 2, p.y - h / 2);
-			spriteComp.Rect.LeftBottom = glm::vec2(p.x - w / 2, p.y + h / 2);
-			spriteComp.Rect.RightTop = glm::vec2(p.x + w / 2, p.y - h / 2);
-			spriteComp.Rect.RightBottom = glm::vec2(p.x + w / 2, p.y + h / 2);
+			spriteComp.Rect.Left = p.x - w / 2;
+			spriteComp.Rect.Top = p.y - h / 2;
+			spriteComp.Rect.Right = p.x + w / 2;
+			spriteComp.Rect.Bottom = p.y + h / 2;
 			Ref<QuadMesh> mesh = AssetsManager::GetRuntimeAsset<QuadMesh>(spriteComp.QuadMesh);
 			mesh->Vertex.clear(); mesh->Vertex.reserve(4);
-			mesh->Vertex.emplace_back(glm::vec3(ScreenToVertex(p.x - w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 1.f));//lt
-			mesh->Vertex.emplace_back(glm::vec3(ScreenToVertex(p.x - w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 0.f));//lb
-			mesh->Vertex.emplace_back(glm::vec3(ScreenToVertex(p.x + w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 1.f));//rt
-			mesh->Vertex.emplace_back(glm::vec3(ScreenToVertex(p.x + w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 0.f));//rb	
+			mesh->Vertex.emplace_back(glm::vec3(Math::ScreenPtToVertex(p.x - w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 1.f));//lt
+			mesh->Vertex.emplace_back(glm::vec3(Math::ScreenPtToVertex(p.x - w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(0.f, 0.f));//lb
+			mesh->Vertex.emplace_back(glm::vec3(Math::ScreenPtToVertex(p.x + w / 2, p.y - h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 1.f));//rt
+			mesh->Vertex.emplace_back(glm::vec3(Math::ScreenPtToVertex(p.x + w / 2, p.y + h / 2, vpSize.x, vpSize.y), 0.f), glm::vec2(1.f, 0.f));//rb	
 			Renderer::SubmitTask([mesh]() mutable
 			{
 				mesh->VertexBuffer->setData(mesh->Vertex.data(), mesh->Vertex.size() * sizeof(QuadVertex));
@@ -128,7 +128,7 @@ namespace pio
 
 	Scene::~Scene() = default;
 
-	void Scene::onAttach(Ref<SceneRenderer> &renderer)
+	void Scene::onAttach(Ref<SceneRenderer>& renderer, const LayoutParams& param)
 	{		
 		createData();
 
@@ -137,11 +137,13 @@ namespace pio
 		m_lightEnv.PointLightData.obtainBlock();
 		m_lightEnv.PtLightShadowData.obtainBlock();
 
-		uint32_t w = m_layoutParam.Viewport.Width;
-		uint32_t h = m_layoutParam.Viewport.Height;
+		uint32_t w = param.Viewport.w();
+		uint32_t h = param.Viewport.h();
 		m_screenQuad = MeshFactory::CreateScreenQuad(0, 0, w, h, w, h)->getHandle();
 
-		renderer->onAttach(*this);
+		renderer->onAttach(*this, param);
+
+		setViewport(param.Viewport.x(), param.Viewport.y(), w, h);
 
 		EventBus::Get()->addRegister(PioEvent::UnzipAsset, EventBusCb(this, (EventBusCbFunc)&Scene::onAssetUnzip));
 
@@ -166,7 +168,7 @@ namespace pio
 	void Scene::onUpdate(const Timestep &ts)
 	{
 		uint64_t start{ PROFILER_TIME };
-		Camera::Main->flush();
+		m_camera->flush();
 
 		//[TODO] use a pixed rate for physics simulation, 
 		//       maybe i need use another thread
@@ -199,7 +201,7 @@ namespace pio
 				auto &lightComp = it->second->getComponent<PointLightComponent>();
 				auto &transComp = it->second->getComponent<TransformComponent>();
 				auto &spriteComp = it->second->getComponent<SpriteComponent>();
-				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.PointLightData.Lights[lightComp.Index], *Camera::Main.get());
+				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.PointLightData.Lights[lightComp.Index], *m_camera.get());
 				it++;
 			}
 		}
@@ -213,7 +215,7 @@ namespace pio
 				auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 				auto &transComp = ent->getComponent<TransformComponent>();
 				auto &spriteComp = ent->getComponent<SpriteComponent>();
-				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.DirectionalLight, *Camera::Main.get());
+				LightCompToSceneData(lightComp, transComp, spriteComp, m_lightEnv.DirectionalLight, *m_camera.get());
 			}
 			else
 			{
@@ -229,7 +231,7 @@ namespace pio
 		uint64_t start{ PROFILER_TIME };
 		// -------------------- Render 3D scene ----------------------------
 		// -----------------------------------------------------------------		
-		renderer->beginScene(*this, *Camera::Main.get());
+		renderer->beginScene(*this, *m_camera.get());
 
 		// Process dynamic mesh
 		{
@@ -288,10 +290,10 @@ namespace pio
 		renderer->endScene(*this);
 	}
 
-	void Scene::setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	void Scene::setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{		
-		Camera::Main->setViewport(x, y, width, height);
-		Camera::Main->setAspect(float(width) / float(height));
+		m_camera->setViewport(x, y, width, height);
+		m_camera->setAspect(float(width) / float(height));
 	}
 
 	void Scene::createData()
@@ -304,24 +306,24 @@ namespace pio
 		auto &sceneComp = m_sceneRoot->getComponent<SceneComponent>();
 		sceneComp.Handle = getHandle();
 
+		m_camera = AssetsManager::CreateRuntimeAssets<Camera>();
+		auto camEnt = s_registry->create<CameraComponent, RelationshipComponent>(EntityClass::Camera, "Camera");
+		auto& cameraComp = camEnt->getComponent<CameraComponent>();
+		PIO_RELATION_SET_SELF(camEnt);
+		PIO_RELATION_SET_CHILD(m_sceneRoot, camEnt);
+		PIO_RELATION_SET_PARENT(camEnt, m_sceneRoot);
+		cameraComp.Primary = true;
+		cameraComp.Handle = m_camera->getHandle();
+		m_camera->setPosition(SphereCoord(72.f, 341.f, 10.f));
+		m_camera->setLookAt(glm::vec3(0.f));
+		m_camera->initSkybox("default_skybox", AssetFmt::HDR);
+
 		if (m_bMain)
 		{
 			Scene::Main = self();
 			Scene::Root = m_sceneRoot;
+			Camera::Main = m_camera;
 		}
-
-		// Main Camera
-		auto camEnt = s_registry->create<CameraComponent, RelationshipComponent>(EntityClass::Camera, "Camera");
-		Camera::Main = AssetsManager::CreateRuntimeAssets<Camera>();
-		PIO_RELATION_SET_SELF(camEnt);
-		PIO_RELATION_SET_CHILD(m_sceneRoot, camEnt);
-		PIO_RELATION_SET_PARENT(camEnt, m_sceneRoot);
-		auto &cameraComp = camEnt->getComponent<CameraComponent>();
-		cameraComp.Primary = true;
-		cameraComp.Handle = Camera::Main->getHandle();
-		Camera::Main->setPosition(SphereCoord(72.f, 341.f, 10.f));
-		Camera::Main->setLookAt(glm::vec3(0.f));
-		Camera::Main->initSkybox("default_skybox", AssetFmt::HDR);
 
 		// Distant Light
 		{

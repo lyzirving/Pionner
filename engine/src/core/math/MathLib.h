@@ -12,17 +12,20 @@ namespace pio
 	#define PIO_EPSILON (1e-4)
 
 	struct Viewport;
-	struct Rect2d;
+	struct LayoutParams;
 
 	namespace Math
 	{
-		bool Contains(const glm::vec2 &cursor, const Rect2d &rect);
 		bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale);	
 		glm::vec3 Reminder(const glm::vec3 &input, float reminder);
 
 		glm::mat4 PerspectiveMat(float fov, float aspect, float near, float far);
 		glm::mat4 OrthoMat(float left, float right, float bottom, float top, float near, float far);
 		glm::mat4 ViewportMat(const Viewport& vp);
+
+		glm::ivec2 ScreenPtToViewportPt(const glm::vec2& screenPt, const LayoutParams& param);
+		glm::vec2 ScreenPtToVertex(uint32_t x, uint32_t y, uint32_t screenWidth, uint32_t screenHeight);
+		glm::vec2 WorldPosToScreenPt(const glm::vec3& worldPos, const glm::mat4& mvpMat, const glm::mat4& vpMat, const glm::uvec2& windowSize);
 
 		inline glm::vec3 Scale(const glm::vec3 &v, float desiredLength) { return v * desiredLength / glm::length(v); }
 
@@ -40,7 +43,7 @@ namespace pio
 		inline bool LessEqual(const glm::vec3 &lhs, const glm::vec3 &rhs) { return lhs.x <= rhs.x && lhs.y <= rhs.y && lhs.z <= rhs.z; }
 		inline bool GreatEqual(const glm::vec3 &lhs, const glm::vec3 &rhs) { return lhs.x >= rhs.x && lhs.y >= rhs.y && lhs.z >= rhs.z; }
 
-		inline glm::mat3 NormalMat(const glm::mat4 &modelMat) { return glm::transpose(glm::inverse(glm::mat3(modelMat))); }		
+		inline glm::mat3 NormalMat(const glm::mat4 &modelMat) { return glm::transpose(glm::inverse(glm::mat3(modelMat))); }
 
 		// greatest common divisor 
 		inline int32_t GCB(int32_t a, int32_t b)

@@ -48,17 +48,17 @@ namespace pio
 																			AssetsManager::IconAbsPath("rotate_selected", AssetFmt::PNG),
 																			AssetsManager::IconAbsPath("scale_selected", AssetFmt::PNG) };
 
-	MotionControlLayer::MotionControlLayer(const WindowLayoutParams &param)
+	MotionControlLayer::MotionControlLayer(const LayoutParams &param)
 		: Layer(param, "MotionControlLayer")
 	{
 	}
 
 	void MotionControlLayer::onAttach()
 	{
-		m_circleLayoutParam.Percentage = LayoutPercentage(m_layoutParam.Percentage.Right - 0.1f,
-														  m_layoutParam.Percentage.Top + 0.015f,
-														  m_layoutParam.Percentage.Right,
-														  m_layoutParam.Percentage.Top + 0.125f);
+		m_circleLayoutParam.Ratio = LayoutRatio(m_layoutParam.Ratio.Right - 0.1f,
+												m_layoutParam.Ratio.Top + 0.015f,
+												m_layoutParam.Ratio.Right,
+												m_layoutParam.Ratio.Top + 0.125f);
 
 		m_views[MotionCtl_Move] = CreateRef<View>("Move Ctl View");
 		m_views[MotionCtl_Move]->setStatus(ViewCtlStatus_Selected);
@@ -133,7 +133,7 @@ namespace pio
 		// Circle background
 		if (m_drawCircle)
 		{
-			LayoutRect &c = m_circleLayoutParam.Position;
+			Rect2d &c = m_circleLayoutParam.Position;
 			Renderer::SubmitRC([c]() mutable
 			{
 				ImDrawList *drawList = ImGui::GetForegroundDrawList();
@@ -147,7 +147,7 @@ namespace pio
 		m_layoutParam.calculate(width, height);
 		m_circleLayoutParam.calculate(width, height);
 
-		LayoutRect lp = m_circleLayoutParam.Position;
+		Rect2d lp = m_circleLayoutParam.Position;
 		float radius = (lp.Bottom - lp.Top) * 0.5f;
 		glm::vec2 center(lp.Right - radius - 3, (lp.Top + lp.Bottom) * 0.5f);
 
@@ -156,10 +156,10 @@ namespace pio
 		m_circleLayoutParam.Position.Top = center.y - radius;
 		m_circleLayoutParam.Position.Bottom = center.y + radius;
 
-		m_circleLayoutParam.Viewport.Width = m_circleLayoutParam.Position.Right - m_circleLayoutParam.Position.Left;
-		m_circleLayoutParam.Viewport.Height = m_circleLayoutParam.Position.Bottom - m_circleLayoutParam.Position.Top;
-		m_circleLayoutParam.Viewport.X = m_circleLayoutParam.Position.Left;
-		m_circleLayoutParam.Viewport.Y = height - m_circleLayoutParam.Position.Top - m_circleLayoutParam.Viewport.Height;
+		m_circleLayoutParam.Viewport.setW(m_circleLayoutParam.Position.Right - m_circleLayoutParam.Position.Left);
+		m_circleLayoutParam.Viewport.setH(m_circleLayoutParam.Position.Bottom - m_circleLayoutParam.Position.Top);
+		m_circleLayoutParam.Viewport.setX(m_circleLayoutParam.Position.Left);
+		m_circleLayoutParam.Viewport.setY(height - m_circleLayoutParam.Position.Top - m_circleLayoutParam.Viewport.h());
 
 		m_gizmoTransform->setLayoutParam(m_layoutParam);
 		m_gizmoRotator->setLayoutParam(m_layoutParam);
@@ -168,8 +168,8 @@ namespace pio
 		m_views[MotionCtl_Move]->setPosition(l, t, viewWid, viewHeight);
 		m_views[MotionCtl_Rotation]->setPosition(l + viewWid, t, viewWid, viewHeight);
 
-		m_views[MotionCtl_Move]->setViewport(0, 0, m_layoutParam.Viewport.Width, m_layoutParam.Viewport.Height);
-		m_views[MotionCtl_Rotation]->setViewport(0, 0, m_layoutParam.Viewport.Width, m_layoutParam.Viewport.Height);
+		m_views[MotionCtl_Move]->setViewport(0, 0, m_layoutParam.Viewport.w(), m_layoutParam.Viewport.h());
+		m_views[MotionCtl_Rotation]->setViewport(0, 0, m_layoutParam.Viewport.w(), m_layoutParam.Viewport.h());
 
 		m_viewIconsRect = m_views[MotionCtl_Move]->getRect();
 		for (uint8_t i = MotionCtl_Rotation; i < MotionCtl_Num; i++)
@@ -240,7 +240,7 @@ namespace pio
 
 	void MotionControlLayer::onDrawVisionCtl(const Timestep &ts)
 	{				
-		LayoutViewport &vp = m_circleLayoutParam.Viewport;
+		const Viewport &vp = m_circleLayoutParam.Viewport;
 
 		CameraUD &cameraUD = m_visionCamUD;
 		Ref<UniformBufferSet> ubSet = m_visionUBSet;
@@ -261,7 +261,7 @@ namespace pio
 
 		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
 		{
-			Renderer::CommitViewport(Viewport{ (int32_t)vp.X, (int32_t)vp.Y, (int32_t)vp.Width, (int32_t)vp.Height });
+			Renderer::CommitViewport(vp);
 			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
 		});
 
@@ -354,7 +354,7 @@ namespace pio
 
 		Renderer::SubmitRC([vp, cameraUB, cameraUD]() mutable
 		{
-			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
+			Renderer::CommitViewport(vp);
 			cameraUB->setData(cameraUD.Block.getBuffer()->as<void *>(), cameraUD.Block.getByteUsed());
 		});
 
@@ -383,7 +383,7 @@ namespace pio
 
 		Renderer::SubmitRC([vp]() mutable
 		{
-			Renderer::CommitViewport(Viewport{ vp.X, vp.Y, vp.Width, vp.Height });
+			Renderer::CommitViewport(vp);
 		});
 		
 		m_viewDrawCmds.clear();
@@ -561,8 +561,8 @@ namespace pio
 		while (it != view.end())
 		{
 			Ref<Entity> ent = it->second;
-			SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();
-			bool consume = Math::Contains(screenPt, spriteComp.Rect);
+			SpriteComponent &spriteComp = ent->getComponent<SpriteComponent>();			
+			bool consume = spriteComp.Rect.contain(screenPt.x, screenPt.y);
 			if (consume)
 			{
 				MotionController::SelectSprite(ent);

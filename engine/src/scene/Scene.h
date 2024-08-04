@@ -12,8 +12,6 @@
 namespace pio
 {
 	class SceneRenderer;
-	struct LayoutViewport;
-
 	/*
 	* Scene is somewhere used to store logical data
 	*/
@@ -28,7 +26,7 @@ namespace pio
 		Scene(bool bMain = false);
 		virtual ~Scene();
 
-		virtual void onAttach(Ref<SceneRenderer> &renderer);
+		virtual void onAttach(Ref<SceneRenderer>& renderer, const LayoutParams &param);
 		virtual void onDetach(Ref<SceneRenderer> &renderer);
 
 		// this method is used to update logic, which should be called before onRender
@@ -36,14 +34,14 @@ namespace pio
 		// update rendering
 		virtual void onRender(Ref<SceneRenderer> &renderer, const Timestep &ts);
 
-		void setCameraViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
-		void setLayoutParam(const WindowLayoutParams &p) { m_layoutParam = p; }
+		void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 		void setSimulate(bool enable) { m_bSimulate = enable; }
 
-		Ref<Scene> self() { return shared_from_this(); }
 		bool bSimulate() const { return m_bSimulate; }
 		Ref<PhysicsScene> physics() const { return m_physics; }
+		Ref<Camera> camera() const { return m_camera; }
 
+		Ref<Scene> self() { return shared_from_this(); }
 	private:
 		void createData();
 		void simulate(const Timestep &ts);
@@ -54,13 +52,13 @@ namespace pio
 		static Registry *s_registry;
 
 	private:
-		WindowLayoutParams m_layoutParam;
-
 		LightEnvironment m_lightEnv;
 
 		bool m_bMain{ false };
 		bool m_bSimulate{ false };
 		Ref<PhysicsScene> m_physics;
+
+		Ref<Camera> m_camera;
 
 		Ref<Entity> m_sceneRoot{ nullptr };			
 		AssetHandle m_screenQuad{ NullAsset };

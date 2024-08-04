@@ -9,6 +9,7 @@
 
 #include "gfx/renderer/RenderState.h"
 #include "gfx/rhi/Uniform.h"
+#include "gfx/struct/RenderTarget.h"
 
 #include "core/math/Transform.h"
 #include "core/math/Ray.h"
@@ -39,6 +40,7 @@ namespace pio
 	{
 		CameraClearFlag_Skybox = 0,
 		CameraClearFlag_Color,
+		//TODO
 		CameraClearFlag_DepthOnly,
 		CameraClearFlag_NoClear,
 		CameraClearFlag_Num
@@ -54,7 +56,7 @@ namespace pio
 
 	using CameraAttrs = std::bitset<CameraAttrBits_Num>;
 
-	struct WindowLayoutParams;
+	struct LayoutParams;
 
 	class Camera : public Asset
 	{
@@ -94,7 +96,7 @@ namespace pio
 		void setSize(float size) { m_orthoFrustum.setSize(size); }
 
 		void setClearFlag(CameraClearFlags f) { m_clearFlag = f; }
-		void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) { m_viewport = Viewport{ x, y, w, h }; }
+		void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) { m_target.setViewport(x, y, w, h); }
 
 		ProjectionType prjType() const { return m_prjType; }
 		float fov() const { return m_persFrustum.fov(); }
@@ -110,7 +112,11 @@ namespace pio
 		const glm::mat4& viewMat()  const { return m_pose.ViewMat; }
 		const glm::mat4& prjMat()   const { return m_persFrustum.mat(); }
 		const glm::mat4& orthoMat() const { return m_orthoFrustum.mat(); }
-		const Viewport&  viewport() const { return m_viewport; }
+		const RenderTarget& target() const { return m_target; }
+		const Viewport&  viewport()  const { return m_target.viewport(); }
+
+		RenderTarget& target() { return m_target; }
+		Viewport& viewport()   { return m_target.viewport(); }		
 
 		const glm::vec3& right() const { return m_pose.Right; }
 		const glm::vec3& up()    const { return m_pose.Up; }
@@ -132,18 +138,18 @@ namespace pio
 		*         and touch point is re-projected back on near plane in camera space.
 		*		  The result ray is transformed into world space.
 		*/
-		Ray screenPointToRay(const glm::vec2& screenPt, const WindowLayoutParams &param, bool bDraw = false);
-		glm::vec3 screenPointToNearPlane(const glm::vec2& screenPt, const WindowLayoutParams& param);
+		Ray screenPointToRay(const glm::vec2& screenPt, const LayoutParams &param, bool bDraw = false);
+		glm::vec3 screenPointToNearPlane(const glm::vec2& screenPt, const LayoutParams& param);
 
 	private:
 		void calcViewMat();
 		void calcCameraPose();
 
 	private:
-		Viewport    m_viewport{};
-		Transform   m_transform{};
-		CameraPose  m_pose{};
+		Transform m_transform{};
+		CameraPose m_pose{};
 		CameraAttrs m_attrBits{};
+		RenderTarget m_target{};
 
 		ProjectionType m_prjType{ ProjectionType_Perspective };
 		PerspectiveFrustum m_persFrustum;

@@ -23,7 +23,7 @@ namespace pio
 
 		void setVisible(bool val) { m_bVisible = val; }
 		void setShowOutline(bool draw) { m_bShowOutline = draw; }
-		void setLayoutParam(const WindowLayoutParams &param) { m_layoutParam = param; }
+		void setLayoutParam(const LayoutParams &param) { m_layoutParam = param; }
 
 		static const char *EditorAxisStr(EditorAxis axis)
 		{
@@ -75,7 +75,7 @@ namespace pio
 	protected:
 		bool m_bVisible{ false };
 		bool m_bShowOutline{ false };
-		WindowLayoutParams m_layoutParam{};
+		LayoutParams m_layoutParam{};
 	};
 }
 

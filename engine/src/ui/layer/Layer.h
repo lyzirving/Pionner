@@ -13,7 +13,7 @@ namespace pio
 	class Layer
 	{
 	public:
-		Layer(const WindowLayoutParams &param, const std::string &name = "Layer");
+		Layer(const LayoutParams &param, const std::string &name = "Layer");
 		virtual ~Layer() = default;
 
 		virtual void onAttach() {}
@@ -27,14 +27,14 @@ namespace pio
 
 	public:
 		inline const std::string &getName() const { return m_name; }
-		inline const WindowLayoutParams &getLayoutParam() const { return m_layoutParam; }
+		inline const LayoutParams &getLayoutParam() const { return m_layoutParam; }
 
 	protected:
 		static Registry *s_registry;
 
 	protected:
 		std::string m_name{};
-		WindowLayoutParams m_layoutParam;
+		LayoutParams m_layoutParam;
 	};
 
 }

@@ -13,13 +13,7 @@ namespace pio
 {
 	namespace Math
 	{
-		bool Contains(const glm::vec2 &cursor, const Rect2d &rect)
-		{
-			return cursor.x >= rect.LeftTop.x && cursor.x <= rect.RightBottom.x &&
-				   cursor.y >= rect.LeftTop.y && cursor.y <= rect.RightBottom.y;
-		}
-
-		bool DecomposeTransform(const glm::mat4 &transform, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale)
+		bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale)
 		{
 			glm::mat4 localMatrix(transform);
 
@@ -79,21 +73,21 @@ namespace pio
 			return true;
 		}
 
-		glm::vec3 Math::Reminder(const glm::vec3 &input, float reminder)
+		glm::vec3 Math::Reminder(const glm::vec3& input, float reminder)
 		{
 			if (reminder < 0.f) { reminder = -reminder; }
 
-			glm::vec3 result = input;	
+			glm::vec3 result = input;
 			glm::vec3 sign = glm::sign(result);
 
-			auto calcReminder = [](float input, float sign, float reminder) 
-			{
-				float val = input * sign;// val is >= 0.f
-				if (val > reminder)
-					val = val - reminder * int(val / reminder);
-				return val * sign;
-			};
-			
+			auto calcReminder = [](float input, float sign, float reminder)
+				{
+					float val = input * sign;// val is >= 0.f
+					if (val > reminder)
+						val = val - reminder * int(val / reminder);
+					return val * sign;
+				};
+
 			result.x = calcReminder(result.x, sign.x, reminder);
 			result.y = calcReminder(result.y, sign.y, reminder);
 			result.z = calcReminder(result.z, sign.z, reminder);
@@ -125,13 +119,36 @@ namespace pio
 
 		glm::mat4 ViewportMat(const Viewport& vp)
 		{
-			glm::vec4 col0 = glm::vec4(float(vp.Width) / 2.f, 0.f, 0.f, 0.f);
-			glm::vec4 col1 = glm::vec4(0.f, float(vp.Height) / 2.f, 0.f, 0.f);
+			glm::vec4 col0 = glm::vec4(float(vp.w()) / 2.f, 0.f, 0.f, 0.f);
+			glm::vec4 col1 = glm::vec4(0.f, float(vp.h()) / 2.f, 0.f, 0.f);
 			glm::vec4 col2 = glm::vec4(0.f, 0.f, 0.5f, 0.f);
-			glm::vec4 col3 = glm::vec4(float(vp.X) + float(vp.Width) / 2.f,
-				                       float(vp.Y) + float(vp.Height) / 2.f,
+			glm::vec4 col3 = glm::vec4(float(vp.x()) + float(vp.w()) / 2.f,
+				                       float(vp.y()) + float(vp.h()) / 2.f,
 				                       0.5f, 1.f);
 			return glm::mat4(col0, col1, col2, col3);
+		}
+
+		glm::ivec2 ScreenPtToViewportPt(const glm::vec2& screenPt, const LayoutParams& param)
+		{
+			return glm::ivec2(screenPt.x - param.Viewport.x(), param.Viewport.h() - (screenPt.y - param.Position.Top));
+		}
+
+		glm::vec2 ScreenPtToVertex(uint32_t x, uint32_t y, uint32_t screenWidth, uint32_t screenHeight)
+		{
+			float halfW = float(screenWidth) / 2.f;
+			float halfH = float(screenHeight) / 2.f;
+			return glm::vec2((float(x) - halfW) / halfW,
+				             (halfH - float(y)) / halfH);
+		}
+
+		glm::vec2 WorldPosToScreenPt(const glm::vec3& worldPos, const glm::mat4& mvpMat, const glm::mat4& vpMat, const glm::uvec2& windowSize)
+		{
+			glm::vec4 clipPos = mvpMat * glm::vec4(worldPos, 1.f);
+			glm::vec4 cvv = glm::vec4(clipPos.x / clipPos.w, clipPos.y / clipPos.w, clipPos.z / clipPos.w, 1.f);
+			glm::vec4 screen = vpMat * cvv;
+			// Window's origin is the left-top corner
+			screen.y = windowSize.y - screen.y;
+			return glm::vec2(screen.x, screen.y);
 		}
 	}
 }

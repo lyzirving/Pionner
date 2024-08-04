@@ -33,5 +33,5 @@ void main() {
     vec4 base = texture(u_texture, v_texcoord);
 	vec3 rgbVal = u_bSRGB ? base.rgb : Mon2Lin(base.rgb);
 	vec3 color = u_bGammaCorrect ? GammaCorrect(rgbVal) : rgbVal;
-    o_color = vec4(color.rgb, base.a);
+    o_color = vec4(color, base.a);
 }

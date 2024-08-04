@@ -30,7 +30,7 @@ namespace pio
 		void setStatus(ViewCtlStatus s) { m_ctlStatus = s; }
 		void setPosition(uint32_t l, uint32_t t, uint32_t width, uint32_t height) 
 		{ 
-			LayoutRect rect(l, t, l + width, t + height); 
+			Rect2d rect(l, t, l + width, t + height);
 			if (m_rect != rect)
 			{
 				m_rect = rect;
@@ -40,7 +40,7 @@ namespace pio
 
 		void setViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 		{
-			LayoutViewport vp(x, y, width, height);
+			Viewport vp(x, y, width, height);
 			if (m_viewport != vp)
 			{
 				m_viewport = vp;
@@ -55,12 +55,12 @@ namespace pio
 
 		AssetHandle getMesh() const;
 		Ref<Texture2D> getTexture() const { return m_texture; }
-		const LayoutRect &getRect() const { return m_rect; }
+		const Rect2d& getRect() const { return m_rect; }
 
 	protected:
 		std::string m_name;
-		LayoutRect m_rect{};
-		LayoutViewport m_viewport{};
+		Rect2d m_rect{};
+		Viewport m_viewport{};
 
 		ViewCtlStatus m_ctlStatus{ ViewCtlStatus_Normal };
 		bool m_invalidate{ false };

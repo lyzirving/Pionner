@@ -26,7 +26,7 @@ namespace pio
 	class MotionControlLayer : public Layer, public EventHandler
 	{
 	public:
-		MotionControlLayer(const WindowLayoutParams &param);
+		MotionControlLayer(const LayoutParams &param);
 		virtual ~MotionControlLayer() = default;
 
 		virtual void onAttach() override;
@@ -73,7 +73,7 @@ namespace pio
 
 	private:
 		bool m_drawCircle{ false };
-		WindowLayoutParams m_circleLayoutParam;
+		LayoutParams m_circleLayoutParam;
 
 		Ref<UniformBufferSet> m_visionUBSet;
 		CameraUD m_visionCamUD;
@@ -90,7 +90,7 @@ namespace pio
 		Ref<GizmoRotator>   m_gizmoRotator;
 
 		Ref<View> m_views[MotionCtl_Num];
-		LayoutRect m_viewIconsRect;
+		Rect2d m_viewIconsRect;
 		std::vector<TextureCmd> m_viewDrawCmds;
 
 		uint64_t  m_downTime{ 0 };//ms

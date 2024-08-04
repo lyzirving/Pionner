@@ -32,6 +32,7 @@ namespace pio
 		virtual void setState(const RenderState &state) = 0;
 
 		virtual const RenderPassSpecification &getSpecification() const = 0;
+		virtual RenderState& getState() = 0;
 		virtual const RenderState &getState() const = 0;
 		virtual Ref<FrameBuffer> getFramebuffer() = 0;
 		virtual Ref<UniformBuffer> getUniformBuffer() = 0;

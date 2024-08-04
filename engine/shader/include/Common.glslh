@@ -12,7 +12,7 @@ const float MAX_REFLECTION_LOD = 4.f;
 // SRGB to Linear Space
 vec3 Mon2Lin(vec3 x)
 {
-    return vec3(pow(x[0], 2.2), pow(x[1], 2.2), pow(x[2], 2.2));
+	return pow(x, vec3(2.2));
 }
 
 // Nearest int value
@@ -22,10 +22,12 @@ int NeInt(float val)
 	return int(index);
 }
 
+vec3 HdrToneMapping(vec3 color)
+{
+	return color / (color + vec3(1.0));
+}
+
 vec3 GammaCorrect(vec3 color)
 {
-    // HDR tonemapping
-	vec3 result = color / (color + vec3(1.0));
-	// gamma correct
-	return pow(result, vec3(1.0 / 2.2)); 
+	return pow(color, vec3(1.0 / 2.2)); 
 }

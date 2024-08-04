@@ -65,7 +65,7 @@ namespace pio
 		}
 	}
 
-	EditorLayer::EditorLayer(const WindowLayoutParams &param)
+	EditorLayer::EditorLayer(const LayoutParams &param)
 		: Layer(param, "EditorLayer")
 	{
 	}
@@ -83,7 +83,7 @@ namespace pio
 	void EditorLayer::onUpdateUI(const Timestep &ts)
 	{
 		const std::string &name = m_name;
-		WindowLayoutParams &param = m_layoutParam;
+		LayoutParams &param = m_layoutParam;
 		Registry *registry = s_registry;
 		Ref<Entity> &lastSelect = m_selectedEnt;
 
@@ -97,7 +97,7 @@ namespace pio
 			flags |= ImGuiWindowFlags_NoTitleBar;
 
 			ImGui::SetNextWindowPos(ImVec2(param.Position.Left, param.Position.Top), ImGuiCond_Always);
-			ImGui::SetNextWindowSize(ImVec2(param.Viewport.Width + 1, param.Viewport.Height + 1), ImGuiCond_Always);
+			ImGui::SetNextWindowSize(ImVec2(param.Viewport.w() + 1, param.Viewport.h() + 1), ImGuiCond_Always);
 
 			if (!ImGui::Begin(name.c_str(), nullptr, flags))
 			{
@@ -105,7 +105,7 @@ namespace pio
 				ImGui::End();
 				return;
 			}
-			const float rowWidth = m_layoutParam.Viewport.Width;
+			const float rowWidth = m_layoutParam.Viewport.w();
 			RendererConfig &config = Renderer::GetConfig();
 			ImGui::PushItemWidth(rowWidth);
 			ImGui::LabelText("##FPS", "FPS[%.1f], FrameTime[%lu]ms", config.FPS, config.FrameTime);
@@ -160,7 +160,7 @@ namespace pio
 		{
 			auto scene = AssetsManager::GetRuntimeAsset<Scene>(ent->getComponent<SceneComponent>().Handle);
 			const std::string &name = ent->getName();
-			const float rowWidth = m_layoutParam.Viewport.Width;
+			const float rowWidth = m_layoutParam.Viewport.w();
 			
 			ImGui::PushItemWidth(rowWidth);
 			ImGui::InputText("##scene_name", const_cast<char *>(name.c_str()), name.size(), ImGuiInputTextFlags_ReadOnly);
@@ -200,7 +200,7 @@ namespace pio
 			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
 			auto &transComp = ent->getComponent<TransformComponent>();
 
-			const float rowWidth = m_layoutParam.Viewport.Width;
+			const float rowWidth = m_layoutParam.Viewport.w();
 			bool bVisible{ true };
 			UiPanel::DrawNamePanel("##DirectionalLight_name", ent->getName(), "##DirectionalLight_visibility", bVisible, rowWidth);
 			UiPanel::DrawTransformPanel(ent);
@@ -232,7 +232,7 @@ namespace pio
 			std::string nLabel = (std::stringstream() << "##" << ent->getName() << "_name").str();
 			std::string vLabel = (std::stringstream() << "##" << ent->getName() << "_visibility").str();
 
-			const float rowWidth = m_layoutParam.Viewport.Width;
+			const float rowWidth = m_layoutParam.Viewport.w();
 			bool bVisible{ true };//TODO
 			UiPanel::DrawNamePanel(nLabel.c_str(), name, vLabel.c_str(), bVisible, rowWidth);
 			glm::vec3 old = transComp.Transform.Position;
@@ -262,7 +262,7 @@ namespace pio
 			auto meshSrc = AssetsManager::GetRuntimeAsset<MeshSource>(meshSrcComp.SourceHandle);
 			if (meshSrc)
 			{
-				const float rowWidth = m_layoutParam.Viewport.Width;
+				const float rowWidth = m_layoutParam.Viewport.w();
 				bool bVisible = meshSrcComp.Visible;
 				UiPanel::DrawNamePanel("##meshSource_name", meshSrc->getName(), "##meshSource_visibility", bVisible, rowWidth);
 				if (meshSrcComp.Visible != bVisible)
@@ -328,7 +328,7 @@ namespace pio
 		if (meshBase)
 		{
 			const Submesh &submesh = meshBase->getMeshSource()->getSubmeshes()[submeshIdx];
-			const float rowWidth = m_layoutParam.Viewport.Width;
+			const float rowWidth = m_layoutParam.Viewport.w();
 			UiPanel::DrawNamePanel("##submesh_name", submesh.MeshName, "##mesh_visibility", bVisibleUI, rowWidth);
 			UiPanel::DrawTransformPanel(ent);
 
@@ -434,7 +434,7 @@ namespace pio
 
 		auto& comp = ent->getComponent<CameraComponent>();
 		auto camera = AssetsManager::GetRuntimeAsset<Camera>(comp.Handle);
-		const float rowWidth = m_layoutParam.Viewport.Width;
+		const float rowWidth = m_layoutParam.Viewport.w();
 		bool visible{ true };// always be visible
 
 		UiPanel::DrawNamePanel("##camera_name", ent->getName(), "##camera_visibility", visible, rowWidth);

@@ -9,7 +9,7 @@ namespace pio
 	class EditorLayer : public Layer
 	{
 	public:
-		EditorLayer(const WindowLayoutParams &param);
+		EditorLayer(const LayoutParams &param);
 		virtual ~EditorLayer() = default;
 
 		virtual void onAttach() override;

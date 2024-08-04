@@ -56,7 +56,7 @@ namespace pio
 	{
 	}
 
-	void SceneRenderer::onAttach(const Scene& scene)
+	void SceneRenderer::onAttach(const Scene& scene, const LayoutParams& param)
 	{
 		m_cameraUD.obtainBlock();
 		const LightEnvironment& lightEnv = scene.m_lightEnv;
@@ -70,7 +70,7 @@ namespace pio
 
 		m_shadowBufferSize.x = m_shadowBufferSize.y = Tiering::GetShadowResolution(Tiering::ShadowResolutionSetting::Low);
 
-		float aspectRatio = float(scene.m_layoutParam.Viewport.Width) / float(scene.m_layoutParam.Viewport.Height);
+		float aspectRatio = float(param.Viewport.w()) / float(param.Viewport.h());
 		m_colorBufferSize.x = Tiering::GetColorResolution(Tiering::ColorResolutionSetting::Low);
 		m_colorBufferSize.y = float(m_colorBufferSize.x) / aspectRatio;
 
@@ -99,7 +99,6 @@ namespace pio
 
 		LightEnvironment& lightEnv = const_cast<LightEnvironment&>(scene.m_lightEnv);
 		CameraUD& cameraUD = m_cameraUD;
-		const Viewport& vp = camera.viewport();
 		Camera& distLightCam = m_distantLightShadowPass->getCamera();
 
 		// [NOTE]: how to set a light matrix for distant light shadow that light's postion will not effect shadow
@@ -558,16 +557,19 @@ namespace pio
 	void SceneRenderer::lightingPass_deferred(const Scene& scene)
 	{
 		const LightEnvironment& env = scene.m_lightEnv;
-		Ref<Skybox> sk = Camera::Main->skybox();
+		Ref<Camera> cam = scene.m_camera;
 		Ref<RenderPass> gp = m_GBufferPass;
 		Ref<RenderPass> lp = m_lightPass;
 		Ref<RenderPass> dlsp = m_distantLightShadowPass;
 		Ref<RenderPass> plsp = m_pointLightShadowPass;
 		Ref<UniformBufferSet> ubs = m_uniformBuffers;
 
-		Renderer::SubmitRC([env, sk, gp, lp, dlsp, plsp, ubs]() mutable
+		Renderer::SubmitRC([env, cam, gp, lp, dlsp, plsp, ubs]() mutable
 			{
 				uint64_t start{ PROFILER_TIME };
+				Ref<Skybox> sk = cam->skybox();
+				CameraClearFlags cf = cam->clearFlag();
+
 				Renderer::BeginRenderPass(lp);
 				// Copy depth buffer from G-Buffer into Lighting pass
 				Renderer::FramebufferBlockTransfer(gp->getFramebuffer()->getId(), lp->getFramebuffer()->getId(),
@@ -577,8 +579,11 @@ namespace pio
 				RenderState lightState{ Blend::Disable(), DepthTest::Disable(), CullFace::Common(), StencilTest::Disable() };
 				Renderer::RenderLightEffect_Deffered(Renderer::GetConfig().FullScreenQuad, sk, ubs, gp, dlsp, plsp, lightState);
 				
-				RenderState skState{ Blend::Disable(), DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite), CullFace::Common(), StencilTest::Disable() };				
-				Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);
+				if (cf == CameraClearFlag_Skybox)
+				{
+					RenderState skState{ Blend::Disable(), DepthTest(FuncAttr::Lequal, DepthTest::Mask::ReadWrite), CullFace::Common(), StencilTest::Disable() };
+					Renderer::RenderSkybox(sk->getCubeMesh(), 0, ubs, sk->getEnvMap(), skState);
+				}			
 
 				Renderer::EndRenderPass(lp);
 				PROFILERD_DURATION(start, "LightingPass");
@@ -588,7 +593,7 @@ namespace pio
 	void SceneRenderer::onScreenRendering(const Scene& scene)
 	{
 		Ref<RenderPass> scpss = m_screenPass;
-		const LayoutViewport& vp = scene.m_layoutParam.Viewport;
+		const Viewport& vp = scene.m_camera->viewport();
 		const AssetHandle& handle = scene.m_screenQuad;
 		Ref<Texture2D> composite = m_compositeTexture;
 		std::map<MeshKey, SpriteCommand>& spCmd = m_spriteDraws;
@@ -597,7 +602,7 @@ namespace pio
 		Renderer::SubmitRC([scpss, vp, handle, composite, spCmd]() mutable
 			{
 				uint64_t start{ PROFILER_TIME };
-				Renderer::BeginScreenPass(scpss, Viewport(vp.X, vp.Y, vp.Width, vp.Height));
+				Renderer::BeginScreenPass(scpss, vp);
 				std::vector<SpriteCommand> cmdList{};
 				cmdList.reserve(spCmd.size() + 1);
 				// Screen texture should be the first sprite to be rendered
