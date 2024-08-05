@@ -18,6 +18,7 @@ namespace pio
 		{
 			rowWidth = ImGui::GetItemRectSize().x;
 		}
+
 		float cbWidth = 0.2f * rowWidth;
 		float textWidth = 0.8f * rowWidth;
 
@@ -82,29 +83,47 @@ namespace pio
 		if (!entity)
 			return;
 
+		bool bVisible = true;
+		DrawNamePanel("##light_name", entity->getName(), "##light_visibility", bVisible);
 		DrawTransformPanel(entity);
 
 		if (ImGui::CollapsingHeader("Light", ImGuiUtils::Flag_Collapse_Header))
 		{
-			auto itemSize = ImGui::GetItemRectSize();
-			float labelWidth = 0.2f * itemSize.x;
-			float textWidth = 0.8f * itemSize.x;
 			std::string_view className = entity->getClassName();
 
-			ImGui::PushItemWidth(labelWidth);
-			ImGui::LabelText("##light_type_label", "Type");
-			ImGui::PopItemWidth();
-
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Type       ");
 			ImGui::SameLine();
-
-			ImGui::PushItemWidth(textWidth);
 			ImGui::InputText("##light_type", const_cast<char*>(className.data()), className.size(), ImGuiInputTextFlags_ReadOnly);
-			ImGui::PopItemWidth();
+
+			if (entity->hasComponent<DirectionalLightComponent>())
+			{
+				DrawDirectionalLightPanel(entity);
+			}
+			else if (entity->hasComponent<PointLightComponent>())
+			{
+				DrawPointLightPanel(entity);
+			}
 		}
 	}
 
-	void UiPanel::DrawCameraPanel(CameraComponent& comp)
+	void UiPanel::DrawCameraPanel(Ref<Entity>& entity)
 	{
+		if (!entity || !entity->hasComponent<CameraComponent>())
+			return;
+
+		auto& comp = entity->getComponent<CameraComponent>();
+		auto camera = AssetsManager::GetRuntimeAsset<Camera>(comp.Handle);
+		bool visible{ true };// always be visible
+
+		UiPanel::DrawNamePanel("##camera_name", entity->getName(), "##camera_visibility", visible);
+
+		auto attr = UiPanel::DrawTransformPanel(camera->transform());
+		if (attr.test(DataAttrBits_Pos))
+			camera->attrChange(CameraAttrBits_Pos);
+		if (attr.test(DataAttrBits_Rot))
+			camera->attrChange(CameraAttrBits_Rot);
+
 		if (ImGui::CollapsingHeader("Camera", ImGuiUtils::Flag_Collapse_Header))
 		{
 			float itemWidth = ImGui::GetItemRectSize().x;
@@ -142,7 +161,7 @@ namespace pio
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Intensity ");
 				ImGui::SameLine();
-				ImGui::SliderFloat("Intensity", &intensity, 0.0001f, 0.3f, "%.4f");
+				ImGui::SliderFloat("##Intensity", &intensity, 0.0001f, 0.3f, "%.4f");
 				sk->setIntensity(intensity);
 				break;
 			}
@@ -202,7 +221,7 @@ namespace pio
 
 			auto& vp = camera->viewport();
 			float x{ vp.offsetX() }, y{ vp.offsetY() };
-			float w{ vp.ratioW() },  h{ vp.ratioH() };
+			float w{ vp.ratioW() }, h{ vp.ratioH() };
 			ImGui::AlignTextToFramePadding();
 			ImGui::Text("Viewport Rect");
 
@@ -239,8 +258,30 @@ namespace pio
 
 	void UiPanel::DrawDirectionalLightPanel(Ref<Entity>& entity)
 	{
-		if (ImGui::CollapsingHeader("Light", ImGuiUtils::Flag_Collapse_Header))
+		auto& comp = entity->getComponent<DirectionalLightComponent>();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Radiance   ");
+		ImGui::SameLine();
+		ImGui::ColorEdit3("##Light_Radiance", &comp.Radiance.r);
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Mode       ");
+		ImGui::SameLine();
+		ImGui::InputText("##Light_Mode", "Real Time", 10, ImGuiInputTextFlags_ReadOnly);
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Intensity  ");
+		ImGui::SameLine();
+		ImGui::DragFloat("##Light_Intensity", &comp.Intensity, 0.02f, 0.1f, 10.f, "%.2f", 0);
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Shadow Type");
+		ImGui::SameLine();
+		ImGui::Combo("##Shadow_Type", &comp.SdMode, ShadowModeNames, ShadowMode_Num);
+		comp.CastShadow = comp.SdMode != ShadowMode_None;
+		if (comp.CastShadow)
 		{
+
 		}
 	}
 

@@ -15,10 +15,10 @@ namespace pio
 
 	enum ShadowMode : uint8_t
 	{
-		ShadowMode_Hard = 0, ShadowMode_Soft, ShadowMode_Soft_2X, ShadowMode_Soft_4X, ShadowMode_Num
+		ShadowMode_None = 0, ShadowMode_Hard, ShadowMode_Soft, ShadowMode_Soft_2X, ShadowMode_Soft_4X, ShadowMode_Num
 	};
 
-	constexpr static const char *ShadowModeNames[ShadowMode_Num] = { "Hard", "Soft", "Soft_2X", "Soft_4X" };
+	constexpr static const char *ShadowModeNames[ShadowMode_Num] = { "No Shadows", "Hard", "Soft", "Soft_2X", "Soft_4X" };
 
 	struct SimpleVertex
 	{

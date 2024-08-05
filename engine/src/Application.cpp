@@ -37,7 +37,7 @@ namespace pio
 
 		LogSystem::Initialize();
 
-		WindowProps prop{ "Pionner", 1280, 720 };
+		WindowProps prop{ "Pionner", 1400, 720 };
 		m_window = Window::create(prop);
 		m_window->setEventCallback(PIO_BIND_EVT_FN(Application::onEvent));
 

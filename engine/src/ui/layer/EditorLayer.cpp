@@ -126,7 +126,7 @@ namespace pio
 						onDrawScenePanel(select);
 						break;
 					case EntityClass::DirectionalLight:
-						onDrawDistantLightPanel(select);
+						UiPanel::DrawLightPanel(select);
 						break;
 					case EntityClass::PointLight:
 						onDrawPointLightPanel(select);
@@ -138,7 +138,7 @@ namespace pio
 						onDrawMeshPanel(select);
 						break;
 					case EntityClass::Camera:
-						onDrawCameraPanel(select);
+						UiPanel::DrawCameraPanel(select);
 						break;
 					default:
 						break;
@@ -183,42 +183,6 @@ namespace pio
 					}
 				}
 			}
-		}
-	}
-
-	void EditorLayer::onDrawDistantLightPanel(Ref<Entity> &ent)
-	{
-		/*{
-			bool bVisible = true;
-			UiPanel::DrawNamePanel("##light_name", ent->getName(), "##light_visibility", bVisible);
-			UiPanel::DrawLightPanel(ent);
-			return;
-		}*/
-
-		if (ent && ent->hasComponent<DirectionalLightComponent>())
-		{			
-			auto &lightComp = ent->getComponent<DirectionalLightComponent>();
-			auto &transComp = ent->getComponent<TransformComponent>();
-
-			const float rowWidth = m_layoutParam.Viewport.w();
-			bool bVisible{ true };
-			UiPanel::DrawNamePanel("##DirectionalLight_name", ent->getName(), "##DirectionalLight_visibility", bVisible, rowWidth);
-			UiPanel::DrawTransformPanel(ent);
-
-			ImGui::Checkbox("CastShadow##DistantLight", &lightComp.CastShadow);
-			ImGui::Combo("PCF", &lightComp.SdMode, ShadowModeNames, ShadowMode_Num, 3);
-			ImGui::DragFloat("Bias##DistantLight", &lightComp.Bias, 0.00001f, 0.0001f, 0.1f, "%.5f");
-
-			glm::vec3 dir = lightComp.Direction;
-			ImGui::DragFloat3("Direction##DirectionalLight", &dir.x, 0.01f, -1.f, 1.f, "%.2f");
-			if (dir != lightComp.Direction)
-			{
-				transComp.Transform.Euler.invalidate();
-				lightComp.Direction = glm::normalize(dir);
-			}
-
-			ImGui::DragFloat3("Radiance##DirectionalLight", glm::value_ptr(lightComp.Radiance), 0.1f, 0.f, 1000.f, "%.1f");
-			ImGui::SliderFloat("Intensity##DirectionalLight", &lightComp.Intensity, 0.01f, 2.f, "%.2f", 0);
 		}
 	}
 
@@ -425,26 +389,5 @@ namespace pio
 				meshComp.Visible = bVisibleUI;
 			}
 		}
-	}
-
-	void EditorLayer::onDrawCameraPanel(Ref<Entity>& ent)
-	{
-		if (!ent || !ent->hasComponent<CameraComponent>())
-			return;
-
-		auto& comp = ent->getComponent<CameraComponent>();
-		auto camera = AssetsManager::GetRuntimeAsset<Camera>(comp.Handle);
-		const float rowWidth = m_layoutParam.Viewport.w();
-		bool visible{ true };// always be visible
-
-		UiPanel::DrawNamePanel("##camera_name", ent->getName(), "##camera_visibility", visible, rowWidth);
-
-		auto attr = UiPanel::DrawTransformPanel(camera->transform());
-		if (attr.test(DataAttrBits_Pos))
-			camera->attrChange(CameraAttrBits_Pos);
-		if (attr.test(DataAttrBits_Rot))
-			camera->attrChange(CameraAttrBits_Rot);
-
-		UiPanel::DrawCameraPanel(comp);
 	}
 }

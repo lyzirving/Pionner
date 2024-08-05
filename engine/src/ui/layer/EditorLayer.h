@@ -18,35 +18,13 @@ namespace pio
 		virtual void onWindowSizeChange(uint32_t width, uint32_t height) override;
 
 	private:
-		struct UiQuat
-		{
-			float w{ 1.f };
-			float x{ 0.f };
-			float y{ 0.f };
-			float z{ 0.f };
-
-			UiQuat() {}
-			UiQuat(float _w, float _x, float _y, float _z) : w(_w), x(_x), y(_y), z(_z) {}
-
-			float *value_ptr() { return &w; }
-		};
-
-		struct UiValue
-		{
-			bool MeshSrcVisible{ true };
-		};
-
-	private:
 		void onDrawScenePanel(Ref<Entity> &ent);
-		void onDrawDistantLightPanel(Ref<Entity> &ent);
 		void onDrawPointLightPanel(Ref<Entity> &ent);
 		void onDrawMeshSourcePanel(Ref<Entity> &ent);
 		void onDrawMeshPanel(Ref<Entity> &ent);
-		void onDrawCameraPanel(Ref<Entity>& ent);
 
 	private:		
 		Ref<Entity> m_selectedEnt;
-		UiValue m_UiVal;
 	};
 }
 

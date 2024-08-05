@@ -327,7 +327,7 @@ namespace pio
 
 		// Distant Light
 		{
-			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-4.5f, 3.8f, -1.f), glm::vec3(0.f), glm::vec3(3.f), 0.12f);
+			m_lightEnv.DirectionalLight = DirectionalLight(glm::vec3(-4.5f, 3.8f, -1.f), glm::vec3(0.f), glm::vec3(1.f), 1.f);
 
 			Ref<Entity> ent = Registry::Get()->create<DirectionalLightComponent, RelationshipComponent, SpriteComponent, TransformComponent>(EntityClass::DirectionalLight, "DirectionalLight");
 
@@ -371,10 +371,10 @@ namespace pio
 			m_lightEnv.PtLightShadowData.LightCount = m_lightEnv.PointLightData.LightCount;
 
 			m_lightEnv.PointLightData.Lights[0] = PointLight(SphereCoord::ToCCS(52.f, 45.f, 2.f),
-															 glm::vec3(3.f), 1.f, 0.001f, 2.25f, 0.5f, 0.1f, "PointLight0");
+															 glm::vec3(1.f), 1.f, 0.001f, 2.25f, 0.5f, 0.1f, "PointLight0");
 			m_lightEnv.PointLightData.Lights[0].Volume = AssetsManager::CreateRuntimeAssets<StaticMesh>(MeshFactory::CreateSphere(m_lightEnv.PointLightData.Lights[0].Radius))->getHandle();
 			m_lightEnv.PointLightData.Lights[1] = PointLight(SphereCoord::ToCCS(40.f, 290.f, 3.2f),
-															 glm::vec3(3.f), 1.f, 0.001f, 2.25f, 0.5f, 0.1f, "PointLight1");
+															 glm::vec3(1.f), 1.f, 0.001f, 2.25f, 0.5f, 0.1f, "PointLight1");
 			m_lightEnv.PointLightData.Lights[1].Volume = AssetsManager::CreateRuntimeAssets<StaticMesh>(MeshFactory::CreateSphere(m_lightEnv.PointLightData.Lights[1].Radius))->getHandle();
 			for (uint32_t i = 0; i < m_lightEnv.PointLightData.LightCount; i++)
 				CreatePointLightComponent(i, m_lightEnv.PointLightData.Lights[i], m_physics, m_sceneRoot, icon);

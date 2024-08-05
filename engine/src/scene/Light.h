@@ -11,6 +11,7 @@ namespace pio
 		PIO_UNIFORM_STRUCT_DECLARE(DirectionalLight)
 
 		glm::vec3 Direction{ 0.f };
+		//Light color, each component should be in [0, 1]
 		glm::vec3 Radiance{ 0.f };
 		float Intensity{ 0.f };
 		float Bias{ 0.0005f };
@@ -43,6 +44,7 @@ namespace pio
 		PIO_UNIFORM_STRUCT_DECLARE(PointLight)
 
 		glm::vec3 Position{ 0.f };
+		//Light color, each component should be in [0, 1]
 		glm::vec3 Radiance{ 0.f };
 		float Intensity{ 0.f };
 		float MinRadius{ 0.f };

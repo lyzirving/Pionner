@@ -4,10 +4,10 @@
 #include <Buffers.glslh>
 #include <PBR.glslh>
 
-const int ShadowMode_Hard = 0;
-const int ShadowMode_Soft = 1;
-const int ShadowMode_Soft_2X = 2;
-const int ShadowMode_Soft_4X = 3;
+const int ShadowMode_Hard = 1;
+const int ShadowMode_Soft = 2;
+const int ShadowMode_Soft_2X = 3;
+const int ShadowMode_Soft_4X = 4;
 
 const int POINT_LIGHT_LIMIT = 10;
 
