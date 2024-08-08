@@ -281,7 +281,24 @@ namespace pio
 		comp.CastShadow = comp.SdMode != ShadowMode_None;
 		if (comp.CastShadow)
 		{
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("  Realtime Shadows");
 
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("    Strength");
+			ImGui::SameLine();
+			auto remain = ImGui::GetContentRegionAvail();
+			ImGui::PushItemWidth(remain.x);
+			ImGui::DragFloat("##Sd_Intensity", &comp.SdIntensity, 0.02f, 0.f, 1.f, "%.2f");
+			ImGui::PopItemWidth();
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("    Bias    ");
+			ImGui::SameLine();
+			remain = ImGui::GetContentRegionAvail();
+			ImGui::PushItemWidth(remain.x);
+			ImGui::DragFloat("##Sd_Bias", &comp.Bias, 0.0001f, 0.f, 0.05f, "%.4f");
+			ImGui::PopItemWidth();
 		}
 	}
 

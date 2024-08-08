@@ -67,7 +67,8 @@ namespace pio
 		sceneData.Intensity = lightComp.Intensity;
 		sceneData.Bias = lightComp.Bias;
 		sceneData.SdMode = lightComp.SdMode;
-		sceneData.CastShadow = lightComp.CastShadow;	
+		sceneData.CastShadow = lightComp.CastShadow;
+		sceneData.SdIntensity = lightComp.SdIntensity;
 
 		UpdateSpritePosition(sceneData.Position, spriteComp, cam);
 	}
@@ -337,6 +338,9 @@ namespace pio
 			lightComp.Direction = m_lightEnv.DirectionalLight.Direction;
 			lightComp.Radiance = m_lightEnv.DirectionalLight.Radiance;
 			lightComp.Intensity = m_lightEnv.DirectionalLight.Intensity;
+			lightComp.SdIntensity = m_lightEnv.DirectionalLight.SdIntensity;
+			lightComp.Bias = m_lightEnv.DirectionalLight.Bias;
+			lightComp.CastShadow = m_lightEnv.DirectionalLight.CastShadow;
 
 			auto &rlComp = ent->getComponent<RelationshipComponent>();
 			PIO_RELATION_SET_SELF(ent);

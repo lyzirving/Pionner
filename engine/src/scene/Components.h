@@ -108,6 +108,7 @@ namespace pio
 		float Bias{ 0.0005f };
 		int SdMode{ ShadowMode_Soft };
 		bool CastShadow{ true };
+		float SdIntensity{ 1.f };
 	};
 
 	struct PointLightComponent

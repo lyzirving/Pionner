@@ -16,6 +16,7 @@ namespace pio
 		block.pushBack("Bias", UniformBlock::CreateData(UniformDataType::Float, "Bias"));
 		block.pushBack("SdMode", UniformBlock::CreateData(UniformDataType::Int, "SdMode"));
 		block.pushBack("CastShadow", UniformBlock::CreateData(UniformDataType::Bool, "CastShadow"));
+		block.pushBack("SdIntensity", UniformBlock::CreateData(UniformDataType::Float, "SdIntensity"));
 		block.calculate();
 		//LOGD("block DirectionalLight byte used[%u]", block.getByteUsed());
 		return block;
@@ -117,6 +118,9 @@ namespace pio
 
 		auto castShadowUD = Block.m_blockItems.get("CastShadow");
 		Block.m_buffer->writeAt(&CastShadow, sizeof(bool), castShadowUD->getAlignOffset());
+
+		auto sdIntensityUD = Block.m_blockItems.get("SdIntensity");
+		Block.m_buffer->writeAt(&SdIntensity, sizeof(float), sdIntensityUD->getAlignOffset());
 	}
 
 	void DirectionalLightShadowData::serialize()

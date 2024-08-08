@@ -17,6 +17,7 @@ namespace pio
 		float Bias{ 0.0005f };
 		int SdMode{ ShadowMode_Soft };
 		bool CastShadow{ true };
+		float SdIntensity{ 1.f };//Shadow intensity
 
 		// ----------- Non Uniform data -----------
 		glm::vec3 Position{ 0.f };		

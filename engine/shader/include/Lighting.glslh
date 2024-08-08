@@ -46,6 +46,7 @@ layout (std140) uniform DirectionalLight
     float Bias;
     int SdMode;
     bool CastShadow;
+    float SdIntensity;
 } u_distantLight;
 
 layout(std140) uniform PointLightData
@@ -53,6 +54,11 @@ layout(std140) uniform PointLightData
 	int LightCount;
 	PointLight Lights[POINT_LIGHT_LIMIT];
 } u_pointLightData;
+
+float CalcShadowBias(vec3 lightDir, vec3 N, float bias)
+{
+    return max(bias * (1.0 - dot(N, lightDir)), bias * 0.1f); 
+}
 
 void CalculateAttrs()
 {
@@ -135,8 +141,8 @@ float CalcDirLightHardShadow(sampler2D shadowMap)
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     float closestDepth = texture(shadowMap, prjCoords.xy).r; 
 
-    vec3 lightDir = normalize(-u_distantLight.Direction);   
-    float bias = max(u_distantLight.Bias * (1.0 - dot(m_PBRParams.N, lightDir)), u_distantLight.Bias); 
+    vec3 lightDir = normalize(-u_distantLight.Direction);
+    float bias = CalcShadowBias(lightDir, m_PBRParams.N, u_distantLight.Bias);    
 
     return (currentDepth - bias) > closestDepth  ? 1.0 : 0.0;
 }
@@ -153,7 +159,7 @@ float CalcDirLightPCFShadow(int radius, sampler2D shadowMap)
 
     float shadow = 0.f;
     vec3 lightDir = normalize(-u_distantLight.Direction);    
-    float bias = max(u_distantLight.Bias * (1.0 - dot(m_PBRParams.N, lightDir)), u_distantLight.Bias); 
+    float bias = CalcShadowBias(lightDir, m_PBRParams.N, u_distantLight.Bias);
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
     int itrCnt = 0;
 
@@ -195,7 +201,7 @@ float CalcDirLightShadow(int mode, sampler2D shadowMap)
     {
         shadow = CalcDirLightPCFShadow(1, shadowMap);
     }
-    return shadow;
+    return shadow * u_distantLight.SdIntensity;
 }
 
 float CalcPointLightSoftShadow(int idx, samplerCubeArray ptShadowMap)
