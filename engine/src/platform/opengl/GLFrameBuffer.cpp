@@ -15,40 +15,40 @@
 
 namespace pio
 {
-	GLFrameBuffer::GLFrameBuffer(const FrameBufferSpecification &spec) : FrameBuffer(), m_spec(spec)
+	GLFrameBuffer::GLFrameBuffer(const FrameBufferSpecification& spec) : FrameBuffer(), m_spec(spec)
 	{
 		uint32_t num = std::min(PIO_UINT(ColorAttachment::Num), PIO_UINT(m_spec.ColorBufferSpec.size()));
 		m_colorBuffers.resize(num);
 
 		for (uint32_t i = 0; i < num; i++)
 		{
-			auto &spec = m_spec.ColorBufferSpec[i];
+			auto& spec = m_spec.ColorBufferSpec[i];
 			if (spec.Format == ImageInternalFormat::None)
 				continue;
 
 			switch (spec.AType)
 			{
-				case AssetType::Texture2D:
+			case AssetType::Texture2D:
+			{
+				m_colorBuffers[i] = Texture2D::Create(spec);
+				if (spec.AddToAssets)
 				{
-					m_colorBuffers[i] = Texture2D::Create(spec);
-					if(spec.AddToAssets)
-					{
-						AssetsManager::Get()->addRuntimeAsset(m_colorBuffers[i]);
-					}
-					break;
+					AssetsManager::Get()->addRuntimeAsset(m_colorBuffers[i]);
 				}
-				case AssetType::CubeTexture:
+				break;
+			}
+			case AssetType::CubeTexture:
+			{
+				m_colorBuffers[i] = CubeTexture::Create(spec);
+				if (spec.AddToAssets)
 				{
-					m_colorBuffers[i] = CubeTexture::Create(spec);
-					if(spec.AddToAssets)
-					{
-						AssetsManager::Get()->addRuntimeAsset(m_colorBuffers[i]);
-					}
-					break;
+					AssetsManager::Get()->addRuntimeAsset(m_colorBuffers[i]);
 				}
-				default:
-					LOGE("err! invalid AType[%u] for color buffer", spec.AType);
-					break;
+				break;
+			}
+			default:
+				LOGE("err! invalid AType[%u] for color buffer", spec.AType);
+				break;
 			}
 		}
 
@@ -56,21 +56,21 @@ namespace pio
 		{
 			switch (m_spec.DepthBufferSpec.AType)
 			{
-				case AssetType::Texture2D:
-					m_depthBuffer = Texture2D::Create(m_spec.DepthBufferSpec);
-					break;
-				case AssetType::CubeTexture:
-					m_depthBuffer = CubeTexture::Create(m_spec.DepthBufferSpec);
-					break;
-				case AssetType::CubeArrayTexture:
-					m_depthBuffer = CubeArrayTexture::Create(m_spec.DepthBufferSpec);
-					break;
-				case AssetType::RenderBuffer:
-					m_depthBuffer = RenderBuffer::Create(m_spec.DepthBufferSpec);
-					break;
-				default:
-					LOGE("fail to find valid assets type[%u]", m_spec.DepthBufferSpec.AType);
-					break;
+			case AssetType::Texture2D:
+				m_depthBuffer = Texture2D::Create(m_spec.DepthBufferSpec);
+				break;
+			case AssetType::CubeTexture:
+				m_depthBuffer = CubeTexture::Create(m_spec.DepthBufferSpec);
+				break;
+			case AssetType::CubeArrayTexture:
+				m_depthBuffer = CubeArrayTexture::Create(m_spec.DepthBufferSpec);
+				break;
+			case AssetType::RenderBuffer:
+				m_depthBuffer = RenderBuffer::Create(m_spec.DepthBufferSpec);
+				break;
+			default:
+				LOGE("fail to find valid assets type[%u]", m_spec.DepthBufferSpec.AType);
+				break;
 			}
 			m_depthSlot = m_spec.DepthAttachment;
 		}
@@ -85,7 +85,7 @@ namespace pio
 	{
 		if (!isInit())
 		{
-			for (auto &colorAttach : m_colorBuffers)
+			for (auto& colorAttach : m_colorBuffers)
 				colorAttach->init();
 
 			if (m_depthBuffer) m_depthBuffer->init();
@@ -106,9 +106,9 @@ namespace pio
 					else if (m_colorBuffers[i]->is<CubeTexture>())
 					{
 						for (uint32_t j = 0; j < LightDir_Num; ++j)
-						{						
+						{
 							glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
-												   GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, m_colorBuffers[i]->getId(), 0);
+								GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, m_colorBuffers[i]->getId(), 0);
 						}
 					}
 					colorAttachments.push_back(GL_COLOR_ATTACHMENT0 + i);
@@ -121,7 +121,7 @@ namespace pio
 					if (m_depthBuffer->is<RenderBuffer>())
 					{
 						glFramebufferRenderbuffer(GL_FRAMEBUFFER, GLHelper::GetGLDepthAttachment(m_depthSlot),
-												  GL_RENDERBUFFER, m_depthBuffer->getId());
+							GL_RENDERBUFFER, m_depthBuffer->getId());
 					}
 				}
 			}
@@ -131,12 +131,12 @@ namespace pio
 				if (m_depthBuffer->is<Texture2D>())
 				{
 					glFramebufferTexture2D(GL_FRAMEBUFFER, GLHelper::GetGLDepthAttachment(m_depthSlot),
-										   GL_TEXTURE_2D, m_depthBuffer->getId(), 0);
+						GL_TEXTURE_2D, m_depthBuffer->getId(), 0);
 				}
 				else if (m_depthBuffer->is<CubeTexture>() || m_depthBuffer->is<CubeArrayTexture>())
 				{
 					glFramebufferTexture(GL_FRAMEBUFFER, GLHelper::GetGLDepthAttachment(m_depthSlot),
-										 m_depthBuffer->getId(), 0);
+						m_depthBuffer->getId(), 0);
 				}
 				else
 				{
@@ -162,7 +162,7 @@ namespace pio
 	{
 		if (isInit())
 		{
-			for (auto &colorAttach : m_colorBuffers)
+			for (auto& colorAttach : m_colorBuffers)
 			{
 				colorAttach->destroy();
 				colorAttach.reset();
@@ -192,10 +192,10 @@ namespace pio
 		if (isInit())
 		{
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + PIO_UINT(attach),
-								   GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 
-								   m_colorBuffers[PIO_UINT(attach)]->getId(), mipLevel);
-			GLHelper::CheckError("bindTarget: frame buffer[%s] fail!! attachment[%u], face[%u]", 
-								 m_spec.Name.c_str(), PIO_UINT(attach), face);
+				GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
+				m_colorBuffers[PIO_UINT(attach)]->getId(), mipLevel);
+			GLHelper::CheckError("bindTarget: frame buffer[%s] fail!! attachment[%u], face[%u]",
+				m_spec.Name.c_str(), PIO_UINT(attach), face);
 		}
 	}
 

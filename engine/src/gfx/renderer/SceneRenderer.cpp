@@ -68,13 +68,14 @@ namespace pio
 		m_uniformBuffers->create(lightEnv.PointLightData.Block.getByteUsed(), PIO_UINT(UBBindings::PointLightData));
 		m_uniformBuffers->create(lightEnv.PtLightShadowData.Block.getByteUsed(), PIO_UINT(UBBindings::PointLightShadowData));
 
-		m_shadowBufferSize.x = m_shadowBufferSize.y = Tiering::GetShadowResolution(Tiering::ShadowResolutionSetting::Low);
+		glm::uvec2 sdBufSize;
+		sdBufSize.x = sdBufSize.y = Tiering::GetShadowResolution(Tiering::ShadowResolutionSetting::Low);
 
 		float aspectRatio = float(param.Viewport.w()) / float(param.Viewport.h());
 		m_colorBufferSize.x = Tiering::GetColorResolution(Tiering::ColorResolutionSetting::Low);
 		m_colorBufferSize.y = float(m_colorBufferSize.x) / aspectRatio;
 
-		createShadowPass(m_shadowBufferSize.x, m_shadowBufferSize.y);		
+		createShadowPass(sdBufSize.x, sdBufSize.y);
 		createDeferredPass(m_colorBufferSize.x, m_colorBufferSize.y);
 		createScreenPass();
 	}
@@ -100,6 +101,7 @@ namespace pio
 		LightEnvironment& lightEnv = const_cast<LightEnvironment&>(scene.m_lightEnv);
 		CameraUD& cameraUD = m_cameraUD;
 		Camera& distLightCam = m_distantLightShadowPass->getCamera();
+		Ref<Texture>& distLightDepthBuf = m_distantLightShadowPass->getFramebuffer()->getDepthBuffer();
 
 		// [NOTE]: how to set a light matrix for distant light shadow that light's postion will not effect shadow
 		distLightCam.setPosition(lightEnv.DirectionalLight.Position);
@@ -125,6 +127,8 @@ namespace pio
 
 		lightEnv.DirectionalLightShadowData.ViewMat = distLightCam.viewMat();
 		lightEnv.DirectionalLightShadowData.PrjMat = distLightCam.orthoMat();
+		lightEnv.DirectionalLightShadowData.SdMapSize = distLightDepthBuf->getWidth();
+		lightEnv.DirectionalLightShadowData.FrustumSize = distLightCam.size();
 
 		FillPointLightShadowData(camera, m_pointLightShadowPass->getFramebuffer(), lightEnv);
 

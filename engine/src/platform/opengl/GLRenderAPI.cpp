@@ -770,7 +770,7 @@ namespace pio
 		if (!pass)
 			return;
 
-		Ref<FrameBuffer> frameBuffer = pass->getSpecification().FrameBuffer;
+		Ref<FrameBuffer> frameBuffer = pass->getFramebuffer();
 		const RenderState &state = pass->getState();
 
 		frameBuffer->bind();
@@ -786,8 +786,8 @@ namespace pio
 	{
 		if (!pass)
 			return;
-
-		pass->getSpecification().FrameBuffer->unbind();
+		
+		pass->getFramebuffer()->unbind();
 
 		Viewport vp = restoreViewport();
 		commitViewport(vp);

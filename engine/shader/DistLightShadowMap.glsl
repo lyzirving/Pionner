@@ -7,6 +7,7 @@
 precision mediump float;
 
 #include <Skeleton.glslh>
+#include <Lighting.glslh>
 
 layout (location = 0) in vec3  a_pos;
 layout (location = 1) in vec3  a_normal;
@@ -15,12 +16,6 @@ layout (location = 3) in vec3  a_binormal;
 layout (location = 4) in vec2  a_texcoord;
 layout (location = 5) in vec4  a_weights;
 layout (location = 6) in uvec4 a_boneIds;
-
-layout (std140) uniform SdMatrices
-{
-	mat4 ViewMat;
-	mat4 PrjMat;
-} u_sdMatrices;
 
 uniform bool u_playAnimation;
 uniform bool u_bGpuAnimated;

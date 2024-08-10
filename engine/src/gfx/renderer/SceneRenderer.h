@@ -77,7 +77,7 @@ namespace pio
 		// default pass, no frame buffer attached
 		Ref<RenderPass> m_screenPass;
 
-		glm::uvec2 m_shadowBufferSize{ 0 }, m_colorBufferSize{ 0 };
+		glm::uvec2 m_colorBufferSize{ 0 };
 	};
 }
 

@@ -14,7 +14,8 @@ namespace pio
 		//Light color, each component should be in [0, 1]
 		glm::vec3 Radiance{ 0.f };
 		float Intensity{ 0.f };
-		float Bias{ 0.0005f };
+		float Bias{ 0.05f };
+		float NormalBias{ 0.4 };
 		int SdMode{ ShadowMode_Soft };
 		bool CastShadow{ true };
 		float SdIntensity{ 1.f };//Shadow intensity
@@ -35,7 +36,9 @@ namespace pio
 		PIO_UNIFORM_STRUCT_DECLARE(DirectionalLightShadowData)
 
 		glm::mat4 ViewMat{1.f};
-		glm::mat4 PrjMat{ 1.f };		
+		glm::mat4 PrjMat{ 1.f };
+		float SdMapSize{ 0.f };
+		float FrustumSize{ 0.f };
 
 		DirectionalLightShadowData() {}
 	};

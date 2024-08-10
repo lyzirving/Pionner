@@ -105,7 +105,8 @@ namespace pio
 		glm::vec3 Direction{ 1.f, 0.f, 0.f };
 		glm::vec3 Radiance{ 0.0f, 0.0f, 0.0f };	
 		float Intensity{ 0.0f };
-		float Bias{ 0.0005f };
+		float Bias{ 0.05f };
+		float NormalBias{ 0.4f };
 		int SdMode{ ShadowMode_Soft };
 		bool CastShadow{ true };
 		float SdIntensity{ 1.f };

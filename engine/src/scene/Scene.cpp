@@ -66,6 +66,7 @@ namespace pio
 		sceneData.Radiance = lightComp.Radiance;
 		sceneData.Intensity = lightComp.Intensity;
 		sceneData.Bias = lightComp.Bias;
+		sceneData.NormalBias = lightComp.NormalBias;
 		sceneData.SdMode = lightComp.SdMode;
 		sceneData.CastShadow = lightComp.CastShadow;
 		sceneData.SdIntensity = lightComp.SdIntensity;
@@ -340,6 +341,7 @@ namespace pio
 			lightComp.Intensity = m_lightEnv.DirectionalLight.Intensity;
 			lightComp.SdIntensity = m_lightEnv.DirectionalLight.SdIntensity;
 			lightComp.Bias = m_lightEnv.DirectionalLight.Bias;
+			lightComp.NormalBias = m_lightEnv.DirectionalLight.NormalBias;
 			lightComp.CastShadow = m_lightEnv.DirectionalLight.CastShadow;
 
 			auto &rlComp = ent->getComponent<RelationshipComponent>();

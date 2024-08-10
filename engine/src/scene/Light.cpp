@@ -14,6 +14,7 @@ namespace pio
 		block.pushBack("Radiance", UniformBlock::CreateData(UniformDataType::Vec3, "Radiance"));
 		block.pushBack("Intensity", UniformBlock::CreateData(UniformDataType::Float, "Intensity"));
 		block.pushBack("Bias", UniformBlock::CreateData(UniformDataType::Float, "Bias"));
+		block.pushBack("NormalBias", UniformBlock::CreateData(UniformDataType::Float, "NormalBias"));
 		block.pushBack("SdMode", UniformBlock::CreateData(UniformDataType::Int, "SdMode"));
 		block.pushBack("CastShadow", UniformBlock::CreateData(UniformDataType::Bool, "CastShadow"));
 		block.pushBack("SdIntensity", UniformBlock::CreateData(UniformDataType::Float, "SdIntensity"));
@@ -26,7 +27,9 @@ namespace pio
 	{
 		UniformBlock block;
 		block.pushBack("ViewMat", UniformBlock::CreateData(UniformDataType::Mat4, "ViewMat"));
-		block.pushBack("PrjMat", UniformBlock::CreateData(UniformDataType::Mat4, "PrjMat"));		
+		block.pushBack("PrjMat", UniformBlock::CreateData(UniformDataType::Mat4, "PrjMat"));
+		block.pushBack("SdMapSize", UniformBlock::CreateData(UniformDataType::Float, "SdMapSize"));
+		block.pushBack("FrustumSize", UniformBlock::CreateData(UniformDataType::Float, "FrustumSize"));
 		block.calculate();
 		//LOGD("block DirectionalLightShadowData byte used[%u]", block.getByteUsed());
 		return block;
@@ -113,6 +116,9 @@ namespace pio
 		auto biasUD = Block.m_blockItems.get("Bias");
 		Block.m_buffer->writeAt(&Bias, sizeof(float), biasUD->getAlignOffset());
 
+		auto normalBiasUD = Block.m_blockItems.get("NormalBias");
+		Block.m_buffer->writeAt(&NormalBias, sizeof(float), normalBiasUD->getAlignOffset());
+
 		auto sdModeUD = Block.m_blockItems.get("SdMode");
 		Block.m_buffer->writeAt(&SdMode, sizeof(int32_t), sdModeUD->getAlignOffset());
 
@@ -136,6 +142,12 @@ namespace pio
 
 		auto prjMatUD = Block.m_blockItems.get("PrjMat");
 		Block.m_buffer->writeAt(glm::value_ptr(PrjMat), sizeof(glm::mat4), prjMatUD->getAlignOffset());
+
+		auto sdMapUD = Block.m_blockItems.get("SdMapSize");
+		Block.m_buffer->writeAt(&SdMapSize, sizeof(float), sdMapUD->getAlignOffset());
+
+		auto frustumSizeUD = Block.m_blockItems.get("FrustumSize");
+		Block.m_buffer->writeAt(&FrustumSize, sizeof(float), frustumSizeUD->getAlignOffset());
 	}
 
 	void PointLight::serialize()

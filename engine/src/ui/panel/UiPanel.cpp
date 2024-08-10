@@ -285,7 +285,7 @@ namespace pio
 			ImGui::Text("  Realtime Shadows");
 
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("    Strength");
+			ImGui::Text("    Strength   ");
 			ImGui::SameLine();
 			auto remain = ImGui::GetContentRegionAvail();
 			ImGui::PushItemWidth(remain.x);
@@ -293,11 +293,19 @@ namespace pio
 			ImGui::PopItemWidth();
 
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("    Bias    ");
+			ImGui::Text("    Bias       ");
 			ImGui::SameLine();
 			remain = ImGui::GetContentRegionAvail();
 			ImGui::PushItemWidth(remain.x);
-			ImGui::DragFloat("##Sd_Bias", &comp.Bias, 0.0001f, 0.f, 0.05f, "%.4f");
+			ImGui::DragFloat("##Sd_Bias", &comp.Bias, 0.01f, 0.f, 2.f, "%.2f");
+			ImGui::PopItemWidth();
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("    Normal Bias");
+			ImGui::SameLine();
+			remain = ImGui::GetContentRegionAvail();
+			ImGui::PushItemWidth(remain.x);
+			ImGui::DragFloat("##Normal_Bias", &comp.NormalBias, 0.01f, 0.f, 3.f, "%.2f");
 			ImGui::PopItemWidth();
 		}
 	}
