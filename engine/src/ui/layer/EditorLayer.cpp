@@ -126,10 +126,8 @@ namespace pio
 						onDrawScenePanel(select);
 						break;
 					case EntityClass::DirectionalLight:
-						UiPanel::DrawLightPanel(select);
-						break;
 					case EntityClass::PointLight:
-						onDrawPointLightPanel(select);
+						UiPanel::DrawLightPanel(select);					
 						break;
 					case EntityClass::MeshSource:
 						onDrawMeshSourcePanel(select);
@@ -182,38 +180,6 @@ namespace pio
 						GDebugger::Get()->clear(GDebug_Line);
 					}
 				}
-			}
-		}
-	}
-
-	void EditorLayer::onDrawPointLightPanel(Ref<Entity> &ent)
-	{
-		if (ent && ent->hasComponent<PointLightComponent>())
-		{
-			auto& lightComp = ent->getComponent<PointLightComponent>();	
-			auto &transComp = ent->getComponent<TransformComponent>();
-			const auto& name = ent->getName();
-			std::string nLabel = (std::stringstream() << "##" << ent->getName() << "_name").str();
-			std::string vLabel = (std::stringstream() << "##" << ent->getName() << "_visibility").str();
-
-			const float rowWidth = m_layoutParam.Viewport.w();
-			bool bVisible{ true };//TODO
-			UiPanel::DrawNamePanel(nLabel.c_str(), name, vLabel.c_str(), bVisible, rowWidth);
-			glm::vec3 old = transComp.Transform.Position;
-			UiPanel::DrawTransformPanel(transComp.Transform);			
-			std::string attrName = "Attrbute##" + name;
-			if (ImGui::CollapsingHeader(attrName.c_str(), ImGuiUtils::Flag_Collapse_Header))
-			{
-				std::string shadow = "CastShadow##" + name;
-				ImGui::Checkbox(shadow.c_str(), &lightComp.CastShadow);
-				std::string intensity = "Intensity##" + name;
-				ImGui::DragFloat(intensity.c_str(), &lightComp.Intensity, 0.01f, 0.f, 10.f, "%.2f");
-				std::string radius = "Radius##Lighting_" + name;
-				ImGui::DragFloat(radius.c_str(), &lightComp.Radius, 0.01f, 0.f, 10.f, "%.2f");
-				std::string falloff = "Falloff##" + name;
-				ImGui::DragFloat(falloff.c_str(), &lightComp.Falloff, 0.01f, 0.f, 5.f, "%.2f");
-				std::string radiance = "Radiance##" + name;
-				ImGui::DragFloat3(radiance.c_str(), glm::value_ptr(lightComp.Radiance), 0.1f, 0.f, 1000.f, "%.1f");
 			}
 		}
 	}

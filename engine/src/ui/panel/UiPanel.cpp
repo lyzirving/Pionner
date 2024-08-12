@@ -260,7 +260,7 @@ namespace pio
 	{
 		auto& comp = entity->getComponent<DirectionalLightComponent>();
 		ImGui::AlignTextToFramePadding();
-		ImGui::Text("Radiance   ");
+		ImGui::Text("Color      ");
 		ImGui::SameLine();
 		ImGui::ColorEdit3("##Light_Radiance", &comp.Radiance.r);
 
@@ -310,7 +310,38 @@ namespace pio
 		}
 	}
 
-	void UiPanel::DrawPointLightPanel(Ref<Entity>& entity)
+	void UiPanel::DrawPointLightPanel(Ref<Entity> &entity)
 	{
+		auto &comp = entity->getComponent<PointLightComponent>();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Range      ");
+		ImGui::SameLine();
+		ImGui::DragFloat("##Light_Range", &comp.Radius, 0.1f, 0.1f, 500.f, "%.1f");
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Color      ");
+		ImGui::SameLine();
+		ImGui::ColorEdit3("##Light_Radiance", &comp.Radiance.r);
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Mode       ");
+		ImGui::SameLine();
+		ImGui::InputText("##Light_Mode", "Real Time", 10, ImGuiInputTextFlags_ReadOnly);
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Intensity  ");
+		ImGui::SameLine();
+		ImGui::DragFloat("##Light_Intensity", &comp.Intensity, 0.02f, 0.1f, 100.f, "%.2f");
+
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Falloff    ");
+		ImGui::SameLine();
+		ImGui::DragFloat("##Light_Falloff", &comp.Falloff, 0.02f, 0.1f, 100.f, "%.2f");
+
+		int sdMode = ShadowMode_None;
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Shadow Type");
+		ImGui::SameLine();
+		ImGui::Combo("##Shadow_Type", &sdMode, ShadowModeNames, ShadowMode_Num);
 	}
 }

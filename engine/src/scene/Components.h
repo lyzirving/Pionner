@@ -120,7 +120,7 @@ namespace pio
 		float MinRadius{ 1.f };
 		float Radius{ 10.f };
 		float SourceSize{ 0.5f }; // For PCSS
-		bool CastShadow{ true };
+		bool CastShadow{ false };
 		float Falloff{ 1.0f };
 	};
 

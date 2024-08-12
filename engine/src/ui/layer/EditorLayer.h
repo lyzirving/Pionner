@@ -19,7 +19,6 @@ namespace pio
 
 	private:
 		void onDrawScenePanel(Ref<Entity> &ent);
-		void onDrawPointLightPanel(Ref<Entity> &ent);
 		void onDrawMeshSourcePanel(Ref<Entity> &ent);
 		void onDrawMeshPanel(Ref<Entity> &ent);
 

@@ -23,7 +23,7 @@ namespace pio
 	{
 		auto start = TimeUtil::CurrentTimeMs();
 		auto* p = ShaderLibrary::Get();
-		p->add(ShaderProgram::MaterialPreview, ShaderCompiler::Compile("shader/MterialPreview.glsl"));
+		p->add(ShaderProgram::MaterialPreview, ShaderCompiler::Compile("shader/MaterialPreview.glsl"));
 		p->add(ShaderProgram::GeometryPass, ShaderCompiler::Compile("shader/GeometryPass.glsl"));
 		p->add(ShaderProgram::LightingPass, ShaderCompiler::Compile("shader/LightingPass.glsl"));
 		p->add(ShaderProgram::Sprite, ShaderCompiler::Compile("shader/Sprite.glsl"));
