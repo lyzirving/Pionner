@@ -2,7 +2,7 @@
 
 #include "MathLib.h"
 
-#include "scene/Camera.h"
+#include "gfx/core/Camera.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

@@ -6,7 +6,7 @@
 
 #include "scene/Scene.h"
 #include "scene/Components.h"
-#include "scene/Skybox.h"
+#include "gfx/core/Skybox.h"
 
 #include "animation/Animation.h"
 #include "animation/Animator.h"

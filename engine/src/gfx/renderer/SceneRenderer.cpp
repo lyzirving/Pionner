@@ -6,8 +6,8 @@
 
 #include "scene/Scene.h"
 #include "scene/TierSetting.h"
-#include "scene/Skybox.h"
 
+#include "gfx/core/Skybox.h"
 #include "gfx/struct/MeshBuilder.h"
 #include "gfx/struct/MaterialAsset.h"
 

@@ -1,17 +1,10 @@
-#ifndef __PIONNER_SCENE_FRUSTUM_H__
-#define __PIONNER_SCENE_FRUSTUM_H__
+#ifndef __PIONNER_GFX_CORE_FRUSTUM_H__
+#define __PIONNER_GFX_CORE_FRUSTUM_H__
 
-#include "core/Base.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {
-	enum ProjectionType : uint8_t
-	{
-		ProjectionType_Perspective,
-		ProjectionType_Orthographic,
-		ProjectionType_Num
-	};
-
 	class Frustum
 	{
 	public:

@@ -11,9 +11,9 @@
 #include "Application.h"
 #include "asset/AssetsManager.h"
 #include "core/utils/Profiler.h"
-#include "scene/Camera.h"
+#include "gfx/core/Camera.h"
 
-#include "scene/Skybox.h"
+#include "gfx/core/Skybox.h"
 
 #include "gfx/struct/MaterialAsset.h"
 #include "gfx/struct/ShaderLibrary.h"

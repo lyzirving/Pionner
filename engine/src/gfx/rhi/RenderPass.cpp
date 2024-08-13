@@ -9,7 +9,7 @@
 #include "platform/opengl/GLRenderPass.h"
 #include "asset/AssetsManager.h"
 
-#include "scene/Skybox.h"
+#include "gfx/core/Skybox.h"
 #include "scene/Light.h"
 
 #ifdef LOCAL_TAG

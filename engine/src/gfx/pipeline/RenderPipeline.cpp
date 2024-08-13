@@ -1,28 +1,47 @@
 #include "RenderPipeline.h"
+#include "RenderPipeline.h"
+#include "RenderPipeline.h"
+#include "RenderPipeline.h"
+#include "RenderPipeline.h"
+#include "RenderPipeline.h"
+#include "RenderPipeline.h"
 
 namespace pio
 {
 	void RenderPipeline::onRender()
 	{
-		beforeRendering();
-		renderOpaque();
-		renderTranparent();
-		postRendering();
+		beginFrameRendering();
+
+		sortCameras();
+
+		beginCameraRendering();
+		renderSingleCamera();
+		endCameraRendering();
+
+		endFrameRendering();
 	}
 
-	void RenderPipeline::beforeRendering()
+	void RenderPipeline::beginFrameRendering()
 	{
 	}
 
-	void RenderPipeline::renderOpaque()
+	void pio::RenderPipeline::endFrameRendering()
 	{
 	}
 
-	void RenderPipeline::renderTranparent()
+	void pio::RenderPipeline::sortCameras()
 	{
 	}
 
-	void RenderPipeline::postRendering()
+	void pio::RenderPipeline::beginCameraRendering()
+	{
+	}
+
+	void pio::RenderPipeline::renderSingleCamera()
+	{
+	}
+
+	void pio::RenderPipeline::endCameraRendering()
 	{
 	}
 }

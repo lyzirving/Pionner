@@ -1,5 +1,5 @@
-#ifndef __PIONNER_SCENE_SKYBOX_H__
-#define __PIONNER_SCENE_SKYBOX_H__
+#ifndef __PIONNER_GFX_CORE_SKYBOX_H__
+#define __PIONNER_GFX_CORE_SKYBOX_H__
 
 #include "gfx/struct/Image.h"
 #include "gfx/renderer/RenderData.h"

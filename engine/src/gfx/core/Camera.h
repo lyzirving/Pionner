@@ -1,9 +1,9 @@
-#ifndef __PIONNER_SCENE_CAMERA_H__
-#define __PIONNER_SCENE_CAMERA_H__
+#ifndef __PIONNER_GFX_CORE_CAMERA_H__
+#define __PIONNER_GFX_CORE_CAMERA_H__
 
-#include "PerspectiveFrustum.h"
-#include "OrthographicFrustum.h"
 #include "Skybox.h"
+#include "OrthographicFrustum.h"
+#include "PerspectiveFrustum.h"
 
 #include "asset/Asset.h"
 

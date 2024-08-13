@@ -14,10 +14,13 @@ namespace pio
 		virtual void onRender();
 
 	protected:
-		virtual void beforeRendering();
-		virtual void renderOpaque();
-		virtual void renderTranparent();
-		virtual void postRendering();
+		void beginFrameRendering();
+		void endFrameRendering();
+
+		void sortCameras();
+		void beginCameraRendering();
+		void renderSingleCamera();
+		void endCameraRendering();
 	};
 }
 
