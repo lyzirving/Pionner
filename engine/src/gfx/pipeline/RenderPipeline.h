@@ -3,24 +3,27 @@
 
 #include "core/Base.h"
 
-namespace pio 
+namespace pio
 {
+	class Camera;
+	class RenderContext;
+
 	class RenderPipeline
 	{
 	public:
 		RenderPipeline() {}
 		~RenderPipeline() = default;
 
-		virtual void onRender();
+		virtual void onRender(Ref<RenderContext> &ctx, std::vector<Ref<Camera>>& cameras);
 
 	protected:
-		void beginFrameRendering();
-		void endFrameRendering();
+		void beginFrameRendering(Ref<RenderContext>& ctx);
+		void endFrameRendering(Ref<RenderContext>& ctx);
 
-		void sortCameras();
-		void beginCameraRendering();
-		void renderSingleCamera();
-		void endCameraRendering();
+		void sortCameras(std::vector<Ref<Camera>>& cameras);
+		void beginCameraRendering(Ref<RenderContext>& ctx, Ref<Camera>& camera);
+		void renderSingleCamera(Ref<RenderContext>& ctx, Ref<Camera>& camera);
+		void endCameraRendering(Ref<RenderContext>& ctx, Ref<Camera>& camera);
 	};
 }
 

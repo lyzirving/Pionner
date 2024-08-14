@@ -26,7 +26,7 @@ namespace pio
 		CameraData(const std::string &name);
 		~CameraData();
 
-		void set(const Camera &camera);
+		void setup(const Camera &camera);
 
 	protected:
 		virtual void initData() override;

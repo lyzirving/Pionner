@@ -5,6 +5,7 @@
 #include <condition_variable>
 
 #include "core/Thread.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {

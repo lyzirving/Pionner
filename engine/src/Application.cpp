@@ -4,7 +4,6 @@
 #include "core/utils/Profiler.h"
 #include "gfx/core/Camera.h"
 
-#include "gfx/renderer/RenderCore.h"
 #include "gfx/struct/MaterialLibrary.h"
 #include "gfx/debug/GDebugger.h"
 
@@ -111,7 +110,6 @@ namespace pio
 			// Wait for render thread to finish renderering
 			m_renderThread.blockUntilRenderComplete();			
 			m_renderThread.nextFrame();
-			RenderCore::Get()->swapQueues();
 			// Start rendering previous frame in render thread
 			m_renderThread.kick();
 			//---------------------------------------------------------

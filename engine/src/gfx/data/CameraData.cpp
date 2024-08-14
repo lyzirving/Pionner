@@ -86,7 +86,7 @@ namespace pio
 	{
 	}
 
-	void CameraData::set(const Camera &camera)
+	void CameraData::setup(const Camera &camera)
 	{
 		m_uniformData.ViewMat = camera.viewMat();
 		m_uniformData.PrjMat = camera.prjMat();

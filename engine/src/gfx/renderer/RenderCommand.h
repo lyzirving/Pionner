@@ -5,16 +5,9 @@
 
 namespace pio
 {
-	class CRenderAPI;
-	class UniformBuffer;
-
 	class RenderCommand
 	{
 	public:
-		static void UploadData(void *data, Ref<UniformBuffer> &buffer);
-
-	private:
-		static CRenderAPI *k_API;
 	};
 }
 
