@@ -4,6 +4,7 @@
 #include "core/utils/Profiler.h"
 #include "gfx/core/Camera.h"
 
+#include "gfx/renderer/RenderCore.h"
 #include "gfx/struct/MaterialLibrary.h"
 #include "gfx/debug/GDebugger.h"
 
@@ -29,6 +30,12 @@
 namespace pio
 {
 	Application *Application::s_app = nullptr;
+
+	Application *Application::Get() { return s_app; }
+
+	Window *Application::MainWindow() { return s_app->m_window.get(); }
+
+	GraphicsContext *Application::GfxContext() { return s_app->m_graphics.get(); }
 
 	Application::Application()
 	{
@@ -90,7 +97,7 @@ namespace pio
 
 	void Application::run()
 	{
-		m_renderThread.run();
+		m_renderThread.run(Renderer::RenderLoop);
 		// pump() will block until the first frame has been done
 		m_renderThread.pump();
 
@@ -102,8 +109,9 @@ namespace pio
 		{
 			//------- Wait for render thread to finish commands -------
 			// Wait for render thread to finish renderering
-			m_renderThread.blockUntilRenderComplete();
+			m_renderThread.blockUntilRenderComplete();			
 			m_renderThread.nextFrame();
+			RenderCore::Get()->swapQueues();
 			// Start rendering previous frame in render thread
 			m_renderThread.kick();
 			//---------------------------------------------------------

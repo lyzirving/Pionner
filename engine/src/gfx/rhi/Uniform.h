@@ -257,6 +257,8 @@ namespace pio
 		friend struct PointLightShadowData;
 		friend struct CameraUD;
 		friend struct BoneTransformUD;
+
+		friend struct CCameraUD;
 	};
 
 	template<>

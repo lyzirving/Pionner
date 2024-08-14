@@ -1,4 +1,5 @@
 #include "RenderThread.h"
+#include "RenderThread.h"
 
 #include "Renderer.h"
 
@@ -14,13 +15,13 @@ namespace pio
 		m_thread.reset(nullptr);
 	}
 
-	void RenderThread::run()
+	void RenderThread::run(std::function<void(RenderThread *)> func)
 	{
-		if (m_thread->isRunning())
+		if(m_thread->isRunning())
 			return;
 
 		m_thread->setRunning(true);
-		m_thread->dispatch(Renderer::RenderLoop, this);
+		m_thread->dispatch(func, this);
 	}
 
 	void RenderThread::terminate()

@@ -31,9 +31,9 @@ namespace pio
 		void run();
 
 	public:
-		static Application *Get()        { return s_app; }
-		static Window *MainWindow() { return s_app->m_window.get(); }
-		static GraphicsContext *GfxContext() { return s_app->m_graphics.get(); }
+		static Application *Get();
+		static Window *MainWindow();
+		static GraphicsContext *GfxContext();
 
 	private:
 		static Application *s_app;

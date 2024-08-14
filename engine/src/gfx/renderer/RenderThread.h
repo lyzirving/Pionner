@@ -22,8 +22,8 @@ namespace pio
 	public:
 		RenderThread(const std::string &name = "RenderThread");
 		~RenderThread();
-
-		void run();
+		
+		void run(std::function<void(RenderThread *)> func);
 		void terminate();
 
 		void wait(State waitForState);
