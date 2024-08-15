@@ -8,16 +8,21 @@ namespace pio
 	class GLRenderAPI2 : public CRenderAPI
 	{
 	public:
-		GLRenderAPI2(CRenderApiType type);
+		GLRenderAPI2(BackendFlags type);
 		~GLRenderAPI2() = default;
 
-		virtual bool init() override;
+		virtual bool setupBackend() override;
+		virtual bool setupUiBackend(void* nativeWindow = nullptr) override;
 		virtual void shutdown() override;
 
-		virtual CRenderApiType type() const override { return m_type; }
+		virtual void beginFrame(RenderContext& ctx) override;
+		virtual void endFrame(RenderContext& ctx) override;
+
+		virtual BackendFlags type() const override { return m_type; }
 
 	private:
-		const CRenderApiType m_type;
+		const BackendFlags m_type;
+		bool m_bBackend{false}, m_bUiBackend{ false };
 	};
 }
 

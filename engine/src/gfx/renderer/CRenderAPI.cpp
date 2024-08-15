@@ -9,11 +9,11 @@
 
 namespace pio
 {
-	Ref<CRenderAPI> CRenderAPI::Create(CRenderApiType type)
+	Ref<CRenderAPI> CRenderAPI::Create(BackendFlags type)
 	{
 		switch(type)
 		{
-			case CRenderApiType_OpenGL:
+			case Backend_OpenGL:
 				return CreateRef<GLRenderAPI2>(type);
 			default:
 				LOGE("RenderAPI type[%u] has not been implemented", type);

@@ -29,8 +29,8 @@ namespace pio
 	void RuntimeLayer::onAttach()
 	{	
 		float aspectRatio = (m_layoutParam.Ratio.Right - m_layoutParam.Ratio.Left) / (m_layoutParam.Ratio.Bottom - m_layoutParam.Ratio.Top);
-		uint32_t w = Application::MainWindow()->getWidth();
-		uint32_t h = Application::MainWindow()->getHeight();
+		uint32_t w = Application::MainWindow()->width();
+		uint32_t h = Application::MainWindow()->height();
 		m_layoutParam.calculate(w, h);		
 		
 		m_scene = AssetsManager::Get()->CreateRuntimeAssets<Scene>(true);

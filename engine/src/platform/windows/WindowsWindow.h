@@ -14,21 +14,27 @@ namespace pio
 	{
 	public:
 		WindowsWindow(const WindowProps &prop);
-		~WindowsWindow();
+		~WindowsWindow() = default;
 
 	public:
+		virtual bool init() override;
+		virtual void shutdown() override;
+
+		virtual void makeCurrent() override;
+		virtual void swapBuffer() override;
+
 		virtual void pollEvents() override;
 		virtual void setEventCallback(const EvtCbFn &callback) override { m_data.cbFunc = callback; }
-		virtual void getWindowPos(int32_t &x, int32_t &y) override;
-
-		virtual uint32_t getWidth()  const override  { return m_data.m_width; }
-		virtual uint32_t getHeight() const override { return m_data.m_height; }
-		virtual void *getNativeWindow() const override { return m_window; }
-		virtual glm::vec2 getCursorPos() const override { return m_data.m_cursorPos; }
-		virtual bool isVSync() const override { return m_data.m_vsync; }
+		virtual glm::ivec2 position() const override;		
+		virtual glm::vec2 cursor() const override { return m_data.m_cursorPos; }
+		virtual uint32_t width()  const override  { return m_data.m_width; }
+		virtual uint32_t height() const override { return m_data.m_height; }
+		virtual void* nativeWindow() const override { return m_window; }	
 
 		virtual void setVSync(bool enabled) override;
 		virtual void setCursorMode(CursorMode mode) override;
+
+		virtual bool isVSync() const override { return m_data.m_vsync; }
 
 	public:
 		static void windowErrorCallback(int error, const char *description);
@@ -41,10 +47,6 @@ namespace pio
 		static void windowCursorPosCallback(GLFWwindow *window, double xPos, double yPos);
 
 	private:
-		void init(const WindowProps &prop);
-		void shutdown();
-
-	private:
 		struct WindowData
 		{
 			std::string  m_title{};
@@ -55,6 +57,7 @@ namespace pio
 		};
 
 	private:
+		WindowProps m_props{};
 		GLFWwindow *m_window{ nullptr };
 		WindowData m_data{};
 		CursorMode m_cursorMode{ CursorMode::Normal };

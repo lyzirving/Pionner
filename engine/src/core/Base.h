@@ -114,6 +114,7 @@ namespace pio
 
 	#define PIO_ASSERT(check, fmt, ...)   { if(!(check)) { LOGE(fmt, __VA_ARGS__) } }
 	#define PIO_ASSERT_RETURN(check, fmt, ...) { if(!(check)) { LOGE(fmt, __VA_ARGS__) return; } }
+	#define PIO_ASSERT_RETURN_FALSE(check, fmt, ...) { if(!(check)) { LOGE(fmt, __VA_ARGS__) return false; } }
 	#define PIO_ASSERT_CONTINUE(check, fmt, ...) { if(!(check)) { LOGW(fmt, __VA_ARGS__) continue; } }
 
 	// Fill __VA_ARGS__ with std::placeholders::_1, std::placeholders::_2 or std::placeholders::_N 

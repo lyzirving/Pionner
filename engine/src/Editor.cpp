@@ -34,11 +34,11 @@ namespace pio
 
 	void Editor::onInit()
 	{		
-		WindowProps prop{ "Pionner", 1400, 720 };
+		WindowProps prop{ "Pionner", 1400, 720, Backend_OpenGL };
 		m_window = Window::create(prop);
 		m_window->setEventCallback(PIO_BIND_FN_SELF(Editor::onEvent, std::placeholders::_1));
 
-		m_renderCtx = CreateRef<RenderContext>(CRenderApiType_OpenGL, m_window);
+		m_renderCtx = CreateRef<RenderContext>(Backend_OpenGL, m_window);
 	}
 
 	void Editor::onQuit()
@@ -76,13 +76,26 @@ namespace pio
 
 		auto &renderThread = m_renderCtx->thread();
 		renderThread.run(PIO_BIND_FN_OTHER(RenderContext::renderLoop, m_renderCtx.get()));
+		// Block until the first frame has been done
+		renderThread.pump();
 
 		while(m_running)
 		{
-			EventBus::Get()->dispatch();
+			//------- Wait for render thread to finish commands -------
+			// Wait for render thread to finish renderering
+			renderThread.blockUntilRenderComplete();
+			renderThread.nextFrame();
+			m_renderCtx->swapQueues();
+			// Start rendering previous frame in render thread
+			renderThread.kick();
+			//---------------------------------------------------------
 
-			m_window->pollEvents();
+			EventBus::Get()->dispatch();
 		}
+
+		// NOTE: AssetsManager must be destroied in render thread,
+		//       because some assets rely on rendering context
+		renderThread.terminate();
 
 		onQuit();
 	}

@@ -6,9 +6,9 @@
 #include "window/event/KeyEvent.h"
 #include "window/event/MouseEvent.h"
 
-#include "gfx/rhi/RenderAPI.h"
-#include "gfx/renderer/Renderer.h"
 #include "gfx/renderer/RenderContext.h"
+
+#include "core/utils/Profiler.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -34,32 +34,91 @@ namespace pio
 		}
 	}
 
-	WindowsWindow::WindowsWindow(const WindowProps &prop)
+	WindowsWindow::WindowsWindow(const WindowProps &prop) : Window(), m_props(prop)
 	{
-		init(prop);
 	}
 
-	WindowsWindow::~WindowsWindow()
+	bool WindowsWindow::init()
 	{
-		shutdown();
+		m_data.m_title = m_props.Title;
+		m_data.m_width = m_props.Width;
+		m_data.m_height = m_props.Height;
+
+		if (s_GLFWWindowCount == 0)
+		{
+			int success = glfwInit();
+			PIO_ASSERT_RETURN_FALSE(success == GLFW_TRUE, "err! fail to init glfw[%d]", success);
+			glfwSetErrorCallback(windowErrorCallback);
+		}
+
+		if (m_props.Backend == Backend_OpenGL)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
+			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // 3.0+ only					
+		}
+
+		m_window = glfwCreateWindow(m_data.m_width, m_data.m_height, m_data.m_title.c_str(), nullptr, nullptr);
+		s_GLFWWindowCount++;
+		LOGD("create glfw window[%u]", s_GLFWWindowCount);
+
+		glfwSetWindowUserPointer(m_window, &m_data);
+		glfwSetWindowSizeCallback(m_window, windowSizeCallback);
+		glfwSetWindowCloseCallback(m_window, windowCloseCallback);
+		glfwSetKeyCallback(m_window, windowKeyCallback);
+		glfwSetCharCallback(m_window, windowCharCallback);
+		glfwSetMouseButtonCallback(m_window, windowMouseBtnCallback);
+		glfwSetScrollCallback(m_window, windowScrollCallback);
+		glfwSetCursorPosCallback(m_window, windowCursorPosCallback);
+		return true;
+	}
+
+	void WindowsWindow::shutdown()
+	{
+		if (m_window)
+		{
+			LOGD("destroy window[%u]", s_GLFWWindowCount);
+			glfwDestroyWindow(m_window);
+			m_window = nullptr;
+			s_GLFWWindowCount--;
+		}
+
+		if (s_GLFWWindowCount == 0)
+		{
+			LOGD("glfw terminate");
+			glfwTerminate();
+		}
+	}
+
+	void WindowsWindow::makeCurrent()
+	{
+		PIO_ASSERT_RETURN(m_window != nullptr, "err! GLFW window handle is null");
+		glfwMakeContextCurrent(m_window);
+	}
+
+	void WindowsWindow::swapBuffer()
+	{
+		PIO_ASSERT_RETURN(m_window != nullptr, "err! GLFW window handle is null");
+		uint64_t start{ PROFILER_TIME };
+		glfwSwapBuffers(m_window);
+		PROFILERD_DURATION(start, "SwapBuffer");
 	}
 
 	void WindowsWindow::pollEvents()
-	{
+	{	
 		glfwPollEvents();
 	}
 
-	void WindowsWindow::getWindowPos(int32_t &x, int32_t &y)
+	glm::ivec2 WindowsWindow::position() const
 	{
-		if(m_window)
+		glm::ivec2 pos{ 0 };
+		if (m_window)
 		{
-			glfwGetWindowPos(m_window, &x, &y);
+			glfwGetWindowPos(m_window, &pos.x, &pos.y);
 		}
-		else
-		{
-			LOGE("native window is invalid");
-			x = y = 0;
-		}
+		return pos;
 	}
 
 	void WindowsWindow::setVSync(bool enabled)
@@ -84,61 +143,6 @@ namespace pio
 				// force the window gain the focus when cursor is disabled
 				glfwFocusWindow(m_window);
 			}
-		}
-	}
-
-	void WindowsWindow::init(const WindowProps &prop)
-	{
-		m_data.m_title = prop.m_title;
-		m_data.m_width = prop.m_width;
-		m_data.m_height = prop.m_height;
-
-		if(s_GLFWWindowCount == 0)
-		{
-			int success = glfwInit();
-			PIO_ASSERT_RETURN(success == GLFW_TRUE, "fail to init glfw[%d], return!", success);
-			glfwSetErrorCallback(windowErrorCallback);
-		}
-
-	#if 0
-		if(m_ctx->backendType() == CRenderApiType_OpenGL)
-		{
-			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
-			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // 3.0+ only					
-		}
-	#endif // 0
-
-		m_window = glfwCreateWindow(m_data.m_width, m_data.m_height, m_data.m_title.c_str(), nullptr, nullptr);
-		s_GLFWWindowCount++;
-		LOGD("create glfw window[%u]", s_GLFWWindowCount);
-
-		glfwSetWindowUserPointer(m_window, &m_data);
-		glfwSetWindowSizeCallback(m_window, windowSizeCallback);
-		glfwSetWindowCloseCallback(m_window, windowCloseCallback);
-		glfwSetKeyCallback(m_window, windowKeyCallback);
-		glfwSetCharCallback(m_window, windowCharCallback);
-		glfwSetMouseButtonCallback(m_window, windowMouseBtnCallback);
-		glfwSetScrollCallback(m_window, windowScrollCallback);
-		glfwSetCursorPosCallback(m_window, windowCursorPosCallback);
-	}
-
-	void WindowsWindow::shutdown()
-	{
-		if(m_window)
-		{
-			LOGD("destroy window[%u]", s_GLFWWindowCount);
-			glfwDestroyWindow(m_window);
-			m_window = nullptr;
-			s_GLFWWindowCount--;
-		}
-
-		if(s_GLFWWindowCount == 0)
-		{
-			LOGD("glfw terminate");
-			glfwTerminate();
 		}
 	}
 
@@ -201,8 +205,10 @@ namespace pio
 
 	void WindowsWindow::windowMouseBtnCallback(GLFWwindow *window, int button, int action, int mods)
 	{
-		if(Renderer::UI_HasFocus(UiFocus::MouseCapture))
+	#if 0
+		if (Renderer::UI_HasFocus(UiFocus::MouseCapture))
 			return;
+	#endif // 0		
 
 		WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
 		switch(action)

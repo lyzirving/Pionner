@@ -61,7 +61,7 @@ namespace pio
 	{
 		m_globalState = m_defaultState;
 
-		commitViewport(0, 0, Application::MainWindow()->getWidth(), Application::MainWindow()->getHeight());
+		commitViewport(0, 0, Application::MainWindow()->width(), Application::MainWindow()->height());
 		
 		GLState::SetClear(m_globalState.Clear);
 		submitRenderState(m_globalState);	
@@ -867,7 +867,7 @@ namespace pio
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)Application::MainWindow()->getNativeWindow(), true);
+		ImGui_ImplGlfw_InitForOpenGL((GLFWwindow *)Application::MainWindow()->nativeWindow(), true);
 		ImGui_ImplOpenGL3_Init(glslVersion);
 		LOGD("init ImGui");
 	}

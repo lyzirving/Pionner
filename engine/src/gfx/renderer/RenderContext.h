@@ -13,13 +13,15 @@ namespace pio
 	class RenderContext
 	{
 	public:	
-		RenderContext(CRenderApiType type, Ref<Window> &window);
+		RenderContext(BackendFlags type, Ref<Window> &window);
 		~RenderContext() = default;
 
 		void renderLoop();
 
+		Ref<Window>& window()  { return m_window; }
 		RenderThread& thread() { return m_thread; }
-		CRenderApiType backendType() const { return m_api->type(); }
+		BackendFlags backendType() const { return m_api->type(); }
+		uint64_t frame() const { return m_frameNum; }
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
 
 		// Submmit garbage collection task which will be executed before the 
@@ -73,9 +75,6 @@ namespace pio
 		static constexpr uint32_t k_queueNum = 2;		
 
 	protected:
-		void initialize();
-		void shutdown();
-
 		void waitAndRender();
 
 		uint32_t submitIdx() const { return m_submitIdx; }
@@ -93,7 +92,9 @@ namespace pio
 		std::atomic<uint32_t> m_submitIdx{ 0 };
 		CommandQueue m_cmdQueue[k_queueNum];
 		CommandQueue m_taskQueue[k_queueNum];
-		CommandQueue m_garbageQueue[k_queueNum];		
+		CommandQueue m_garbageQueue[k_queueNum];
+
+		uint64_t m_frameNum{ 0 };
 	};
 }
 

@@ -1,7 +1,9 @@
 #include "RenderThread.h"
-#include "RenderThread.h"
 
-#include "Renderer.h"
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "RenderThread"
 
 namespace pio 
 {
@@ -61,7 +63,6 @@ namespace pio
 	void RenderThread::nextFrame()
 	{
 		m_threadFrame++;
-		Renderer::SwapCmdQueues();
 	}
 
 	void RenderThread::blockUntilRenderComplete()

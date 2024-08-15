@@ -5,11 +5,11 @@
 
 namespace pio
 {
-	enum CRenderApiType : uint8_t
+	enum BackendFlags : uint8_t
 	{
-		CRenderApiType_OpenGL = 0,
-		CRenderApiType_Vulkan,
-		CRenderApiType_Num
+		Backend_OpenGL = 0,
+		Backend_Vulkan,
+		Backend_Num
 	};
 
 	enum ProjectionType : uint8_t

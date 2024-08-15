@@ -89,8 +89,8 @@ namespace pio
 		m_gizmoTransform = CreateRef<GizmoTransform>();
 		m_gizmoRotator = CreateRef<GizmoRotator>();
 
-		onWindowSizeChange(Application::MainWindow()->getWidth(),
-						   Application::MainWindow()->getHeight());
+		onWindowSizeChange(Application::MainWindow()->width(),
+						   Application::MainWindow()->height());
 	}
 
 	void MotionControlLayer::onDetach()
@@ -201,7 +201,7 @@ namespace pio
 		bool bUsing = !MotionController::bTarget(MotionTarget_None);
 		if (!bUsing && MotionController::bClick(TimeUtil::CurrentTimeMs(), m_downTime))
 		{
-			bUsing = onHandleClick(Application::MainWindow()->getCursorPos());
+			bUsing = onHandleClick(Application::MainWindow()->cursor());
 		}
 
 		if (MotionController::bTarget(MotionTarget_Vision)) { Application::MainWindow()->setCursorMode(CursorMode::Normal); }
@@ -230,7 +230,7 @@ namespace pio
 
 	bool MotionControlLayer::onMouseScrolled(Event &event)
 	{
-		glm::vec2 cursor = Application::MainWindow()->getCursorPos();
+		glm::vec2 cursor = Application::MainWindow()->cursor();
 		bool inside = m_circleLayoutParam.Position.contain((uint32_t)cursor.x, (uint32_t)cursor.y);
 		if (inside)
 		{

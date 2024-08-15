@@ -72,8 +72,8 @@ namespace pio
 
 	void EditorLayer::onAttach()
 	{				
-		onWindowSizeChange(Application::MainWindow()->getWidth(),
-						   Application::MainWindow()->getHeight());
+		onWindowSizeChange(Application::MainWindow()->width(),
+						   Application::MainWindow()->height());
 	}
 
 	void EditorLayer::onDetach()

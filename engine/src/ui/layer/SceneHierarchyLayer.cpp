@@ -49,8 +49,8 @@ namespace pio
 
 	void SceneHierarchyLayer::onAttach()
 	{
-		onWindowSizeChange(Application::MainWindow()->getWidth(),
-						   Application::MainWindow()->getHeight());
+		onWindowSizeChange(Application::MainWindow()->width(),
+						   Application::MainWindow()->height());
 	}
 
 	void SceneHierarchyLayer::onDetach()

@@ -9,32 +9,35 @@
 
 namespace pio
 {
-	RenderContext::RenderContext(CRenderApiType type, Ref<Window> &window) : m_window(window)
+	RenderContext::RenderContext(BackendFlags type, Ref<Window> &window) : m_window(window)
 	{
 		m_api = CRenderAPI::Create(type);
-	}
-
-	void RenderContext::initialize()
-	{
-		m_api->init();
-	}
-
-	void RenderContext::shutdown()
-	{
-		m_api->shutdown();
 	}
 
 	void RenderContext::renderLoop()
 	{
 		LOGD("enter render thread");
-		initialize();
+		// Initialization
+		m_window->init();
+		m_window->makeCurrent();
+		m_window->setVSync(true);
+		m_api->setupBackend();
+		m_api->setupUiBackend(m_window->nativeWindow());
 
 		while (m_thread.isRunning())
 		{
+			m_window->pollEvents();
+
 			waitAndRender();
+
+			m_window->swapBuffer();
+
+			m_frameNum++;
 		}
 
-		shutdown();
+		m_api->shutdown();
+		m_window->shutdown();
+		m_thread.set(RenderThread::State::Idle);
 	}
 
 	void RenderContext::waitAndRender()
@@ -42,12 +45,16 @@ namespace pio
 		// Wait for kick, then set render thread to busy
 		m_thread.waitAndSet(RenderThread::State::Kick, RenderThread::State::Busy);
 
+		m_api->beginFrame(*this);
+
 		// garbage collection
 		m_garbageQueue[queueIdx()].execute();
 		// task before render cmd
 		m_taskQueue[queueIdx()].execute();
 		// rendering
 		m_cmdQueue[queueIdx()].execute();
+
+		m_api->endFrame(*this);
 
 		// finish waiting, begin execute draw cmd
 		m_thread.set(RenderThread::State::Idle);
