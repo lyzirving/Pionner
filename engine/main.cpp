@@ -1,9 +1,9 @@
-﻿#include "Application.h"
+﻿#include "Editor.h"
 
 int main()
 {
-	auto app = pio::CreateScope<pio::Application>();
-	app->run();
-	app.reset(nullptr);
+	auto editor = pio::CreateScope<pio::Editor>();
+	editor->run();
+	editor.reset(nullptr);
 	return 0;
 }

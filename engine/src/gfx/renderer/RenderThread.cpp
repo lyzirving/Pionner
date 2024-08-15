@@ -15,13 +15,13 @@ namespace pio
 		m_thread.reset(nullptr);
 	}
 
-	void RenderThread::run(std::function<void(RenderThread *)> func)
+	void RenderThread::run(std::function<void()> func)
 	{
 		if(m_thread->isRunning())
 			return;
 
 		m_thread->setRunning(true);
-		m_thread->dispatch(func, this);
+		m_thread->dispatch(func);
 	}
 
 	void RenderThread::terminate()

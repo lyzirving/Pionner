@@ -8,6 +8,7 @@
 
 #include "gfx/rhi/RenderAPI.h"
 #include "gfx/renderer/Renderer.h"
+#include "gfx/renderer/RenderContext.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -21,7 +22,7 @@ namespace pio
 
 	static uint32_t ToGLFWCursorMode(CursorMode mode)
 	{
-		switch (mode)
+		switch(mode)
 		{
 			case CursorMode::Hidden:
 				return GLFW_CURSOR_HIDDEN;
@@ -50,7 +51,7 @@ namespace pio
 
 	void WindowsWindow::getWindowPos(int32_t &x, int32_t &y)
 	{
-		if (m_window)
+		if(m_window)
 		{
 			glfwGetWindowPos(m_window, &x, &y);
 		}
@@ -64,7 +65,7 @@ namespace pio
 	void WindowsWindow::setVSync(bool enabled)
 	{
 		//TODO: why vsync is implementd by this?
-		if (enabled)
+		if(enabled)
 			glfwSwapInterval(1);
 		else
 			glfwSwapInterval(0);
@@ -74,11 +75,11 @@ namespace pio
 
 	void WindowsWindow::setCursorMode(CursorMode mode)
 	{
-		if (m_window && m_cursorMode != mode)
+		if(m_window && m_cursorMode != mode)
 		{
 			m_cursorMode = mode;
 			glfwSetInputMode(m_window, GLFW_CURSOR, ToGLFWCursorMode(mode));
-			if (mode == CursorMode::Disabled)
+			if(mode == CursorMode::Disabled)
 			{
 				// force the window gain the focus when cursor is disabled
 				glfwFocusWindow(m_window);
@@ -92,14 +93,15 @@ namespace pio
 		m_data.m_width = prop.m_width;
 		m_data.m_height = prop.m_height;
 
-		if (s_GLFWWindowCount == 0)
+		if(s_GLFWWindowCount == 0)
 		{
 			int success = glfwInit();
 			PIO_ASSERT_RETURN(success == GLFW_TRUE, "fail to init glfw[%d], return!", success);
 			glfwSetErrorCallback(windowErrorCallback);
 		}
 
-		if (RenderAPI::IsOpenGL())
+	#if 0
+		if(m_ctx->backendType() == CRenderApiType_OpenGL)
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -107,6 +109,7 @@ namespace pio
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
 			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // 3.0+ only					
 		}
+	#endif // 0
 
 		m_window = glfwCreateWindow(m_data.m_width, m_data.m_height, m_data.m_title.c_str(), nullptr, nullptr);
 		s_GLFWWindowCount++;
@@ -124,7 +127,7 @@ namespace pio
 
 	void WindowsWindow::shutdown()
 	{
-		if (m_window)
+		if(m_window)
 		{
 			LOGD("destroy window[%u]", s_GLFWWindowCount);
 			glfwDestroyWindow(m_window);
@@ -132,7 +135,7 @@ namespace pio
 			s_GLFWWindowCount--;
 		}
 
-		if (s_GLFWWindowCount == 0)
+		if(s_GLFWWindowCount == 0)
 		{
 			LOGD("glfw terminate");
 			glfwTerminate();
@@ -164,7 +167,7 @@ namespace pio
 	void WindowsWindow::windowKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 	{
 		WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-		switch (action)
+		switch(action)
 		{
 			case GLFW_PRESS:
 			{
@@ -198,11 +201,11 @@ namespace pio
 
 	void WindowsWindow::windowMouseBtnCallback(GLFWwindow *window, int button, int action, int mods)
 	{
-		if (Renderer::UI_HasFocus(UiFocus::MouseCapture))
+		if(Renderer::UI_HasFocus(UiFocus::MouseCapture))
 			return;
 
 		WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-		switch (action)
+		switch(action)
 		{
 			case GLFW_PRESS:
 			{

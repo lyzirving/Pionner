@@ -6,14 +6,15 @@
 
 namespace pio
 {
+	class RenderContext;
+
 	struct WindowProps
 	{
 		std::string m_title;
 		uint32_t m_width;
 		uint32_t m_height;
 
-		WindowProps(const std::string &title, uint32_t width, uint32_t height)
-			: m_title(title), m_width(width), m_height(height)
+		WindowProps(const std::string &title, uint32_t width, uint32_t height) : m_title(title), m_width(width), m_height(height)
 		{
 		}
 	};
@@ -27,7 +28,7 @@ namespace pio
 		virtual ~Window() = default;
 
 	public:
-		static Scope<Window> create(const WindowProps &prop);
+		static Ref<Window> create(const WindowProps &prop);
 
 	public:
 		virtual void pollEvents() = 0;

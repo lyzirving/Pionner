@@ -5,6 +5,13 @@
 
 namespace pio
 {
+	enum CRenderApiType : uint8_t
+	{
+		CRenderApiType_OpenGL = 0,
+		CRenderApiType_Vulkan,
+		CRenderApiType_Num
+	};
+
 	enum ProjectionType : uint8_t
 	{
 		ProjectionType_Perspective,

@@ -14,7 +14,7 @@ namespace pio
 	{
 	public:
 		WindowsWindow(const WindowProps &prop);
-		virtual ~WindowsWindow();
+		~WindowsWindow();
 
 	public:
 		virtual void pollEvents() override;

@@ -1,5 +1,7 @@
 #include "RenderContext.h"
 
+#include "window/Window.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -7,20 +9,32 @@
 
 namespace pio
 {
-	void RenderContext::init()
+	RenderContext::RenderContext(CRenderApiType type, Ref<Window> &window) : m_window(window)
 	{
+		m_api = CRenderAPI::Create(type);
+	}
+
+	void RenderContext::initialize()
+	{
+		m_api->init();
 	}
 
 	void RenderContext::shutdown()
 	{
+		m_api->shutdown();
 	}
 
 	void RenderContext::renderLoop()
 	{
+		LOGD("enter render thread");
+		initialize();
+
 		while (m_thread.isRunning())
 		{
 			waitAndRender();
 		}
+
+		shutdown();
 	}
 
 	void RenderContext::waitAndRender()

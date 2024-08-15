@@ -2,21 +2,24 @@
 #define __PIONNER_GFX_RENDERER_RENDER_CONTEXT_H__
 
 #include "RenderThread.h"
+#include "CRenderAPI.h"
+
 #include "core/CommandQueue.h"
 
 namespace pio
 {
+	class Window;
+
 	class RenderContext
 	{
 	public:	
-		RenderContext() {}
+		RenderContext(CRenderApiType type, Ref<Window> &window);
 		~RenderContext() = default;
 
-		void init();
-		void shutdown();
 		void renderLoop();
 
 		RenderThread& thread() { return m_thread; }
+		CRenderApiType backendType() const { return m_api->type(); }
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
 
 		// Submmit garbage collection task which will be executed before the 
@@ -67,9 +70,12 @@ namespace pio
 		}
 
 	private:
-		static constexpr uint32_t k_queueNum = 2;
+		static constexpr uint32_t k_queueNum = 2;		
 
 	protected:
+		void initialize();
+		void shutdown();
+
 		void waitAndRender();
 
 		uint32_t submitIdx() const { return m_submitIdx; }
@@ -80,12 +86,14 @@ namespace pio
 		CommandQueue& garbageQueue() { return m_garbageQueue[m_submitIdx]; }
 
 	private:
+		Ref<CRenderAPI> m_api;
 		RenderThread m_thread;
+		Ref<Window> m_window;
 
 		std::atomic<uint32_t> m_submitIdx{ 0 };
 		CommandQueue m_cmdQueue[k_queueNum];
 		CommandQueue m_taskQueue[k_queueNum];
-		CommandQueue m_garbageQueue[k_queueNum];
+		CommandQueue m_garbageQueue[k_queueNum];		
 	};
 }
 

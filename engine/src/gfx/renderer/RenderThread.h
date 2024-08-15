@@ -9,7 +9,6 @@
 
 namespace pio
 {
-
 	class RenderThread
 	{
 	public:
@@ -24,7 +23,7 @@ namespace pio
 		RenderThread(const std::string &name = "RenderThread");
 		~RenderThread();
 		
-		void run(std::function<void(RenderThread *)> func);
+		void run(std::function<void()> func);
 		void terminate();
 
 		void wait(State waitForState);
@@ -38,7 +37,7 @@ namespace pio
 		void pump();
 
 	public:
-		inline bool isRunning() const { return m_thread && m_thread->isRunning(); }
+		bool isRunning() const { return m_thread && m_thread->isRunning(); }
 
 	private:
 		State m_state{ State::Idle };

@@ -104,19 +104,21 @@ namespace pio
 
 	bool MotionControlLayer::onEvent(Event &event)
 	{
+	#if 0
 		EventDispatcher dispatcher(event);
 
-		dispatcher.dispatch<MouseButtonPressedEvent>(PIO_BIND_EVT_FN(MotionControlLayer::onMouseButtonPressed));
+		dispatcher.dispatch<MouseButtonPressedEvent>(PIO_BIND_FN_SELF(MotionControlLayer::onMouseButtonPressed, std::placeholders::_1));
 		if (event.Handled) return true;
 
-		dispatcher.dispatch<MouseMovedEvent>(PIO_BIND_EVT_FN(MotionControlLayer::onMouseMoved));
+		dispatcher.dispatch<MouseMovedEvent>(PIO_BIND_FN_SELF(MotionControlLayer::onMouseMoved, std::placeholders::_1));
 		if (event.Handled) return true;
 
-		dispatcher.dispatch<MouseButtonReleasedEvent>(PIO_BIND_EVT_FN(MotionControlLayer::onMouseButtonReleased));
+		dispatcher.dispatch<MouseButtonReleasedEvent>(PIO_BIND_FN_SELF(MotionControlLayer::onMouseButtonReleased, std::placeholders::_1));
 		if (event.Handled) return true;
 
-		dispatcher.dispatch<MouseScrolledEvent>(PIO_BIND_EVT_FN(MotionControlLayer::onMouseScrolled));
+		dispatcher.dispatch<MouseScrolledEvent>(PIO_BIND_FN_SELF(MotionControlLayer::onMouseScrolled, std::placeholders::_1));
 		if (event.Handled) return true;
+	#endif // 0
 
 		return false;
 	}

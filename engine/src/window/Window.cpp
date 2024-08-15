@@ -4,10 +4,10 @@
 
 namespace pio
 {
-	Scope<Window> Window::create(const WindowProps &prop)
+	Ref<Window> Window::create(const WindowProps &prop)
 	{
 	#ifdef PIO_WINDOWS
-		return CreateScope<WindowsWindow>(prop);
+		return CreateRef<WindowsWindow>(prop);
 	#else
 		return Scope<Window>(nullptr);
 	#endif

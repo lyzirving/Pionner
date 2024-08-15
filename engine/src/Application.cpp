@@ -38,6 +38,7 @@ namespace pio
 
 	Application::Application()
 	{
+	#if 0
 		// Only one Application in whole program.
 		s_app = this;
 
@@ -45,7 +46,7 @@ namespace pio
 
 		WindowProps prop{ "Pionner", 1400, 720 };
 		m_window = Window::create(prop);
-		m_window->setEventCallback(PIO_BIND_EVT_FN(Application::onEvent));
+		m_window->setEventCallback(PIO_BIND_FN_SELF(Application::onEvent));
 
 		m_graphics = GraphicsContext::create(m_window->getNativeWindow());
 
@@ -54,6 +55,7 @@ namespace pio
 		AssetsManager::Init();
 		PhysicsSystem::Init();
 		Renderer::SetRenderListener(this);
+	#endif // 0
 	}
 
 	Application::~Application()
@@ -71,15 +73,17 @@ namespace pio
 
 	void Application::onEvent(Event &event)
 	{
+	#if 0
 		EventDispatcher dispatcher(event);
 
-		dispatcher.dispatch<WindowCloseEvent>(PIO_BIND_EVT_FN(Application::onWindowClose));
+		dispatcher.dispatch<WindowCloseEvent>(PIO_BIND_FN_SELF(Application::onWindowClose));
 		PIO_CHECK_EVT_HANDLE_AND_RETURN(event);
 
-		dispatcher.dispatch<WindowResizeEvent>(PIO_BIND_EVT_FN(Application::onWindowResize));
+		dispatcher.dispatch<WindowResizeEvent>(PIO_BIND_FN_SELF(Application::onWindowResize));
 		PIO_CHECK_EVT_HANDLE_AND_RETURN(event);
 
 		m_layerManager.onEvent(event);
+	#endif // 0
 	}
 
 	bool Application::onWindowClose(Event &event)
@@ -96,6 +100,7 @@ namespace pio
 
 	void Application::run()
 	{
+	#if 0
 		m_renderThread.run(Renderer::RenderLoop);
 		// pump() will block until the first frame has been done
 		m_renderThread.pump();
@@ -150,6 +155,7 @@ namespace pio
 		m_renderThread.terminate();
 
 		onQuit();
+	#endif // 0
 	}
 
 	void Application::onInit()
