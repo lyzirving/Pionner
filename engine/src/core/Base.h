@@ -122,8 +122,8 @@ namespace pio
 	#define PIO_BIND_FN_SELF(fn, ...)         std::bind(&fn, this, ##__VA_ARGS__)
 	#define PIO_BIND_FN_OTHER(fn, who, ...)   std::bind(&fn, who,  ##__VA_ARGS__)
 
-	#define PIO_CHECK_EVT_HANDLE_AND_RETURN(evt) if(evt.Handled) {return;}
-	#define PIO_CHECK_EVT_HANDLE_AND_BREAK(evt) if(evt.Handled) {break;}
+	#define PIO_CHECK_EVT_HANDLE_AND_RETURN(evt) if(evt->Handled) {return;}
+	#define PIO_CHECK_EVT_HANDLE_AND_BREAK(evt) if(evt->Handled) {break;}
 
 	#define PIO_UINT8(x) uint8_t(x)
 	#define PIO_UINT(x)  uint32_t(x)

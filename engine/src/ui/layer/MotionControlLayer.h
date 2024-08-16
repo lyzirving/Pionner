@@ -6,7 +6,7 @@
 #include "ui/MotionController.h"
 #include "gfx/core/Camera.h"
 #include "physics/PhysicsDef.h"
-#include "window/event/EventHandler.h"
+#include "event/EventHandler.h"
 
 namespace pio
 {

@@ -1,5 +1,5 @@
-#ifndef __PIONNER_WINDOW_EVENT_EVENT_H__
-#define __PIONNER_WINDOW_EVENT_EVENT_H__
+#ifndef __PIONNER_EVENT_EVENT_H__
+#define __PIONNER_EVENT_EVENT_H__
 
 #include <sstream>
 
@@ -27,8 +27,8 @@ namespace pio
 	};
 
 	// note #type will be turned in to char*
-	#define EVENT_CLASS_TYPE(type) static  EventType getStaticType() { return EventType::type; }\
-								   virtual EventType getEventType() const override { return getStaticType(); }\
+	#define EVENT_CLASS_TYPE(type) static  EventType StaticType() { return EventType::type; }\
+								   virtual EventType getEventType() const override { return StaticType(); }\
 								   virtual const char* getName() const override { return #type; }
 
 	#define EVENT_CLASS_CATEGORY(category) virtual int getCategoryFlags() const override { return category; }
@@ -59,24 +59,21 @@ namespace pio
 	class EventDispatcher
 	{
 	public:
-		EventDispatcher(Event &event) : m_event(event)
-		{
-		}
+		EventDispatcher(const Ref<Event> &event) : m_event(event) {}
 
 		// F will be deduced by the compiler
 		template<typename T, typename F>
 		bool dispatch(const F &func)
 		{
-			if (m_event.getEventType() == T::getStaticType())
+			if(m_event && m_event->getEventType() == T::StaticType())
 			{
-				m_event.Handled |= func(static_cast<T &>(m_event));
-				return m_event.Handled;
+				m_event->Handled |= func(RefCast<Event, T>(m_event));
+				return m_event->Handled;
 			}
 			return false;
 		}
-	private:
-		// note it's a reference
-		Event &m_event;
+	private:		
+		Ref<Event> m_event;
 	};
 }
 

@@ -1,6 +1,6 @@
 #include "Application.h"
 
-#include "core/EventBus.h"
+#include "event/EventBus.h"
 #include "core/utils/Profiler.h"
 #include "gfx/core/Camera.h"
 
@@ -9,7 +9,7 @@
 
 #include "asset/AssetsManager.h"
 
-#include "window/event/AppEvent.h"
+#include "event/AppEvent.h"
 
 #include "scene/Scene.h"
 #include "scene/Registry.h"
@@ -45,8 +45,7 @@ namespace pio
 		LogSystem::Initialize();
 
 		WindowProps prop{ "Pionner", 1400, 720 };
-		m_window = Window::create(prop);
-		m_window->setEventCallback(PIO_BIND_FN_SELF(Application::onEvent));
+		m_window = Window::create(prop);		
 
 		m_graphics = GraphicsContext::create(m_window->getNativeWindow());
 

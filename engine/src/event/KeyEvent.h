@@ -1,8 +1,8 @@
-#ifndef __PIONNER_WINDOW_EVENT_KEY_EVENT_H__
-#define __PIONNER_WINDOW_EVENT_KEY_EVENT_H__
+#ifndef __PIONNER_EVENT_KEY_EVENT_H__
+#define __PIONNER_EVENT_KEY_EVENT_H__
 
 #include "Event.h"
-#include "window/input/KeyCodes.h"
+#include "KeyCodes.h"
 
 namespace pio
 {
@@ -23,8 +23,7 @@ namespace pio
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(const KeyCode keycode, bool isRepeat = false)
-			: KeyEvent(keycode), m_isRepeat(isRepeat) {}
+		KeyPressedEvent(const KeyCode keycode, bool isRepeat = false) : KeyEvent(keycode), m_isRepeat(isRepeat) {}
 
 		bool IsRepeat() const { return m_isRepeat; }
 

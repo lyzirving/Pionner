@@ -24,7 +24,6 @@ namespace pio
 		virtual void swapBuffer() override;
 
 		virtual void pollEvents() override;
-		virtual void setEventCallback(const EvtCbFn &callback) override { m_data.cbFunc = callback; }
 		virtual glm::ivec2 position() const override;		
 		virtual glm::vec2 cursor() const override { return m_data.m_cursorPos; }
 		virtual uint32_t width()  const override  { return m_data.m_width; }
@@ -51,9 +50,8 @@ namespace pio
 		{
 			std::string  m_title{};
 			uint32_t     m_width, m_height;
-			bool         m_vsync{false};
+			bool         m_vsync{ false };
 			glm::vec2    m_cursorPos{ 0.f };
-			EvtCbFn      cbFunc;
 		};
 
 	private:

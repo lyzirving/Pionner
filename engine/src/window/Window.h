@@ -2,8 +2,8 @@
 #define __PIONNER_WINDOW_WINDOW_H__
 
 #include "gfx/GfxDef.h"
-#include "window/event/Event.h"
-#include "window/input/Cursor.h"
+#include "event/Event.h"
+#include "event/Cursor.h"
 
 namespace pio
 {
@@ -27,8 +27,6 @@ namespace pio
 	class Window
 	{
 	public:
-		using EvtCbFn = std::function<void(Event &)>;
-
 		Window() {};
 		virtual ~Window() = default;
 
@@ -43,7 +41,6 @@ namespace pio
 		virtual void swapBuffer() = 0;
 
 		virtual void pollEvents() = 0;
-		virtual void setEventCallback(const EvtCbFn &callback) = 0;
 
 		virtual glm::ivec2 position() const = 0;
 		virtual glm::vec2 cursor() const = 0;

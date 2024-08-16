@@ -12,7 +12,7 @@
 
 #include "core/math/Intersection.h"
 #include "core/func/hittable/HittableBox.h"
-#include "window/event/MouseEvent.h"
+#include "event/MouseEvent.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

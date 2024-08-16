@@ -5,6 +5,7 @@
 #include "CRenderAPI.h"
 
 #include "core/CommandQueue.h"
+#include "platform/SystemUtils.h"
 
 namespace pio
 {
@@ -18,11 +19,12 @@ namespace pio
 
 		void renderLoop();
 
-		Ref<Window>& window()  { return m_window; }
+		Ref<Window>&  window() { return m_window; }
 		RenderThread& thread() { return m_thread; }
 		BackendFlags backendType() const { return m_api->type(); }
-		uint64_t frame() const { return m_frameNum; }
+		uint64_t frame() const { return m_frameNum; }		
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
+		bool bInRenderThread() const { return m_thread.isRunning() && SystemUtils::GetThreadId() == m_threadId; }
 
 		// Submmit garbage collection task which will be executed before the 
 		// execution of task and render cmds
@@ -85,9 +87,10 @@ namespace pio
 		CommandQueue& garbageQueue() { return m_garbageQueue[m_submitIdx]; }
 
 	private:
-		Ref<CRenderAPI> m_api;
-		RenderThread m_thread;
+		Ref<CRenderAPI> m_api;		
 		Ref<Window> m_window;
+		RenderThread m_thread;
+		uint64_t m_threadId{ 0 };
 
 		std::atomic<uint32_t> m_submitIdx{ 0 };
 		CommandQueue m_cmdQueue[k_queueNum];

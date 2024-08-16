@@ -1,12 +1,11 @@
-#ifndef __PIONNER_WINDOW_EVENT_MOUSE_EVENT_H__
-#define __PIONNER_WINDOW_EVENT_MOUSE_EVENT_H__
+#ifndef __PIONNER_EVENT_MOUSE_EVENT_H__
+#define __PIONNER_EVENT_MOUSE_EVENT_H__
 
 #include "Event.h"
-#include "window/input/MouseCodes.h"
+#include "MouseCodes.h"
 
 namespace pio 
 {
-
 	class MouseMovedEvent : public Event
 	{
 	public:

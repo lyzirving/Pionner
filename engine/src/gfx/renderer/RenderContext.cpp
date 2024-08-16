@@ -16,7 +16,9 @@ namespace pio
 
 	void RenderContext::renderLoop()
 	{
-		LOGD("enter render thread");
+		m_threadId = SystemUtils::GetThreadId();
+		LOGD("enter render thread[%lu]", m_threadId);
+
 		// Initialization
 		m_window->init();
 		m_window->makeCurrent();
@@ -38,6 +40,8 @@ namespace pio
 		m_api->shutdown();
 		m_window->shutdown();
 		m_thread.set(RenderThread::State::Idle);
+
+		LOGD("exit render thread[%lu]", m_threadId);
 	}
 
 	void RenderContext::waitAndRender()

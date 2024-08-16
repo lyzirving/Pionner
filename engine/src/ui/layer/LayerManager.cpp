@@ -1,6 +1,6 @@
 #include "LayerManager.h"
 
-#include "window/event/AppEvent.h"
+#include "event/AppEvent.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -16,12 +16,15 @@ namespace pio
 
 	bool LayerManager::onEvent(Event &event)
 	{
+	#if 0
 		for (auto it = m_stack.end(); it != m_stack.begin(); )
 		{
 			(*--it)->onEvent(event);
 			PIO_CHECK_EVT_HANDLE_AND_BREAK(event);
 		}
 		return event.Handled;
+	#endif // 0
+		return false;
 	}
 
 	void LayerManager::onRenderDestroy()

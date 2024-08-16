@@ -1,9 +1,12 @@
 #include "Editor.h"
+#include "Editor.h"
 
 #include "window/Window.h"
-#include "window/event/AppEvent.h"
 
-#include "core/EventBus.h"
+#include "event/AppEvent.h"
+
+#include "event/EventBus.h"
+#include "event/EventHub.h"
 
 #include "gfx/renderer/RenderContext.h"
 
@@ -18,7 +21,7 @@ namespace pio
 
 	Editor *Editor::Get() { return k_Editor; }
 
-	Editor::Editor()
+	Editor::Editor() : EventHubObj()
 	{
 		k_Editor = this;
 
@@ -28,26 +31,30 @@ namespace pio
 
 	Editor::~Editor()
 	{
+		EventHub::Shutdown();
 		EventBus::Shutdown();
 		LogSystem::Shutdown();
 	}
 
 	void Editor::onInit()
-	{		
+	{		 
+		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
+		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
+
 		WindowProps prop{ "Pionner", 1400, 720, Backend_OpenGL };
-		m_window = Window::create(prop);
-		m_window->setEventCallback(PIO_BIND_FN_SELF(Editor::onEvent, std::placeholders::_1));
+		m_window = Window::create(prop);		
 
 		m_renderCtx = CreateRef<RenderContext>(Backend_OpenGL, m_window);
 	}
 
 	void Editor::onQuit()
 	{		
+		EventHub::Get()->removeCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));		
 		m_renderCtx.reset();
 		m_window.reset();
 	}
 
-	void Editor::onEvent(Event &event)
+	void Editor::onEvent(Ref<Event> &event)
 	{
 		EventDispatcher dispatcher(event);
 
@@ -58,14 +65,14 @@ namespace pio
 		PIO_CHECK_EVT_HANDLE_AND_RETURN(event);
 	}
 
-	bool Editor::onWindowClose(Event &event)
+	bool Editor::onWindowClose(Ref<WindowCloseEvent> &event)
 	{
 		LOGD("window is closed");
 		m_running = false;
 		return true;
 	}
 
-	bool Editor::onWindowResize(Event &event)
+	bool Editor::onWindowResize(Ref<WindowResizeEvent> &event)
 	{
 		return false;
 	}
@@ -89,8 +96,9 @@ namespace pio
 			// Start rendering previous frame in render thread
 			renderThread.kick();
 			//---------------------------------------------------------
-
+			
 			EventBus::Get()->dispatch();
+			EventHub::Get()->dispatch();
 		}
 
 		// NOTE: AssetsManager must be destroied in render thread,

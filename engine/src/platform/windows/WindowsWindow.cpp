@@ -2,9 +2,10 @@
 
 #include "WindowsWindow.h"
 
-#include "window/event/AppEvent.h"
-#include "window/event/KeyEvent.h"
-#include "window/event/MouseEvent.h"
+#include "event/AppEvent.h"
+#include "event/KeyEvent.h"
+#include "event/MouseEvent.h"
+#include "event/EventHub.h"
 
 #include "gfx/renderer/RenderContext.h"
 
@@ -157,38 +158,36 @@ namespace pio
 		data.m_width = width;
 		data.m_height = height;
 
-		WindowResizeEvent event(width, height);
-		data.cbFunc(event);
+		Ref<Event> event = CreateRef<WindowResizeEvent>(width, height);
+		EventHub::Get()->add(event);		
 	}
 
 	void WindowsWindow::windowCloseCallback(GLFWwindow *window)
 	{
-		WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-		WindowCloseEvent event;
-		data.cbFunc(event);
+		Ref<Event> event = CreateRef<WindowCloseEvent>();
+		EventHub::Get()->add(event);
 	}
 
 	void WindowsWindow::windowKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
-	{
-		WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
+	{		
 		switch(action)
 		{
 			case GLFW_PRESS:
 			{
-				KeyPressedEvent event(key);
-				data.cbFunc(event);
+				Ref<Event> event = CreateRef<KeyPressedEvent>(key);
+				EventHub::Get()->add(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				KeyReleasedEvent event(key);
-				data.cbFunc(event);
+				Ref<Event> event = CreateRef<KeyReleasedEvent>(key);
+				EventHub::Get()->add(event);
 				break;
 			}
 			case GLFW_REPEAT:
 			{
-				KeyPressedEvent event(key, true);
-				data.cbFunc(event);
+				Ref<Event> event = CreateRef<KeyPressedEvent>(key, true);
+				EventHub::Get()->add(event);
 				break;
 			}
 			default:
@@ -198,9 +197,8 @@ namespace pio
 
 	void WindowsWindow::windowCharCallback(GLFWwindow *window, unsigned int keycode)
 	{
-		WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-		KeyTypedEvent event(keycode);
-		data.cbFunc(event);
+		Ref<Event> event = CreateRef<KeyTypedEvent>(keycode);
+		EventHub::Get()->add(event);
 	}
 
 	void WindowsWindow::windowMouseBtnCallback(GLFWwindow *window, int button, int action, int mods)
@@ -215,14 +213,14 @@ namespace pio
 		{
 			case GLFW_PRESS:
 			{
-				MouseButtonPressedEvent event(button, data.m_cursorPos.x, data.m_cursorPos.y);
-				data.cbFunc(event);
+				Ref<Event> event = CreateRef<MouseButtonPressedEvent>(button, data.m_cursorPos.x, data.m_cursorPos.y);
+				EventHub::Get()->add(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				MouseButtonReleasedEvent event(button, data.m_cursorPos.x, data.m_cursorPos.y);
-				data.cbFunc(event);
+				Ref<Event> event = CreateRef<MouseButtonReleasedEvent>(button, data.m_cursorPos.x, data.m_cursorPos.y);
+				EventHub::Get()->add(event);
 				break;
 			}
 			default:
@@ -232,17 +230,17 @@ namespace pio
 
 	void WindowsWindow::windowScrollCallback(GLFWwindow *window, double deltaX, double deltaY)
 	{
-		WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-		MouseScrolledEvent event((float)deltaX, (float)deltaY);
-		data.cbFunc(event);
+		Ref<Event> event = CreateRef<MouseScrolledEvent>((float)deltaX, (float)deltaY);
+		EventHub::Get()->add(event);
 	}
 
 	void WindowsWindow::windowCursorPosCallback(GLFWwindow *window, double xPos, double yPos)
 	{
 		WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
-		MouseMovedEvent event((float)xPos, (float)yPos);
 		data.m_cursorPos.x = xPos;
 		data.m_cursorPos.y = yPos;
-		data.cbFunc(event);
+
+		Ref<Event> event = CreateRef<MouseMovedEvent>((float)xPos, (float)yPos);
+		EventHub::Get()->add(event);
 	}
 }

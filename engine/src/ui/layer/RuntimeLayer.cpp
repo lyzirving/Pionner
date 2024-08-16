@@ -3,7 +3,7 @@
 #include "Application.h"
 
 #include "asset/AssetsManager.h"
-#include "window/event/MouseEvent.h"
+#include "event/MouseEvent.h"
 
 #include "scene/Scene.h"
 

@@ -4,7 +4,7 @@
 #include "AssetsManager.h"
 #include "AssimpMeshImporter.h"
 
-#include "core/EventBus.h"
+#include "event/EventBus.h"
 
 #include "gfx/rhi/Texture.h"
 #include "gfx/struct/Mesh.h"

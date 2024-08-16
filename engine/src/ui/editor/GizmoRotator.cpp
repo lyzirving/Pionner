@@ -15,7 +15,7 @@
 #include "core/func/hittable/HittableFlatCircle.h"
 
 #include "ui/UiDef.h"
-#include "window/event/MouseEvent.h"
+#include "event/MouseEvent.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

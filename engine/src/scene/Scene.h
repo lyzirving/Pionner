@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_SCENE_H__
 #define __PIONNER_SCENE_SCENE_H__
 
-#include "core/EventBus.h"
+#include "event/EventBus.h"
 #include "physics/PhysicsDef.h"
 #include "ui/UiDef.h"
 

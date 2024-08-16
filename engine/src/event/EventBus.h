@@ -1,10 +1,10 @@
-#ifndef __PIONNER_CORE_EVENT_BUS_H__
-#define __PIONNER_CORE_EVENT_BUS_H__
+#ifndef __PIONNER_EVENT_EVENT_BUS_H__
+#define __PIONNER_EVENT_EVENT_BUS_H__
 
 #include <atomic>
 
-#include "Thread.h"
-#include "EventBusDef.h"
+#include "EBDef.h"
+#include "core/Thread.h"
 
 namespace pio
 {
@@ -57,6 +57,11 @@ namespace pio
 		std::condition_variable m_taskCond{};
 	};
 
+	/*
+	* @brief  EventBus is used for time-costing task.
+	*         User should submit() a task and call notity() at the end of task as a callback.
+	*         EventBus will deal with the task in a work thread, and dispatch the notify in logic thread.
+	*/
 	class EventBus
 	{
 		PIO_SINGLETON_DECLARE(EventBus)

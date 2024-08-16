@@ -1,5 +1,5 @@
-#ifndef __PIONNER_WINDOW_INPUT_CURSOR_H__
-#define __PIONNER_WINDOW_INPUT_CURSOR_H__
+#ifndef __PIONNER_EVENT_CURSOR_H__
+#define __PIONNER_EVENT_CURSOR_H__
 
 #include "core/Base.h"
 

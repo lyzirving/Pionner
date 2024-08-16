@@ -9,7 +9,7 @@
 #include "gfx/struct/Geometry2D.h"
 #include "gfx/rhi/Texture.h"
 
-#include "core/EventBus.h"
+#include "event/EventBus.h"
 #include "core/math/Ray.h"
 #include "core/utils/Profiler.h"
 

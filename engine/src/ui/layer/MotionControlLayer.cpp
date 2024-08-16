@@ -23,7 +23,7 @@
 #include "ui/editor/GizmoRotator.h"
 
 #include "asset/AssetsManager.h"
-#include "window/event/MouseEvent.h"
+#include "event/MouseEvent.h"
 
 #include "core/math/Ray.h"
 

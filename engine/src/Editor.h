@@ -2,22 +2,25 @@
 #define __PIONNER_EDITOR_H__
 
 #include "core/Base.h"
+#include "event/EventHub.h"
 
 namespace pio
 {
 	class Event;
 	class Window;
 	class RenderContext;
+	class WindowCloseEvent;
+	class WindowResizeEvent;
 
-	class Editor
+	class Editor : public EventHubObj
 	{
 	public:
 		Editor();
 		~Editor();
 
-		void onEvent(Event &event);
-		bool onWindowClose(Event &event);
-		bool onWindowResize(Event &event);
+		void onEvent(Ref<Event> &event);
+		bool onWindowClose(Ref<WindowCloseEvent> &event);
+		bool onWindowResize(Ref<WindowResizeEvent> &event);
 
 		void onInit();
 		void onQuit();

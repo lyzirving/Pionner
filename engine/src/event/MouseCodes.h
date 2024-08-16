@@ -1,5 +1,5 @@
-#ifndef __PIONNER_WINDOW_INPUT_MOUSE_CODES_H__
-#define __PIONNER_WINDOW_INPUT_MOUSE_CODES_H__
+#ifndef __PIONNER_EVENT_MOUSE_CODES_H__
+#define __PIONNER_EVENT_MOUSE_CODES_H__
 
 #include <cstdint>
 
