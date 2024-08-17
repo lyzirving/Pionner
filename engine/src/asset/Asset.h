@@ -1,7 +1,7 @@
 #ifndef __PIONNER_ASSET_ASSET_H__
 #define __PIONNER_ASSET_ASSET_H__
 
-#include "base/Base.h"
+#include "Base.h"
 
 namespace pio
 {
@@ -9,7 +9,7 @@ namespace pio
 
 	enum class AssetType : uint8_t
 	{
-		None = 0, Camera
+		None = 0, Camera, Scene
 	};
 
 	#define OVERRIDE_ASSET_TYPE(TypeName)  public:\
@@ -19,17 +19,15 @@ namespace pio
 	class Asset
 	{
 	public:
-		Asset() : m_handle(), m_parentHandle(0), m_name("None") {}
-		Asset(const std::string& name) : m_handle(), m_parentHandle(0), m_name(name) {}
+		Asset() : m_handle(), m_parentHandle(0) {}
 
-		Asset(const Asset& rhs) : m_handle(rhs.m_handle), m_parentHandle(rhs.m_parentHandle), m_name(rhs.m_name) {}
+		Asset(const Asset& rhs) : m_handle(rhs.m_handle), m_parentHandle(rhs.m_parentHandle) {}
 		Asset operator=(const Asset& rhs)
 		{
 			if (this != &rhs)
 			{
 				m_handle = rhs.m_handle;
 				m_parentHandle = rhs.m_parentHandle;
-				m_name = rhs.m_name;
 			}
 			return *this;
 		}
@@ -41,10 +39,8 @@ namespace pio
 		AssetHandle handle() { return m_handle; }
 		const AssetHandle& handle() const { return m_handle; }
 		const AssetHandle& parentHandle() const { return m_parentHandle; }
-		const std::string& name() const { return m_name; }
 
 		void setParentHandle(const AssetHandle& handle) { m_parentHandle = handle; }
-		void setName(const std::string& name) { m_name = name; }
 
 	public:
 		template<typename T>
@@ -58,7 +54,6 @@ namespace pio
 
 	protected:
 		AssetHandle m_handle, m_parentHandle;
-		std::string m_name;
 	};
 }
 

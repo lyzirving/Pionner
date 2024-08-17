@@ -1,7 +1,7 @@
 #ifndef __PIONNER_EVENT_EB_DEF_H__
 #define __PIONNER_EVENT_EB_DEF_H__
 
-#include "base/Base.h"
+#include "Base.h"
 
 namespace pio
 {
@@ -24,10 +24,10 @@ namespace pio
 
 	struct EventBusArg
 	{
-		PioEvent Event;
-		Ref<Asset> Assets;
+		PioEvent Event{ PioEvent::None };
+		Ref<Asset> Assets{ nullptr };
 
-		EventBusArg() : Event(PioEvent::None), Assets() {}
+		EventBusArg() {}
 		EventBusArg(PioEvent event) : Event(event) {}
 		EventBusArg(PioEvent event, const Ref<Asset> &assets) : Event(event), Assets(assets) {}
 

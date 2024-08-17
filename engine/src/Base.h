@@ -1,5 +1,5 @@
-#ifndef __PIONNER_BASE_BASE_H__
-#define __PIONNER_BASE_BASE_H__
+#ifndef __PIONNER_BASE_H__
+#define __PIONNER_BASE_H__
 
 #include <vector>
 #include <map>
@@ -27,10 +27,11 @@
 #include <typeinfo>
 #include <cassert>
 
-#include "Def.h"
-#include "Math.h"
-#include "UUID.h"
-#include "utils/LogSystem.h"
+#include "base/Def.h"
+#include "base/Math.h"
+#include "base/UUID.h"
+#include "base/utils/Time.h"
+#include "base/utils/LogSystem.h"
 
 #include "magic_enum.hpp"
 
@@ -88,7 +89,19 @@ namespace pio
 		 * auto name = GetMemberName(#PIO_TO_STR(m_lightEnv.DirectionalLight));
 		 * The result name is "DirectionalLight".
 		*/
-		std::string GetMemberName(const char *exp);
+		inline std::string GetMemberName(const char* exp)
+		{
+			std::string ret(exp);
+			std::size_t pos = ret.find_last_of(".");
+			if (pos != std::string::npos)
+				return ret.substr(pos + 1);
+
+			pos = ret.find_last_of("->");
+			if (pos != std::string::npos)
+				return ret.substr(pos + 1);
+
+			return "invalid expression!";
+		}
 	}
 
 	#define PIO_MALLOC(num) std::malloc(num)

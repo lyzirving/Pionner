@@ -50,12 +50,12 @@ namespace pio
 
 		m_api->beginFrame(*this);
 
-		// garbage collection
-		m_garbageQueue[queueIdx()].execute();
 		// task before render cmd
 		m_taskQueue[queueIdx()].execute();
 		// rendering
 		m_cmdQueue[queueIdx()].execute();
+		// garbage collection
+		m_garbageQueue[queueIdx()].execute();
 
 		m_api->endFrame(*this);
 

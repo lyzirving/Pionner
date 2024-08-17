@@ -1,8 +1,8 @@
 #ifndef __PIONNER_EDITOR_H__
 #define __PIONNER_EDITOR_H__
 
-#include "base/Base.h"
 #include "event/EventHub.h"
+#include "scene/SceneMgr.h"
 
 namespace pio
 {
@@ -22,8 +22,8 @@ namespace pio
 		bool onWindowClose(Ref<WindowCloseEvent> &event);
 		bool onWindowResize(Ref<WindowResizeEvent> &event);
 
-		void onInit();
-		void onQuit();
+		void onAttach();
+		void onDetach();
 
 		void run();
 
@@ -35,6 +35,8 @@ namespace pio
 
 	private:
 		bool m_running{ true };
+		SceneMgr m_sceneMgr;
+
 		Ref<Window> m_window{ nullptr };
 		Ref<RenderContext> m_renderCtx{ nullptr };
 	};

@@ -9,9 +9,7 @@ namespace pio
 	{
 		OVERRIDE_ASSET_TYPE(AssetType::Camera)
 	public:
-
-	public:
-		Camera() {}
+		Camera() : Asset() {}
 		~Camera() = default;
 	};
 
