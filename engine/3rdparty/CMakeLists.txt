@@ -33,9 +33,9 @@ if(NOT TARGET stb)
     set_target_properties(stb PROPERTIES FOLDER ${THIRD_PARTY_DIR}/stb)
 endif()
 
-if(NOT TARGET Decs)
-    add_library(Decs INTERFACE)
-    target_include_directories(Decs INTERFACE ${THIRD_PARTY_DIR}/decs)
+if(NOT TARGET entt)
+    add_library(entt INTERFACE)
+    target_include_directories(entt INTERFACE ${THIRD_PARTY_DIR}/entt)
 endif()
 
 if(NOT TARGET MAGIC_ENUM)
