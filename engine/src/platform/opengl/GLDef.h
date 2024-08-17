@@ -1,7 +1,7 @@
 #ifndef __PIONNER_PLATFORM_OPENGL_GL_DEF_H__
 #define __PIONNER_PLATFORM_OPENGL_GL_DEF_H__
 
-#include "core/Base.h"
+#include "base/Base.h"
 
 namespace pio
 {

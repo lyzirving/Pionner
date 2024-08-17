@@ -1,7 +1,7 @@
 #ifndef __PIONNER_PLATFORM_WINDOWS_WINDOWS_THREAD_H__
 #define __PIONNER_PLATFORM_WINDOWS_WINDOWS_THREAD_H__
 
-#include "core/Thread.h"
+#include "base/Thread.h"
 
 namespace pio
 {

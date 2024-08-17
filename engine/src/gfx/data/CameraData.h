@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_DATA_CAMERA_DATA_H__
 #define __PIONNER_GFX_DATA_CAMERA_DATA_H__
 
-#include "CRenderData.h"
+#include "RenderData.h"
 
 namespace pio
 {
@@ -19,7 +19,7 @@ namespace pio
 		ProjectionType PrjType{ ProjectionType_Perspective };
 	};
 
-	class CameraData : public CRenderData
+	class CameraData : public RenderData
 	{	
 	public:
 		CameraData();

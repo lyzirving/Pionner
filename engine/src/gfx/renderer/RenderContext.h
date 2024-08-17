@@ -2,9 +2,9 @@
 #define __PIONNER_GFX_RENDERER_RENDER_CONTEXT_H__
 
 #include "RenderThread.h"
-#include "CRenderAPI.h"
+#include "RenderAPI.h"
 
-#include "core/CommandQueue.h"
+#include "base/CommandQueue.h"
 #include "platform/SystemUtils.h"
 
 namespace pio
@@ -87,7 +87,7 @@ namespace pio
 		CommandQueue& garbageQueue() { return m_garbageQueue[m_submitIdx]; }
 
 	private:
-		Ref<CRenderAPI> m_api;		
+		Ref<RenderAPI> m_api;		
 		Ref<Window> m_window;
 		RenderThread m_thread;
 		uint64_t m_threadId{ 0 };

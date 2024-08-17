@@ -1,11 +1,16 @@
 #ifndef __PIONNER_EVENT_EB_DEF_H__
 #define __PIONNER_EVENT_EB_DEF_H__
 
-#include "core/Base.h"
+#include "base/Base.h"
 
 namespace pio
 {
 	class Asset;
+
+	enum class PioEvent : uint8_t
+	{
+		None = 0, UnzipAsset
+	};
 
 	/*
 	* @brief EventBusObject should be the first parent class in class hierarchy
@@ -15,11 +20,6 @@ namespace pio
 	public:
 		EventBusObject() {}
 		virtual ~EventBusObject() = default;
-	};
-
-	enum class PioEvent : uint8_t
-	{
-		None = 0, UnzipAsset
 	};
 
 	struct EventBusArg

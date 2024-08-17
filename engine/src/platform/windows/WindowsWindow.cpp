@@ -9,8 +9,6 @@
 
 #include "gfx/renderer/RenderContext.h"
 
-#include "core/utils/Profiler.h"
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -102,9 +100,7 @@ namespace pio
 	void WindowsWindow::swapBuffer()
 	{
 		PIO_ASSERT_RETURN(m_window != nullptr, "err! GLFW window handle is null");
-		uint64_t start{ PROFILER_TIME };
 		glfwSwapBuffers(m_window);
-		PROFILERD_DURATION(start, "SwapBuffer");
 	}
 
 	void WindowsWindow::pollEvents()

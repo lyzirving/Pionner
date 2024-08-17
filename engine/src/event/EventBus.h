@@ -4,7 +4,7 @@
 #include <atomic>
 
 #include "EBDef.h"
-#include "core/Thread.h"
+#include "base/Thread.h"
 
 namespace pio
 {

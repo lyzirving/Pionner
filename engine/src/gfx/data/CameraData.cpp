@@ -71,12 +71,12 @@ namespace pio
 		}
 	}
 
-	CameraData::CameraData() : CRenderData(std::string("CameraData") + std::to_string(k_CamDataNum++))
+	CameraData::CameraData() : RenderData(std::string("CameraData") + std::to_string(k_CamDataNum++))
 	{
 		initData();
 	}
 
-	CameraData::CameraData(const std::string &name) : CRenderData(name)
+	CameraData::CameraData(const std::string &name) : RenderData(name)
 	{
 		k_CamDataNum++;
 		initData();
@@ -87,14 +87,7 @@ namespace pio
 	}
 
 	void CameraData::setup(const Camera &camera)
-	{
-		m_uniformData.ViewMat = camera.viewMat();
-		m_uniformData.PrjMat = camera.prjMat();
-		m_uniformData.OrthoMat = camera.orthoMat();
-		m_uniformData.CameraPosition = camera.position();
-		m_uniformData.FrustumFar = camera.frustFar();
-		m_uniformData.PrjType = camera.prjType();
-		m_uniformData.serialize();
+	{		
 	}
 
 	void CameraData::initData()

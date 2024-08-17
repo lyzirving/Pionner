@@ -1,52 +1,33 @@
 #ifndef __PIONNER_ASSET_ASSET_H__
 #define __PIONNER_ASSET_ASSET_H__
 
-#include "core/Base.h"
+#include "base/Base.h"
 
 namespace pio
 {
 	using AssetHandle = UUID32;
 
-	static const char* ICON_MOVE_NORMAL = "move_normal";
-	static const char* ICON_MOVE_SELECTED = "move_selected";
-	static const char* ICON_ROTATE_NORMAL = "rotate_normal";
-	static const char* ICON_ROTATE_SELECTED = "rotate_selected";
-
 	enum class AssetType : uint8_t
 	{
-		None = 0,
-		Mesh, StaticMesh, LineSegment, QuadMesh, CircleMesh, MeshSource,
-		GeoBegin, Geometry, Cylinder, Cone, Arrow, Sphere, Torus, GeoEnd,
-		Animation, Skeleton, Material,
-		Texture, Texture2D, CubeTexture, CubeArrayTexture, BufferTexture, Skybox, RenderBuffer,
-		PhysicsMat, PhysicsScene,
-		Scene, Camera
+		None = 0, Camera
 	};
 
-	enum class AssetFmt : uint8_t
-	{
-		Obj = 0, Dae, GLTF, GLB, PNG, HDR, Num
-	};
-
-#define OVERRIDE_ASSET_TYPE(type)  public:\
-									   static  AssetType GetStaticType() { return type; }\
-									   virtual AssetType getAssetType() const override { return GetStaticType(); }
+	#define OVERRIDE_ASSET_TYPE(TypeName)  public:\
+									       static  AssetType StaticType() { return TypeName; }\
+									       virtual AssetType type() const override { return StaticType(); }
 
 	class Asset
 	{
 	public:
-		Asset() : m_assetHandle(), m_parentHandle(0), m_name("None") {}
-		Asset(const std::string& name) : m_assetHandle(), m_parentHandle(0), m_name(name) {}
+		Asset() : m_handle(), m_parentHandle(0), m_name("None") {}
+		Asset(const std::string& name) : m_handle(), m_parentHandle(0), m_name(name) {}
 
-		Asset(const Asset& rhs) : m_assetHandle(rhs.m_assetHandle), m_parentHandle(rhs.m_parentHandle), m_name(rhs.m_name)
-		{
-		}
-
+		Asset(const Asset& rhs) : m_handle(rhs.m_handle), m_parentHandle(rhs.m_parentHandle), m_name(rhs.m_name) {}
 		Asset operator=(const Asset& rhs)
 		{
 			if (this != &rhs)
 			{
-				m_assetHandle = rhs.m_assetHandle;
+				m_handle = rhs.m_handle;
 				m_parentHandle = rhs.m_parentHandle;
 				m_name = rhs.m_name;
 			}
@@ -54,13 +35,14 @@ namespace pio
 		}
 
 		virtual ~Asset() = default;
-		virtual AssetType getAssetType() const { return GetStaticType(); }
+		virtual AssetType type() const { return StaticType(); }
 
 	public:
-		AssetHandle getHandle() { return m_assetHandle; }
-		const AssetHandle& getHandle() const { return m_assetHandle; }
-		const AssetHandle& getParentHandle() const { return m_parentHandle; }
-		const std::string& getName() const { return m_name; }
+		AssetHandle handle() { return m_handle; }
+		const AssetHandle& handle() const { return m_handle; }
+		const AssetHandle& parentHandle() const { return m_parentHandle; }
+		const std::string& name() const { return m_name; }
+
 		void setParentHandle(const AssetHandle& handle) { m_parentHandle = handle; }
 		void setName(const std::string& name) { m_name = name; }
 
@@ -72,11 +54,10 @@ namespace pio
 		T* as() { if (std::is_base_of<Asset, T>() && is<T>()) { return static_cast<T*>(this); } else { return nullptr; } }
 
 	public:
-		static AssetType GetStaticType() { return AssetType::None; }
+		static AssetType StaticType() { return AssetType::None; }
 
 	protected:
-		AssetHandle m_assetHandle;
-		AssetHandle m_parentHandle;
+		AssetHandle m_handle, m_parentHandle;
 		std::string m_name;
 	};
 }

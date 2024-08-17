@@ -1,5 +1,4 @@
 #include "Editor.h"
-#include "Editor.h"
 
 #include "window/Window.h"
 
@@ -39,7 +38,6 @@ namespace pio
 	void Editor::onInit()
 	{		 
 		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
-		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
 
 		WindowProps prop{ "Pionner", 1400, 720, Backend_OpenGL };
 		m_window = Window::create(prop);		
@@ -49,6 +47,7 @@ namespace pio
 
 	void Editor::onQuit()
 	{		
+		LOGD("enter");
 		EventHub::Get()->removeCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));		
 		m_renderCtx.reset();
 		m_window.reset();
@@ -101,8 +100,6 @@ namespace pio
 			EventHub::Get()->dispatch();
 		}
 
-		// NOTE: AssetsManager must be destroied in render thread,
-		//       because some assets rely on rendering context
 		renderThread.terminate();
 
 		onQuit();

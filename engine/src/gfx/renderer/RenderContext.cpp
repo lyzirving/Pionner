@@ -11,7 +11,7 @@ namespace pio
 {
 	RenderContext::RenderContext(BackendFlags type, Ref<Window> &window) : m_window(window)
 	{
-		m_api = CRenderAPI::Create(type);
+		m_api = RenderAPI::Create(type);
 	}
 
 	void RenderContext::renderLoop()
@@ -40,7 +40,6 @@ namespace pio
 		m_api->shutdown();
 		m_window->shutdown();
 		m_thread.set(RenderThread::State::Idle);
-
 		LOGD("exit render thread[%lu]", m_threadId);
 	}
 

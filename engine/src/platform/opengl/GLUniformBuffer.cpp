@@ -1,8 +1,6 @@
 #include "GLUniformBuffer.h"
 #include "GLHelper.h"
 
-#include "gfx/rhi/Shader.h"
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -124,34 +122,35 @@ namespace pio
 
 	bool GLUniformBuffer::Binding(const Ref<Shader> &shader, const std::string &blockName, uint32_t bindingPt)
 	{
-		if (!shader || !shader->isInit())
-		{
-			LOGE("invalid program");
-			return false;
-		}
+		return false;
+		//if (!shader || !shader->isInit())
+		//{
+		//	LOGE("invalid program");
+		//	return false;
+		//}
 
-		if (blockName.empty())
-		{
-			LOGE("invalid block name");
-			return false;
-		}
+		//if (blockName.empty())
+		//{
+		//	LOGE("invalid block name");
+		//	return false;
+		//}
 
-		uint32_t program = shader->getProgram();
+		//uint32_t program = shader->getProgram();
 
-		uint32_t index = glGetUniformBlockIndex(program, blockName.c_str());
-		if (index == GL_INVALID_INDEX)
-		{
-			LOGE("fail to get block[%s]'s index in program[%u]", blockName.c_str(), program);
-			GLHelper::CheckError("fail to get uniform block's index in program");
-			return false;
-		}
+		//uint32_t index = glGetUniformBlockIndex(program, blockName.c_str());
+		//if (index == GL_INVALID_INDEX)
+		//{
+		//	LOGE("fail to get block[%s]'s index in program[%u]", blockName.c_str(), program);
+		//	GLHelper::CheckError("fail to get uniform block's index in program");
+		//	return false;
+		//}
 
-		GLint blockSize{ 0 };
-		glGetActiveUniformBlockiv(program, index, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-		//LOGD("block[%s] in program[%u]'s size is [%d]", blockName.c_str(), program, blockSize);
+		//GLint blockSize{ 0 };
+		//glGetActiveUniformBlockiv(program, index, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+		////LOGD("block[%s] in program[%u]'s size is [%d]", blockName.c_str(), program, blockSize);
 
-		glUniformBlockBinding(program, index, bindingPt);
-		return GLHelper::CheckError("fail to bind program[%u]'s uniform block[%s][%u] to binding point[%u]",
-							        program, blockName.c_str(), index, bindingPt);
+		//glUniformBlockBinding(program, index, bindingPt);
+		//return GLHelper::CheckError("fail to bind program[%u]'s uniform block[%s][%u] to binding point[%u]",
+		//					        program, blockName.c_str(), index, bindingPt);
 	}
 }

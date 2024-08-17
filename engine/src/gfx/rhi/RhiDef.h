@@ -81,8 +81,7 @@ namespace pio
 
 	enum class BufferUsage : uint8_t
 	{
-		None = 0, Static, Dynamic,
-		DynamicRead
+		None = 0, Static, Dynamic, DynamicRead
 	};
 
 	enum class ColorAttachment : uint8_t
@@ -121,24 +120,6 @@ namespace pio
 		TextureInternalFmt GetInternalFmt(uint32_t channelNum);
 		TextureFmt GetTextureFmt(uint32_t channelNum);
 	}
-
-	struct RendererDebugger
-	{
-		bool  Raycast{ false };
-		float OutlineScale{ 0.02f };
-		glm::vec4 OutlineColor{ 0.93f, 0.58f, 0.19f, 1.f };
-	};
-
-	struct RendererConfig
-	{
-		float FPS{ 0.f };
-		uint64_t FrameTime{ 0 };	
-		glm::vec4 ClearColor{ 0.3f, 0.3f, 0.3f, 1.f };
-		glm::vec4 OutlineColor{ 1.f, 0.f, 0.f, 1.f };
-		RenderStrategy Strategy{ RenderStrategy::Deferred };
-		AssetHandle FullScreenQuad{ NullAsset };
-		RendererDebugger Debugger{};
-	};
 
 	#define PIO_UNIFORM_WRAPPER_INTERFACE_DECLARE(T) \
             public:\

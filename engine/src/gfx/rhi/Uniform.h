@@ -2,8 +2,8 @@
 #define __PIONNER_GFX_RHI_UNIFORM_H__
 
 #include "RhiDef.h"
-#include "core/Buffer.h"
-#include "core/LinkedMap.h"
+#include "base/Buffer.h"
+#include "base/LinkedMap.h"
 
 namespace pio
 {
