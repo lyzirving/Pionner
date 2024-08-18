@@ -10,43 +10,50 @@
 
 namespace pio
 {
+	bool CameraSorter(Ref<Camera> &lhs, Ref<Camera> &rhs)
+	{
+		return lhs->depth() < rhs->depth();
+	}
+
 	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<Camera>>& cameras)
 	{
-		beginFrameRendering(context);
+		onBeginFrameRendering(context);
 
-		sortCameras(cameras);
+		onSortCameras(cameras);
 
 		for (int32_t i = 0; i < cameras.size(); i++)
 		{
-			beginCameraRendering(context, cameras[i]);
-			renderSingleCamera(context, cameras[i]);
-			endCameraRendering(context, cameras[i]);
+			onBeginCameraRendering(context, cameras[i]);
+			onRenderSingleCamera(context, cameras[i]);
+			onEndCameraRendering(context, cameras[i]);
 		}
 
-		endFrameRendering(context);
+		onEndFrameRendering(context);
 	}
 
-	void RenderPipeline::beginFrameRendering(Ref<RenderContext>& context)
+	void RenderPipeline::onBeginFrameRendering(Ref<RenderContext>& context)
 	{
 	}
 
-	void RenderPipeline::endFrameRendering(Ref<RenderContext>& context)
+	void RenderPipeline::onEndFrameRendering(Ref<RenderContext>& context)
 	{
 	}
 
-	void pio::RenderPipeline::sortCameras(std::vector<Ref<Camera>>& cameras)
+	void pio::RenderPipeline::onSortCameras(std::vector<Ref<Camera>>& cameras)
+	{
+		if (cameras.size() >= 2)
+			std::sort(cameras.begin(), cameras.end(), CameraSorter);
+	}
+
+	void RenderPipeline::onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
 	}
 
-	void RenderPipeline::beginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
+	void RenderPipeline::onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
 	}
 
-	void RenderPipeline::renderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
-	{
-	}
-
-	void RenderPipeline::endCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
+	void RenderPipeline::onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
 	}
 }

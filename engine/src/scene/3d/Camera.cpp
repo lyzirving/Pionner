@@ -7,6 +7,14 @@
 
 namespace pio
 {
+	void Camera::makeCulling()
+	{
+		if (m_drawEnts.empty())
+			return;
+
+		//[TODO]
+	}
+
 	template<>
 	bool Asset::is<Camera>() const { return type() == AssetType::Camera; }
 }

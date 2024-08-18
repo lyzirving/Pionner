@@ -51,7 +51,11 @@ namespace pio
 		m_pipeline = CreateRef<RenderPipeline>();
 
 		auto scene = CreateRef<Scene>();
-		Factory::MakeCamera(scene, "MainCamera", true);
+		{
+			//Default entities
+			Factory::MakeCamera(scene, "MainCamera", 0);
+			Factory::MakePlane(scene, "Plane");
+		}
 		m_sceneMgr.add(scene);
 	}
 

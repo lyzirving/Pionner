@@ -14,11 +14,20 @@
 
 namespace pio
 {
-	Ref<Entity> Factory::MakeCamera(Ref<Scene>& scene, const std::string& name, bool bMain)
+	Ref<Entity> Factory::MakeCamera(Ref<Scene>& scene, const std::string& name, int32_t depth)
 	{
 		auto entity	= scene->addEntity<CameraComponent>(name);
 		auto *pComp = entity->getComponent<CameraComponent>();
-		pComp->Handle = AssetMgr::MakeRuntimeAsset<Camera>()->id();
+		auto camera = AssetMgr::MakeRuntimeAsset<Camera>();
+
+		camera->setDepth(depth);
+		pComp->Handle = camera->id();
+		return entity;
+	}
+
+	Ref<Entity> Factory::MakePlane(Ref<Scene>& scene, const std::string& name)
+	{
+		auto entity = scene->addEntity<MeshFilter, MeshRenderer>(name);
 		return entity;
 	}
 }

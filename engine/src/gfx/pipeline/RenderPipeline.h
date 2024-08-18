@@ -17,13 +17,13 @@ namespace pio
 		virtual void onRender(Ref<RenderContext> &context, std::vector<Ref<Camera>>& cameras);
 
 	protected:
-		void beginFrameRendering(Ref<RenderContext>& context);
-		void endFrameRendering(Ref<RenderContext>& context);
+		void onBeginFrameRendering(Ref<RenderContext>& context);
+		void onEndFrameRendering(Ref<RenderContext>& context);
 
-		void sortCameras(std::vector<Ref<Camera>>& cameras);
-		void beginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
-		void renderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
-		void endCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
+		void onSortCameras(std::vector<Ref<Camera>>& cameras);
+		void onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
+		void onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
+		void onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
 	};
 }
 

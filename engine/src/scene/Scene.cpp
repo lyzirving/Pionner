@@ -29,14 +29,14 @@ namespace pio
 	{
 		std::vector<Ref<Camera>> cameras;
 
+		auto meshEntities = m_registry.view<MeshFilter, MeshRenderer>();
 		auto cameraEntities = m_registry.view<CameraComponent>();
+
 		for (auto &ent : cameraEntities)
 		{
 			auto cam = AssetMgr::GetRuntimeAsset<Camera>(ent->getComponent<CameraComponent>()->Handle);
-			if (cam)
-			{
-				cameras.push_back(cam);
-			}
+			cam->setUpEntities(meshEntities);
+			cameras.push_back(cam);
 		}
 
 		pipeline->onRender(context, cameras);
