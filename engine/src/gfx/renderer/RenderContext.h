@@ -2,10 +2,11 @@
 #define __PIONNER_GFX_RENDERER_RENDER_CONTEXT_H__
 
 #include "RenderThread.h"
-#include "RenderAPI.h"
 
+#include "gfx/rhi/RenderAPI.h"
+
+#include "base/utils/SystemUtils.h"
 #include "base/CommandQueue.h"
-#include "platform/SystemUtils.h"
 
 namespace pio
 {

@@ -11,17 +11,17 @@ namespace pio
 {
 	void SceneMgr::add(const Ref<Scene>& scene)
 	{
-		auto it = m_scenes.find(scene->handle());
+		auto it = m_scenes.find(scene->id());
 		if (it == m_scenes.end())
 		{
 			scene->onAttach();
-			m_scenes[scene->handle()] = scene;			
+			m_scenes[scene->id()] = scene;			
 		}
 	}
 
 	void SceneMgr::remove(const Ref<Scene>& scene)
 	{
-		auto it = m_scenes.find(scene->handle());
+		auto it = m_scenes.find(scene->id());
 		if (it != m_scenes.end())
 		{
 			scene->onDetach();
@@ -39,11 +39,11 @@ namespace pio
 		}
 	}
 
-	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context)
+	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline)
 	{
 		for (auto &it : m_scenes)
 		{
-			it.second->onUpdate(context);
+			it.second->onUpdate(context, pipeline);
 		}
 	}
 }

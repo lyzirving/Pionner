@@ -37,12 +37,7 @@
 
 namespace pio
 {
-	constexpr static const uint32_t NullIndex = ~0U;
-	constexpr static const uint32_t NullAsset = 0U;
-
-	constexpr static const glm::vec3 AXIS_X = glm::vec3(1.f, 0.f, 0.f);
-	constexpr static const glm::vec3 AXIS_Y = glm::vec3(0.f, 1.f, 0.f);
-	constexpr static const glm::vec3 AXIS_Z = glm::vec3(0.f, 0.f, 1.f);
+	constexpr static const uint32_t InvalidId = 0U;
 
 	using byte = uint8_t;
 

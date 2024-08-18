@@ -1,5 +1,5 @@
-#ifndef __PIONNER_GFX_CORE_CAMERA_H__
-#define __PIONNER_GFX_CORE_CAMERA_H__
+#ifndef __PIONNER_SCENE_3D_CAMERA_H__
+#define __PIONNER_SCENE_3D_CAMERA_H__
 
 #include "asset/Asset.h"
 

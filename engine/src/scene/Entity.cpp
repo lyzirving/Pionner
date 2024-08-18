@@ -6,11 +6,15 @@ namespace pio
 
 	#define PIO_MAKE_ENT_NAME (std::string("Entity") + std::to_string(k_EntNum++))
 
-	Entity::Entity(const entt::entity& key, const std::string& name) : m_key(key), m_id()
+	Entity::Entity(const entt::entity& key, entt::registry& regi, const std::string& name)
+		: m_key(key), m_regi(regi), m_id()
 	{
-		if (m_name.empty())
+		if (name.empty())
 			m_name = PIO_MAKE_ENT_NAME;
 		else
+		{
+			m_name = name;
 			k_EntNum++;
+		}
 	}
 }

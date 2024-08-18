@@ -5,11 +5,22 @@
 
 namespace pio
 {
-	struct CameraComponent
+	struct Component
 	{
+		bool Enable{ true };
 	};
 
-	struct MeshFilter
+	struct CameraComponent : public Component
+	{
+		UUID32 Handle{ InvalidId };
+	};
+
+	struct MeshFilter : public Component
+	{
+
+	};
+
+	struct MeshRenderer : public Component
 	{
 
 	};

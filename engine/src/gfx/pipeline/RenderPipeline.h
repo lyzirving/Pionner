@@ -14,16 +14,16 @@ namespace pio
 		RenderPipeline() {}
 		~RenderPipeline() = default;
 
-		virtual void onRender(Ref<RenderContext> &ctx, std::vector<Ref<Camera>>& cameras);
+		virtual void onRender(Ref<RenderContext> &context, std::vector<Ref<Camera>>& cameras);
 
 	protected:
-		void beginFrameRendering(Ref<RenderContext>& ctx);
-		void endFrameRendering(Ref<RenderContext>& ctx);
+		void beginFrameRendering(Ref<RenderContext>& context);
+		void endFrameRendering(Ref<RenderContext>& context);
 
 		void sortCameras(std::vector<Ref<Camera>>& cameras);
-		void beginCameraRendering(Ref<RenderContext>& ctx, Ref<Camera>& camera);
-		void renderSingleCamera(Ref<RenderContext>& ctx, Ref<Camera>& camera);
-		void endCameraRendering(Ref<RenderContext>& ctx, Ref<Camera>& camera);
+		void beginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
+		void renderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
+		void endCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
 	};
 }
 

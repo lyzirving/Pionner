@@ -15,10 +15,10 @@ namespace pio
 		void remove(const Ref<Scene>& scene);
 		void removeAll();
 
-		void onUpdate(Ref<RenderContext> &context);
+		void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline);
 
 	private:
-		std::map<AssetHandle, Ref<Scene>> m_scenes;
+		std::map<UUID32, Ref<Scene>> m_scenes;
 	};
 }
 

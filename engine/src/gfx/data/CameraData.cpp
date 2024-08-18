@@ -1,6 +1,6 @@
 #include "CameraData.h"
 
-#include "gfx/core/Camera.h"
+#include "scene/3d/Camera.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

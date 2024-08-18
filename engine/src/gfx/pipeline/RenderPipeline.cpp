@@ -1,6 +1,6 @@
 #include "RenderPipeline.h"
 
-#include "gfx/core/Camera.h"
+#include "scene/3d/Camera.h"
 #include "gfx/renderer/RenderContext.h"
 
 #ifdef LOCAL_TAG
@@ -10,27 +10,27 @@
 
 namespace pio
 {
-	void RenderPipeline::onRender(Ref<RenderContext>& ctx, std::vector<Ref<Camera>>& cameras)
+	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<Camera>>& cameras)
 	{
-		beginFrameRendering(ctx);
+		beginFrameRendering(context);
 
 		sortCameras(cameras);
 
 		for (int32_t i = 0; i < cameras.size(); i++)
 		{
-			beginCameraRendering(ctx, cameras[i]);
-			renderSingleCamera(ctx, cameras[i]);
-			endCameraRendering(ctx, cameras[i]);
+			beginCameraRendering(context, cameras[i]);
+			renderSingleCamera(context, cameras[i]);
+			endCameraRendering(context, cameras[i]);
 		}
 
-		endFrameRendering(ctx);
+		endFrameRendering(context);
 	}
 
-	void RenderPipeline::beginFrameRendering(Ref<RenderContext>& ctx)
+	void RenderPipeline::beginFrameRendering(Ref<RenderContext>& context)
 	{
 	}
 
-	void RenderPipeline::endFrameRendering(Ref<RenderContext>& ctx)
+	void RenderPipeline::endFrameRendering(Ref<RenderContext>& context)
 	{
 	}
 
@@ -38,15 +38,15 @@ namespace pio
 	{
 	}
 
-	void RenderPipeline::beginCameraRendering(Ref<RenderContext>& ctx, Ref<Camera>& camera)
+	void RenderPipeline::beginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
 	}
 
-	void RenderPipeline::renderSingleCamera(Ref<RenderContext>& ctx, Ref<Camera>& camera)
+	void RenderPipeline::renderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
 	}
 
-	void RenderPipeline::endCameraRendering(Ref<RenderContext>& ctx, Ref<Camera>& camera)
+	void RenderPipeline::endCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
 	}
 }

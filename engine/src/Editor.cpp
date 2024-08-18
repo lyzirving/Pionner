@@ -6,9 +6,13 @@
 #include "event/EventBus.h"
 #include "event/EventHub.h"
 
-#include "gfx/renderer/RenderContext.h"
-#include "scene/Registry.h"
+#include "asset/AssetMgr.h"
+
 #include "scene/Components.h"
+#include "scene/Factory.h"
+
+#include "gfx/renderer/RenderContext.h"
+#include "gfx/pipeline/RenderPipeline.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -39,28 +43,33 @@ namespace pio
 
 	void Editor::onAttach()
 	{		 
-		Registry::Init();
+		AssetMgr::Init();
 		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
 
 		m_window = Window::create(WindowProps("Pionner", 1400, 720, Backend_OpenGL));
-		m_renderCtx = CreateRef<RenderContext>(Backend_OpenGL, m_window);
+		m_context = CreateRef<RenderContext>(Backend_OpenGL, m_window);
+		m_pipeline = CreateRef<RenderPipeline>();
 
 		auto scene = CreateRef<Scene>();
+		Factory::MakeCamera(scene, "MainCamera", true);
 		m_sceneMgr.add(scene);
 	}
 
 	void Editor::onDetach()
 	{		
 		LOGD("begin to destroy resource");
-		auto& renderThread = m_renderCtx->thread();
+		auto& renderThread = m_context->thread();
+
 		m_sceneMgr.removeAll();
+		AssetMgr::Shutdown();
+
 		renderThread.terminate();
 		LOGD("wake up from render thread");
 
-		EventHub::Get()->removeCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));		
-		m_renderCtx.reset();
+		EventHub::Get()->removeCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
+		m_pipeline.reset();
+		m_context.reset();
 		m_window.reset();
-		Registry::Shutdown();
 	}
 
 	void Editor::onEvent(Ref<Event> &event)
@@ -90,8 +99,8 @@ namespace pio
 	{
 		onAttach();
 
-		auto &renderThread = m_renderCtx->thread();
-		renderThread.run(PIO_BIND_FN_OTHER(RenderContext::renderLoop, m_renderCtx.get()));
+		auto &renderThread = m_context->thread();
+		renderThread.run(PIO_BIND_FN_OTHER(RenderContext::renderLoop, m_context.get()));
 		// Block until the first frame has been done
 		renderThread.pump();
 
@@ -100,7 +109,7 @@ namespace pio
 			// Wait for render thread to finish commands
 			renderThread.blockUntilRenderComplete();
 			renderThread.nextFrame();
-			m_renderCtx->swapQueues();
+			m_context->swapQueues();
 			// Start rendering previous frame in render thread
 			renderThread.kick();
 			//---------------------------------------------------------
@@ -111,7 +120,7 @@ namespace pio
 			EventBus::Get()->dispatch();
 			EventHub::Get()->dispatch();
 
-			m_sceneMgr.onUpdate(m_renderCtx);
+			m_sceneMgr.onUpdate(m_context, m_pipeline);
 
 			Time::RecordTime();
 		}

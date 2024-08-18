@@ -8,47 +8,60 @@ namespace pio
 	class Registry
 	{
 	public:
-		static void Init();
-		static void Shutdown();
+		Registry() {}
+		~Registry() { shutdown(); }
 
-		static Ref<Entity> Create(const std::string& name = "")
+		Ref<Entity> create(const std::string& name = "")
 		{
-			auto entity = CreateRef<Entity>(k_Registry.create(), name);
-			k_EntCache[entity->id()] = entity;
+			auto entity = CreateRef<Entity>(m_registry.create(), m_registry, name);
+			m_entCache[entity->index()] = entity;
 			return entity;
 		}
 
 		template <typename T, typename ... Comps>
-		static Ref<Entity> Create(const std::string& name = "")
+		Ref<Entity> create(const std::string& name = "")
 		{
-			auto entity = CreateRef<Entity>(k_Registry.create(), name);
-			k_EntCache[entity->id()] = entity;
-			AddComponent<T, Comps...>(entity);
+			auto entity = CreateRef<Entity>(m_registry.create(), m_registry, name);
+			m_entCache[entity->index()] = entity;
+			entity->addComponent<T, Comps...>();
 			return entity;
 		}
 
-		template <typename T, typename ... Comps>
-		static void AddComponent(Ref<Entity>& entity)
+		template<typename... Comps>
+		std::vector<Ref<Entity>> view() const
 		{
-			k_Registry.emplace<T>(entity->key());
-			if constexpr (sizeof...(Comps) > 0) { AddComponent<Comps...>(entity); }
+			std::vector<Ref<Entity>> entities;
+			auto v = m_registry.view<Comps...>();
+			for (auto ent : v)
+			{
+				auto it = m_entCache.find(PIO_ENT_KEY_2_IDX(ent));
+				if (it != m_entCache.end())
+				{
+					entities.push_back(it->second);
+				}
+			}
+			return entities;
 		}
 
-		template <typename T, typename ... Comps>
-		static uint32_t RemoveComponent(Ref<Entity>& entity)
+		void destroy(Ref<Entity>& entity)
 		{
-			return k_Registry.remove(T, Comps...)(entity->key());s
+			m_entCache.erase(entity->index());
+			m_registry.destroy(entity->key());
 		}
 
-		static void Destroy(Ref<Entity>& entity)
+		void shutdown()
 		{
-			k_EntCache.erase(entity->id());
-			k_Registry.destroy(entity->key());
+			auto it = m_entCache.begin();
+			while (it != m_entCache.end())
+			{
+				m_registry.destroy(it->second->key());
+				it = m_entCache.erase(it);
+			}
 		}
 
 	private:
-		static entt::registry k_Registry;
-		static std::unordered_map<uint32_t, Ref<Entity>> k_EntCache;
+		entt::registry m_registry;
+		std::unordered_map<uint32_t, Ref<Entity>> m_entCache;
 	};
 }
 

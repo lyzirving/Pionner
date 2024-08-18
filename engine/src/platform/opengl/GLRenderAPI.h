@@ -1,7 +1,7 @@
-#ifndef __PIONNER_PLATFORM_OPENGL_GL_RENDER_API_2_H__
-#define __PIONNER_PLATFORM_OPENGL_GL_RENDER_API_2_H__
+#ifndef __PIONNER_PLATFORM_OPENGL_GL_RENDER_API_H__
+#define __PIONNER_PLATFORM_OPENGL_GL_RENDER_API_H__
 
-#include "gfx/renderer/RenderAPI.h"
+#include "gfx/rhi/RenderAPI.h"
 
 namespace pio
 {

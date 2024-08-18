@@ -8,9 +8,11 @@ namespace pio
 {
 	class Event;
 	class Window;
-	class RenderContext;
 	class WindowCloseEvent;
 	class WindowResizeEvent;
+
+	class RenderContext;
+	class RenderPipeline;
 
 	class Editor : public EventHubObj
 	{
@@ -38,7 +40,8 @@ namespace pio
 		SceneMgr m_sceneMgr;
 
 		Ref<Window> m_window{ nullptr };
-		Ref<RenderContext> m_renderCtx{ nullptr };
+		Ref<RenderContext>  m_context{ nullptr };
+		Ref<RenderPipeline> m_pipeline{ nullptr };
 	};
 }
 

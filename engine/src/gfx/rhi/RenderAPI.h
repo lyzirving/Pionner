@@ -1,11 +1,12 @@
-#ifndef __PIONNER_GFX_RENDERER_CRENDER_API_H__
-#define __PIONNER_GFX_RENDERER_CRENDER_API_H__
+#ifndef __PIONNER_GFX_RHI_RENDER_API_H__
+#define __PIONNER_GFX_RHI_RENDER_API_H__
 
 #include "gfx/GfxDef.h"
 
 namespace pio
 {
 	class RenderContext;
+
 	class RenderAPI
 	{
 	public:

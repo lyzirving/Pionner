@@ -5,8 +5,6 @@
 
 namespace pio
 {
-	using AssetHandle = UUID32;
-
 	enum class AssetType : uint8_t
 	{
 		None = 0, Camera, Scene
@@ -19,15 +17,15 @@ namespace pio
 	class Asset
 	{
 	public:
-		Asset() : m_handle(), m_parentHandle(0) {}
+		Asset() : m_id(), m_parentId(0) {}
 
-		Asset(const Asset& rhs) : m_handle(rhs.m_handle), m_parentHandle(rhs.m_parentHandle) {}
+		Asset(const Asset& rhs) : m_id(rhs.m_id), m_parentId(rhs.m_parentId) {}
 		Asset operator=(const Asset& rhs)
 		{
 			if (this != &rhs)
 			{
-				m_handle = rhs.m_handle;
-				m_parentHandle = rhs.m_parentHandle;
+				m_id = rhs.m_id;
+				m_parentId = rhs.m_parentId;
 			}
 			return *this;
 		}
@@ -36,11 +34,11 @@ namespace pio
 		virtual AssetType type() const { return StaticType(); }
 
 	public:
-		AssetHandle handle() { return m_handle; }
-		const AssetHandle& handle() const { return m_handle; }
-		const AssetHandle& parentHandle() const { return m_parentHandle; }
+		UUID32 id() { return m_id; }
+		const UUID32& id() const { return m_id; }
+		const UUID32& parentId() const { return m_parentId; }
 
-		void setParentHandle(const AssetHandle& handle) { m_parentHandle = handle; }
+		void setParentId(const UUID32& id) { m_parentId = id; }
 
 	public:
 		template<typename T>
@@ -53,7 +51,7 @@ namespace pio
 		static AssetType StaticType() { return AssetType::None; }
 
 	protected:
-		AssetHandle m_handle, m_parentHandle;
+		UUID32 m_id, m_parentId;
 	};
 }
 
