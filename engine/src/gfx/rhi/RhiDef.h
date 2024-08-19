@@ -104,7 +104,7 @@ namespace pio
 		None = 0, MouseCapture, KeyboardCapture, TextInputCapture
 	};
 
-	enum class RenderStrategy : uint8_t
+	enum class RenderingMode : uint8_t
 	{
 		Forward = 0, Deferred
 	};

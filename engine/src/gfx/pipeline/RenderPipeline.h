@@ -7,11 +7,12 @@ namespace pio
 {
 	class Camera;
 	class RenderContext;
+	class Renderer;
 
 	class RenderPipeline
 	{
 	public:
-		RenderPipeline() {}
+		RenderPipeline();
 		~RenderPipeline() = default;
 
 		virtual void onRender(Ref<RenderContext> &context, std::vector<Ref<Camera>>& cameras);
@@ -24,6 +25,9 @@ namespace pio
 		void onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
 		void onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
 		void onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
+
+	protected:
+		Ref<Renderer> m_renderer;
 	};
 }
 
