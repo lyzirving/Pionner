@@ -3,47 +3,71 @@
 
 #include "Base.h"
 
-namespace pio 
+namespace pio
 {
-    enum RenderPassEvent
-    {
-        BeforeRendering = 0,
-        BeforeRenderingShadows, 
-        RenderingShadows, 
-        AfterRenderingShadows,        
-        BeforeRenderingPrepasses, 
-        RenderingPrepasses, 
-        AfterRenderingPrePasses,
-        BeforeRenderingOpaques, 
-        RenderingOpaques, 
-        AfterRenderingOpaques,
-        BeforeRenderingSkybox,
-        RenderingSkybox, 
-        AfterRenderingSkybox,
-        BeforeRenderingTransparents, 
-        RenderingTransparents, 
-        AfterRenderingTransparents,
-        BeforeRenderingPostProcessing, 
-        RenderingPostProcessing, 
-        AfterRenderingPostProcessing, 
-        AfterRendering
-    };
+	enum RenderPassEvent
+	{
+		BeforeRendering                = 50,									   
+		BeforeRenderingShadows         = 100,
+		RenderingShadows,			   
+		AfterRenderingShadows,		   									   
+		BeforeRenderingPrepasses       = 150,
+		RenderingPrepasses,			   
+		AfterRenderingPrePasses,	   									   
+		BeforeRenderingOpaques         = 200,
+		RenderingOpaques,			   
+		AfterRenderingOpaques,		   									   
+		BeforeRenderingSkybox          = 250,
+		RenderingSkybox,			   
+		AfterRenderingSkybox,		   									   
+		BeforeRenderingTransparents    = 300,
+		RenderingTransparents,		   
+		AfterRenderingTransparents,								   
+		BeforeRenderingPostProcessing  = 350,
+		RenderingPostProcessing,	   
+		AfterRenderingPostProcessing,  									   
+		AfterRendering                 = 400
+	};
+
+	enum RenderBlockFlags
+	{
+		MainBeforeRendering = 0, 
+		MainRenderingOpaque,
+		MainRenderingTransparents,
+		MainAfterRendering
+	};
 
 	class RenderPass
 	{
 	public:
-		RenderPass(const std::string &name, RenderPassEvent event) : m_name(name), m_event(event) {}
+		RenderPass(const std::string& name, RenderPassEvent event) : m_name(name), m_event(event) {}
 		virtual ~RenderPass() = default;
 
-        const std::string &name() const { return m_name; }
-        RenderPassEvent event() const { return m_event; }
+		const std::string& name() const { return m_name; }
+		RenderPassEvent event() const { return m_event; }
 
-    public:
-        static bool PassSorter(Ref<RenderPass> &lhs, Ref<RenderPass> &rhs);
+	public:
+		static bool PassSorter(Ref<RenderPass>& lhs, Ref<RenderPass>& rhs);
 
-    protected:
-        std::string m_name;
-        RenderPassEvent m_event;
+	protected:
+		std::string m_name;
+		RenderPassEvent m_event;
+	};
+
+	struct BlockRange
+	{
+		RenderPassEvent Left{ BeforeRendering }, Right{ BeforeRendering };
+
+		BlockRange() {}
+		BlockRange(RenderPassEvent l, RenderPassEvent r) : Left(l), Right(r) {}
+
+		bool contains(Ref<RenderPass>& pass) { return pass->event() >= Left && pass->event() < Right; }
+	};
+
+	class RenderBlock
+	{
+	public:
+		static BlockRange GetBlockRange(RenderBlockFlags flag);
 	};
 }
 

@@ -7,12 +7,9 @@
 
 namespace pio
 {
-	void Camera::makeCulling()
+	void Camera::culling(PendingData& pendingData)
 	{
-		if (m_drawEnts.empty())
-			return;
-
-		//[TODO]
+		//TODO
 	}
 
 	template<>

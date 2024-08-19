@@ -28,9 +28,9 @@ namespace pio
 		}
 
 		template<typename... Comps>
-		std::vector<Ref<Entity>> view() const
+		std::list<Ref<Entity>> view() const
 		{
-			std::vector<Ref<Entity>> entities;
+			std::list<Ref<Entity>> entities;
 			auto v = m_registry.view<Comps...>();
 			for (auto ent : v)
 			{

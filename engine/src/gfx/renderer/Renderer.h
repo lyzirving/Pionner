@@ -6,6 +6,7 @@
 namespace pio
 {
 	class RenderContext;
+	struct PendingData;
 
 	class Renderer
 	{
@@ -13,8 +14,8 @@ namespace pio
 		Renderer() {}
 		virtual ~Renderer() = default;
 
-		virtual void onSetUp() = 0;
-		virtual void onRender(Ref<RenderContext> &context) = 0;
+		virtual void onSetUp(PendingData &pendingData) = 0;
+		virtual void onExecute(Ref<RenderContext> &context) = 0;
 
 	public:
 		static Ref<Renderer> Create(const RenderConfig &config);

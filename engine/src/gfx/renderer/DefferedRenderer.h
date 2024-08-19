@@ -5,6 +5,7 @@
 
 namespace pio
 {
+	enum RenderBlockFlags;
 	class RenderPass;
 	class GBufferPass;
 	class DefferedPass;
@@ -16,11 +17,16 @@ namespace pio
 		DefferedRenderer();
 		~DefferedRenderer() = default;
 
-		virtual void onSetUp() override;
-		virtual void onRender(Ref<RenderContext> &context) override;
+		virtual void onSetUp(PendingData& pendingData) override;
+		virtual void onExecute(Ref<RenderContext> &context) override;
+
+	protected:
+		void initializeRenderingData(PendingData& pendingData);
+		void executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>> &queue, Ref<RenderContext>& context);
+		void executePass(Ref<RenderPass> &pass, Ref<RenderContext>& context);
 
 	private:
-		std::vector<Ref<RenderPass>> m_passList;
+		std::vector<Ref<RenderPass>> m_activeQueue;
 
 		Ref<MainLightShadowCasterPass> m_mainLightShadowPass;
 		Ref<DefferedPass> m_defferedPass;

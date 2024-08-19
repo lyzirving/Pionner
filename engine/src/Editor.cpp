@@ -56,7 +56,7 @@ namespace pio
 			Factory::MakeCamera(scene, "MainCamera", 0);
 			Factory::MakePlane(scene, "Plane");
 		}
-		m_sceneMgr.add(scene);
+		m_sceneMgr.add(scene, true);
 	}
 
 	void Editor::onDetach()

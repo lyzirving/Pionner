@@ -11,7 +11,7 @@ namespace pio
 		SceneMgr() {}
 		~SceneMgr() = default;
 
-		void add(const Ref<Scene>& scene);
+		void add(const Ref<Scene>& scene, bool bActive = false);
 		void remove(const Ref<Scene>& scene);
 		void removeAll();
 
@@ -19,6 +19,7 @@ namespace pio
 
 	private:
 		std::map<UUID32, Ref<Scene>> m_scenes;
+		Ref<Scene> m_active;
 	};
 }
 

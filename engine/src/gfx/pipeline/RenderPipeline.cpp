@@ -58,11 +58,13 @@ namespace pio
 
 	void RenderPipeline::onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
-		camera->makeCulling();
+		auto& pendingData = context->pendingData();
 
-		m_renderer->onSetUp();
+		camera->culling(pendingData);
 
-		m_renderer->onRender(context);
+		m_renderer->onSetUp(pendingData);
+
+		m_renderer->onExecute(context);
 	}
 
 	void RenderPipeline::onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)

@@ -4,6 +4,7 @@
 #include "RenderThread.h"
 
 #include "gfx/rhi/RenderAPI.h"
+#include "gfx/data/PendingData.h"
 
 #include "base/utils/SystemUtils.h"
 #include "base/CommandQueue.h"
@@ -20,10 +21,13 @@ namespace pio
 
 		void renderLoop();
 
-		Ref<Window>&  window() { return m_window; }
-		RenderThread& thread() { return m_thread; }
 		BackendFlags backendType() const { return m_api->type(); }
-		uint64_t frame() const { return m_frameNum; }		
+		uint64_t frame() const { return m_frameNum; }
+		PendingData& pendingData() { return m_pendingData; }
+		RenderThread& thread() { return m_thread; }
+		Ref<Window>&  window() { return m_window; }
+		
+		void setUpPendingData(PendingData&& data) { m_pendingData = std::forward<PendingData>(data); }
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
 		bool bInRenderThread() const { return m_thread.isRunning() && SystemUtils::GetThreadId() == m_threadId; }
 
@@ -97,6 +101,8 @@ namespace pio
 		CommandQueue m_cmdQueue[k_queueNum];
 		CommandQueue m_taskQueue[k_queueNum];
 		CommandQueue m_garbageQueue[k_queueNum];
+
+		PendingData m_pendingData;
 
 		uint64_t m_frameNum{ 0 };
 	};

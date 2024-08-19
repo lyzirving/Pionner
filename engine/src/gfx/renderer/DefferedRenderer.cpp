@@ -19,21 +19,44 @@ namespace pio
 		m_defferedPass = CreateRef<DefferedPass>("DefferedPass", RenderPassEvent::AfterRenderingOpaques);
 	}
 
-	void DefferedRenderer::onSetUp()
+	void DefferedRenderer::onSetUp(PendingData& pendingData)
 	{
-		m_passList.clear();
-		m_passList.push_back(m_mainLightShadowPass);
-		m_passList.push_back(m_GBufferPass);
-		m_passList.push_back(m_defferedPass);
+		initializeRenderingData(pendingData);
 
-		std::sort(m_passList.begin(), m_passList.end(), RenderPass::PassSorter);
+		m_activeQueue.clear();
+		m_activeQueue.push_back(m_mainLightShadowPass);
+		m_activeQueue.push_back(m_GBufferPass);
+		m_activeQueue.push_back(m_defferedPass);
+
+		if (m_activeQueue.size() > 1)
+			std::sort(m_activeQueue.begin(), m_activeQueue.end(), RenderPass::PassSorter);		
 	}
 
-	void DefferedRenderer::onRender(Ref<RenderContext> &context)
+	void DefferedRenderer::onExecute(Ref<RenderContext> &context)
 	{
-		for(size_t i = 0; i < m_passList.size(); i++)
+		executeBlock(RenderBlockFlags::MainBeforeRendering, m_activeQueue, context);
+		executeBlock(RenderBlockFlags::MainRenderingOpaque, m_activeQueue, context);
+		executeBlock(RenderBlockFlags::MainRenderingTransparents, m_activeQueue, context);
+		executeBlock(RenderBlockFlags::MainAfterRendering, m_activeQueue, context);
+	}
+
+	void DefferedRenderer::initializeRenderingData(PendingData& pendingData)
+	{
+	}
+
+	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context)
+	{
+		BlockRange range = RenderBlock::GetBlockRange(flag);
+		for (size_t i = 0; i < queue.size(); i++)
 		{
-			
+			if (range.contains(queue[i]))
+			{
+				executePass(queue[i], context);
+			}
 		}
+	}
+
+	void DefferedRenderer::executePass(Ref<RenderPass>& pass, Ref<RenderContext>& context)
+	{		
 	}
 }
