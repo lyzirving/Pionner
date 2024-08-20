@@ -22,8 +22,7 @@ namespace pio
 
 	protected:
 		void initializeRenderingData(PendingData& pendingData);
-		void executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>> &queue, Ref<RenderContext>& context);
-		void executePass(Ref<RenderPass> &pass, Ref<RenderContext>& context);
+		void executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>> &queue, Ref<RenderContext>& context);		
 
 	private:
 		std::vector<Ref<RenderPass>> m_activeQueue;

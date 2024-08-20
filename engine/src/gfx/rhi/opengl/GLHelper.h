@@ -1,5 +1,5 @@
-#ifndef __PIONNER_PLATFORM_GL_GLHELPER_H__
-#define __PIONNER_PLATFORM_GL_GLHELPER_H__
+#ifndef __PIONNER_GFX_RHI_OPENGL_GL_HELPER_H__
+#define __PIONNER_GFX_RHI_OPENGL_GL_HELPER_H__
 
 #include "GLHeader.h"
 #include "gfx/rhi/RhiDef.h"

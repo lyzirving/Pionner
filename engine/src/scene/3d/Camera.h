@@ -2,6 +2,7 @@
 #define __PIONNER_SCENE_3D_CAMERA_H__
 
 #include "asset/Asset.h"
+#include "gfx/data/CameraData.h"
 
 namespace pio
 {
@@ -21,6 +22,7 @@ namespace pio
 
 	private:
 		int32_t m_depth{ 0 };
+		CameraData m_data{};
 	};
 
 	template<>

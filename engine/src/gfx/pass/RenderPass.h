@@ -37,6 +37,8 @@ namespace pio
 		MainAfterRendering
 	};
 
+	class RenderContext;
+
 	class RenderPass
 	{
 	public:
@@ -45,6 +47,8 @@ namespace pio
 
 		const std::string& name() const { return m_name; }
 		RenderPassEvent event() const { return m_event; }
+
+		virtual void execute(Ref<RenderContext> &context) {}
 
 	public:
 		static bool PassSorter(Ref<RenderPass>& lhs, Ref<RenderPass>& rhs);

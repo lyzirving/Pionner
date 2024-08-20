@@ -1,6 +1,6 @@
 #include "RenderAPI.h"
 
-#include "platform/opengl/GLRenderAPI.h"
+#include "gfx/rhi/opengl/GLRenderAPI.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

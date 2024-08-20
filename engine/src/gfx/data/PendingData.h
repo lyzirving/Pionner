@@ -24,24 +24,20 @@ namespace pio
 			SkinnedMesh = std::move(rhs.SkinnedMesh);
 		}
 
-		PendingData& operator=(const PendingData& rhs)
+		PendingData &operator=(const PendingData &rhs)
 		{
-			if (this != &rhs)
+			if(this != &rhs)
 			{
-				MainLight = rhs.MainLight;
-				Mesh = rhs.Mesh;
-				SkinnedMesh = rhs.SkinnedMesh;
+				this->PendingData::PendingData(rhs);
 			}
 			return *this;
 		}
 
-		PendingData& operator=(PendingData&& rhs) noexcept
+		PendingData &operator=(PendingData &&rhs) noexcept
 		{
-			if (this != &rhs)
+			if(this != &rhs)
 			{
-				MainLight = std::move(rhs.MainLight);
-				Mesh = std::move(rhs.Mesh);
-				SkinnedMesh = std::move(rhs.SkinnedMesh);
+				this->PendingData::PendingData(std::forward<PendingData>(rhs));
 			}
 			return *this;
 		}

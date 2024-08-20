@@ -10,7 +10,7 @@ namespace pio
 	enum class UBBindings : uint8_t
 	{
 		Camera = 0, 
-		DistantLight, DistantLightShadowData, PointLightData, PointLightShadowData,
+		MainLight, MainLightShadowData, PointLightData, PointLightShadowData,
 		BoneTransform, Num
 	};
 

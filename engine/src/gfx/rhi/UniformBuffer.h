@@ -27,7 +27,6 @@ namespace pio
 
 	public:
 		static Ref<UniformBuffer> Create(uint32_t size, uint32_t binding, BufferUsage usage = BufferUsage::DynamicRead);
-		static bool Binding(const Ref<Shader> &shader, const std::string &blockName, uint32_t bindingPt);
 	};
 }
 

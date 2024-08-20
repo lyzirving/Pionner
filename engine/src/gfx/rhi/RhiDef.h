@@ -2,6 +2,7 @@
 #define __PIONNER_GFX_RHI_DEF_H__
 
 #include "asset/Asset.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {
@@ -97,16 +98,6 @@ namespace pio
 	enum class FrameBufferUsage : uint8_t
 	{
 		ColorBuffer = 0, DepthBuffer, DepthStencil
-	};		
-
-	enum class UiFocus : uint8_t
-	{
-		None = 0, MouseCapture, KeyboardCapture, TextInputCapture
-	};
-
-	enum class RenderingMode : uint8_t
-	{
-		Forward = 0, Deferred
 	};
 
 	namespace RhiDef

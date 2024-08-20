@@ -42,6 +42,7 @@ namespace pio
 
 	void DefferedRenderer::initializeRenderingData(PendingData& pendingData)
 	{
+
 	}
 
 	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context)
@@ -51,12 +52,8 @@ namespace pio
 		{
 			if (range.contains(queue[i]))
 			{
-				executePass(queue[i], context);
+				queue[i]->execute(context);
 			}
 		}
-	}
-
-	void DefferedRenderer::executePass(Ref<RenderPass>& pass, Ref<RenderContext>& context)
-	{		
 	}
 }
