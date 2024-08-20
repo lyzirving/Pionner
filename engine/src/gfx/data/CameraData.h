@@ -29,6 +29,9 @@ namespace pio
 	private:
 		CameraUD m_uniformData;
 		Ref<UniformBuffer> m_uniformBuffer;
+
+	private:
+		friend class Camera;
 	};
 }
 

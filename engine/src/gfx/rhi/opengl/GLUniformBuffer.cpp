@@ -8,14 +8,13 @@
 
 namespace pio
 {
-	GLUniformBuffer::GLUniformBuffer(uint32_t size, uint32_t binding, BufferUsage usage)
-		: UniformBuffer(), m_size(size), m_usage(usage), m_binding(binding)
+	GLUniformBuffer::GLUniformBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t binding, BufferUsage usage)
+		: UniformBuffer(context), m_size(size), m_usage(usage), m_binding(binding)
 	{
 	}
 
 	GLUniformBuffer::~GLUniformBuffer()
 	{
-		destroy();
 	}
 
 	bool GLUniformBuffer::init()
@@ -29,8 +28,7 @@ namespace pio
 			{
 				LOGD("create uniform buffer[%u], binding[%u], byte used[%u]", m_vbo, m_binding, m_size);
 			}
-			glBindBuffer(GL_UNIFORM_BUFFER, 0);
-			
+			glBindBuffer(GL_UNIFORM_BUFFER, 0);			
 		}
 		return isInit();
 	}
@@ -117,40 +115,5 @@ namespace pio
 		{
 			LOGE("invalid state, vbo[%u], binding[%u]", m_vbo, m_binding);
 		}
-	}
-
-
-	bool GLUniformBuffer::Binding(const Ref<Shader> &shader, const std::string &blockName, uint32_t bindingPt)
-	{
-		return false;
-		//if (!shader || !shader->isInit())
-		//{
-		//	LOGE("invalid program");
-		//	return false;
-		//}
-
-		//if (blockName.empty())
-		//{
-		//	LOGE("invalid block name");
-		//	return false;
-		//}
-
-		//uint32_t program = shader->getProgram();
-
-		//uint32_t index = glGetUniformBlockIndex(program, blockName.c_str());
-		//if (index == GL_INVALID_INDEX)
-		//{
-		//	LOGE("fail to get block[%s]'s index in program[%u]", blockName.c_str(), program);
-		//	GLHelper::CheckError("fail to get uniform block's index in program");
-		//	return false;
-		//}
-
-		//GLint blockSize{ 0 };
-		//glGetActiveUniformBlockiv(program, index, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-		////LOGD("block[%s] in program[%u]'s size is [%d]", blockName.c_str(), program, blockSize);
-
-		//glUniformBlockBinding(program, index, bindingPt);
-		//return GLHelper::CheckError("fail to bind program[%u]'s uniform block[%s][%u] to binding point[%u]",
-		//					        program, blockName.c_str(), index, bindingPt);
 	}
 }

@@ -19,10 +19,8 @@ namespace pio
 		m_defferedPass = CreateRef<DefferedPass>("DefferedPass", RenderPassEvent::AfterRenderingOpaques);
 	}
 
-	void DefferedRenderer::onSetUp(PendingData& pendingData)
+	void DefferedRenderer::onSetUp()
 	{
-		initializeRenderingData(pendingData);
-
 		m_activeQueue.clear();
 		m_activeQueue.push_back(m_mainLightShadowPass);
 		m_activeQueue.push_back(m_GBufferPass);
@@ -38,11 +36,6 @@ namespace pio
 		executeBlock(RenderBlockFlags::MainRenderingOpaque, m_activeQueue, context);
 		executeBlock(RenderBlockFlags::MainRenderingTransparents, m_activeQueue, context);
 		executeBlock(RenderBlockFlags::MainAfterRendering, m_activeQueue, context);
-	}
-
-	void DefferedRenderer::initializeRenderingData(PendingData& pendingData)
-	{
-
 	}
 
 	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context)

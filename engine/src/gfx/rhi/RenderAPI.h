@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_RHI_RENDER_API_H__
 #define __PIONNER_GFX_RHI_RENDER_API_H__
 
-#include "gfx/GfxDef.h"
+#include "Base.h"
 
 namespace pio
 {

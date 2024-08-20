@@ -27,9 +27,9 @@
 #include <typeinfo>
 #include <cassert>
 
-#include "base/Def.h"
-#include "base/Math.h"
+#include "base/Types.h"
 #include "base/UUID.h"
+#include "base/QuatUtil.h"
 #include "base/utils/Time.h"
 #include "base/utils/LogSystem.h"
 

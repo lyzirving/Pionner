@@ -20,6 +20,7 @@ namespace pio
 		auto it = k_RuntimeAssets.begin();
 		while (it != k_RuntimeAssets.end())
 		{
+			it->second.reset();
 			it = k_RuntimeAssets.erase(it);
 		}
 	}

@@ -2,7 +2,6 @@
 #define __PIONNER_GFX_RHI_DEF_H__
 
 #include "asset/Asset.h"
-#include "gfx/GfxDef.h"
 
 namespace pio
 {

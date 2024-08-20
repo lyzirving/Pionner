@@ -71,11 +71,14 @@ namespace pio
 
 	CameraData::CameraData()
 	{
-		m_uniformData.obtainBlock();
-		m_uniformBuffer = UniformBuffer::Create(m_uniformData.Block.getByteUsed(), PIO_UINT(UBBindings::Camera), BufferUsage::Dynamic);	
+		m_uniformData.obtainBlock();	
 	}
 
 	void CameraData::setUpData(Ref<RenderContext> &context)
 	{
+		if (!m_uniformBuffer)
+		{
+			m_uniformBuffer = UniformBuffer::Create(context, m_uniformData.Block.getByteUsed(), PIO_UINT(UBBindings::Camera), BufferUsage::Dynamic);
+		}
 	}
 }

@@ -3,8 +3,9 @@
 
 #include "RenderThread.h"
 
-#include "gfx/rhi/RenderAPI.h"
 #include "gfx/data/PendingData.h"
+#include "gfx/rhi/RenderAPI.h"
+#include "gfx/rhi/UniformBuffer.h"
 
 #include "base/utils/SystemUtils.h"
 #include "base/CommandQueue.h"
@@ -21,7 +22,7 @@ namespace pio
 
 		void renderLoop();
 
-		BackendFlags backendType() const { return m_api->type(); }
+		BackendFlags backendFlag() const { return m_api->type(); }
 		uint64_t frame() const { return m_frameNum; }
 		PendingData& pendingData() { return m_pendingData; }
 		RenderThread& thread() { return m_thread; }
@@ -40,7 +41,6 @@ namespace pio
 			{
 				auto pFunc = (FuncT*)ptr;
 				(*pFunc)();
-
 				pFunc->~FuncT();
 			};
 			auto storageBuffer = garbageQueue().allocate(task, sizeof(func));
@@ -76,6 +76,11 @@ namespace pio
 			};
 			auto storageBuffer = cmdQueue().allocate(renderCmd, sizeof(func));
 			new (storageBuffer) FuncT(std::forward<FuncT>(func));
+		}
+
+		void uploadData(void* data, uint32_t size, Ref<UniformBuffer>& buffer)
+		{
+			submitTask([data, size, &buffer]() mutable { buffer->setData(data, size, 0); });
 		}
 
 	private:

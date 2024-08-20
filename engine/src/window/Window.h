@@ -1,7 +1,6 @@
 #ifndef __PIONNER_WINDOW_WINDOW_H__
 #define __PIONNER_WINDOW_WINDOW_H__
 
-#include "gfx/GfxDef.h"
 #include "event/Event.h"
 #include "event/Cursor.h"
 

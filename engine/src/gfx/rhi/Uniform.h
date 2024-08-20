@@ -30,15 +30,15 @@ namespace pio
 		virtual uint32_t getArrayNum() { return 0; }
 		virtual std::string toString();
 
-		inline uint32_t getBaseAlign() const { return m_baseAlign; }
-		inline uint32_t getAlignOffset() const { return m_alignOffset; }
-		inline uint32_t getByteUsed() const { return m_byteUsed; }
-		inline uint32_t getOccupied() const { return getAlignOffset() + getByteUsed(); }
-		inline UniformDataType getType() const { return m_type; }
-		inline const std::string &getName() const { return m_name; }
+		uint32_t getBaseAlign() const { return m_baseAlign; }
+		uint32_t getAlignOffset() const { return m_alignOffset; }
+		uint32_t getByteUsed() const { return m_byteUsed; }
+		uint32_t getOccupied() const { return getAlignOffset() + getByteUsed(); }
+		UniformDataType getType() const { return m_type; }
+		const std::string &getName() const { return m_name; }
 
-		inline void setAlignOffset(uint32_t offset) { m_alignOffset = offset; }
-		inline void setByteUsed(uint32_t used) { m_byteUsed = used; }
+		void setAlignOffset(uint32_t offset) { m_alignOffset = offset; }
+		void setByteUsed(uint32_t used) { m_byteUsed = used; }
 
 		template<class T>
 		T *as() { if (is<T>()) { return static_cast<T *>(this); } else { return nullptr; } }
@@ -235,10 +235,10 @@ namespace pio
 		std::string toString();
 
 	public:
-		inline uint32_t getAlignOffset() const { return m_alignOffset; }
-		inline uint32_t getByteUsed() const { return m_byteUsed; }
-		inline Ref<Buffer> getBuffer() const { return m_buffer; }
-		inline Ref<UniformData> operator[](const std::string &key) { return m_blockItems.get(key); }
+		uint32_t getAlignOffset() const { return m_alignOffset; }
+		uint32_t getByteUsed() const { return m_byteUsed; }
+		Ref<Buffer> getBuffer() const { return m_buffer; }
+		Ref<UniformData> operator[](const std::string &key) { return m_blockItems.get(key); }
 
 	public:
 		static Ref<UniformData> CreateData(UniformDataType type, const std::string &name, uint32_t arrayNum = 0);

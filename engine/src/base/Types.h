@@ -1,10 +1,24 @@
-#ifndef __PIONNER_BASE_DEF_H__
-#define __PIONNER_BASE_DEF_H__
+#ifndef __PIONNER_BASE_TYPES_H__
+#define __PIONNER_BASE_TYPES_H__
 
 #include "Math.h"
 
 namespace pio
 {
+	enum BackendFlags : uint8_t
+	{
+		Backend_OpenGL = 0,
+		Backend_Vulkan,
+		Backend_Num
+	};
+
+	enum ProjectionType : uint8_t
+	{
+		ProjectionType_Perspective,
+		ProjectionType_Orthographic,
+		ProjectionType_Num
+	};
+
 	/*
 	* @brief: Rectangle of a panel on window whose origin is left-top
 	*/
