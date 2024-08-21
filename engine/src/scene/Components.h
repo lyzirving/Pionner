@@ -12,6 +12,10 @@ namespace pio
 
 	struct CameraComponent : public Component
 	{
+		ProjectionType PrjType{ ProjectionType_Perspective };
+		int32_t Depth{ 0 };
+		float Fov{ 60.f };
+		float Size{ 5.f };
 		UUID32 Handle{ InvalidId };
 	};
 

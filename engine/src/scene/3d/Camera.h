@@ -6,12 +6,26 @@
 
 #include "asset/Asset.h"
 #include "base/Transform.h"
-#include "gfx/data/CameraData.h"
+#include "gfx/rhi/UniformBuffer.h"
 
 namespace pio
 {
 	struct PendingData;
+	struct CameraComponent;
 	class RenderContext;
+	class Entity;
+
+	struct CameraUD
+	{
+		PIO_UNIFORM_STRUCT_DECLARE(CameraUD)
+
+		glm::mat4 ViewMat{ 1.f };
+		glm::mat4 PrjMat{ 1.f };
+		glm::mat4 OrthoMat{ 1.f };
+		glm::vec3 CameraPosition{ 0.f };
+		float FrustumFar{ 0.f };
+		ProjectionType PrjType{ ProjectionType_Perspective };
+	};
 
 	struct CameraPose
 	{
@@ -97,6 +111,8 @@ namespace pio
 		const CPosition& position()  const { return m_transform.Position; }
 		CameraClearFlags clearFlag() const { return m_clearFlag; }
 
+		Ref<UniformBuffer>& unimBuffer() { return m_data.UnimBuff; }
+
 	private:
 		void calcViewMat();
 		void calcCameraPose();
@@ -115,9 +131,24 @@ namespace pio
 		int32_t m_depth{ 0 };
 
 		CameraClearFlags m_clearFlag{ CameraClearFlag_Skybox };
+		
+	private:
+		struct Data
+		{
+			CameraUD UnimData{};
+			Ref<UniformBuffer> UnimBuff;
 
-		CameraData m_data{};
+			Data() { UnimData.obtainBlock(); }
+		};
+
+		Data m_data{};
 	};
+
+	namespace CameraUtils
+	{
+		std::vector<Ref<Camera>> FetchCameras(const std::list<Ref<Entity>>& entities);
+		void Update(CameraComponent* comp, Ref<Camera>& camera);
+	}
 
 	template<>
 	bool Asset::is<Camera>() const;

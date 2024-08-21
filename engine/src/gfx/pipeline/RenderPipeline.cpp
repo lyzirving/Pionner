@@ -12,7 +12,7 @@
 
 namespace pio
 {
-	bool CameraSorter(Ref<Camera> &lhs, Ref<Camera> &rhs)
+	bool CameraSorter(Ref<Camera>& lhs, Ref<Camera>& rhs)
 	{
 		return lhs->depth() < rhs->depth();
 	}
@@ -24,6 +24,11 @@ namespace pio
 
 	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<Camera>>& cameras)
 	{
+		if (cameras.empty())
+		{
+			LOGE("err! empty camera list");
+		}
+
 		onBeginFrameRendering(context);
 
 		onSortCameras(cameras);
@@ -53,7 +58,7 @@ namespace pio
 	}
 
 	void RenderPipeline::onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
-	{		
+	{
 	}
 
 	void RenderPipeline::onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
@@ -74,6 +79,23 @@ namespace pio
 
 	void RenderPipeline::onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, PendingData& pendingData)
 	{
+		onSetUpCamera(context, camera);
+
+		onSetUpLight(context, pendingData);
+
+		onSetUpObject(context, pendingData);
+	}
+
+	void RenderPipeline::onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
+	{
 		camera->setUp(context);
+	}
+
+	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, PendingData& pendingData)
+	{
+	}
+
+	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, PendingData& pendingData)
+	{
 	}
 }

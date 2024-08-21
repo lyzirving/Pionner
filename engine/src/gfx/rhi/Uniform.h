@@ -250,15 +250,7 @@ namespace pio
 		Ref<Buffer> m_buffer{};
 
 	private:
-		friend struct DirectionalLight;
-		friend struct DirectionalLightShadowData;
-		friend struct PointLight;
-		friend struct PointLightData;
-		friend struct PointLightShadowData;
 		friend struct CameraUD;
-		friend struct BoneTransformUD;
-
-		friend struct CCameraUD;
 	};
 
 	template<>

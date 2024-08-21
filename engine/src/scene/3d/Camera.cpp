@@ -1,5 +1,10 @@
 #include "Camera.h"
 
+#include "asset/AssetMgr.h"
+
+#include "scene/Components.h"
+#include "scene/Entity.h"
+
 #include "gfx/renderer/RenderContext.h"
 
 #ifdef LOCAL_TAG
@@ -9,6 +14,66 @@
 
 namespace pio
 {
+	UniformBlock CameraUD::CreateBlock()
+	{
+		UniformBlock block;
+		block.pushBack("ViewMat", UniformBlock::CreateData(UniformDataType::Mat4, "ViewMat"));
+		block.pushBack("PrjMat", UniformBlock::CreateData(UniformDataType::Mat4, "PrjMat"));
+		block.pushBack("OrthoMat", UniformBlock::CreateData(UniformDataType::Mat4, "OrthoMat"));
+		block.pushBack("CameraPosition", UniformBlock::CreateData(UniformDataType::Vec3, "CameraPosition"));
+		block.pushBack("FrustumFar", UniformBlock::CreateData(UniformDataType::Float, "FrustumFar"));
+		block.pushBack("PrjType", UniformBlock::CreateData(UniformDataType::Int, "PrjType"));
+		block.calculate();
+		//LOGD("block CameraUD byte used[%u]", block.getByteUsed());
+		return block;
+	}
+
+	void CameraUD::serialize()
+	{
+		if (!Block.m_buffer || Block.m_buffer->getCapacity() == 0)
+		{
+			LOGE("UD buffer is invalid");
+			return;
+		}
+
+		auto viewMatUD = Block.m_blockItems.get("ViewMat");
+		if (viewMatUD)
+		{
+			Block.m_buffer->writeAt(glm::value_ptr(ViewMat), sizeof(glm::mat4), viewMatUD->getAlignOffset());
+		}
+
+		auto prjMatUD = Block.m_blockItems.get("PrjMat");
+		if (prjMatUD)
+		{
+			Block.m_buffer->writeAt(glm::value_ptr(PrjMat), sizeof(glm::mat4), prjMatUD->getAlignOffset());
+		}
+
+		auto orthoMatUD = Block.m_blockItems.get("OrthoMat");
+		if (orthoMatUD)
+		{
+			Block.m_buffer->writeAt(glm::value_ptr(OrthoMat), sizeof(glm::mat4), orthoMatUD->getAlignOffset());
+		}
+
+		auto cameraPositionUD = Block.m_blockItems.get("CameraPosition");
+		if (cameraPositionUD)
+		{
+			Block.m_buffer->writeAt(&CameraPosition, sizeof(glm::vec3), cameraPositionUD->getAlignOffset());
+		}
+
+		auto frustumFarUD = Block.m_blockItems.get("FrustumFar");
+		if (frustumFarUD)
+		{
+			Block.m_buffer->writeAt(&FrustumFar, sizeof(float), frustumFarUD->getAlignOffset());
+		}
+
+		auto prjTypeUD = Block.m_blockItems.get("PrjType");
+		if (prjTypeUD)
+		{
+			int32_t val = PrjType;
+			Block.m_buffer->writeAt(&val, sizeof(int32_t), prjTypeUD->getAlignOffset());
+		}
+	}
+
 	void Camera::culling(PendingData& pendingData)
 	{
 		//TODO
@@ -18,17 +83,20 @@ namespace pio
 	{
 		flush();
 
-		m_data.setUp(context);
+		if (!m_data.UnimBuff)
+		{
+			m_data.UnimBuff = UniformBuffer::Create(context, m_data.UnimData.Block.getByteUsed(), PIO_UINT(UBBindings::Camera), BufferUsage::Dynamic);
+		}
 
-		m_data.m_uniformData.ViewMat = viewMat();
-		m_data.m_uniformData.PrjMat = prjMat();
-		m_data.m_uniformData.OrthoMat = orthoMat();
-		m_data.m_uniformData.CameraPosition = position();
-		m_data.m_uniformData.FrustumFar = frustFar();
-		m_data.m_uniformData.PrjType = prjType();
-		m_data.m_uniformData.serialize();
+		m_data.UnimData.ViewMat = viewMat();
+		m_data.UnimData.PrjMat = prjMat();
+		m_data.UnimData.OrthoMat = orthoMat();
+		m_data.UnimData.CameraPosition = position();
+		m_data.UnimData.FrustumFar = frustFar();
+		m_data.UnimData.PrjType = prjType();
+		m_data.UnimData.serialize();
 
-		context->uploadData(m_data.m_uniformData.Block.getBuffer()->as<void*>(), m_data.m_uniformData.Block.getByteUsed(), m_data.m_uniformBuffer);
+		context->uploadData(m_data.UnimData.Block.getBuffer()->as<void*>(), m_data.UnimData.Block.getByteUsed(), m_data.UnimBuff);
 	}
 
 	void Camera::flush()
@@ -129,4 +197,28 @@ namespace pio
 
 	template<>
 	bool Asset::is<Camera>() const { return type() == AssetType::Camera; }
+
+	namespace CameraUtils
+	{
+		std::vector<Ref<Camera>> FetchCameras(const std::list<Ref<Entity>>& entities)
+		{
+			std::vector<Ref<Camera>> cameras;
+			for (auto& ent : entities)
+			{				
+				if (ent->has<CameraComponent>())
+				{
+					auto* comp = ent->getComponent<CameraComponent>();
+					auto cam = AssetMgr::GetRuntimeAsset<Camera>(comp->Handle);
+					CameraUtils::Update(comp, cam);
+					cameras.push_back(cam);
+				}				
+			}
+			return cameras;
+		}
+
+		void Update(CameraComponent* comp, Ref<Camera>& camera)
+		{
+		}
+	}
+
 }

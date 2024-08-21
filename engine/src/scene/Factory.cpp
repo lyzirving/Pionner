@@ -18,10 +18,8 @@ namespace pio
 	{
 		auto entity	= scene->addEntity<CameraComponent>(name);
 		auto *pComp = entity->getComponent<CameraComponent>();
-		auto camera = AssetMgr::MakeRuntimeAsset<Camera>();
-
-		camera->setDepth(depth);
-		pComp->Handle = camera->id();
+		pComp->Depth = depth;
+		pComp->Handle = AssetMgr::MakeRuntimeAsset<Camera>()->id();
 		return entity;
 	}
 

@@ -27,7 +27,11 @@ namespace pio
 		void onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
 		void onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
 
+		// Methods where make data  which is about to be uploaded
 		void onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, PendingData& pendingData);
+		void onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
+		void onSetUpLight(Ref<RenderContext>& context, PendingData& pendingData);
+		void onSetUpObject(Ref<RenderContext>& context, PendingData& pendingData);
 
 	protected:
 		Ref<Renderer> m_renderer;

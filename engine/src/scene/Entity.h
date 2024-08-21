@@ -48,6 +48,12 @@ namespace pio
 			return m_regi.try_get<T>(m_key);
 		}
 
+		template <typename T>
+		bool has() const
+		{
+			return m_regi.any_of<T>(m_key);
+		}
+
 	private:
 		static uint32_t k_EntNum;
 
