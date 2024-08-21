@@ -13,7 +13,7 @@ namespace pio
 
 		virtual bool init() override;
 		virtual void destroy() override;
-		virtual bool isInit() const override { return m_vbo != 0; }
+		virtual bool isInit() const override { return m_id != 0; }
 
 		virtual void bind() override;
 		virtual void bind(int64_t offset, int64_t size) override;
@@ -25,7 +25,6 @@ namespace pio
 		virtual uint32_t getSize() const override { return m_size; }
 
 	private:
-		uint32_t m_vbo{ 0 };
 		uint32_t m_size{ 0 };
 		BufferUsage m_usage{ BufferUsage::None };
 		uint32_t m_binding{ 0 };

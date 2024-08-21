@@ -65,7 +65,18 @@ namespace pio
 		BlockRange() {}
 		BlockRange(RenderPassEvent l, RenderPassEvent r) : Left(l), Right(r) {}
 
-		bool contains(Ref<RenderPass>& pass) { return pass->event() >= Left && pass->event() < Right; }
+		bool contains(Ref<RenderPass>& pass) const { return pass->event() >= Left && pass->event() < Right; }
+		bool intersect(std::vector<Ref<RenderPass>> &passes) const
+		{
+			if(passes.empty()) return false;
+			if(passes.size() == 1) return contains(passes[0]);
+
+			RenderPassEvent l = passes[0]->event();
+			RenderPassEvent r = passes[passes.size() - 1]->event();
+			RenderPassEvent lMax = Left > l ? Left : l;
+			RenderPassEvent rMin = Right > r ? r : Right;
+			return lMax < rMin;
+		}
 	};
 
 	class RenderBlock

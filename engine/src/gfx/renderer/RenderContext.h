@@ -78,6 +78,12 @@ namespace pio
 			new (storageBuffer) FuncT(std::forward<FuncT>(func));
 		}
 
+		void recyleResource(ResourceGCDelegate &&data) 
+		{			
+			auto &api = m_api;
+			submitGC([data, &api]() mutable { api->releaseResource(std::move(data)); });
+		}	
+
 		void uploadData(void* data, uint32_t size, Ref<UniformBuffer>& buffer)
 		{
 			submitTask([data, size, &buffer]() mutable { buffer->setData(data, size, 0); });

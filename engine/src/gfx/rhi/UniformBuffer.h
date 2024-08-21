@@ -11,7 +11,7 @@ namespace pio
 	class UniformBuffer : public RenderResource
 	{
 	public:
-		UniformBuffer(Ref<RenderContext>& context) : RenderResource(context) {}
+		UniformBuffer(Ref<RenderContext>& context) : RenderResource(context, RenderResourceType::UBO) {}
 		virtual ~UniformBuffer() = default;
 
 		virtual void bind() = 0;

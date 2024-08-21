@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_DATA_CAMERA_DATA_H__
 #define __PIONNER_GFX_DATA_CAMERA_DATA_H__
 
-#include "RenderingData.h"
+#include "DataWrap.h"
 
 namespace pio
 {
@@ -17,13 +17,13 @@ namespace pio
 		ProjectionType PrjType{ ProjectionType_Perspective };
 	};
 
-	class CameraData : public RenderingData
+	class CameraData : public DataWrap
 	{
 	public:
 		CameraData();
 		~CameraData() = default;
 
-		virtual void setUpData(Ref<RenderContext> &context) override;
+		virtual void setUp(Ref<RenderContext> &context) override;
 		virtual Ref<UniformBuffer> &uniformBuffer() override { return m_uniformBuffer; }
 
 	private:

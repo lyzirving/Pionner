@@ -34,20 +34,22 @@ namespace pio
 
 			m_window->swapBuffer();
 
-			m_frameNum++;
+			m_frameNum++;			
 		}
+		LOGD("exit render thread[%lu]", m_threadId);
+		// Clear resources submitted at the last frame
+		m_garbageQueue[submitIdx()].execute();
 
 		m_api->shutdown();
 		m_window->shutdown();
-		m_thread.set(RenderThread::State::Idle);
-		LOGD("exit render thread[%lu]", m_threadId);
+		m_thread.set(RenderThread::State::Idle);		
 	}
 
 	void RenderContext::waitAndRender()
-	{
+	{		
 		// Wait for kick, then set render thread to busy
 		m_thread.waitAndSet(RenderThread::State::Kick, RenderThread::State::Busy);
-
+		
 		m_api->beginFrame(*this);
 
 		// task before render cmd

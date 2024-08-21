@@ -18,6 +18,8 @@ namespace pio
 		virtual void beginFrame(RenderContext& ctx) override;
 		virtual void endFrame(RenderContext& ctx) override;
 
+		virtual void releaseResource(ResourceGCDelegate &&resource) override;
+
 		virtual BackendFlags type() const override { return m_type; }
 
 	private:

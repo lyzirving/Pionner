@@ -12,6 +12,12 @@ namespace pio
 		FB_StencilBuffer_Bit = 1 << 2
 	};
 
+	enum class RenderResourceType : uint8_t
+	{
+		UBO = 0,
+		Num
+	};
+
 	enum class TextureSampler : uint8_t
 	{
 		Slot0 = 0,

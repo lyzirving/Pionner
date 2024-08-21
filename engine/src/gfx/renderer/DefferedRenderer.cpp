@@ -38,14 +38,17 @@ namespace pio
 		executeBlock(RenderBlockFlags::MainAfterRendering, m_activeQueue, context);
 	}
 
-	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context)
-	{
+	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>> &queue, Ref<RenderContext> &context)
+	{		
 		BlockRange range = RenderBlock::GetBlockRange(flag);
-		for (size_t i = 0; i < queue.size(); i++)
+		if(range.intersect(queue))
 		{
-			if (range.contains(queue[i]))
+			for(size_t i = 0; i < queue.size(); i++)
 			{
-				queue[i]->execute(context);
+				if(range.contains(queue[i]))
+				{					
+					queue[i]->execute(context);
+				}
 			}
 		}
 	}

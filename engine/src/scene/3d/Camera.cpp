@@ -18,7 +18,7 @@ namespace pio
 	{
 		flush();
 
-		m_data.setUpData(context);
+		m_data.setUp(context);
 
 		m_data.m_uniformData.ViewMat = viewMat();
 		m_data.m_uniformData.PrjMat = prjMat();

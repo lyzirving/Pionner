@@ -21,12 +21,12 @@ namespace pio
 	{
 		if (!isInit())
 		{
-			glGenBuffers(1, &m_vbo);
-			glBindBuffer(GL_UNIFORM_BUFFER, m_vbo);
+			glGenBuffers(1, &m_id);
+			glBindBuffer(GL_UNIFORM_BUFFER, m_id);
 			glBufferData(GL_UNIFORM_BUFFER, m_size, nullptr, GLHelper::BufferUsageToGLUsage(m_usage));
-			if (GLHelper::CheckError("fail to create uniform buffer[%u]", m_vbo))
+			if (GLHelper::CheckError("fail to create uniform buffer[%u]", m_id))
 			{
-				LOGD("create uniform buffer[%u], binding[%u], byte used[%u]", m_vbo, m_binding, m_size);
+				LOGD("create uniform buffer[%u], binding[%u], byte used[%u]", m_id, m_binding, m_size);
 			}
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);			
 		}
@@ -37,8 +37,8 @@ namespace pio
 	{
 		if (isInit())
 		{
-			glDeleteBuffers(1, &m_vbo);
-			m_vbo = 0;
+			glDeleteBuffers(1, &m_id);
+			m_id = 0;
 		}
 	}
 
@@ -48,12 +48,12 @@ namespace pio
 
 		if (isInit())
 		{
-			glBindBufferBase(GL_UNIFORM_BUFFER, m_binding, m_vbo);
-			GLHelper::CheckError("fail to bind buffer[%u] to binding[%u]", m_vbo, m_binding);
+			glBindBufferBase(GL_UNIFORM_BUFFER, m_binding, m_id);
+			GLHelper::CheckError("fail to bind buffer[%u] to binding[%u]", m_id, m_binding);
 		}
 		else
 		{
-			LOGE("invalid state, vbo[%u], binding[%u]", m_vbo, m_binding);
+			LOGE("invalid state, vbo[%u], binding[%u]", m_id, m_binding);
 		}
 	}
 
@@ -70,13 +70,13 @@ namespace pio
 
 		if (isInit())
 		{
-			glBindBufferRange(GL_UNIFORM_BUFFER, m_binding, m_vbo, offset, size);
+			glBindBufferRange(GL_UNIFORM_BUFFER, m_binding, m_id, offset, size);
 			GLHelper::CheckError("fail to bind buffer[%u] to binding[%u], offset[%ld], size[%ld]", 
-								 m_vbo, m_binding, offset, size);
+								 m_id, m_binding, offset, size);
 		}
 		else
 		{
-			LOGE("invalid state, vbo[%u], binding[%u]", m_vbo, m_binding);
+			LOGE("invalid state, vbo[%u], binding[%u]", m_id, m_binding);
 		}
 	}
 
@@ -106,14 +106,14 @@ namespace pio
 
 		if (isInit())
 		{
-			glBindBuffer(GL_UNIFORM_BUFFER, m_vbo);
+			glBindBuffer(GL_UNIFORM_BUFFER, m_id);
 			glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
 			GLHelper::CheckError("fail to update uniform buffer, offset[%u], size[%u]", offset, size);
 			glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		}
 		else
 		{
-			LOGE("invalid state, vbo[%u], binding[%u]", m_vbo, m_binding);
+			LOGE("invalid state, vbo[%u], binding[%u]", m_id, m_binding);
 		}
 	}
 }

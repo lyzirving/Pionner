@@ -121,4 +121,25 @@ namespace pio
 			glfwMakeContextCurrent(backup_current_context);
 		}
 	}
+
+	void GLRenderAPI::releaseResource(ResourceGCDelegate &&resource)
+	{
+		if(resource.Id == 0)
+		{
+			LOGE("err! invalid resource id for type[%u]", resource.Type);
+			return;
+		}	
+		switch(resource.Type)
+		{
+			case RenderResourceType::UBO:
+			{
+				LOGD("release UBO[%u]", resource.Id);
+				glDeleteBuffers(1, &resource.Id);
+				break;
+			}
+			default:
+				LOGE("err! invalid resource type[%u]", resource.Type);
+				break;
+		}
+	}
 }

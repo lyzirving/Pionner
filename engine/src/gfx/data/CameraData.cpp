@@ -74,7 +74,7 @@ namespace pio
 		m_uniformData.obtainBlock();	
 	}
 
-	void CameraData::setUpData(Ref<RenderContext> &context)
+	void CameraData::setUp(Ref<RenderContext> &context)
 	{
 		if (!m_uniformBuffer)
 		{
