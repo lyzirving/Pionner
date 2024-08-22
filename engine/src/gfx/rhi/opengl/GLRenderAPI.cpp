@@ -18,7 +18,7 @@
 
 namespace pio
 {
-	GLRenderAPI::GLRenderAPI(BackendFlags type) : RenderAPI(), m_type(type)
+	GLRenderAPI::GLRenderAPI(RenderBackendFlags type) : RenderAPI(), m_type(type)
 	{
 	}
 
@@ -122,24 +122,24 @@ namespace pio
 		}
 	}
 
-	void GLRenderAPI::releaseResource(ResourceGCDelegate &&resource)
+	void GLRenderAPI::releaseResource(ResourceGCDelegate&& resource)
 	{
-		if(resource.Id == 0)
+		if (resource.Id == 0)
 		{
 			LOGE("err! invalid resource id for type[%u]", resource.Type);
 			return;
-		}	
-		switch(resource.Type)
+		}
+		switch (resource.Type)
 		{
-			case RenderResourceType::UBO:
-			{
-				LOGD("release UBO[%u]", resource.Id);
-				glDeleteBuffers(1, &resource.Id);
-				break;
-			}
-			default:
-				LOGE("err! invalid resource type[%u]", resource.Type);
-				break;
+		case RenderResourceType::UBO:
+		{
+			LOGD("release UBO[%u]", resource.Id);
+			glDeleteBuffers(1, &resource.Id);
+			break;
+		}
+		default:
+			LOGE("err! invalid resource type[%u]", resource.Type);
+			break;
 		}
 	}
 }

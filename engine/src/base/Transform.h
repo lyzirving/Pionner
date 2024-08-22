@@ -2,7 +2,7 @@
 #define __PIONNER_BASE_TRANSFORM_H__
 
 #include "EulerAngle.h"
-#include "CPosition.h"
+#include "Position3d.h"
 
 namespace pio
 {
@@ -27,7 +27,7 @@ namespace pio
 	public:
 		glm::vec3  Scale{ 1.f };	
 		EulerAngle Euler;
-		CPosition  Position{};
+		Position3d  Position{};
 	};
 }
 

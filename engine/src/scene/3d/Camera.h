@@ -1,8 +1,7 @@
 #ifndef __PIONNER_SCENE_3D_CAMERA_H__
 #define __PIONNER_SCENE_3D_CAMERA_H__
 
-#include "PerspectiveFrustum.h"
-#include "OrthographicFrustum.h"
+#include "Frustum.h"
 
 #include "asset/Asset.h"
 #include "base/Transform.h"
@@ -105,10 +104,10 @@ namespace pio
 		const glm::mat4& orthoMat() const { return m_orthoFrustum.mat(); }
 
 		Transform& transform() { return m_transform; }
-		CPosition& position() { return m_transform.Position; }
+		Position3d& position() { return m_transform.Position; }
 
 		const Transform& transform() const { return m_transform; }
-		const CPosition& position()  const { return m_transform.Position; }
+		const Position3d& position()  const { return m_transform.Position; }
 		CameraClearFlags clearFlag() const { return m_clearFlag; }
 
 		Ref<UniformBuffer>& unimBuffer() { return m_data.UnimBuff; }
@@ -128,9 +127,10 @@ namespace pio
 		ProjectionType m_prjType{ ProjectionType_Perspective };
 		PerspectiveFrustum m_persFrustum;
 		OrthographicFrustum m_orthoFrustum;
-		int32_t m_depth{ 0 };
 
 		CameraClearFlags m_clearFlag{ CameraClearFlag_Skybox };
+
+		int32_t m_depth{ 0 };
 		
 	private:
 		struct Data

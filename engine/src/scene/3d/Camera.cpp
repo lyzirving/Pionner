@@ -196,7 +196,7 @@ namespace pio
 	}
 
 	template<>
-	bool Asset::is<Camera>() const { return type() == AssetType::Camera; }
+	bool Asset::is<Camera>() const { return assetType() == AssetType::Camera; }
 
 	namespace CameraUtils
 	{

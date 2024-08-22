@@ -54,6 +54,58 @@ namespace pio
 		glm::mat4 m_mat{ 1.f };
 		bool m_invalidate{ true };
 	};
+
+	class PerspectiveFrustum : public Frustum
+	{
+	public:
+		PerspectiveFrustum() : Frustum(ProjectionType_Perspective) {}
+		~PerspectiveFrustum() = default;
+
+		PerspectiveFrustum(const PerspectiveFrustum& rhs);
+		PerspectiveFrustum& operator=(const PerspectiveFrustum& rhs);
+
+		void setFov(float fov);
+
+	public:
+		float fov() const { return m_fov; }
+
+		virtual float top()    const override { return m_near * std::tan(glm::radians(m_fov * 0.5f)); }
+		virtual float bottom() const override { return -top(); }
+		virtual float right()  const override { return top() * m_aspect; }
+		virtual float left()   const override { return -right(); }
+
+	protected:
+		virtual void calcMat() override;
+
+	private:
+		float m_fov{ 60.f };
+	};
+
+	class OrthographicFrustum : public Frustum
+	{
+	public:
+		OrthographicFrustum() : Frustum(ProjectionType_Orthographic) {}
+		~OrthographicFrustum() = default;
+
+		OrthographicFrustum(const OrthographicFrustum& rhs);
+		OrthographicFrustum& operator=(const OrthographicFrustum& rhs);
+
+		void setSize(float size);
+
+	public:
+		float size() const { return m_size; }
+
+		virtual float top()    const override { return m_size; }
+		virtual float bottom() const override { return -top(); }
+		virtual float right()  const override { return top() * m_aspect; }
+		virtual float left()   const override { return -right(); }
+
+	protected:
+		virtual void calcMat() override;
+
+	private:
+		float m_size{ 1.f };
+	};
 }
 
 #endif

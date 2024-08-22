@@ -64,5 +64,5 @@ namespace pio
 	}
 
 	template<>
-	bool Asset::is<Scene>() const { return type() == AssetType::Scene; }
+	bool Asset::is<Scene>() const { return assetType() == AssetType::Scene; }
 }

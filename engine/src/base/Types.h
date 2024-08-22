@@ -5,11 +5,15 @@
 
 namespace pio
 {
-	enum BackendFlags : uint8_t
+	static const glm::vec3 k_AxisX = glm::vec3(1.f, 0.f, 0.f);
+	static const glm::vec3 k_AxisY = glm::vec3(0.f, 1.f, 0.f);
+	static const glm::vec3 k_AxisZ = glm::vec3(0.f, 0.f, 1.f);
+
+	enum RenderBackendFlags : uint8_t
 	{
-		Backend_OpenGL = 0,
-		Backend_Vulkan,
-		Backend_Num
+		RenderBackend_OpenGL = 0,
+		RenderBackend_Vulkan,
+		RenderBackend_Num
 	};
 
 	enum ProjectionType : uint8_t
@@ -17,6 +21,11 @@ namespace pio
 		ProjectionType_Perspective,
 		ProjectionType_Orthographic,
 		ProjectionType_Num
+	};
+
+	enum class MeshType : uint8_t
+	{
+		Plane, Cube, Num
 	};
 
 	/*

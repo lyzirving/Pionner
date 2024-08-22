@@ -9,7 +9,7 @@
 
 namespace pio
 {
-	RenderContext::RenderContext(BackendFlags type, Ref<Window> &window) : m_window(window)
+	RenderContext::RenderContext(RenderBackendFlags type, Ref<Window> &window) : m_window(window)
 	{
 		m_api = RenderAPI::Create(type);
 	}

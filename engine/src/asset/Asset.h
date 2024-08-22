@@ -7,12 +7,12 @@ namespace pio
 {
 	enum class AssetType : uint8_t
 	{
-		None = 0, Camera, Scene
+		None = 0, Camera, Mesh, Scene
 	};
 
 	#define OVERRIDE_ASSET_TYPE(TypeName)  public:\
 									       static  AssetType StaticType() { return TypeName; }\
-									       virtual AssetType type() const override { return StaticType(); }
+									       virtual AssetType assetType() const override { return StaticType(); }
 
 	class Asset
 	{
@@ -31,7 +31,7 @@ namespace pio
 		}
 
 		virtual ~Asset() = default;
-		virtual AssetType type() const { return StaticType(); }
+		virtual AssetType assetType() const { return StaticType(); }
 
 	public:
 		UUID32 id() { return m_id; }

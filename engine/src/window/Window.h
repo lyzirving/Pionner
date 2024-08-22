@@ -13,11 +13,11 @@ namespace pio
 		std::string Title{};
 		uint32_t Width{ 0 };
 		uint32_t Height{ 0 };
-		BackendFlags Backend{ Backend_Num };
+		RenderBackendFlags Backend{ RenderBackend_Num };
 
 		WindowProps() {}
 
-		WindowProps(const std::string& title, uint32_t width, uint32_t height, BackendFlags type = Backend_OpenGL)
+		WindowProps(const std::string& title, uint32_t width, uint32_t height, RenderBackendFlags type = RenderBackend_OpenGL)
 			: Title(title), Width(width), Height(height), Backend(type)
 		{
 		}

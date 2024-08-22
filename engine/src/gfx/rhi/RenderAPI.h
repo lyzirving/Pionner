@@ -22,10 +22,10 @@ namespace pio
 
 		virtual void releaseResource(ResourceGCDelegate &&resource) = 0;
 
-		virtual BackendFlags type() const = 0;
+		virtual RenderBackendFlags type() const = 0;
 
 	public:
-		static Ref<RenderAPI> Create(BackendFlags type);
+		static Ref<RenderAPI> Create(RenderBackendFlags type);
 	};
 }
 

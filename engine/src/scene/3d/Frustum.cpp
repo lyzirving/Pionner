@@ -18,12 +18,7 @@ namespace pio
 	{
 		if (this != &rhs)
 		{
-			m_type = rhs.m_type;
-			m_aspect = rhs.m_aspect;
-			m_near = rhs.m_near;
-			m_far = rhs.m_far;
-			m_mat = rhs.m_mat;
-			m_invalidate = rhs.m_invalidate;
+			this->Frustum::Frustum(rhs);
 		}
 		return *this;
 	}
@@ -84,5 +79,63 @@ namespace pio
 	glm::mat4 Frustum::OrthoMat(float left, float right, float bottom, float top, float near, float far)
 	{
 		return glm::ortho(left, right, bottom, top, near, far);
+	}
+
+	PerspectiveFrustum::PerspectiveFrustum(const PerspectiveFrustum& rhs) 
+		: Frustum(rhs), m_fov(rhs.m_fov)
+	{
+	}
+
+	PerspectiveFrustum& PerspectiveFrustum::operator=(const PerspectiveFrustum& rhs)
+	{
+		if (this != &rhs)
+		{
+			Frustum::operator=(rhs);
+			m_fov = rhs.m_fov;
+		}
+		return *this;
+	}
+
+	void PerspectiveFrustum::setFov(float fov)
+	{
+		if (!Math::Equal(m_fov, fov))
+		{
+			m_fov = fov;
+			invalidate();
+		}
+	}
+
+	void PerspectiveFrustum::calcMat()
+	{
+		m_mat = Frustum::PerspectiveMat(m_fov, m_aspect, m_near, m_far);
+	}
+
+	OrthographicFrustum::OrthographicFrustum(const OrthographicFrustum& rhs) 
+		: Frustum(rhs), m_size(rhs.m_size)
+	{
+	}
+
+	OrthographicFrustum& OrthographicFrustum::operator=(const OrthographicFrustum& rhs)
+	{
+		if (this != &rhs)
+		{
+			Frustum::operator=(rhs);
+			m_size = rhs.m_size;
+		}
+		return *this;
+	}
+
+	void OrthographicFrustum::setSize(float size)
+	{
+		if (!Math::Equal(m_size, size))
+		{
+			m_size = size;
+			invalidate();
+		}
+	}
+
+	void OrthographicFrustum::calcMat()
+	{
+		m_mat = Frustum::OrthoMat(left(), right(), bottom(), top(), m_near, m_far);
 	}
 }

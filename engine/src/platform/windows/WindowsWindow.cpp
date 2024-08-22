@@ -50,7 +50,7 @@ namespace pio
 			glfwSetErrorCallback(windowErrorCallback);
 		}
 
-		if (m_props.Backend == Backend_OpenGL)
+		if (m_props.Backend == RenderBackend_OpenGL)
 		{
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);

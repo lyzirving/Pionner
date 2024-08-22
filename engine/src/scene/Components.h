@@ -21,7 +21,8 @@ namespace pio
 
 	struct MeshFilter : public Component
 	{
-
+		MeshType Type{ MeshType::Num };
+		UUID32 Handle{ InvalidId };
 	};
 
 	struct MeshRenderer : public Component

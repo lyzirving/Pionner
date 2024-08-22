@@ -9,11 +9,11 @@
 
 namespace pio
 {
-	Ref<RenderAPI> RenderAPI::Create(BackendFlags type)
+	Ref<RenderAPI> RenderAPI::Create(RenderBackendFlags type)
 	{
 		switch(type)
 		{
-			case Backend_OpenGL:
+			case RenderBackend_OpenGL:
 				return CreateRef<GLRenderAPI>(type);
 			default:
 				LOGE("RenderAPI type[%u] has not been implemented", type);

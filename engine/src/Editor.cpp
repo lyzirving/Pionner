@@ -46,8 +46,8 @@ namespace pio
 		AssetMgr::Init();
 		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
 
-		m_window = Window::create(WindowProps("Pionner", 1400, 720, Backend_OpenGL));
-		m_context = CreateRef<RenderContext>(Backend_OpenGL, m_window);
+		m_window = Window::create(WindowProps("Pionner", 1400, 720, RenderBackend_OpenGL));
+		m_context = CreateRef<RenderContext>(RenderBackend_OpenGL, m_window);
 		m_pipeline = CreateRef<RenderPipeline>();
 
 		auto scene = CreateRef<Scene>();

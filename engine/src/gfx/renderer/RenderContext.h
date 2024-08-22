@@ -16,12 +16,12 @@ namespace pio
 	class RenderContext
 	{
 	public:	
-		RenderContext(BackendFlags type, Ref<Window> &window);
+		RenderContext(RenderBackendFlags type, Ref<Window> &window);
 		~RenderContext() = default;
 
 		void renderLoop();
 
-		BackendFlags backendFlag() const { return m_api->type(); }
+		RenderBackendFlags backendFlag() const { return m_api->type(); }
 		uint64_t frame() const { return m_frameNum; }
 		RenderingEntities& renderingEntities() { return m_renderingEntities; }
 		RenderingData& renderingData() { return m_renderingData; }
