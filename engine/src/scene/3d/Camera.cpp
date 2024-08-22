@@ -74,7 +74,7 @@ namespace pio
 		}
 	}
 
-	void Camera::culling(PendingData& pendingData)
+	void Camera::culling(RenderingEntities& renderingEntities)
 	{
 		//TODO
 	}
@@ -85,7 +85,7 @@ namespace pio
 
 		if (!m_data.UnimBuff)
 		{
-			m_data.UnimBuff = UniformBuffer::Create(context, m_data.UnimData.Block.getByteUsed(), PIO_UINT(UBBindings::Camera), BufferUsage::Dynamic);
+			m_data.UnimBuff = UniformBuffer::Create(context, m_data.UnimData.Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
 		}
 
 		m_data.UnimData.ViewMat = viewMat();

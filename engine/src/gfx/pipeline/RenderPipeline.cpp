@@ -59,14 +59,15 @@ namespace pio
 
 	void RenderPipeline::onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
+		context->onBeginFrameRendering();
 	}
 
 	void RenderPipeline::onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
-		auto& pendingData = context->pendingData();
-		camera->culling(pendingData);
+		auto& renderingEntities = context->renderingEntities();
+		camera->culling(renderingEntities);
 
-		onInitializeRenderingData(context, camera, pendingData);
+		onInitializeRenderingData(context, camera, renderingEntities);
 
 		m_renderer->onSetUp();
 
@@ -75,27 +76,33 @@ namespace pio
 
 	void RenderPipeline::onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
 	{
+		context->onEndFrameRendering();
 	}
 
-	void RenderPipeline::onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, PendingData& pendingData)
+	void RenderPipeline::onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingEntities& renderingEntities)
 	{
-		onSetUpCamera(context, camera);
+		RenderingData renderingData;
 
-		onSetUpLight(context, pendingData);
+		onSetUpCamera(context, camera, renderingData);
 
-		onSetUpObject(context, pendingData);
+		onSetUpLight(context, renderingEntities, renderingData);
+
+		onSetUpObject(context, renderingEntities, renderingData);
+
+		context->setRenderingData(std::move(renderingData));
 	}
 
-	void RenderPipeline::onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
+	void RenderPipeline::onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingData &renderingData)
 	{
 		camera->setUp(context);
+		renderingData.UnimBuffSet.put(camera->unimBuffer());
 	}
 
-	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, PendingData& pendingData)
+	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData)
 	{
 	}
 
-	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, PendingData& pendingData)
+	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData)
 	{
 	}
 }

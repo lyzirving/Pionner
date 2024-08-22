@@ -20,11 +20,33 @@ namespace pio
 
 		virtual void setData(const void *data, uint32_t size, uint32_t offset = 0) = 0;
 	
-		virtual uint32_t getBinding() const = 0;
-		virtual uint32_t getSize() const = 0;
+		virtual UBBinding binding() const = 0;
+		virtual uint32_t size() const = 0;
 
 	public:
-		static Ref<UniformBuffer> Create(Ref<RenderContext> &context, uint32_t size, uint32_t binding, BufferUsage usage = BufferUsage::DynamicRead);
+		static Ref<UniformBuffer> Create(Ref<RenderContext> &context, uint32_t size, UBBinding binding, BufferUsage usage = BufferUsage::DynamicRead);
+	};
+
+	class UniformBufferSet
+	{
+	public:
+		UniformBufferSet() {}
+		~UniformBufferSet();
+
+		UniformBufferSet(const UniformBufferSet &rhs);
+		UniformBufferSet(UniformBufferSet &&rhs) noexcept;
+
+		UniformBufferSet &operator=(const UniformBufferSet &rhs);
+		UniformBufferSet &operator=(UniformBufferSet &&rhs) noexcept;
+
+		void release();
+
+		void put(Ref<UniformBuffer> &unimBuff);
+		Ref<UniformBuffer> &get(uint32_t binding);
+		Ref<UniformBuffer> &operator[](uint32_t binding) { return get(binding); }
+
+	private:
+		std::map<uint32_t, Ref<UniformBuffer>> m_bufferSet{};
 	};
 }
 

@@ -8,7 +8,7 @@ namespace pio
 	class GLUniformBuffer : public UniformBuffer
 	{
 	public:
-		GLUniformBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t binding, BufferUsage usage = BufferUsage::DynamicRead);
+		GLUniformBuffer(Ref<RenderContext>& context, uint32_t size, UBBinding binding, BufferUsage usage = BufferUsage::DynamicRead);
 		virtual ~GLUniformBuffer();
 
 		virtual bool init() override;
@@ -21,13 +21,13 @@ namespace pio
 
 		virtual void setData(const void *data, uint32_t size, uint32_t offset) override;
 
-		virtual uint32_t getBinding() const override { return m_binding; };
-		virtual uint32_t getSize() const override { return m_size; }
+		virtual UBBinding binding() const override { return m_binding; };
+		virtual uint32_t size() const override { return m_size; }
 
 	private:
 		uint32_t m_size{ 0 };
 		BufferUsage m_usage{ BufferUsage::None };
-		uint32_t m_binding{ 0 };
+		UBBinding m_binding{ UBBinding_Num };
 	};
 }
 

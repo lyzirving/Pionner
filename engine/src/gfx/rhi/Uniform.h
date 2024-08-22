@@ -7,11 +7,9 @@
 
 namespace pio
 {
-	enum class UBBindings : uint8_t
+	enum UBBinding : uint8_t
 	{
-		Camera = 0, 
-		MainLight, MainLightShadowData, PointLightData, PointLightShadowData,
-		BoneTransform, Num
+		UBBinding_Camera = 0, UBBinding_Num
 	};
 
 	/*

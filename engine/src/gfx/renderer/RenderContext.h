@@ -2,10 +2,9 @@
 #define __PIONNER_GFX_RENDERER_RENDER_CONTEXT_H__
 
 #include "RenderThread.h"
-#include "PendingData.h"
+#include "RenderingData.h"
 
 #include "gfx/rhi/RenderAPI.h"
-#include "gfx/rhi/UniformBuffer.h"
 
 #include "base/utils/SystemUtils.h"
 #include "base/CommandQueue.h"
@@ -24,12 +23,15 @@ namespace pio
 
 		BackendFlags backendFlag() const { return m_api->type(); }
 		uint64_t frame() const { return m_frameNum; }
-		PendingData& pendingData() { return m_pendingData; }
+		RenderingEntities& renderingEntities() { return m_renderingEntities; }
+		RenderingData& renderingData() { return m_renderingData; }
 		RenderThread& thread() { return m_thread; }
 		Ref<Window>&  window() { return m_window; }
 		
-		void setUpPendingData(PendingData&& data) { m_pendingData = std::forward<PendingData>(data); }
+		void setRenderingEntities(RenderingEntities&& data) { m_renderingEntities = std::forward<RenderingEntities>(data); }
+		void setRenderingData(RenderingData &&data) { m_renderingData = std::forward<RenderingData>(data); }
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
+
 		bool bInRenderThread() const { return m_thread.isRunning() && SystemUtils::GetThreadId() == m_threadId; }
 
 		// Submmit garbage collection task which will be executed before the 
@@ -89,6 +91,9 @@ namespace pio
 			submitTask([data, size, &buffer]() mutable { buffer->setData(data, size, 0); });
 		}
 
+		void onBeginFrameRendering();
+		void onEndFrameRendering();
+
 	private:
 		static constexpr uint32_t k_queueNum = 2;		
 
@@ -111,11 +116,12 @@ namespace pio
 		std::atomic<uint32_t> m_submitIdx{ 0 };
 		CommandQueue m_cmdQueue[k_queueNum];
 		CommandQueue m_taskQueue[k_queueNum];
-		CommandQueue m_garbageQueue[k_queueNum];
-
-		PendingData m_pendingData;
+		CommandQueue m_garbageQueue[k_queueNum];		
 
 		uint64_t m_frameNum{ 0 };
+
+		RenderingEntities m_renderingEntities;
+		RenderingData m_renderingData;
 	};
 }
 

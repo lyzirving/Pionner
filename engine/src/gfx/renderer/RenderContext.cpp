@@ -36,13 +36,23 @@ namespace pio
 
 			m_frameNum++;			
 		}
-		LOGD("exit render thread[%lu]", m_threadId);
+		LOGD("exit render thread[%lu]", m_threadId);		
 		// Clear resources submitted at the last frame
 		m_garbageQueue[submitIdx()].execute();
 
 		m_api->shutdown();
 		m_window->shutdown();
 		m_thread.set(RenderThread::State::Idle);		
+	}
+
+	void RenderContext::onBeginFrameRendering()
+	{
+	}
+
+	void RenderContext::onEndFrameRendering()
+	{
+		std::swap(m_renderingEntities, RenderingEntities());
+		std::swap(m_renderingData, RenderingData());
 	}
 
 	void RenderContext::waitAndRender()

@@ -8,7 +8,8 @@ namespace pio
 	class Camera;
 	class RenderContext;
 	class Renderer;
-	struct PendingData;
+	struct RenderingEntities;
+	struct RenderingData;
 
 	class RenderPipeline
 	{
@@ -28,10 +29,10 @@ namespace pio
 		void onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
 
 		// Methods where make data  which is about to be uploaded
-		void onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, PendingData& pendingData);
-		void onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
-		void onSetUpLight(Ref<RenderContext>& context, PendingData& pendingData);
-		void onSetUpObject(Ref<RenderContext>& context, PendingData& pendingData);
+		void onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingEntities& renderingEntities);
+		void onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingData &renderingData);
+		void onSetUpLight(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData);
+		void onSetUpObject(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData);
 
 	protected:
 		Ref<Renderer> m_renderer;

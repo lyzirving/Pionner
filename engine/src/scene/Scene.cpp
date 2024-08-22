@@ -27,13 +27,13 @@ namespace pio
 
 	void Scene::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline)
 	{
-		PendingData data;
+		RenderingEntities data;
 		data.Mesh = m_registry.view<MeshFilter, MeshRenderer>();
 
 		auto cameraEntities = m_registry.view<CameraComponent>();
 		auto cameras = CameraUtils::FetchCameras(cameraEntities);
 
-		context->setUpPendingData(std::move(data));
+		context->setRenderingEntities(std::move(data));
 		pipeline->onRender(context, cameras);
 	}
 

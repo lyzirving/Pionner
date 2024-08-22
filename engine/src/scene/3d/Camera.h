@@ -10,7 +10,7 @@
 
 namespace pio
 {
-	struct PendingData;
+	struct RenderingEntities;
 	struct CameraComponent;
 	class RenderContext;
 	class Entity;
@@ -62,7 +62,7 @@ namespace pio
 		Camera() : Asset() {}
 		~Camera() = default;
 
-		void culling(PendingData& pendingData);
+		void culling(RenderingEntities& renderingEntities);
 		void setUp(Ref<RenderContext>& context);
 		void flush();		
 
