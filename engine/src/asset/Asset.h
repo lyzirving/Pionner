@@ -7,7 +7,7 @@ namespace pio
 {
 	enum class AssetType : uint8_t
 	{
-		None = 0, Camera, Mesh, Scene
+		None = 0, Camera, Mesh, Material, Scene
 	};
 
 	#define OVERRIDE_ASSET_TYPE(TypeName)  public:\

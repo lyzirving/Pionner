@@ -19,7 +19,7 @@ namespace pio
 
 	RenderPipeline::RenderPipeline()
 	{
-		m_renderer = Renderer::Create(GlobalSettings::k_RenderConfig);
+		m_renderer = Renderer::Create(GlobalSettings::RenderConfig);
 	}
 
 	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<Camera>>& cameras)

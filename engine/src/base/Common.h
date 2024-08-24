@@ -1,14 +1,10 @@
-#ifndef __PIONNER_BASE_TYPES_H__
-#define __PIONNER_BASE_TYPES_H__
+#ifndef __PIONNER_BASE_COMMON_H__
+#define __PIONNER_BASE_COMMON_H__
 
 #include "Math.h"
 
 namespace pio
 {
-	static const glm::vec3 k_AxisX = glm::vec3(1.f, 0.f, 0.f);
-	static const glm::vec3 k_AxisY = glm::vec3(0.f, 1.f, 0.f);
-	static const glm::vec3 k_AxisZ = glm::vec3(0.f, 0.f, 1.f);
-
 	enum RenderBackendFlags : uint8_t
 	{
 		RenderBackend_OpenGL = 0,
@@ -121,6 +117,13 @@ namespace pio
 		float m_offsetX{ 0.f }, m_offsetY{ 0.f};
 		float m_ratioW{ 1.f }, m_ratioH{ 1.f };
 	};
+
+	namespace World
+	{
+		static const glm::vec3 Right = glm::vec3(1.f, 0.f, 0.f);
+		static const glm::vec3 Up = glm::vec3(0.f, 1.f, 0.f);
+		static const glm::vec3 Forward = glm::vec3(0.f, 0.f, 1.f);
+	}
 }
 
 #endif

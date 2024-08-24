@@ -12,10 +12,15 @@ namespace pio
 		FB_StencilBuffer_Bit = 1 << 2
 	};
 
+	enum ShaderSpecifier : uint8_t
+	{
+		ShaderSpec_Standard = 0, 
+		ShaderSpec_Num
+	};
+
 	enum class RenderResourceType : uint8_t
 	{
-		UBO = 0,
-		Num
+		UBO = 0, Shader, Num
 	};
 
 	enum class TextureSampler : uint8_t

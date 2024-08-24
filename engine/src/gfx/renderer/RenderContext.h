@@ -2,9 +2,10 @@
 #define __PIONNER_GFX_RENDERER_RENDER_CONTEXT_H__
 
 #include "RenderThread.h"
-#include "RenderingData.h"
 
 #include "gfx/rhi/RenderAPI.h"
+
+#include "gfx/renderer/resource/RenderingData.h"
 
 #include "base/utils/SystemUtils.h"
 #include "base/CommandQueue.h"
@@ -12,8 +13,9 @@
 namespace pio
 {
 	class Window;
+	class RenderShader;
 
-	class RenderContext
+	class RenderContext : std::enable_shared_from_this<RenderContext>
 	{
 	public:	
 		RenderContext(RenderBackendFlags type, Ref<Window> &window);
@@ -25,6 +27,7 @@ namespace pio
 		uint64_t frame() const { return m_frameNum; }
 		RenderingEntities& renderingEntities() { return m_renderingEntities; }
 		RenderingData& renderingData() { return m_renderingData; }
+		Ref<RenderContext> self() { return shared_from_this(); }
 		RenderThread& thread() { return m_thread; }
 		Ref<Window>&  window() { return m_window; }
 		
@@ -119,6 +122,8 @@ namespace pio
 		CommandQueue m_garbageQueue[k_queueNum];		
 
 		uint64_t m_frameNum{ 0 };
+
+		Ref<RenderShader> m_shaders[ShaderSpec_Num];
 
 		RenderingEntities m_renderingEntities;
 		RenderingData m_renderingData;

@@ -2,6 +2,7 @@
 #define __PIONNER_SCENE_COMPONENTS_H__
 
 #include "Base.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {
@@ -27,7 +28,8 @@ namespace pio
 
 	struct MeshRenderer : public Component
 	{
-
+		ShaderSpecifier ShaderSpec{ ShaderSpec_Standard };
+		RenderingMode Mode{ RenderingMode_Opaque };
 	};
 }
 

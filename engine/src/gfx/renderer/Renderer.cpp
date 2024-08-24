@@ -11,13 +11,13 @@ namespace pio
 {
 	Ref<Renderer> Renderer::Create(const RenderConfig &config)
 	{
-		switch(config.Mode)
+		switch(config.Strategy)
 		{
-			case RenderingMode_Deffered:
+			case RenderingStrategy::Deffered:
 				return CreateRef<DefferedRenderer>();
-			case RenderingMode_Forward:
+			case RenderingStrategy::Forward:
 			default:
-				LOGE("err! Rendering mode[%u] has been implemented", config.Mode);
+				LOGE("err! Rendering mode[%u] has been implemented", config.Strategy);
 				std::abort();
 				return Ref<Renderer>();
 		}		

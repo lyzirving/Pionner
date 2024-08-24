@@ -2,5 +2,5 @@
 
 namespace pio
 {
-	RenderConfig GlobalSettings::k_RenderConfig{};
+	RenderConfig GlobalSettings::RenderConfig{};
 }

@@ -2,7 +2,7 @@
 #define __PIONNER_GFX_RHI_OPENGL_GL_HELPER_H__
 
 #include "GLHeader.h"
-#include "gfx/rhi/RhiDef.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {

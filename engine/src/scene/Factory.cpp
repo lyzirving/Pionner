@@ -45,12 +45,19 @@ namespace pio
 			for (uint32_t col = 0; col < n; col++)
 			{
 				Vertex3d v0, v1, v2, v3;
-				v0.Pos = origin + k_AxisX * float(col) + k_AxisZ * float(row);
-				v1.Pos = v0.Pos + k_AxisZ;
-				v2.Pos = v1.Pos + k_AxisX;
-				v3.Pos = v2.Pos - k_AxisZ;
+				v0.Pos = origin + World::Right * float(col) + World::Forward * float(row);				
+				v1.Pos = v0.Pos + World::Forward;			
+				v2.Pos = v1.Pos + World::Right;
+				v3.Pos = v2.Pos - World::Forward;
 
-				uint32_t idx = triMesh.Vertices.size();
+				v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Up;
+
+				v0.TexCoord = glm::vec2(float(col) / float(n), 1.f - float(row) / float(n));
+				v1.TexCoord = glm::vec2(float(col) / float(n), 1.f - float(row + 1) / float(n));
+				v2.TexCoord = glm::vec2(float(col + 1) / float(n), 1.f - float(row + 1) / float(n));
+				v3.TexCoord = glm::vec2(float(col + 1) / float(n), 1.f - float(row) / float(n));
+
+				uint16_t idx = triMesh.Vertices.size();
 				triMesh.Vertices.push_back(v0);
 				triMesh.Vertices.push_back(v1);
 				triMesh.Vertices.push_back(v2);
@@ -62,6 +69,11 @@ namespace pio
 				triMesh.Indices.push_back(idx + 2);
 				triMesh.Indices.push_back(idx + 3);
 				triMesh.Indices.push_back(idx);
+				
+				triMesh.Triangles.push_back(Triangle((v0.Normal + v1.Normal + v2.Normal) / 3.f,
+											{ idx, (uint16_t)(idx + 1), (uint16_t)(idx + 2) }));
+				triMesh.Triangles.push_back(Triangle((v2.Normal + v3.Normal + v0.Normal) / 3.f,
+											{ (uint16_t)(idx + 2), (uint16_t)(idx + 3), idx }));
 			}
 		}
 		return triMesh;
