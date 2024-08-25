@@ -1,5 +1,7 @@
 #include "RenderPipeline.h"
 
+#include "scene/Entity.h"
+#include "scene/Components.h"
 #include "scene/3d/Camera.h"
 
 #include "gfx/renderer/RenderContext.h"
@@ -104,5 +106,16 @@ namespace pio
 
 	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData)
 	{
+		auto &meshEnts = renderingEntities.Mesh;
+		for (auto &ent : meshEnts)
+		{
+			auto* filter = ent->getComponent<MeshFilter>();
+			auto* render = ent->getComponent<MeshRenderer>();
+			auto* transform = ent->getComponent<TransformComponent>();
+			if (filter->Enable && render->Enable)
+			{
+
+			}
+		}
 	}
 }

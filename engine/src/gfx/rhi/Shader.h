@@ -11,8 +11,6 @@ namespace pio
 		Shader(Ref<RenderContext>& context) : RenderResource(context, RenderResourceType::Shader) {}
 		virtual ~Shader() = default;
 
-		virtual void bind() = 0;
-		virtual void unbind() = 0;
 		virtual const std::string& name() const = 0;
 		virtual bool getSampler(TextureSampler& out) const = 0;
 

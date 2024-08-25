@@ -5,13 +5,6 @@
 
 namespace pio
 {
-	struct Vertex3d
-	{
-		glm::vec3 Pos{ 0.f };
-		glm::vec3 Normal{ 0.f };
-		glm::vec2 TexCoord{ 0.f };
-	};
-
 	struct Triangle
 	{
 		glm::vec3 Normal{ 0.f };

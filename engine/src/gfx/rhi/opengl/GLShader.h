@@ -34,6 +34,9 @@ namespace pio
 
 		virtual void bind() override;
 		virtual void unbind() override;
+		virtual uint32_t size() const override { return 0;/*do nothing*/ }
+		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
+
 		virtual const std::string& name() const override { return m_name; };
 		virtual bool getSampler(TextureSampler& out) const override;
 

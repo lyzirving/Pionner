@@ -11,6 +11,13 @@ namespace pio
 		bool Enable{ true };
 	};
 
+	struct TransformComponent : public Component
+	{
+		glm::vec3 Position{ 0.f };		
+		glm::vec3 Rotation{ 0.f };//Euler angle respectivly for x/y/z axis
+		glm::vec3 Scale{ 1.f };
+	};
+
 	struct CameraComponent : public Component
 	{
 		ProjectionType PrjType{ ProjectionType_Perspective };
@@ -28,8 +35,7 @@ namespace pio
 
 	struct MeshRenderer : public Component
 	{
-		ShaderSpecifier ShaderSpec{ ShaderSpec_Standard };
-		RenderingMode Mode{ RenderingMode_Opaque };
+		UUID32 MaterialHnd{ InvalidId };
 	};
 }
 

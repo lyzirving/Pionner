@@ -69,8 +69,8 @@ namespace pio
 		if (m_baseAlign != 0)
 			return;
 
-		m_baseAlign = RhiDef::GetUniformBaseAlign(m_type);
-		m_byteUsed = RhiDef::GetUniformColumnsByteSize(m_type);
+		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
+		m_byteUsed = Rhi::GetUniformColumnsByteSize(m_type);
 	}
 
 	void UniformData::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
@@ -143,12 +143,12 @@ namespace pio
 			return;
 
 		m_columns.resize(m_columnNum);
-		m_baseAlign = RhiDef::GetUniformBaseAlign(m_type);
+		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
 		for (uint32_t i = 0; i < m_columnNum; i++)
 		{
 			m_columns[i].m_type = UniformMat::GetColumnDataType(m_type);
 			m_columns[i].m_baseAlign = m_baseAlign;
-			m_columns[i].m_byteUsed = RhiDef::GetUniformColumnsByteSize(m_columns[i].m_type);
+			m_columns[i].m_byteUsed = Rhi::GetUniformColumnsByteSize(m_columns[i].m_type);
 		}
 	}
 
@@ -225,12 +225,12 @@ namespace pio
 			return;
 
 		m_array.resize(m_arrayNum);
-		m_baseAlign = RhiDef::GetUniformBaseAlign(m_type);
+		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
 		for (uint32_t i = 0; i < m_arrayNum; i++)
 		{
 			m_array[i].m_type = UniformArray::GetArrayDataType(m_type);
 			m_array[i].m_baseAlign = m_baseAlign;
-			m_array[i].m_byteUsed = RhiDef::GetUniformColumnsByteSize(m_array[i].m_type);
+			m_array[i].m_byteUsed = Rhi::GetUniformColumnsByteSize(m_array[i].m_type);
 		}
 	}
 
@@ -307,7 +307,7 @@ namespace pio
 			return;
 
 		m_matArray.resize(m_arrayNum);
-		m_baseAlign = RhiDef::GetUniformBaseAlign(m_type);
+		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
 		for (uint32_t i = 0; i < m_arrayNum; i++)
 		{
 			m_matArray[i].m_type = UniformMatArray::GetArrayDataType(m_type);
@@ -377,7 +377,7 @@ namespace pio
 		if (m_baseAlign != 0 || m_data.empty())
 			return;
 
-		m_baseAlign = RhiDef::GetUniformBaseAlign(m_type);
+		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
 		for (auto &d : m_data)
 		{
 			d.second->fillMetaData();
@@ -447,7 +447,7 @@ namespace pio
 		if (m_baseAlign != 0)
 			return;
 
-		m_baseAlign = RhiDef::GetUniformBaseAlign(m_type);
+		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
 		for (auto &s : m_structArray)
 		{
 			s.fillMetaData();

@@ -28,6 +28,13 @@ namespace pio
 		Plane, Cube, Num
 	};
 
+	struct Vertex3d
+	{
+		glm::vec3 Pos{ 0.f };
+		glm::vec3 Normal{ 0.f };
+		glm::vec2 TexCoord{ 0.f };
+	};
+
 	/*
 	* @brief: Rectangle of a panel on window whose origin is left-top
 	*/

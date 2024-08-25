@@ -26,13 +26,20 @@ namespace pio
 		virtual void destroy() = 0;
 		virtual bool isInit() const = 0;
 
+		virtual void bind() = 0;
+		virtual void unbind() = 0;
+
+		virtual uint32_t size() const = 0;
+		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
+
 		RenderResourceType type() const { return m_type; }
 		uint32_t id() const { return m_id; }
 
 	protected:
 		Ref<RenderContext> m_context;
 		RenderResourceType m_type;
-		uint32_t m_id{ 0 };
+		uint32_t m_id{ 0 }, m_size{ 0 };
+		void* m_data{ nullptr };
 	};
 }
 

@@ -7,7 +7,7 @@
 
 namespace pio
 {
-	namespace RhiDef
+	namespace Rhi
 	{
 		uint32_t GetShaderDataTypeByteSize(ShaderDataType type)
 		{
@@ -339,6 +339,26 @@ namespace pio
 				default:
 					LOGE("invalid channel num[%u]", channelNum);
 					return TextureFmt::None;
+			}
+		}
+
+		const char* RenderResourceToStr(RenderResourceType type)
+		{
+			switch (type)
+			{
+			case RenderResourceType::UBO:
+				return "Uniform Buffer Object";
+			case RenderResourceType::VBO:
+				return "Vertex Buffer Object";
+			case RenderResourceType::EBO:
+				return "Indice Buffer Object";
+			case RenderResourceType::VAO:
+				return "Vertex Array Object";
+			case RenderResourceType::Shader:
+				return "Shader";
+			default:
+				LOGE("err! undefined render resource type[%u]", type);
+				return "Undefined RenderResourceType";
 			}
 		}
 	}

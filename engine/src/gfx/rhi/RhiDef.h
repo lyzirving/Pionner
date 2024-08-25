@@ -20,7 +20,7 @@ namespace pio
 
 	enum class RenderResourceType : uint8_t
 	{
-		UBO = 0, Shader, Num
+		UBO = 0, VBO, EBO, VAO, Shader, Num
 	};
 
 	enum class TextureSampler : uint8_t
@@ -110,16 +110,17 @@ namespace pio
 		ColorBuffer = 0, DepthBuffer, DepthStencil
 	};
 
-	namespace RhiDef
+	namespace Rhi
 	{
 		uint32_t GetShaderDataTypeByteSize(ShaderDataType type);
 		uint32_t GetShaderDataTypeCompNum(ShaderDataType type);
 		uint32_t GetUniformBaseAlign(UniformDataType type);
 		uint32_t GetUniformColumnsByteSize(UniformDataType type);
 		uint32_t GetUniformByteSize(UniformDataType type, uint32_t arrayNum = 1);
-		const char *GetUniformDataTypeStr(UniformDataType type);
+		const char* GetUniformDataTypeStr(UniformDataType type);
 		TextureInternalFmt GetInternalFmt(uint32_t channelNum);
 		TextureFmt GetTextureFmt(uint32_t channelNum);
+		const char* RenderResourceToStr(RenderResourceType type);
 	}
 
 	#define PIO_UNIFORM_WRAPPER_INTERFACE_DECLARE(T) \

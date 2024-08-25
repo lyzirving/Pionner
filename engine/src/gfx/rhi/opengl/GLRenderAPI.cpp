@@ -133,9 +133,17 @@ namespace pio
 		switch (resource.Type)
 		{
 		case RenderResourceType::UBO:
+		case RenderResourceType::VBO:
+		case RenderResourceType::EBO:
 		{
-			LOGD("release UBO[%u]", resource.Id);
+			LOGD("delete buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceToStr(resource.Type));
 			glDeleteBuffers(1, &resource.Id);
+			break;
+		}
+		case RenderResourceType::VAO:
+		{
+			LOGD("delete buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceToStr(resource.Type));
+			glDeleteVertexArrays(1, &resource.Id);
 			break;
 		}
 		default:
