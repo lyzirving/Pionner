@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_COMPONENTS_H__
 #define __PIONNER_SCENE_COMPONENTS_H__
 
-#include "Base.h"
+#include "Entry.h"
 #include "gfx/GfxDef.h"
 
 namespace pio

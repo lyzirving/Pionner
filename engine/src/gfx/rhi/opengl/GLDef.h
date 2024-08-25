@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_RHI_OPENGL_GL_DEF_H__
 #define __PIONNER_GFX_RHI_OPENGL_GL_DEF_H__
 
-#include "Base.h"
+#include "Entry.h"
 
 namespace pio
 {

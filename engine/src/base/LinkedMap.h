@@ -1,7 +1,7 @@
 #ifndef __PIONNER_BASE_LINKED_MAP_H__
 #define __PIONNER_BASE_LINKED_MAP_H__
 
-#include "Base.h"
+#include "defs/TypeDef.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

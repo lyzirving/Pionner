@@ -1,7 +1,7 @@
 #ifndef __PIONNER_EVENT_CURSOR_H__
 #define __PIONNER_EVENT_CURSOR_H__
 
-#include "Base.h"
+#include "Entry.h"
 
 namespace pio
 {

@@ -1,7 +1,7 @@
 #ifndef __PIONNER_BASE_EULER_ANGLE_H__
 #define __PIONNER_BASE_EULER_ANGLE_H__
 
-#include "Base.h"
+#include "defs/MathDef.h"
 
 namespace pio
 {

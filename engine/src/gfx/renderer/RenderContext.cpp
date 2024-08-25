@@ -1,5 +1,7 @@
 #include "RenderContext.h"
 
+#include "gfx/renderer/resource/RenderShader.h"
+
 #include "window/Window.h"
 
 #ifdef LOCAL_TAG

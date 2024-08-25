@@ -1,7 +1,7 @@
 #ifndef __PIONNER_ASSET_ASSET_H__
 #define __PIONNER_ASSET_ASSET_H__
 
-#include "Base.h"
+#include "Entry.h"
 
 namespace pio
 {

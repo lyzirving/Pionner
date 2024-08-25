@@ -1,9 +1,6 @@
 #ifndef __PIONNER_GFX_RENDERER_RENDER_THREAD_H__
 #define __PIONNER_GFX_RENDERER_RENDER_THREAD_H__
 
-#include <atomic>
-#include <condition_variable>
-
 #include "base/Thread.h"
 
 namespace pio

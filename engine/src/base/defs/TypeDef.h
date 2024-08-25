@@ -1,10 +1,14 @@
-#ifndef __PIONNER_BASE_COMMON_H__
-#define __PIONNER_BASE_COMMON_H__
+#ifndef __PIONNER_BASE_DEFS_TYPE_DEF_H__
+#define __PIONNER_BASE_DEFS_TYPE_DEF_H__
 
-#include "Math.h"
+#include "MathDef.h"
 
 namespace pio
 {
+	constexpr static const uint32_t InvalidId = 0U;
+
+	using byte = uint8_t;
+
 	enum RenderBackendFlags : uint8_t
 	{
 		RenderBackend_OpenGL = 0,
@@ -84,8 +88,8 @@ namespace pio
 
 		float offsetX() const { return m_offsetX; }
 		float offsetY() const { return m_offsetY; }
-		float ratioW() const  { return m_ratioW; }
-		float ratioH() const  { return m_ratioH; }
+		float ratioW() const { return m_ratioW; }
+		float ratioH() const { return m_ratioH; }
 
 		void setX(int32_t x) { m_x = x; }
 		void setY(int32_t y) { m_y = y; }
@@ -94,18 +98,18 @@ namespace pio
 
 		void setOffsetX(float x) { m_offsetX = Math::Clamp(x, 0.f, 1.f); }
 		void setOffsetY(float y) { m_offsetY = Math::Clamp(y, 0.f, 1.f); }
-		void setRatioW(float r)  { m_ratioW = Math::Clamp(r, 0.f, 1.f); }
-		void setRatioH(float r)  { m_ratioH = Math::Clamp(r, 0.f, 1.f); }
+		void setRatioW(float r) { m_ratioW = Math::Clamp(r, 0.f, 1.f); }
+		void setRatioH(float r) { m_ratioH = Math::Clamp(r, 0.f, 1.f); }
 
 		void reset() { m_offsetX = m_offsetY = 0.f; m_ratioW = m_ratioH = 1.f; }
 
 		bool operator==(const Viewport& rhs)
 		{
 			if (this == &rhs) return true;
-			return this->m_x == rhs.m_x && this->m_y == rhs.m_y && 
-				   this->m_w == rhs.m_w && this->m_h == rhs.m_h && 
-				   this->m_offsetX == rhs.m_offsetX && this->m_offsetY == rhs.m_offsetY &&
-				   this->m_ratioW == rhs.m_ratioW && this->m_ratioH == rhs.m_ratioH;
+			return this->m_x == rhs.m_x && this->m_y == rhs.m_y &&
+				this->m_w == rhs.m_w && this->m_h == rhs.m_h &&
+				this->m_offsetX == rhs.m_offsetX && this->m_offsetY == rhs.m_offsetY &&
+				this->m_ratioW == rhs.m_ratioW && this->m_ratioH == rhs.m_ratioH;
 		}
 
 		bool operator!=(const Viewport& rhs) { return !((*this) == rhs); }
@@ -114,7 +118,7 @@ namespace pio
 		int32_t m_x{ 0 }, m_y{ 0 };
 		int32_t m_w{ 0 }, m_h{ 0 };
 		//TODO: click is invalid after the change of offset or ratio
-		float m_offsetX{ 0.f }, m_offsetY{ 0.f};
+		float m_offsetX{ 0.f }, m_offsetY{ 0.f };
 		float m_ratioW{ 1.f }, m_ratioH{ 1.f };
 	};
 

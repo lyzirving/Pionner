@@ -1,9 +1,7 @@
 #ifndef __PIONNER_BASE_THREAD_H__
 #define __PIONNER_BASE_THREAD_H__
 
-#include <thread>
-
-#include "Base.h"
+#include "defs/FunDef.h"
 
 namespace pio
 {

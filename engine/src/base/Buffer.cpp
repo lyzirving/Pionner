@@ -1,5 +1,8 @@
 #include "Buffer.h"
 
+#include "defs/FunDef.h"
+#include "utils/LogSystem.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif

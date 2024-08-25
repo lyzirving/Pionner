@@ -1,6 +1,7 @@
 #include "GLRenderAPI.h"
 
 #include "GLHelper.h"
+#include "GLHeader.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "window/Window.h"

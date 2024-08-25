@@ -1,22 +1,25 @@
-#include "QuatUtil.h"
-#include "Transform.h"
+#include "MathDef.h"
 
 namespace pio
 {
+	namespace Math
+	{
+	}
+
 	namespace quaternion
 	{
-		bool Equal(const glm::quat &lhs, const glm::quat &rhs)
+		bool Equal(const glm::quat& lhs, const glm::quat& rhs)
 		{
 			return Math::IsZero(glm::dot(lhs, rhs));
 		}
 
-		glm::quat Mix(const glm::quat &lhs, const glm::quat &rhs, float ratio)
+		glm::quat Mix(const glm::quat& lhs, const glm::quat& rhs, float ratio)
 		{
 			float val = Math::Clamp(ratio, 0.f, 1.f);
 			return glm::mix(lhs, rhs, val);
 		}
 
-		glm::quat RotationToQuat(const glm::vec3 &start, const glm::vec3 &dest)
+		glm::quat RotationToQuat(const glm::vec3& start, const glm::vec3& dest)
 		{
 			glm::vec3 nStart = glm::normalize(start);
 			glm::vec3 nDest = glm::normalize(dest);

@@ -1,7 +1,7 @@
 #ifndef __PIONNER_BASE_SPHERE_COORD_H__
 #define __PIONNER_BASE_SPHERE_COORD_H__
 
-#include "Base.h"
+#include "defs/MathDef.h"
 
 namespace pio
 {

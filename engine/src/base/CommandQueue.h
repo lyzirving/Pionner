@@ -1,7 +1,7 @@
 #ifndef __PIONNER_BASE_COMMAND_QUEUE_H__
 #define __PIONNER_BASE_COMMAND_QUEUE_H__
 
-#include "Base.h"
+#include "defs/TypeDef.h"
 
 namespace pio
 {

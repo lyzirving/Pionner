@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_FACTORY_H__
 #define __PIONNER_SCENE_FACTORY_H__
 
-#include "Base.h"
+#include "Entry.h"
 
 namespace pio
 {
