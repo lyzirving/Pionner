@@ -24,18 +24,18 @@ namespace pio
 		int32_t Depth{ 0 };
 		float Fov{ 60.f };
 		float Size{ 5.f };
-		UUID32 Handle{ InvalidId };
+		UUID32 Uid{ InvalidId };
 	};
 
 	struct MeshFilter : public Component
 	{
 		MeshType Type{ MeshType::Num };
-		UUID32 Handle{ InvalidId };
+		UUID32 Uid{ InvalidId };
 	};
 
 	struct MeshRenderer : public Component
 	{
-		UUID32 MaterialHnd{ InvalidId };
+		UUID32 Uid{ InvalidId };
 	};
 }
 

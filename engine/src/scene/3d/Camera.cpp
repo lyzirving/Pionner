@@ -208,7 +208,7 @@ namespace pio
 				if (ent->has<CameraComponent>())
 				{
 					auto* comp = ent->getComponent<CameraComponent>();
-					auto cam = AssetMgr::GetRuntimeAsset<Camera>(comp->Handle);
+					auto cam = AssetMgr::GetRuntimeAsset<Camera>(comp->Uid);
 					CameraUtils::Update(comp, cam);
 					cameras.push_back(cam);
 				}				

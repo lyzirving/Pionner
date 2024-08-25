@@ -6,7 +6,7 @@
 #include "asset/AssetMgr.h"
 
 #include "scene/3d/Camera.h"
-#include "scene/3d/Mesh.h"
+#include "scene/resources/Mesh.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -20,7 +20,7 @@ namespace pio
 		auto entity	= scene->addEntity<CameraComponent>(name);
 		auto *pComp = entity->getComponent<CameraComponent>();
 		pComp->Depth = depth;
-		pComp->Handle = AssetMgr::MakeRuntimeAsset<Camera>()->id();
+		pComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->id();
 		return entity;
 	}
 
@@ -32,7 +32,7 @@ namespace pio
 		mesh->m_triMesh = Geometry3dFactory::MakePlane();
 
 		meshFilter->Type = MeshType::Plane;
-		meshFilter->Handle = mesh->id();
+		meshFilter->Uid = mesh->id();
 		return entity;
 	}
 
