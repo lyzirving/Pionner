@@ -1,7 +1,7 @@
 #ifndef __PIONNER_BASE_UTILS_SYSTEM_UTILS_H__
 #define __PIONNER_BASE_UTILS_SYSTEM_UTILS_H__
 
-#include "Entry.h"
+#include <base/defs/FunDef.h>
 
 namespace pio
 {

@@ -1,8 +1,7 @@
 #ifndef __PIONNER_BASE_UTILS_LOG_SYSTEM_H__
 #define __PIONNER_BASE_UTILS_LOG_SYSTEM_H__
 
-#include <memory>
-#include <cstdint>
+#include <base/defs/FunDef.h>
 
 #ifdef LIB_TAB
 #undef LIB_TAB

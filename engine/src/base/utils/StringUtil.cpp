@@ -1,9 +1,10 @@
 #include "StringUtil.h"
 
+#include "LogSystem.h"
+
 #include <regex>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

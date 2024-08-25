@@ -10,6 +10,26 @@
 #include <condition_variable>
 #include <atomic>
 
+#include <map>
+#include <set>
+#include <list>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+
+#include <string>
+#include <string_view>
+#include <sstream>
+
+#include <initializer_list>
+
+#include <tuple>
+#include <bitset>
+
+#include <type_traits>
+#include <typeinfo>
+#include <cassert>
+
 namespace pio
 {
 	template<typename T>
