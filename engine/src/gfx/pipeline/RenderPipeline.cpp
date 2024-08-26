@@ -119,7 +119,7 @@ namespace pio
 			if (filter->Enable && render->Enable)
 			{
 				Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->Uid);
-				mesh->setUp(context);
+				mesh->setUp(context, *transform);
 			}
 		}
 	}

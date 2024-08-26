@@ -15,8 +15,8 @@ namespace pio
 		virtual uint32_t indiceNum() const = 0;
 
 	public:
-		static Ref<IndexBuffer> Create(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum);
-		static Ref<IndexBuffer> Create(Ref<RenderContext>& context, const void *data, uint32_t size, uint32_t indiceNum);
+		static Ref<IndexBuffer> Create(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum, BufferUsage usage = BufferUsage::Static);
+		static Ref<IndexBuffer> Create(Ref<RenderContext>& context, const void *data, uint32_t size, uint32_t indiceNum, BufferUsage usage = BufferUsage::Static);
 	};
 }
 

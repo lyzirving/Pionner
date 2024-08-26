@@ -8,8 +8,8 @@ namespace pio
 	class GLIndexBuffer : public IndexBuffer
 	{
 	public:
-		GLIndexBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum);
-		GLIndexBuffer(Ref<RenderContext>& context, const void *data, uint32_t size, uint32_t indiceNum);
+		GLIndexBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum, BufferUsage usage);
+		GLIndexBuffer(Ref<RenderContext>& context, const void *data, uint32_t size, uint32_t indiceNum, BufferUsage usage);
 		virtual ~GLIndexBuffer() = default;
 
 		virtual bool init() override;
@@ -26,6 +26,7 @@ namespace pio
 		virtual uint32_t indiceNum() const override { return m_indiceNum; }
 
 	private:
+		BufferUsage m_usage{ BufferUsage::Static };
 		uint32_t m_indiceNum{ 0 };
 	};
 }

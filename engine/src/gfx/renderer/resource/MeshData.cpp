@@ -1,11 +1,5 @@
 #include "MeshData.h"
 
-#include "gfx/renderer/RenderContext.h"
-
-#include "gfx/rhi/VertexArray.h"
-#include "gfx/rhi/VertexBuffer.h"
-#include "gfx/rhi/IndexBuffer.h"
-
 namespace pio
 {
 	MeshBuffer::MeshBuffer(const MeshBuffer& rhs) : Vao(rhs.Vao), Vbo(rhs.Vbo), Ebo(rhs.Ebo)

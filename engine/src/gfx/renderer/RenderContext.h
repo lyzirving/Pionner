@@ -89,9 +89,16 @@ namespace pio
 			submitGC([data, &api]() mutable { api->releaseResource(std::move(data)); });
 		}	
 
-		void uploadData(void* data, uint32_t size, Ref<UniformBuffer>& buffer)
+		template<typename Type>
+		void uploadData(void* data, uint32_t size, Ref<Type>& resource)
 		{
-			submitTask([data, size, &buffer]() mutable { buffer->setData(data, size, 0); });
+			submitTask([data, size, &resource]() mutable { resource->setData(data, size, 0); });
+		}
+
+		template<typename Type>
+		void uploadData(Ref<Type> &resource)
+		{
+			submitTask([&resource]() mutable { resource->init(); });
 		}
 
 		void onBeginFrameRendering();

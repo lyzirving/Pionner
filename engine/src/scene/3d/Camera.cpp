@@ -81,22 +81,25 @@ namespace pio
 
 	void Camera::setUp(Ref<RenderContext>& context)
 	{
-		flush();
-
-		if (!m_data.UnimBuff)
+		if(!m_data.UnimBuff)
 		{
 			m_data.UnimBuff = UniformBuffer::Create(context, m_data.UnimData.Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
 		}
 
-		m_data.UnimData.ViewMat = viewMat();
-		m_data.UnimData.PrjMat = prjMat();
-		m_data.UnimData.OrthoMat = orthoMat();
-		m_data.UnimData.CameraPosition = position();
-		m_data.UnimData.FrustumFar = frustFar();
-		m_data.UnimData.PrjType = prjType();
-		m_data.UnimData.serialize();
+		if(anyChange())
+		{
+			flush();
 
-		context->uploadData(m_data.UnimData.Block.getBuffer()->as<void*>(), m_data.UnimData.Block.getByteUsed(), m_data.UnimBuff);
+			m_data.UnimData.ViewMat = viewMat();
+			m_data.UnimData.PrjMat = prjMat();
+			m_data.UnimData.OrthoMat = orthoMat();
+			m_data.UnimData.CameraPosition = position();
+			m_data.UnimData.FrustumFar = frustFar();
+			m_data.UnimData.PrjType = prjType();
+			m_data.UnimData.serialize();
+
+			context->uploadData(m_data.UnimData.Block.getBuffer()->as<void *>(), m_data.UnimData.Block.getByteUsed(), m_data.UnimBuff);
+		}
 	}
 
 	void Camera::flush()

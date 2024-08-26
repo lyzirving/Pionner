@@ -17,7 +17,7 @@ namespace pio
 {
 	Ref<Entity> Factory::MakeCamera(Ref<Scene>& scene, const std::string& name, int32_t depth)
 	{
-		auto entity	= scene->addEntity<CameraComponent>(name);
+		auto entity	= scene->addEntity<CameraComponent, TransformComponent>(name);
 		auto *pComp = entity->getComponent<CameraComponent>();
 		pComp->Depth = depth;
 		pComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->id();
@@ -26,7 +26,7 @@ namespace pio
 
 	Ref<Entity> Factory::MakePlane(Ref<Scene>& scene, const std::string& name)
 	{
-		auto entity = scene->addEntity<MeshFilter, MeshRenderer>(name);
+		auto entity = scene->addEntity<MeshFilter, MeshRenderer, TransformComponent>(name);
 		auto* meshFilter = entity->getComponent<MeshFilter>();
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
 		mesh->m_triMesh = Geometry3dFactory::MakePlane();

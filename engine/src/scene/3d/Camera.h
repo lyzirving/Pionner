@@ -79,6 +79,7 @@ namespace pio
 		void setFov(float fov) { m_persFrustum.setFov(fov); }
 		void setSize(float size) { m_orthoFrustum.setSize(size); }
 
+		bool anyChange() const { return m_attrBits.any() || m_persFrustum.bDirty() || m_orthoFrustum.bDirty(); }
 		void attrChange(CameraAttrBits bit) { m_attrBits.set(bit); }
 		void setClearFlag(CameraClearFlags f) { m_clearFlag = f; }
 		void setDepth(int32_t depth) { m_depth = depth; }

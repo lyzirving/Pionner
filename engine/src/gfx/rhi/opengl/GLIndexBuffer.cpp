@@ -12,12 +12,12 @@
 
 namespace pio
 {
-	GLIndexBuffer::GLIndexBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum) : IndexBuffer(context), m_indiceNum(indiceNum)
+	GLIndexBuffer::GLIndexBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum, BufferUsage usage) : IndexBuffer(context), m_indiceNum(indiceNum), m_usage(usage)
 	{
 		m_size = size;
 	}
 
-	GLIndexBuffer::GLIndexBuffer(Ref<RenderContext>& context, const void* data, uint32_t size, uint32_t indiceNum) : IndexBuffer(context), m_indiceNum(indiceNum)
+	GLIndexBuffer::GLIndexBuffer(Ref<RenderContext>& context, const void* data, uint32_t size, uint32_t indiceNum, BufferUsage usage) : IndexBuffer(context), m_indiceNum(indiceNum), m_usage(usage)
 	{
 		m_size = size;
 
@@ -46,7 +46,7 @@ namespace pio
 			glGenBuffers(1, &m_id);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, m_data, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, m_data, GLHelper::BufferUsageToGLUsage(m_usage));
 			if (GLHelper::CheckError("fail to make index buffer, vbo[%u]", m_id))
 			{
 				LOGD("create index buffer[%u]", m_id);

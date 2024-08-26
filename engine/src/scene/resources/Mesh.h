@@ -7,6 +7,8 @@
 
 namespace pio
 {
+	struct TransformComponent;
+
 	class Mesh : public Asset
 	{
 		OVERRIDE_ASSET_TYPE(AssetType::Mesh)
@@ -14,7 +16,7 @@ namespace pio
 		Mesh() : Asset() {}
 		virtual ~Mesh() = default;
 
-		void setUp(Ref<RenderContext>& context);
+		void setUp(Ref<RenderContext>& context, const TransformComponent &transComp);
 
 		MeshBuffer& buffer() { return m_buffer; }
 		TriangleMesh& triMesh() { return m_triMesh; }
@@ -25,6 +27,7 @@ namespace pio
 	protected:
 		TriangleMesh m_triMesh;
 		MeshBuffer m_buffer;
+		Transform m_transform;
 
 	private:
 		friend class Factory;

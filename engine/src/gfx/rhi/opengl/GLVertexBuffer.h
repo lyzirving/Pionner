@@ -23,7 +23,7 @@ namespace pio
 		virtual uint32_t size() const override { return m_size; }
 		virtual void setData(const void *data, uint32_t size, uint32_t offset = 0) override;
 
-		virtual void setLayout(const VertexBufferLayout &layout) override { m_layout = layout; }
+		virtual void setBufferLayout(const VertexBufferLayout &layout) override { m_layout = layout; }
 		virtual const VertexBufferLayout &layout() const override { return m_layout; }
 
 	private:

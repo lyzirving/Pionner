@@ -70,7 +70,7 @@ namespace pio
 		VertexBuffer(Ref<RenderContext>& context) : RenderResource(context, RenderResourceType::VBO) {}
 		virtual ~VertexBuffer() = default;
 
-		virtual void setLayout(const VertexBufferLayout &layout) = 0;
+		virtual void setBufferLayout(const VertexBufferLayout &layout) = 0;
 		virtual const VertexBufferLayout &layout() const = 0;
 
 	public:

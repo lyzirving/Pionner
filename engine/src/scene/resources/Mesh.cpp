@@ -1,10 +1,6 @@
 #include "Mesh.h"
 
-#include "gfx/renderer/RenderContext.h"
-
-#include "gfx/rhi/VertexArray.h"
-#include "gfx/rhi/VertexBuffer.h"
-#include "gfx/rhi/IndexBuffer.h"
+#include "scene/Components.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -13,11 +9,15 @@
 
 namespace pio
 {	
-	void Mesh::setUp(Ref<RenderContext>& context)
+	void Mesh::setUp(Ref<RenderContext>& context, const TransformComponent &transComp)
 	{
 		if (!m_buffer.valid())
 		{
+			MeshBuffer::Create(context, m_buffer, m_triMesh.Vertices, m_triMesh.Indices);
 		}
+		m_transform.Euler = transComp.Rotation;
+		m_transform.Scale = transComp.Scale;
+		m_transform.Position = transComp.Position;
 	}
 
 	template<>

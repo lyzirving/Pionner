@@ -127,7 +127,7 @@ namespace pio
 	{
 		if (resource.Id == 0)
 		{
-			LOGE("err! invalid resource id for type[%u]", resource.Type);
+			LOGE("err! invalid resource id[0] for type[%s]", Rhi::RenderResourceToStr(resource.Type));
 			return;
 		}
 		switch (resource.Type)
@@ -147,7 +147,7 @@ namespace pio
 			break;
 		}
 		default:
-			LOGE("err! invalid resource type[%u]", resource.Type);
+			LOGE("err! invalid resource type[%s], id[%u]", Rhi::RenderResourceToStr(resource.Type), resource.Id);
 			break;
 		}
 	}
