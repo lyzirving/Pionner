@@ -127,7 +127,7 @@ namespace pio
 											return s_instance;\
 										}
 
-	// need to include Uniform.h
+	// need to include UniformPack.h
 	#define PIO_UNIFORM_STRUCT_DECLARE(T)	UniformBlock Block;\
 											void obtainBlock() { this->Block = T::CreateBlock(); }\
 											void serialize();\

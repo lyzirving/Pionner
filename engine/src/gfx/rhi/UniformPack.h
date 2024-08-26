@@ -1,5 +1,5 @@
-#ifndef __PIONNER_GFX_RHI_UNIFORM_H__
-#define __PIONNER_GFX_RHI_UNIFORM_H__
+#ifndef __PIONNER_GFX_RHI_UNIFORM_PACK_H__
+#define __PIONNER_GFX_RHI_UNIFORM_PACK_H__
 
 #include "RhiDef.h"
 #include "base/Buffer.h"
@@ -22,7 +22,7 @@ namespace pio
 		UniformPack();
 		UniformPack(UniformDataType type);
 		UniformPack(UniformDataType type, const std::string &name);
-		virtual ~UniformPack();
+		virtual ~UniformPack() = default;
 		virtual void fillMetaData();
 		virtual void calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart);
 		virtual uint32_t getArrayNum() { return 0; }

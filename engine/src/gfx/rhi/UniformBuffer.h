@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_RHI_UNIFORM_BUFFER_H__
 #define __PIONNER_GFX_RHI_UNIFORM_BUFFER_H__
 
-#include "Uniform.h"
+#include "UniformPack.h"
 #include "RenderResource.h"
 
 namespace pio

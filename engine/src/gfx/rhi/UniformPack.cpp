@@ -1,9 +1,9 @@
-#include "Uniform.h"
+#include "UniformPack.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "Uniform"
+#define LOCAL_TAG "UniformPack"
 
 namespace pio
 {
@@ -56,10 +56,6 @@ namespace pio
 	}
 
 	UniformPack::UniformPack(UniformDataType type, const std::string &name) : m_type(type), m_name(name)
-	{
-	}
-
-	UniformPack::~UniformPack()
 	{
 	}
 
