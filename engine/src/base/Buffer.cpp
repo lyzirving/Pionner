@@ -10,17 +10,12 @@
 
 namespace pio
 {
-	Buffer::Buffer() 
-	{
-	}
-
 	Buffer::Buffer(uint32_t cap) : m_capacity(cap)
 	{
 		allocate(0, m_capacity);
 	}
 
-	Buffer::Buffer(void *data, uint32_t cap) 
-		: m_data(data), m_capacity(cap), m_offset(cap)
+	Buffer::Buffer(void *data, uint32_t cap) : m_data(data), m_capacity(cap), m_offset(cap)
 	{
 	}
 
@@ -28,6 +23,11 @@ namespace pio
 	{
 		if (this != &rhs)
 		{
+			if(m_data)
+			{
+				PIO_FREE(m_data);
+				m_data = nullptr;
+			}
 			m_capacity = rhs.m_capacity;
 			m_offset = rhs.m_offset;
 			if (rhs.m_data && m_capacity != 0 && (m_data = PIO_MALLOC(m_capacity)))
@@ -40,18 +40,8 @@ namespace pio
 	Buffer &Buffer::operator=(const Buffer &rhs)
 	{
 		if (this != &rhs)
-		{
-			m_capacity = rhs.m_capacity;
-			m_offset = rhs.m_offset;
-			if (m_data)
-			{
-				PIO_FREE(m_data);
-				m_data = nullptr;
-			}
-			if (m_capacity != 0 && rhs.m_data && (m_data = PIO_MALLOC(m_capacity)))
-			{
-				std::memcpy(m_data, rhs.m_data, m_capacity);
-			}
+		{			
+			this->Buffer::Buffer(rhs);
 		}
 		return *this;
 	}
@@ -73,12 +63,7 @@ namespace pio
 	{
 		if (this != &rhs)
 		{
-			m_capacity = rhs.m_capacity;
-			m_offset = rhs.m_offset;
-			m_data = rhs.m_data;
-
-			rhs.m_capacity = rhs.m_offset = 0;
-			rhs.m_data = nullptr;
+			this->Buffer::Buffer(std::forward<Buffer>(rhs));
 		}
 		return *this;
 	}

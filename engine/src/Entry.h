@@ -6,6 +6,8 @@
 
 #include "base/UUID.h"
 #include "base/Transform.h"
+#include "base/Buffer.h"
+#include "base/LinkedMap.h"
 #include "base/utils/Time.h"
 #include "base/utils/StringUtil.h"
 #include "base/utils/LogSystem.h"

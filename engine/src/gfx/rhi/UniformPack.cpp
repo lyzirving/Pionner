@@ -81,9 +81,9 @@ namespace pio
 		return ss.str();
 	}
 
-	// ------------------------ UniformMat --------------------------
+	// ------------------------ UnimPackMat --------------------------
 	// --------------------------------------------------------------
-	UniformDataType UniformMat::GetColumnDataType(UniformDataType type)
+	UniformDataType UnimPackMat::GetColumnDataType(UniformDataType type)
 	{
 		switch (type)
 		{
@@ -94,12 +94,12 @@ namespace pio
 			case UniformDataType::Mat4:
 				return UniformDataType::Vec4;
 			default:
-				LOGE("UniformMat: invalid Mat type[%u]", type);
+				LOGE("UnimPackMat: invalid Mat type[%u]", type);
 				return UniformDataType::None;
 		}
 	}
 
-	uint32_t UniformMat::GetMatColumnNum(UniformDataType type)
+	uint32_t UnimPackMat::GetMatColumnNum(UniformDataType type)
 	{
 		switch (type)
 		{
@@ -110,16 +110,16 @@ namespace pio
 			case UniformDataType::Mat4:
 				return 4;
 			default:
-				LOGE("UniformMat: invalid Mat type[%u]", type);
+				LOGE("UnimPackMat: invalid Mat type[%u]", type);
 				return 0;
 		}
 	}
 
-	UniformMat::UniformMat() : UniformPack()
+	UnimPackMat::UnimPackMat() : UniformPack()
 	{
 	}
 
-	UniformMat::UniformMat(UniformDataType type, uint32_t columnNum, const std::string &name)
+	UnimPackMat::UnimPackMat(UniformDataType type, uint32_t columnNum, const std::string &name)
 		: UniformPack(type, name), m_columnNum(columnNum)
 	{
 		if (m_columnNum <= 1)
@@ -130,9 +130,9 @@ namespace pio
 		fillMetaData();
 	}
 
-	UniformMat::~UniformMat() = default;
+	UnimPackMat::~UnimPackMat() = default;
 
-	void UniformMat::fillMetaData()
+	void UnimPackMat::fillMetaData()
 	{
 		if (m_baseAlign != 0)
 			return;
@@ -141,13 +141,13 @@ namespace pio
 		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
 		for (uint32_t i = 0; i < m_columnNum; i++)
 		{
-			m_columns[i].m_type = UniformMat::GetColumnDataType(m_type);
+			m_columns[i].m_type = UnimPackMat::GetColumnDataType(m_type);
 			m_columns[i].m_baseAlign = m_baseAlign;
 			m_columns[i].m_byteUsed = Rhi::GetUniformColumnsByteSize(m_columns[i].m_type);
 		}
 	}
 
-	void UniformMat::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
+	void UnimPackMat::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
 	{
 		if (m_columnNum <= 1)
 		{
@@ -175,7 +175,7 @@ namespace pio
 		m_byteUsed = m_endPadding - m_alignOffset;
 	}
 
-	std::string UniformMat::toString()
+	std::string UnimPackMat::toString()
 	{
 		std::stringstream ss{};
 		ss << "name[" << m_name << "], base align[" << m_baseAlign << "]\n";
@@ -187,10 +187,10 @@ namespace pio
 		return ss.str();
 	}
 
-	// ------------------------ UniformArray --------------------------
+	// ------------------------ UnimPackArray --------------------------
 	// ----------------------------------------------------------------
 
-	UniformDataType UniformArray::GetArrayDataType(UniformDataType type)
+	UniformDataType UnimPackArray::GetArrayDataType(UniformDataType type)
 	{
 		switch (type)
 		{
@@ -201,20 +201,20 @@ namespace pio
 			case UniformDataType::UIntArray:
 				return UniformDataType::UInt;
 			default:
-				LOGE("UniformMat: invalid array type[%u]", type);
+				LOGE("UnimPackMat: invalid array type[%u]", type);
 				return UniformDataType::None;
 		}
 	}
 
-	UniformArray::UniformArray(UniformDataType type, uint32_t arrayNum, const std::string &name)
+	UnimPackArray::UnimPackArray(UniformDataType type, uint32_t arrayNum, const std::string &name)
 		: UniformPack(type, name), m_arrayNum(arrayNum)
 	{
 		fillMetaData();
 	}
 
-	UniformArray::~UniformArray() = default;
+	UnimPackArray::~UnimPackArray() = default;
 
-	void UniformArray::fillMetaData()
+	void UnimPackArray::fillMetaData()
 	{
 		if (m_baseAlign != 0)
 			return;
@@ -223,13 +223,13 @@ namespace pio
 		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
 		for (uint32_t i = 0; i < m_arrayNum; i++)
 		{
-			m_array[i].m_type = UniformArray::GetArrayDataType(m_type);
+			m_array[i].m_type = UnimPackArray::GetArrayDataType(m_type);
 			m_array[i].m_baseAlign = m_baseAlign;
 			m_array[i].m_byteUsed = Rhi::GetUniformColumnsByteSize(m_array[i].m_type);
 		}
 	}
 
-	void UniformArray::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
+	void UnimPackArray::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
 	{
 		if (m_arrayNum < 1)
 		{
@@ -257,7 +257,7 @@ namespace pio
 		m_byteUsed = m_endPadding - m_alignOffset;
 	}
 
-	std::string UniformArray::toString()
+	std::string UnimPackArray::toString()
 	{
 		std::stringstream ss{};
 		ss << "name[" << m_name << "], array base align[" << m_baseAlign << "]\n";
@@ -269,10 +269,10 @@ namespace pio
 		ss << "\nend padding[" << m_endPadding << "]";
 		return ss.str();
 	}
-	// ------------------------ UniformMatArray --------------------------
+	// ------------------------ UnimPackMatArray --------------------------
 	// -------------------------------------------------------------------
 
-	UniformDataType UniformMatArray::GetArrayDataType(UniformDataType type)
+	UniformDataType UnimPackMatArray::GetArrayDataType(UniformDataType type)
 	{
 		switch (type)
 		{
@@ -288,15 +288,15 @@ namespace pio
 		}
 	}
 
-	UniformMatArray::UniformMatArray(UniformDataType type, uint32_t arrayNum, const std::string &name)
+	UnimPackMatArray::UnimPackMatArray(UniformDataType type, uint32_t arrayNum, const std::string &name)
 		: UniformPack(type, name), m_arrayNum(arrayNum)
 	{
 		fillMetaData();
 	}
 
-	UniformMatArray::~UniformMatArray() = default;
+	UnimPackMatArray::~UnimPackMatArray() = default;
 
-	void UniformMatArray::fillMetaData()
+	void UnimPackMatArray::fillMetaData()
 	{
 		if (m_baseAlign != 0)
 			return;
@@ -305,12 +305,12 @@ namespace pio
 		m_baseAlign = Rhi::GetUniformBaseAlign(m_type);
 		for (uint32_t i = 0; i < m_arrayNum; i++)
 		{
-			m_matArray[i].m_type = UniformMatArray::GetArrayDataType(m_type);
-			m_matArray[i].m_columnNum = UniformMat::GetMatColumnNum(m_matArray[i].m_type);
+			m_matArray[i].m_type = UnimPackMatArray::GetArrayDataType(m_type);
+			m_matArray[i].m_columnNum = UnimPackMat::GetMatColumnNum(m_matArray[i].m_type);
 		}
 	}
 
-	void UniformMatArray::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
+	void UnimPackMatArray::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
 	{
 		if (m_matArray.empty())
 			return;
@@ -335,7 +335,7 @@ namespace pio
 		m_byteUsed = m_endPadding - m_alignOffset;
 	}
 
-	std::string UniformMatArray::toString()
+	std::string UnimPackMatArray::toString()
 	{
 		std::stringstream ss{};
 		ss << "name[" << m_name <<"], base align[" << m_baseAlign << "]\n";
@@ -347,17 +347,17 @@ namespace pio
 		ss << "\nend padding[" << m_endPadding << "]";
 		return ss.str();
 	}
-	// ------------------------- UniformStruct ---------------------------
+	// ------------------------- UnimPackStruct ---------------------------
 	// -------------------------------------------------------------------
-	UniformStruct::UniformStruct() : UniformPack(UniformDataType::Struct)
+	UnimPackStruct::UnimPackStruct() : UniformPack(UniformDataType::Struct)
 	{
 	}
 
-	UniformStruct::UniformStruct(const std::string &name) : UniformPack(UniformDataType::Struct, name)
+	UnimPackStruct::UnimPackStruct(const std::string &name) : UniformPack(UniformDataType::Struct, name)
 	{
 	}
 
-	UniformStruct::~UniformStruct()
+	UnimPackStruct::~UnimPackStruct()
 	{
 		auto it = m_data.begin();
 		while (it != m_data.end())
@@ -367,7 +367,7 @@ namespace pio
 		}
 	}
 
-	void UniformStruct::fillMetaData()
+	void UnimPackStruct::fillMetaData()
 	{
 		if (m_baseAlign != 0 || m_data.empty())
 			return;
@@ -379,7 +379,7 @@ namespace pio
 		}
 	}
 
-	void UniformStruct::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
+	void UnimPackStruct::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
 	{
 		if (m_data.empty())
 			return;
@@ -411,7 +411,7 @@ namespace pio
 		m_byteUsed = m_endPadding - m_alignOffset;
 	}
 
-	std::string UniformStruct::toString()
+	std::string UnimPackStruct::toString()
 	{
 		std::stringstream ss{};
 		ss << "name["<< m_name << "], base align[" << m_baseAlign << "], start padding[" << m_startPadding << "]\n";
@@ -427,17 +427,17 @@ namespace pio
 		return ss.str();
 	}
 
-	// ------------------------- UniformStructArray ---------------------------
+	// ------------------------- UnimPackStructArray ---------------------------
 	// ------------------------------------------------------------------------
 
-	UniformStructArray::UniformStructArray(const std::string &name)
+	UnimPackStructArray::UnimPackStructArray(const std::string &name)
 		: UniformPack(UniformDataType::StructArray, name)
 	{
 	}
 
-	UniformStructArray::~UniformStructArray() = default;
+	UnimPackStructArray::~UnimPackStructArray() = default;
 
-	void UniformStructArray::fillMetaData()
+	void UnimPackStructArray::fillMetaData()
 	{
 		if (m_baseAlign != 0)
 			return;
@@ -449,7 +449,7 @@ namespace pio
 		}
 	}
 
-	void UniformStructArray::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
+	void UnimPackStructArray::calculateOffset(uint32_t byteUsed, uint32_t offset, bool blockStart)
 	{
 		if (m_structArray.empty())
 			return;
@@ -474,7 +474,7 @@ namespace pio
 		m_byteUsed = m_endPadding - m_alignOffset;
 	}
 
-	std::string UniformStructArray::toString()
+	std::string UnimPackStructArray::toString()
 	{
 		std::stringstream ss{};
 		ss << "name[" << m_name << "], base align[" << m_baseAlign << "]\n";
@@ -544,33 +544,33 @@ namespace pio
 			case UniformDataType::UVec4:
 				return CreateRef<UniformPack>(type, name);
 			case UniformDataType::Mat2:
-				return CreateRef<UniformPack, UniformMat>(type, 2, name);
+				return CreateRef<UniformPack, UnimPackMat>(type, 2, name);
 			case UniformDataType::Mat3:
-				return CreateRef<UniformPack, UniformMat>(type, 3, name);
+				return CreateRef<UniformPack, UnimPackMat>(type, 3, name);
 			case UniformDataType::Mat4:
-				return CreateRef<UniformPack, UniformMat>(type, 4, name);
+				return CreateRef<UniformPack, UnimPackMat>(type, 4, name);
 			case UniformDataType::FloatArray:
 			case UniformDataType::IntArray:
 			case UniformDataType::UIntArray:
 			case UniformDataType::Vec2Array:
 			case UniformDataType::Vec3Array:
 			case UniformDataType::Vec4Array:
-				return CreateRef<UniformPack, UniformArray>(type, arrayNum, name);
+				return CreateRef<UniformPack, UnimPackArray>(type, arrayNum, name);
 			case UniformDataType::Mat2Array:
 			case UniformDataType::Mat3Array:
 			case UniformDataType::Mat4Array:
-				return CreateRef<UniformPack, UniformMatArray>(type, arrayNum, name);
+				return CreateRef<UniformPack, UnimPackMatArray>(type, arrayNum, name);
 			case UniformDataType::Struct:
-				return CreateRef<UniformPack, UniformStruct>(name);
+				return CreateRef<UniformPack, UnimPackStruct>(name);
 			case UniformDataType::StructArray:
-				return CreateRef<UniformPack, UniformStructArray>(name);
+				return CreateRef<UniformPack, UnimPackStructArray>(name);
 			default:
 				return Ref<UniformPack>();
 		}
 	}
 
 	template<>
-	bool UniformPack::is<UniformMatArray>() 
+	bool UniformPack::is<UnimPackMatArray>() 
 	{
 		return m_type == UniformDataType::Mat2Array ||
 			   m_type == UniformDataType::Mat3Array ||
@@ -578,8 +578,8 @@ namespace pio
 	}
 
 	template<>
-	bool UniformPack::is<UniformStruct>() { return m_type == UniformDataType::Struct; }
+	bool UniformPack::is<UnimPackStruct>() { return m_type == UniformDataType::Struct; }
 
 	template<>
-	bool UniformPack::is<UniformStructArray>() { return m_type == UniformDataType::StructArray; }
+	bool UniformPack::is<UnimPackStructArray>() { return m_type == UniformDataType::StructArray; }
 }

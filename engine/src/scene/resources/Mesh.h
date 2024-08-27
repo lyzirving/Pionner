@@ -8,6 +8,7 @@
 namespace pio
 {
 	struct TransformComponent;
+	class UniformData;
 
 	class Mesh : public Asset
 	{
@@ -27,7 +28,9 @@ namespace pio
 	protected:
 		TriangleMesh m_triMesh;
 		MeshBuffer m_buffer;
+
 		Transform m_transform;
+		std::map<std::string, Ref<UniformData>> m_uniforms;
 
 	private:
 		friend class Factory;

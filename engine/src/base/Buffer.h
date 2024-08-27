@@ -8,7 +8,7 @@ namespace pio
 	class Buffer
 	{
 	public:
-		Buffer();
+		Buffer() {}
 		Buffer(uint32_t cap);
 		Buffer(void *data, uint32_t cap);
 

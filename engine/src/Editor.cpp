@@ -12,7 +12,6 @@
 #include "scene/Factory.h"
 
 #include "gfx/renderer/RenderContext.h"
-#include "gfx/rhi/UniformData.h"
 #include "gfx/pipeline/RenderPipeline.h"
 
 #ifdef LOCAL_TAG
@@ -44,8 +43,7 @@ namespace pio
 
 	void Editor::onAttach()
 	{		 
-		AssetMgr::Init();
-		UniformDataPool::Init();
+		AssetMgr::Init();		
 		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
 
 		m_window = Window::create(WindowProps("Pionner", 1400, 720, RenderBackend_OpenGL));
@@ -72,8 +70,7 @@ namespace pio
 		renderThread.terminate();
 		LOGD("wake up from render thread");
 
-		EventHub::Get()->removeCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
-		UniformDataPool::Shutdown();
+		EventHub::Get()->removeCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));		
 		m_pipeline.reset();
 		m_context.reset();
 		m_window.reset();

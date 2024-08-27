@@ -1,7 +1,6 @@
 #ifndef __PIONNER_GFX_RHI_OPENGL_GL_VERTEX_BUFFER_H__
 #define __PIONNER_GFX_RHI_OPENGL_GL_VERTEX_BUFFER_H__
 
-#include "base/Buffer.h"
 #include "gfx/rhi/VertexBuffer.h"
 
 namespace pio
