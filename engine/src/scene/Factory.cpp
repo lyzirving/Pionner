@@ -7,6 +7,7 @@
 
 #include "scene/3d/Camera.h"
 #include "scene/resources/Mesh.h"
+#include "scene/resources/Material.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -27,12 +28,20 @@ namespace pio
 	Ref<Entity> Factory::MakePlane(Ref<Scene>& scene, const std::string& name)
 	{
 		auto entity = scene->addEntity<MeshFilter, MeshRenderer, TransformComponent>(name);
+
 		auto* meshFilter = entity->getComponent<MeshFilter>();
+		auto* meshRender = entity->getComponent<MeshRenderer>();
+
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
 		mesh->m_triMesh = Geometry3dFactory::MakePlane();
+		
+		auto material = AssetMgr::MakeRuntimeAsset<Material>();
 
 		meshFilter->Type = MeshType::Plane;
 		meshFilter->Uid = mesh->id();
+
+		meshRender->MatUid = material->id();
+
 		return entity;
 	}
 

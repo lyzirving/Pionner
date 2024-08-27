@@ -30,11 +30,6 @@ namespace pio
 		operator SphereCoord() const { return m_sphericalPos; }
 		operator const SphereCoord &() const { return m_sphericalPos; }
 
-		// flush based on Cartesian coordinate system
-		void CFlush() { m_sphericalPos = SphereCoord::ToSCS(m_cartesianPos); }
-		// flush based on Spherical coordinate system
-		void SFlush() { m_cartesianPos = SphereCoord::ToCCS(m_sphericalPos); }
-
 		Position3d& operator=(const glm::vec3& rhs);
 		Position3d& operator=(const SphereCoord& rhs);
 

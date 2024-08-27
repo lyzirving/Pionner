@@ -2,10 +2,12 @@
 #define __PIONNER_GFX_RENDERER_RESOURCE_RENDERING_DATA_H__
 
 #include "gfx/rhi/UniformBuffer.h"
+#include "gfx/renderer/resource/MeshData.h"
 
 namespace pio
 {
 	class Entity;
+	class UniformData;
 
 	//Entity collection that is about to be uploaded
 	struct RenderingEntities
@@ -36,6 +38,8 @@ namespace pio
 		RenderingData &operator=(RenderingData &&rhs) noexcept;
 
 		UniformBufferSet UnimBuffSet{};
+		std::vector<MeshCmd> OpaqueMeshCmd{};
+		std::vector<MeshCmd> TransparentMeshCmd{};
 	};
 }
 

@@ -200,28 +200,4 @@ namespace pio
 
 	template<>
 	bool Asset::is<Camera>() const { return assetType() == AssetType::Camera; }
-
-	namespace CameraUtils
-	{
-		std::vector<Ref<Camera>> FetchCameras(const std::list<Ref<Entity>>& entities)
-		{
-			std::vector<Ref<Camera>> cameras;
-			for (auto& ent : entities)
-			{				
-				if (ent->has<CameraComponent>())
-				{
-					auto* comp = ent->getComponent<CameraComponent>();
-					auto cam = AssetMgr::GetRuntimeAsset<Camera>(comp->Uid);
-					CameraUtils::Update(comp, cam);
-					cameras.push_back(cam);
-				}				
-			}
-			return cameras;
-		}
-
-		void Update(CameraComponent* comp, Ref<Camera>& camera)
-		{
-		}
-	}
-
 }

@@ -145,12 +145,6 @@ namespace pio
 		Data m_data{};
 	};
 
-	namespace CameraUtils
-	{
-		std::vector<Ref<Camera>> FetchCameras(const std::list<Ref<Entity>>& entities);
-		void Update(CameraComponent* comp, Ref<Camera>& camera);
-	}
-
 	template<>
 	bool Asset::is<Camera>() const;
 }

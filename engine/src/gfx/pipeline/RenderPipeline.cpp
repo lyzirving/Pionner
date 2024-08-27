@@ -1,15 +1,10 @@
 #include "RenderPipeline.h"
+#include "PipelineUtils.h"
 
-#include "scene/Entity.h"
-#include "scene/Components.h"
 #include "scene/3d/Camera.h"
-#include "scene/resources/Mesh.h"
-#include "scene/resources/Material.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/renderer/Renderer.h"
-
-#include "asset/AssetMgr.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -113,14 +108,7 @@ namespace pio
 		auto &meshEnts = renderingEntities.Mesh;
 		for (auto &ent : meshEnts)
 		{
-			auto* filter = ent->getComponent<MeshFilter>();
-			auto* render = ent->getComponent<MeshRenderer>();
-			auto* transform = ent->getComponent<TransformComponent>();
-			if (filter->Enable && render->Enable)
-			{
-				Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->Uid);
-				mesh->setUp(context, *transform);
-			}
+			pipeline::ProcessMeshEnt(context, ent, renderingData);
 		}
 	}
 }

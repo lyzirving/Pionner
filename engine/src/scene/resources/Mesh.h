@@ -17,20 +17,23 @@ namespace pio
 		Mesh() : Asset() {}
 		virtual ~Mesh() = default;
 
-		void setUp(Ref<RenderContext>& context, const TransformComponent &transComp);
+		void setUp(Ref<RenderContext>& context);
+		void update(const TransformComponent &comp);
 
-		MeshBuffer& buffer() { return m_buffer; }
+		MeshData& data() { return m_data; }
 		TriangleMesh& triMesh() { return m_triMesh; }
+		std::map<std::string, Ref<UniformData>>& unims() { return m_uniforms; }
 
-		const MeshBuffer& buffer() const { return m_buffer; }
+		const MeshData& data() const { return m_data; }	
 		const TriangleMesh& triMesh() const { return m_triMesh; }
+		const std::map<std::string, Ref<UniformData>>& unims() const { return m_uniforms; }
 
 	protected:
 		TriangleMesh m_triMesh;
-		MeshBuffer m_buffer;
-
-		Transform m_transform;
+		MeshData m_data;
 		std::map<std::string, Ref<UniformData>> m_uniforms;
+
+		Transform m_transform;		
 
 	private:
 		friend class Factory;

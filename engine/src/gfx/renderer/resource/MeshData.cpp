@@ -2,31 +2,40 @@
 
 namespace pio
 {
-	MeshBuffer::MeshBuffer(const MeshBuffer& rhs) : Vao(rhs.Vao), Vbo(rhs.Vbo), Ebo(rhs.Ebo)
-	{
-	}
-
-	MeshBuffer::MeshBuffer(MeshBuffer&& rhs) noexcept
-	{
-		Vao = std::move(rhs.Vao);
-		Vbo = std::move(rhs.Vbo);
-		Ebo = std::move(rhs.Ebo);
-	}
-
-	MeshBuffer& MeshBuffer::operator=(const MeshBuffer& rhs)
+	MeshData::MeshData(const MeshData& rhs)
 	{
 		if (this != &rhs)
 		{
-			this->MeshBuffer::MeshBuffer(rhs);
+			Vao = rhs.Vao;
+			Vbo = rhs.Vbo;
+			Ebo = rhs.Ebo;
+		}
+	}
+
+	MeshData::MeshData(MeshData&& rhs) noexcept
+	{		
+		if (this != &rhs)
+		{
+			Vao = std::move(rhs.Vao);
+			Vbo = std::move(rhs.Vbo);
+			Ebo = std::move(rhs.Ebo);
+		}
+	}
+
+	MeshData& MeshData::operator=(const MeshData& rhs)
+	{
+		if (this != &rhs)
+		{
+			this->MeshData::MeshData(rhs);
 		}
 		return *this;
 	}
 
-	MeshBuffer& MeshBuffer::operator=(MeshBuffer&& rhs) noexcept
+	MeshData& MeshData::operator=(MeshData&& rhs) noexcept
 	{
 		if (this != &rhs)
 		{
-			this->MeshBuffer::MeshBuffer(std::forward<MeshBuffer>(rhs));
+			this->MeshData::MeshData(std::forward<MeshData>(rhs));
 		}
 		return *this;
 	}
