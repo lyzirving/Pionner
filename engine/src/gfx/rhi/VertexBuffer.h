@@ -7,7 +7,7 @@ namespace pio
 {
 	struct VertexBufferElement
 	{
-		ShaderDataType Type{ ShaderDataType::None };
+		ShaderDataType Type{ ShaderDataType::Byte };
 		uint32_t Comp{ 0 };
 		std::string Name{};
 		uint32_t Size{ 0 };

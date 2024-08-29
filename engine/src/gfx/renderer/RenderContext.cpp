@@ -12,7 +12,7 @@
 
 namespace pio
 {
-	RenderContext::RenderContext(RenderBackendFlags type, Ref<Window> &window) : m_window(window)
+	RenderContext::RenderContext(RenderBackendFlags type, Ref<Window>& window) : m_window(window)
 	{
 		m_api = RenderAPI::Create(type);
 	}
@@ -39,17 +39,17 @@ namespace pio
 
 			m_window->swapBuffer();
 
-			m_frameNum++;			
+			m_frameNum++;
 		}
-		LOGD("exit render thread[%lu]", m_threadId);		
+		LOGD("exit render thread[%lu]", m_threadId);
 		//Call before garbage queue is executed
 		releaseShaders();
 		// Clear resources submitted at the last frame
-		m_garbageQueue[submitIdx()].execute();		
+		m_garbageQueue[submitIdx()].execute();
 
 		m_api->shutdown();
 		m_window->shutdown();
-		m_thread.set(RenderThread::State::Idle);		
+		m_thread.set(RenderThread::State::Idle);
 	}
 
 	void RenderContext::onBeginFrameRendering()
@@ -65,9 +65,9 @@ namespace pio
 	void RenderContext::initShaders()
 	{
 		auto context = self();
-		for(uint8_t i = 0; i < ShaderSpec_Num; i++)
+		for (uint8_t i = 0; i < ShaderSpec_Num; i++)
 		{
-			if(!m_shaders[i])
+			if (!m_shaders[i])
 			{
 				m_shaders[i] = ShaderCompiler::Compile(context, ShaderUtils::GetShaderPath(ShaderSpecifier(i)));
 			}
@@ -76,9 +76,9 @@ namespace pio
 
 	void RenderContext::releaseShaders()
 	{
-		for(uint8_t i = 0; i < ShaderSpec_Num; i++)
+		for (uint8_t i = 0; i < ShaderSpec_Num; i++)
 		{
-			if(m_shaders[i])
+			if (m_shaders[i])
 			{
 				m_shaders[i].reset();//Real release will be executed at garbage queue
 			}
@@ -86,10 +86,10 @@ namespace pio
 	}
 
 	void RenderContext::waitAndRender()
-	{		
+	{
 		// Wait for kick, then set render thread to busy
 		m_thread.waitAndSet(RenderThread::State::Kick, RenderThread::State::Busy);
-		
+
 		m_api->beginFrame(*this);
 
 		// task before render cmd

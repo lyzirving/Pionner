@@ -393,9 +393,9 @@ namespace pio
 		case ShaderDataType::Double3:
 		case ShaderDataType::Double4:
 			return GL_DOUBLE;
-		case ShaderDataType::None:
 		default:
 			LOGE("invalid shader data type[%u]", type);
+			std::abort();
 			return 0;
 		}
 	}

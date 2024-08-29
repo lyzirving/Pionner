@@ -27,7 +27,7 @@ namespace pio
 
 			Ref<T> asset = CreateRef<T>(std::forward<Args>(args)...);
 			std::lock_guard<std::mutex> lk{ k_RuntimeMutex };
-			k_RuntimeAssets[asset->id()] = asset;
+			k_RuntimeAssets[asset->assetHnd()] = asset;
 			return asset;
 		}
 

@@ -2,6 +2,7 @@
 #define __PIONNER_GFX_RHI_RENDER_RESOURCE_H__
 
 #include "RhiDef.h"
+#include "asset/Asset.h"
 
 namespace pio
 {
@@ -16,10 +17,11 @@ namespace pio
 		ResourceGCDelegate(RenderResourceType t, uint32_t id) : Type(t), Id(id) {}
 	};
 
-	class RenderResource
+	class RenderResource : public Asset
 	{
+		OVERRIDE_ASSET_TYPE(AssetType::RenderResource)
 	public:
-		RenderResource(Ref<RenderContext> &context, RenderResourceType type);
+		RenderResource(Ref<RenderContext>& context, RenderResourceType type);
 		virtual ~RenderResource();
 
 		virtual bool init() = 0;
@@ -41,6 +43,9 @@ namespace pio
 		uint32_t m_id{ 0 }, m_size{ 0 };
 		void* m_data{ nullptr };
 	};
+
+	template<>
+	bool Asset::is<RenderResource>() const;
 }
 
 #endif

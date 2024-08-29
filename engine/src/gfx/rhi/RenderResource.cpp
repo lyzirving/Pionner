@@ -4,7 +4,8 @@
 
 namespace pio
 {
-	RenderResource::RenderResource(Ref<RenderContext> &context, RenderResourceType type) : m_context(context), m_type(type) 
+	RenderResource::RenderResource(Ref<RenderContext> &context, RenderResourceType type) : Asset(),
+		m_context(context), m_type(type) 
 	{
 	}
 
@@ -16,4 +17,7 @@ namespace pio
 			m_context->recyleResource(std::move(resource));
 		}
 	}
+
+	template<>
+	bool Asset::is<RenderResource>() const { return assetType() == AssetType::RenderResource; }
 }

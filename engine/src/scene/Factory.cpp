@@ -21,7 +21,7 @@ namespace pio
 		auto entity	= scene->addEntity<CameraComponent, TransformComponent>(name);
 		auto *pComp = entity->getComponent<CameraComponent>();
 		pComp->Depth = depth;
-		pComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->id();
+		pComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->assetHnd();
 		return entity;
 	}
 
@@ -38,9 +38,9 @@ namespace pio
 		auto material = AssetMgr::MakeRuntimeAsset<Material>("My Material");
 
 		meshFilter->Type = MeshType::Plane;
-		meshFilter->Uid = mesh->id();
+		meshFilter->Uid = mesh->assetHnd();
 
-		meshRender->MatUid = material->id();
+		meshRender->MatUid = material->assetHnd();
 
 		return entity;
 	}

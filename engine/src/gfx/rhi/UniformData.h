@@ -34,7 +34,7 @@ namespace pio
 		uint32_t byteUsed() const { return m_byteUsed; }
 
 	protected:
-		UniformDataType m_type{ UniformDataType::None };
+		UniformDataType m_type{ UniformDataType::Bool };
 		std::string m_name{};
 		uint32_t m_byteUsed{ 0 };
 		Buffer m_buffer{};				

@@ -50,7 +50,7 @@ namespace pio
 
 	protected:
 		std::string m_name{};
-		UniformDataType m_type{ UniformDataType::None };
+		UniformDataType m_type{ UniformDataType::Int };
 
 		/*
 		* Base align is the space one variable occupies in block, including padding,

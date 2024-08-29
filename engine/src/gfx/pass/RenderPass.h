@@ -38,6 +38,7 @@ namespace pio
 	};
 
 	class RenderContext;
+	class FrameBuffer;
 
 	class RenderPass
 	{
@@ -56,6 +57,7 @@ namespace pio
 	protected:
 		std::string m_name;
 		RenderPassEvent m_event;
+		Ref<FrameBuffer> m_frameBuff;
 	};
 
 	struct BlockRange

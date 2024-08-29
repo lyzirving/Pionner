@@ -45,9 +45,9 @@ namespace pio
 				case ShaderDataType::Double2: return 16;
 				case ShaderDataType::Double3: return 24;
 				case ShaderDataType::Double4: return 32;
-				case ShaderDataType::None:
 				default:
 					LOGE("invalid type[%u] for data type byte size", type);
+					std::abort();
 					return 0;
 			}
 		}
@@ -96,9 +96,9 @@ namespace pio
 				case ShaderDataType::Float4:
 				case ShaderDataType::Double4:
 					return 4;
-				case ShaderDataType::None:
 				default:
 					LOGE("invalid type[%u] for component", type);
+					std::abort();
 					return 0;
 			}
 		}
@@ -143,8 +143,9 @@ namespace pio
 				case UniformDataType::Struct:
 				case UniformDataType::StructArray:
 					return 4 * N;
-				case UniformDataType::None:
 				default:
+					LOGE("err! invalid data type[%u]", type);
+					std::abort();
 					return 0;
 			}
 		}
@@ -186,8 +187,9 @@ namespace pio
 				case UniformDataType::Mat4:
 				case UniformDataType::Mat4Array:
 					return 4 * N;
-				case UniformDataType::None:
 				default:
+					LOGE("err! invalid data type[%u]", type);
+					std::abort();
 					return 0;
 			}
 		}
@@ -236,8 +238,9 @@ namespace pio
 					return 4 * 4 * 4;
 				case UniformDataType::Mat4Array:
 					return 4 * 4 * 4 * arrayNum;
-				case UniformDataType::None:
 				default:
+					LOGE("err! invalid data type[%u]", type);
+					std::abort();
 					return 0;
 			}
 		}
@@ -300,8 +303,9 @@ namespace pio
 					return "struct";
 				case UniformDataType::StructArray:
 					return "struct array";
-				case UniformDataType::None:
 				default:
+					LOGE("err! invalid data type[%u]", type);
+					std::abort();					
 					return "None";
 			}
 		}
@@ -319,8 +323,9 @@ namespace pio
 				case 4:
 					return TextureInternalFmt::RGBA;
 				default:
-					LOGE("invalid channel num[%u]", channelNum);
-					return TextureInternalFmt::None;
+					LOGE("err! invalid channel num[%u]", channelNum);
+					std::abort();
+					return TextureInternalFmt::RED;
 			}
 		}
 
@@ -337,8 +342,9 @@ namespace pio
 				case 4:
 					return TextureFmt::RGBA;
 				default:
-					LOGE("invalid channel num[%u]", channelNum);
-					return TextureFmt::None;
+					LOGE("err! invalid channel num[%u]", channelNum);
+					std::abort();
+					return TextureFmt::RED;
 			}
 		}
 
@@ -358,6 +364,7 @@ namespace pio
 				return "Shader";
 			default:
 				LOGE("err! undefined render resource type[%u]", type);
+				std::abort();
 				return "Undefined RenderResourceType";
 			}
 		}

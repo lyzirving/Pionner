@@ -95,7 +95,8 @@ namespace pio
 				return UniformDataType::Vec4;
 			default:
 				LOGE("UnimPackMat: invalid Mat type[%u]", type);
-				return UniformDataType::None;
+				std::abort();
+				return UniformDataType::Vec2;
 		}
 	}
 
@@ -111,6 +112,7 @@ namespace pio
 				return 4;
 			default:
 				LOGE("UnimPackMat: invalid Mat type[%u]", type);
+				std::abort();
 				return 0;
 		}
 	}
@@ -202,7 +204,8 @@ namespace pio
 				return UniformDataType::UInt;
 			default:
 				LOGE("UnimPackMat: invalid array type[%u]", type);
-				return UniformDataType::None;
+				std::abort();
+				return UniformDataType::Float;
 		}
 	}
 
@@ -284,7 +287,8 @@ namespace pio
 				return UniformDataType::Mat4;
 			default:
 				LOGE("invalid mat array type[%]", type);
-				UniformDataType::None;
+				std::abort();
+				return UniformDataType::Mat2;
 		}
 	}
 
@@ -565,6 +569,8 @@ namespace pio
 			case UniformDataType::StructArray:
 				return CreateRef<UniformPack, UnimPackStructArray>(name);
 			default:
+				LOGE("err! invalid data type[%u]", type);
+				std::abort();
 				return Ref<UniformPack>();
 		}
 	}

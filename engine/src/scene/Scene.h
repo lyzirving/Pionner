@@ -11,7 +11,7 @@ namespace pio
 
 	class Scene : public Asset
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::Scene)
+		OVERRIDE_ASSET_TYPE(AssetType::SceneResource)
 	public:
 		Scene() : Asset() {}
 		~Scene() = default;

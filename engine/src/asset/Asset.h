@@ -7,7 +7,9 @@ namespace pio
 {
 	enum class AssetType : uint8_t
 	{
-		None = 0, Camera, Mesh, Material, Scene
+		None, 
+		SceneResource, Camera, Mesh, Material,
+		RenderResource, Texture
 	};
 
 	#define OVERRIDE_ASSET_TYPE(TypeName)  public:\
@@ -17,15 +19,15 @@ namespace pio
 	class Asset
 	{
 	public:
-		Asset() : m_id(), m_parentId(0) {}
+		Asset() : m_hnd(), m_parentHnd(0) {}
 
-		Asset(const Asset& rhs) : m_id(rhs.m_id), m_parentId(rhs.m_parentId) {}
+		Asset(const Asset& rhs) : m_hnd(rhs.m_hnd), m_parentHnd(rhs.m_parentHnd) {}
 		Asset operator=(const Asset& rhs)
 		{
 			if (this != &rhs)
 			{
-				m_id = rhs.m_id;
-				m_parentId = rhs.m_parentId;
+				m_hnd = rhs.m_hnd;
+				m_parentHnd = rhs.m_parentHnd;
 			}
 			return *this;
 		}
@@ -34,11 +36,11 @@ namespace pio
 		virtual AssetType assetType() const { return StaticType(); }
 
 	public:
-		UUID32 id() { return m_id; }
-		const UUID32& id() const { return m_id; }
-		const UUID32& parentId() const { return m_parentId; }
+		UUID32 assetHnd() { return m_hnd; }
+		const UUID32& assetHnd() const { return m_hnd; }
+		const UUID32& parentHnd() const { return m_parentHnd; }
 
-		void setParentId(const UUID32& id) { m_parentId = id; }
+		void setParentHnd(const UUID32& hnd) { m_parentHnd = hnd; }
 
 	public:
 		template<typename T>
@@ -51,7 +53,7 @@ namespace pio
 		static AssetType StaticType() { return AssetType::None; }
 
 	protected:
-		UUID32 m_id, m_parentId;
+		UUID32 m_hnd, m_parentHnd;
 	};
 }
 

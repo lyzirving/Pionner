@@ -25,7 +25,7 @@ namespace pio
 		virtual UBBinding binding() const override { return m_binding; };		
 
 	private:
-		BufferUsage m_usage{ BufferUsage::None };
+		BufferUsage m_usage{ BufferUsage::Static };
 		UBBinding m_binding{ UBBinding_Num };
 	};
 }

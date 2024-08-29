@@ -14,13 +14,13 @@ namespace pio
 
 	enum ShaderSpecifier : uint8_t
 	{
-		ShaderSpec_Standard = 0, 
+		ShaderSpec_Standard, 
 		ShaderSpec_Num
 	};
 
 	enum class RenderResourceType : uint8_t
 	{
-		UBO = 0, VBO, EBO, VAO, Shader, Num
+		UBO, FBO, VBO, EBO, VAO, Texture, Shader, Num
 	};
 
 	enum class TextureSampler : uint8_t
@@ -34,22 +34,21 @@ namespace pio
 
 	enum class TextureWrap : uint8_t
 	{
-		None = 0, ClampEdge, ClampBorder, Repeat
+		ClampEdge, ClampBorder, Repeat
 	};
 
 	enum class TextureFilterMin : uint8_t
 	{
-		None = 0, Linear, Nearest, Linear_Mipmap_Linear, Linear_Mipmap_Nearest, Nearest_Mipmap_Linear
+		Nearest, Linear, Linear_Mipmap_Linear, Linear_Mipmap_Nearest, Nearest_Mipmap_Linear
 	};
 
 	enum class TextureFilterMag : uint8_t
 	{
-		None = 0, Linear, Nearest,
+		Nearest, Linear
 	};
 
 	enum class TextureInternalFmt : uint8_t
 	{
-		None = 0,
 		Depth, Depth24, Depth32F, DepthStencil,
 		RED, R8, R8U, R16U, R32U, R32F,
 		RG, RG8, RG8U, RG16F, RG32F,
@@ -59,7 +58,6 @@ namespace pio
 
 	enum class TextureFmt : uint8_t
 	{
-		None = 0,
 		Depth, DepthStencil,
 		RED, RG, RGB, BGR, RGBA, BGRA,
 		REDI, RGI, RGBI, BGRI, RGBAI, BGRAI
@@ -67,7 +65,6 @@ namespace pio
 
 	enum class ShaderDataType : uint8_t
 	{
-		None = 0,
 		Byte, Byte2, Byte3, Byte4,
 		UByte, UByte2, UByte3, UByte4,
 		Short, Short2, Short3, Short4,
@@ -80,7 +77,6 @@ namespace pio
 
 	enum class UniformDataType : uint8_t
 	{
-		None = 0,
 		Bool, Float, Int, UInt,
 		Vec2, Vec3, Vec4, IVec2, IVec3, IVec4, UVec2, UVec3, UVec4,
 		Mat2, Mat3, Mat4,
@@ -92,22 +88,18 @@ namespace pio
 
 	enum class BufferUsage : uint8_t
 	{
-		None = 0, Static, Dynamic, DynamicRead
-	};
-
-	enum class ColorAttachment : uint8_t
-	{
-		Attach0, Attach1, Attach2, Attach3, Attach4, Attach5, Attach6, Attach7, Num
-	};
-
-	enum class DepthAttachment : uint8_t
-	{
-		Depth, DepthStencil
+		Static, Dynamic, DynamicRead
 	};
 
 	enum class FrameBufferUsage : uint8_t
 	{
-		ColorBuffer = 0, DepthBuffer, DepthStencil
+		ColorBuffer, DepthBuffer, DepthStencil
+	};
+
+	enum class FrameBufferAttach : uint8_t
+	{
+		ColorAttach0, ColorAttach1, ColorAttach2, ColorAttach3, ColorAttach4, ColorAttach5, ColorAttach6, ColorAttach7,
+		DepthAttach
 	};
 
 	namespace Rhi

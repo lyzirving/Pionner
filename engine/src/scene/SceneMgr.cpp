@@ -11,7 +11,7 @@ namespace pio
 {
 	void SceneMgr::add(const Ref<Scene>& scene, bool bActive)
 	{
-		m_scenes[scene->id()] = scene;
+		m_scenes[scene->assetHnd()] = scene;
 		if (bActive && scene != m_active)
 		{
 			if (m_active) { m_active->onDetach(); }
@@ -22,7 +22,7 @@ namespace pio
 
 	void SceneMgr::remove(const Ref<Scene>& scene)
 	{
-		auto it = m_scenes.find(scene->id());
+		auto it = m_scenes.find(scene->assetHnd());
 		if (it != m_scenes.end())
 		{
 			if (m_active == scene)
