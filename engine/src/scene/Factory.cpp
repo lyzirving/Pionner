@@ -35,7 +35,7 @@ namespace pio
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
 		mesh->m_triMesh = Geometry3dFactory::MakePlane();
 		
-		auto material = AssetMgr::MakeRuntimeAsset<Material>();
+		auto material = AssetMgr::MakeRuntimeAsset<Material>("My Material");
 
 		meshFilter->Type = MeshType::Plane;
 		meshFilter->Uid = mesh->id();

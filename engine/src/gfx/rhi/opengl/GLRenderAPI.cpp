@@ -146,6 +146,12 @@ namespace pio
 			glDeleteVertexArrays(1, &resource.Id);
 			break;
 		}
+		case RenderResourceType::Shader:
+		{
+			LOGD("delete shader[%u], type[%s]", resource.Id, Rhi::RenderResourceToStr(resource.Type));
+			glDeleteProgram(resource.Id);
+			break;
+		}
 		default:
 			LOGE("err! invalid resource type[%s], id[%u]", Rhi::RenderResourceToStr(resource.Type), resource.Id);
 			break;

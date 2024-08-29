@@ -10,6 +10,8 @@ namespace pio
 	public:
 		DefferedPass(const std::string &name, RenderPassEvent event) : RenderPass(name, event) {}
 		~DefferedPass() = default;
+
+		virtual void execute(Ref<RenderContext> &context) override;
 	};
 }
 

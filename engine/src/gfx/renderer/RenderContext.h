@@ -13,9 +13,9 @@
 namespace pio
 {
 	class Window;
-	class RenderShader;
+	class Shader;
 
-	class RenderContext : std::enable_shared_from_this<RenderContext>
+	class RenderContext : public std::enable_shared_from_this<RenderContext>
 	{
 	public:	
 		RenderContext(RenderBackendFlags type, Ref<Window> &window);
@@ -31,6 +31,7 @@ namespace pio
 		RenderThread& thread() { return m_thread; }
 		Ref<Window>&  window() { return m_window; }
 		
+		Ref<Shader> &shader(ShaderSpecifier spec) { return m_shaders[spec]; }
 		void setRenderingEntities(RenderingEntities&& data) { m_renderingEntities = std::forward<RenderingEntities>(data); }
 		void setRenderingData(RenderingData &&data) { m_renderingData = std::forward<RenderingData>(data); }
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
@@ -108,6 +109,8 @@ namespace pio
 		static constexpr uint32_t k_queueNum = 2;		
 
 	protected:
+		void initShaders();
+		void releaseShaders();
 		void waitAndRender();
 
 		uint32_t submitIdx() const { return m_submitIdx; }
@@ -130,7 +133,7 @@ namespace pio
 
 		uint64_t m_frameNum{ 0 };
 
-		Ref<RenderShader> m_shaders[ShaderSpec_Num];
+		Ref<Shader> m_shaders[ShaderSpec_Num];
 
 		RenderingEntities m_renderingEntities;
 		RenderingData m_renderingData;

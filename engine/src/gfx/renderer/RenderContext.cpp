@@ -1,8 +1,9 @@
 #include "RenderContext.h"
 
-#include "gfx/renderer/resource/RenderShader.h"
-
 #include "window/Window.h"
+
+#include "gfx/rhi/Shader.h"
+#include "gfx/rhi/ShaderCompiler.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -28,6 +29,8 @@ namespace pio
 		m_api->setupBackend();
 		m_api->setupUiBackend(m_window->nativeWindow());
 
+		initShaders();
+
 		while (m_thread.isRunning())
 		{
 			m_window->pollEvents();
@@ -39,8 +42,10 @@ namespace pio
 			m_frameNum++;			
 		}
 		LOGD("exit render thread[%lu]", m_threadId);		
+		//Call before garbage queue is executed
+		releaseShaders();
 		// Clear resources submitted at the last frame
-		m_garbageQueue[submitIdx()].execute();
+		m_garbageQueue[submitIdx()].execute();		
 
 		m_api->shutdown();
 		m_window->shutdown();
@@ -55,6 +60,29 @@ namespace pio
 	{
 		std::swap(m_renderingEntities, RenderingEntities());
 		std::swap(m_renderingData, RenderingData());
+	}
+
+	void RenderContext::initShaders()
+	{
+		auto context = self();
+		for(uint8_t i = 0; i < ShaderSpec_Num; i++)
+		{
+			if(!m_shaders[i])
+			{
+				m_shaders[i] = ShaderCompiler::Compile(context, ShaderUtils::GetShaderPath(ShaderSpecifier(i)));
+			}
+		}
+	}
+
+	void RenderContext::releaseShaders()
+	{
+		for(uint8_t i = 0; i < ShaderSpec_Num; i++)
+		{
+			if(m_shaders[i])
+			{
+				m_shaders[i].reset();//Real release will be executed at garbage queue
+			}
+		}
 	}
 
 	void RenderContext::waitAndRender()
