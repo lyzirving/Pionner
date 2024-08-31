@@ -49,6 +49,7 @@ namespace pio
 		m_window = Window::create(WindowProps("Pionner", 1400, 720, RenderBackend_OpenGL));
 		m_context = CreateRef<RenderContext>(RenderBackend_OpenGL, m_window);
 		m_pipeline = CreateRef<RenderPipeline>();
+		m_pipeline->onAttach(m_context);
 
 		auto scene = CreateRef<Scene>();
 		{
@@ -66,6 +67,7 @@ namespace pio
 
 		m_sceneMgr.removeAll();
 		AssetMgr::Shutdown();
+		m_pipeline->onDetach(m_context);
 
 		renderThread.terminate();
 		LOGD("wake up from render thread");

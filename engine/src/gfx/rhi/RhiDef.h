@@ -20,7 +20,7 @@ namespace pio
 
 	enum class RenderResourceType : uint8_t
 	{
-		UBO, FBO, VBO, EBO, VAO, Texture, Shader, Num
+		UBO, VBO, EBO, VAO, FBO, Texture, Shader, Num
 	};
 
 	enum class TextureSampler : uint8_t
@@ -47,20 +47,23 @@ namespace pio
 		Nearest, Linear
 	};
 
-	enum class TextureInternalFmt : uint8_t
+	enum class TextureFormat : uint8_t
 	{
-		Depth, Depth24, Depth32F, DepthStencil,
-		RED, R8, R8U, R16U, R32U, R32F,
-		RG, RG8, RG8U, RG16F, RG32F,
-		RGB, RGB8U, RGBUI, RGB16F, RGB32F,
-		RGBA, RGBAUI, RGBA8U, RGBA16U, RGBA16F, RGBA32F,
-	};
-
-	enum class TextureFmt : uint8_t
-	{
-		Depth, DepthStencil,
-		RED, RG, RGB, BGR, RGBA, BGRA,
-		REDI, RGI, RGBI, BGRI, RGBAI, BGRAI
+		RGBA_32,    //8 bits per channel
+		RGB_24,     //8 bits per channel
+		RGB_16,     //integer values in the range [0, 65535] per channel
+		R_16,       //integer values in the range [0, 65535] per channel
+		R_8, 
+		Alpha_8,
+		RGBA_FLOAT, 
+		RGBA_HALF,  //16 bits floating point per channel
+		RG_FLOAT, 
+		R_FLOAT,
+		DEPTH_16,	//16 bits for a single channel depth map
+		DEPTH_24,   //24 bits for a single channel depth map
+		DEPTH_32,   //32 bits for a single channel depth map
+		DEPTH_32F,  //32 bits as high resolution float for a single channel depth map
+		DEPTH_24_STENCIL_8 // 24 bits for depth channel and 8 bits for stencil channel
 	};
 
 	enum class ShaderDataType : uint8_t
@@ -91,14 +94,16 @@ namespace pio
 		Static, Dynamic, DynamicRead
 	};
 
-	enum class FrameBufferUsage : uint8_t
+	enum FrameBufferUsage : uint8_t
 	{
-		ColorBuffer, DepthBuffer, DepthStencil
+		FrameBufferUsage_Color   = 0b00000001,
+		FrameBufferUsage_Depth   = 0b00000010,
+		FrameBufferUsage_Stencil = 0b00000100
 	};
 
 	enum class FrameBufferAttach : uint8_t
 	{
-		ColorAttach0, ColorAttach1, ColorAttach2, ColorAttach3, ColorAttach4, ColorAttach5, ColorAttach6, ColorAttach7,
+		ColorAttach0, ColorAttach1, ColorAttach2, ColorAttach3, ColorAttach4, ColorAttach5, ColorAttach6, ColorAttach7, ColorAttachNum,
 		DepthAttach
 	};
 
@@ -110,61 +115,10 @@ namespace pio
 		uint32_t GetUniformColumnsByteSize(UniformDataType type);
 		uint32_t GetUniformByteSize(UniformDataType type, uint32_t arrayNum = 1);
 		const char* GetUniformDataTypeStr(UniformDataType type);
-		TextureInternalFmt GetInternalFmt(uint32_t channelNum);
-		TextureFmt GetTextureFmt(uint32_t channelNum);
-		const char* RenderResourceToStr(RenderResourceType type);
+		const char* RenderResourceTypeStr(RenderResourceType type);
+		uint32_t GetTextureChannelNum(TextureFormat fmt);
+		uint32_t GetTextureByteSize(TextureFormat fmt);
 	}
-
-	#define PIO_UNIFORM_WRAPPER_INTERFACE_DECLARE(T) \
-            public:\
-            virtual void set(const std::string &name, float value) = 0;\
-	        virtual void set(const std::string &name, int value) = 0;\
-	        virtual void set(const std::string &name, uint32_t value) = 0;\
-	        virtual void set(const std::string &name, bool value) = 0;\
-	        virtual void set(const std::string &name, const glm::vec2 &value) = 0;\
-	        virtual void set(const std::string &name, const glm::vec3 &value) = 0;\
-	        virtual void set(const std::string &name, const glm::vec4 &value) = 0;\
-	        virtual void set(const std::string &name, const glm::ivec3 &value) = 0;\
-	        virtual void set(const std::string &name, const glm::ivec4 &value) = 0;\
-	        virtual void set(const std::string &name, const glm::ivec2 &value) = 0;\
-	        virtual void set(const std::string &name, const glm::mat3 &value) = 0;\
-	        virtual void set(const std::string &name, const glm::mat4 &value) = 0;\
-            \
-            virtual bool getBool(const std::string &name) = 0;\
-	        virtual float getFloat(const std::string &name) = 0;\
-	        virtual int32_t getInt(const std::string &name) = 0;\
-	        virtual uint32_t getUInt(const std::string &name) = 0;\
-	        virtual glm::vec2 getVector2(const std::string &name) = 0;\
-	        virtual glm::vec3 getVector3(const std::string &name) = 0;\
-	        virtual glm::vec4 getVector4(const std::string &name) = 0;\
-	        virtual glm::mat4 getMatrix4(const std::string &name) = 0;
-
-
-	#define PIO_UNIFORM_WRAPPER_CLASS_DECLARE(T)\
-            public:\
-            virtual void set(const std::string &name, float value) override;\
-	        virtual void set(const std::string &name, int value) override;\
-	        virtual void set(const std::string &name, uint32_t value) override;\
-	        virtual void set(const std::string &name, bool value) override;\
-	        virtual void set(const std::string &name, const glm::vec2 &value) override;\
-	        virtual void set(const std::string &name, const glm::vec3 &value) override;\
-	        virtual void set(const std::string &name, const glm::vec4 &value) override;\
-	        virtual void set(const std::string &name, const glm::ivec3 &value) override;\
-	        virtual void set(const std::string &name, const glm::ivec4 &value) override;\
-	        virtual void set(const std::string &name, const glm::ivec2 &value) override;\
-	        virtual void set(const std::string &name, const glm::mat3 &value) override;\
-	        virtual void set(const std::string &name, const glm::mat4 &value) override;\
-            \
-	        virtual float getFloat(const std::string &name) override;\
-	        virtual int32_t getInt(const std::string &name) override;\
-	        virtual uint32_t getUInt(const std::string &name) override;\
-	        virtual bool getBool(const std::string &name) override;\
-	        virtual glm::vec2 getVector2(const std::string &name) override;\
-	        virtual glm::vec3 getVector3(const std::string &name) override;\
-	        virtual glm::vec4 getVector4(const std::string &name) override;\
-	        virtual glm::mat4 getMatrix4(const std::string &name) override;
-
-
 }
 
 #endif

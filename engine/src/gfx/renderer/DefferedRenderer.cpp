@@ -4,6 +4,8 @@
 #include "gfx/pass/DefferedPass.h"
 #include "gfx/pass/GBufferPass.h"
 
+#include "gfx/renderer/RenderContext.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -14,18 +16,35 @@ namespace pio
 	DefferedRenderer::DefferedRenderer() : Renderer()
 	{
 		LOGD("Deffered Renderer create");
-		m_mainLightShadowPass = CreateRef<MainLightShadowCasterPass>("MainLightShadowCasterPass", RenderPassEvent::RenderingShadows);		
-		m_GBufferPass = CreateRef<GBufferPass>("GBufferPass", RenderPassEvent::RenderingOpaques);
-		m_defferedPass = CreateRef<DefferedPass>("DefferedPass", RenderPassEvent::AfterRenderingOpaques);
+		m_passQueue.push_back(CreateRef<MainLightShadowCasterPass>("MainLightShadowCasterPass", RenderPassEvent::RenderingShadows));
+		m_passQueue.push_back(CreateRef<GBufferPass>("GBufferPass", RenderPassEvent::RenderingOpaques));
+		m_passQueue.push_back(CreateRef<DefferedPass>("DefferedPass", RenderPassEvent::AfterRenderingOpaques));
+	}
+
+	void DefferedRenderer::onAttach(Ref<RenderContext>& context)
+	{
+		for (auto &pass : m_passQueue)
+		{
+			pass->onAttach(context);
+		}
+	}
+
+	void DefferedRenderer::onDetach(Ref<RenderContext>& context)
+	{
+		for (auto& pass : m_passQueue)
+		{
+			pass->onDetach(context);
+		}
 	}
 
 	void DefferedRenderer::onSetUp()
 	{
 		m_activeQueue.clear();
-		m_activeQueue.push_back(m_mainLightShadowPass);
-		m_activeQueue.push_back(m_GBufferPass);
-		m_activeQueue.push_back(m_defferedPass);
-
+		for (auto& pass : m_passQueue)
+		{
+			if (pass->bActive())
+				m_activeQueue.push_back(pass);			
+		}
 		if (m_activeQueue.size() > 1)
 			std::sort(m_activeQueue.begin(), m_activeQueue.end(), RenderPass::PassSorter);		
 	}
@@ -47,7 +66,7 @@ namespace pio
 			{
 				if(range.contains(queue[i]))
 				{					
-					queue[i]->execute(context);
+					queue[i]->onExecute(context);
 				}
 			}
 		}

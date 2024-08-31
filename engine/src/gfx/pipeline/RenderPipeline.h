@@ -17,7 +17,9 @@ namespace pio
 		RenderPipeline();
 		~RenderPipeline() = default;
 
-		virtual void onRender(Ref<RenderContext> &context, std::vector<Ref<Camera>>& cameras);
+		virtual void onAttach(Ref<RenderContext>& context);
+		virtual void onDetach(Ref<RenderContext>& context);
+		virtual void onRender(Ref<RenderContext>& context, std::vector<Ref<Camera>>& cameras);
 
 	protected:
 		void onBeginFrameRendering(Ref<RenderContext>& context);

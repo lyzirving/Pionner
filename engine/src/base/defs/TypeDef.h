@@ -23,6 +23,14 @@ namespace pio
 		ProjectionType_Num
 	};
 
+	enum class TextureType : uint8_t
+	{
+		TwoDimen, SingleChannel, 
+		NormalMap, RenderBuffer,
+		CubeMap, CubeArray,
+		Num
+	};
+
 	enum class MeshType : uint8_t
 	{
 		Plane, Cube, Num

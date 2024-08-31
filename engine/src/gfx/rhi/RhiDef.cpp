@@ -245,7 +245,7 @@ namespace pio
 			}
 		}
 
-		const char *GetUniformDataTypeStr(UniformDataType type)
+		const char* GetUniformDataTypeStr(UniformDataType type)
 		{
 			switch (type)
 			{
@@ -305,67 +305,80 @@ namespace pio
 					return "struct array";
 				default:
 					LOGE("err! invalid data type[%u]", type);
-					std::abort();					
+					std::abort();
 					return "None";
 			}
 		}
 
-		TextureInternalFmt GetInternalFmt(uint32_t channelNum)
-		{
-			switch (channelNum)
-			{
-				case 1:
-					return TextureInternalFmt::RED;
-				case 2:
-					return TextureInternalFmt::RG;
-				case 3:
-					return TextureInternalFmt::RGB;
-				case 4:
-					return TextureInternalFmt::RGBA;
-				default:
-					LOGE("err! invalid channel num[%u]", channelNum);
-					std::abort();
-					return TextureInternalFmt::RED;
-			}
-		}
-
-		TextureFmt GetTextureFmt(uint32_t channelNum)
-		{
-			switch (channelNum)
-			{
-				case 1:
-					return TextureFmt::RED;
-				case 2:
-					return TextureFmt::RG;
-				case 3:
-					return TextureFmt::RGB;
-				case 4:
-					return TextureFmt::RGBA;
-				default:
-					LOGE("err! invalid channel num[%u]", channelNum);
-					std::abort();
-					return TextureFmt::RED;
-			}
-		}
-
-		const char* RenderResourceToStr(RenderResourceType type)
+		const char* RenderResourceTypeStr(RenderResourceType type)
 		{
 			switch (type)
 			{
-			case RenderResourceType::UBO:
-				return "Uniform Buffer Object";
-			case RenderResourceType::VBO:
-				return "Vertex Buffer Object";
-			case RenderResourceType::EBO:
-				return "Indice Buffer Object";
-			case RenderResourceType::VAO:
-				return "Vertex Array Object";
-			case RenderResourceType::Shader:
-				return "Shader";
-			default:
-				LOGE("err! undefined render resource type[%u]", type);
-				std::abort();
-				return "Undefined RenderResourceType";
+				case RenderResourceType::UBO:
+					return "Uniform Buffer Object";
+				case RenderResourceType::VBO:
+					return "Vertex Buffer Object";
+				case RenderResourceType::EBO:
+					return "Indice Buffer Object";
+				case RenderResourceType::VAO:
+					return "Vertex Array Object";
+				case RenderResourceType::FBO:
+					return "Frame Buffer Object";
+				case RenderResourceType::Shader:
+					return "Shader";
+				default:
+					LOGE("err! undefined render resource type[%u]", type);
+					std::abort();
+					return "Undefined RenderResourceType";
+			}
+		}
+
+		uint32_t GetTextureChannelNum(TextureFormat fmt)
+		{
+			switch (fmt)
+			{
+				case TextureFormat::RGBA_32:
+				case TextureFormat::RGBA_FLOAT:
+					return 4;
+				case TextureFormat::RGB_24:
+				case TextureFormat::RGBA_HALF:
+				case TextureFormat::RGB_16:
+					return 3;
+				case TextureFormat::RG_FLOAT:
+					return 2;
+				case TextureFormat::R_16:
+				case TextureFormat::R_8:
+				case TextureFormat::R_FLOAT:
+				case TextureFormat::Alpha_8:
+					return 1;
+				default:
+					LOGE("err! texture format[%u] has not been implemented", fmt);
+					std::abort();
+					return 0;
+			}
+		}
+
+		uint32_t GetTextureByteSize(TextureFormat fmt)
+		{
+			switch (fmt)
+			{				
+				case TextureFormat::RGBA_FLOAT:
+				case TextureFormat::RG_FLOAT:
+				case TextureFormat::R_FLOAT:
+					return 4;
+				case TextureFormat::RGBA_HALF:
+				case TextureFormat::RGB_16:
+				case TextureFormat::R_16:
+					return 2;
+				case TextureFormat::RGBA_32:
+				case TextureFormat::RGB_24:
+				case TextureFormat::R_8:
+				case TextureFormat::Alpha_8:
+					return 1;
+				default:
+					LOGE("err! texture format[%u] has not been implemented", fmt);
+					std::abort();
+					return 0;
 			}
 		}
 	}

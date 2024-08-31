@@ -47,6 +47,9 @@ namespace pio
 		bool is() const { return false; }
 
 		template<typename T>
+		const T* as() const { if (std::is_base_of<Asset, T>() && is<T>()) { return static_cast<const T*>(this); } else { return nullptr; } }
+
+		template<typename T>
 		T* as() { if (std::is_base_of<Asset, T>() && is<T>()) { return static_cast<T*>(this); } else { return nullptr; } }
 
 	public:

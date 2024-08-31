@@ -11,7 +11,8 @@ namespace pio
 		DefferedPass(const std::string &name, RenderPassEvent event) : RenderPass(name, event) {}
 		~DefferedPass() = default;
 
-		virtual void execute(Ref<RenderContext> &context) override;
+		virtual void onAttach(Ref<RenderContext>& context) override;
+		virtual void onExecute(Ref<RenderContext> &context) override;
 	};
 }
 

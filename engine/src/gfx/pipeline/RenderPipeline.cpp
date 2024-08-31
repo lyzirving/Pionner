@@ -20,7 +20,17 @@ namespace pio
 
 	RenderPipeline::RenderPipeline()
 	{
+	}
+
+	void RenderPipeline::onAttach(Ref<RenderContext>& context)
+	{
 		m_renderer = Renderer::Create(GlobalSettings::RenderConfig);
+		m_renderer->onAttach(context);
+	}
+
+	void RenderPipeline::onDetach(Ref<RenderContext>& context)
+	{
+		m_renderer->onDetach(context);
 	}
 
 	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<Camera>>& cameras)

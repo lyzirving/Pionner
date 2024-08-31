@@ -9,7 +9,11 @@
 
 namespace pio
 {
-    void DefferedPass::execute(Ref<RenderContext> &context)
+    void DefferedPass::onAttach(Ref<RenderContext>& context)
+    {
+    }
+
+    void DefferedPass::onExecute(Ref<RenderContext> &context)
     {
         auto &renderingData = context->renderingData();
         if(renderingData.OpaqueMeshCmd.empty())

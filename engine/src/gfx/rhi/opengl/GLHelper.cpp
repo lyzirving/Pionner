@@ -15,13 +15,13 @@ namespace pio
 	{
 		switch (usage)
 		{
-		case BufferUsage::Dynamic:
-			return GL_DYNAMIC_DRAW;
-		case BufferUsage::DynamicRead:
-			return GL_DYNAMIC_READ;
-		case BufferUsage::Static:
-		default:
-			return GL_STATIC_DRAW;
+			case BufferUsage::Dynamic:
+				return GL_DYNAMIC_DRAW;
+			case BufferUsage::DynamicRead:
+				return GL_DYNAMIC_READ;
+			case BufferUsage::Static:
+			default:
+				return GL_STATIC_DRAW;
 		}
 	}
 
@@ -76,28 +76,28 @@ namespace pio
 		{
 			switch (stageIdx)
 			{
-			case 0:
-			{
-				next = !it->empty() && (vert = it->c_str());
-				if (next) { stageIdx++; }
-				break;
-			}
-			case 1:
-			{
-				next = !it->empty() && (frag = it->c_str());
-				if (next) { stageIdx++; }
-				break;
-			}
-			case 2:
-			{
-				next = !it->empty() && (geo = it->c_str());
-				if (next) { stageIdx++; }
-				break;
-			}
-			default:
-				LOGE("invalid stage idx[%u]", stageIdx);
-				assert(0);
-				break;
+				case 0:
+				{
+					next = !it->empty() && (vert = it->c_str());
+					if (next) { stageIdx++; }
+					break;
+				}
+				case 1:
+				{
+					next = !it->empty() && (frag = it->c_str());
+					if (next) { stageIdx++; }
+					break;
+				}
+				case 2:
+				{
+					next = !it->empty() && (geo = it->c_str());
+					if (next) { stageIdx++; }
+					break;
+				}
+				default:
+					LOGE("invalid stage idx[%u]", stageIdx);
+					assert(0);
+					break;
 			}
 			it++;
 		}
@@ -353,50 +353,210 @@ namespace pio
 	{
 		switch (type)
 		{
-		case ShaderDataType::Byte:
-		case ShaderDataType::Byte2:
-		case ShaderDataType::Byte3:
-		case ShaderDataType::Byte4:
-			return GL_BYTE;
-		case ShaderDataType::UByte:
-		case ShaderDataType::UByte2:
-		case ShaderDataType::UByte3:
-		case ShaderDataType::UByte4:
-			return GL_UNSIGNED_BYTE;
-		case ShaderDataType::Short:
-		case ShaderDataType::Short2:
-		case ShaderDataType::Short3:
-		case ShaderDataType::Short4:
-			return GL_SHORT;
-		case ShaderDataType::UShort:
-		case ShaderDataType::UShort2:
-		case ShaderDataType::UShort3:
-		case ShaderDataType::UShort4:
-			return GL_UNSIGNED_SHORT;
-		case ShaderDataType::Int:
-		case ShaderDataType::Int2:
-		case ShaderDataType::Int3:
-		case ShaderDataType::Int4:
-			return GL_INT;
-		case ShaderDataType::UInt:
-		case ShaderDataType::UInt2:
-		case ShaderDataType::UInt3:
-		case ShaderDataType::UInt4:
-			return GL_UNSIGNED_INT;
-		case ShaderDataType::Float:
-		case ShaderDataType::Float2:
-		case ShaderDataType::Float3:
-		case ShaderDataType::Float4:
-			return GL_FLOAT;
-		case ShaderDataType::Double:
-		case ShaderDataType::Double2:
-		case ShaderDataType::Double3:
-		case ShaderDataType::Double4:
-			return GL_DOUBLE;
-		default:
-			LOGE("invalid shader data type[%u]", type);
-			std::abort();
-			return 0;
+			case ShaderDataType::Byte:
+			case ShaderDataType::Byte2:
+			case ShaderDataType::Byte3:
+			case ShaderDataType::Byte4:
+				return GL_BYTE;
+			case ShaderDataType::UByte:
+			case ShaderDataType::UByte2:
+			case ShaderDataType::UByte3:
+			case ShaderDataType::UByte4:
+				return GL_UNSIGNED_BYTE;
+			case ShaderDataType::Short:
+			case ShaderDataType::Short2:
+			case ShaderDataType::Short3:
+			case ShaderDataType::Short4:
+				return GL_SHORT;
+			case ShaderDataType::UShort:
+			case ShaderDataType::UShort2:
+			case ShaderDataType::UShort3:
+			case ShaderDataType::UShort4:
+				return GL_UNSIGNED_SHORT;
+			case ShaderDataType::Int:
+			case ShaderDataType::Int2:
+			case ShaderDataType::Int3:
+			case ShaderDataType::Int4:
+				return GL_INT;
+			case ShaderDataType::UInt:
+			case ShaderDataType::UInt2:
+			case ShaderDataType::UInt3:
+			case ShaderDataType::UInt4:
+				return GL_UNSIGNED_INT;
+			case ShaderDataType::Float:
+			case ShaderDataType::Float2:
+			case ShaderDataType::Float3:
+			case ShaderDataType::Float4:
+				return GL_FLOAT;
+			case ShaderDataType::Double:
+			case ShaderDataType::Double2:
+			case ShaderDataType::Double3:
+			case ShaderDataType::Double4:
+				return GL_DOUBLE;
+			default:
+				LOGE("invalid shader data type[%u]", type);
+				std::abort();
+				return 0;
+		}
+	}
+
+	uint32_t GLHelper::GetTextureWrap(TextureWrap wrap)
+	{
+		switch (wrap)
+		{
+			case TextureWrap::ClampEdge:
+				return GL_CLAMP_TO_EDGE;
+			case TextureWrap::ClampBorder:
+				return GL_CLAMP_TO_BORDER;
+			case TextureWrap::Repeat:
+				return GL_REPEAT;
+			default:
+				LOGE("err! invalid wrap[%u]", wrap);
+				std::abort();
+				return GL_NONE;
+		}
+	}
+
+	uint32_t GLHelper::GetTextureMinFilter(TextureFilterMin filter)
+	{
+		switch (filter)
+		{
+			case TextureFilterMin::Linear:
+				return GL_LINEAR;
+			case TextureFilterMin::Nearest:
+				return GL_NEAREST;
+			case TextureFilterMin::Linear_Mipmap_Linear:
+				return GL_LINEAR_MIPMAP_LINEAR;
+			case TextureFilterMin::Linear_Mipmap_Nearest:
+				return GL_LINEAR_MIPMAP_NEAREST;
+			case TextureFilterMin::Nearest_Mipmap_Linear:
+				return GL_NEAREST_MIPMAP_LINEAR;
+			default:
+			{
+				LOGE("err! invalid min filter[%u]", filter);
+				std::abort();
+				return GL_NONE;
+			}
+		}
+	}
+
+	uint32_t GLHelper::GetTextureMagFilter(TextureFilterMag filter)
+	{
+		switch (filter)
+		{
+			case TextureFilterMag::Linear:
+				return GL_LINEAR;
+			case TextureFilterMag::Nearest:
+				return GL_NEAREST;
+			default:
+				LOGE("err! invalid max filter[%u]", filter);
+			std:abort();
+				return GL_NONE;
+		}
+	}
+
+	uint32_t GLHelper::GetTextureInternalFmt(TextureFormat fmt)
+	{
+		switch (fmt)
+		{
+			case TextureFormat::RGBA_32:
+				return GL_RGBA;
+			case TextureFormat::RGB_24:
+				return GL_RGB;
+			case TextureFormat::RGB_16:
+				return GL_RGB16UI;
+			case TextureFormat::R_16:
+				return GL_R16UI;
+			case TextureFormat::R_8:
+			case TextureFormat::Alpha_8:
+				return GL_R8;
+			case TextureFormat::RGBA_FLOAT:
+				return GL_RGBA32F;
+			case TextureFormat::RGBA_HALF:
+				return GL_RGBA16F;
+			case TextureFormat::RG_FLOAT:
+				return GL_RG32F;
+			case TextureFormat::R_FLOAT:
+				return GL_R32F;
+			case TextureFormat::DEPTH_16:
+				return GL_DEPTH_COMPONENT16;
+			case TextureFormat::DEPTH_24:
+				return GL_DEPTH_COMPONENT24;
+			case TextureFormat::DEPTH_32:
+				return GL_DEPTH_COMPONENT32;
+			case TextureFormat::DEPTH_32F:
+				return GL_DEPTH_COMPONENT32F;
+			case TextureFormat::DEPTH_24_STENCIL_8:
+				return GL_DEPTH24_STENCIL8;
+			default:
+				LOGE("err! invalid texture format[%u]", fmt);
+				std::abort();
+				return GL_NONE;
+		}
+	}
+
+	uint32_t GLHelper::GetTexturePixelFmt(TextureFormat fmt)
+	{
+		switch (fmt)
+		{
+			case TextureFormat::RGBA_32:
+			case TextureFormat::RGBA_FLOAT:
+			case TextureFormat::RGBA_HALF:
+				return GL_RGBA;
+			case TextureFormat::RGB_24:
+			case TextureFormat::RGB_16:
+				return GL_RGB;
+			case TextureFormat::R_FLOAT:
+			case TextureFormat::R_16:
+			case TextureFormat::R_8:
+			case TextureFormat::Alpha_8:
+				return GL_RED;
+			case TextureFormat::RG_FLOAT:
+				return GL_RG;
+			case TextureFormat::DEPTH_32F:
+			case TextureFormat::DEPTH_32:
+			case TextureFormat::DEPTH_24:
+			case TextureFormat::DEPTH_16:
+				return GL_DEPTH_COMPONENT;
+			case TextureFormat::DEPTH_24_STENCIL_8:
+				return GL_DEPTH_STENCIL;
+			default:
+				LOGE("err! invalid texture format[%u]", fmt);
+				std::abort();
+				return GL_NONE;
+		}
+	}
+
+	uint32_t GLHelper::GetTexturePixelType(TextureFormat fmt)
+	{
+		switch (fmt)
+		{
+			case TextureFormat::RGBA_32:
+			case TextureFormat::RGB_24:
+			case TextureFormat::R_8:
+			case TextureFormat::Alpha_8:
+				return GL_UNSIGNED_BYTE;
+			case TextureFormat::RGB_16:
+			case TextureFormat::R_16:
+				return GL_UNSIGNED_SHORT;
+			case TextureFormat::RGBA_FLOAT:
+			case TextureFormat::RG_FLOAT:
+			case TextureFormat::R_FLOAT:
+			case TextureFormat::DEPTH_32F:
+				return GL_FLOAT;
+			case TextureFormat::RGBA_HALF:
+				return GL_HALF_FLOAT;
+			case TextureFormat::DEPTH_16:
+				return GL_UNSIGNED_SHORT;
+			case TextureFormat::DEPTH_24:
+			case TextureFormat::DEPTH_32:
+				return GL_UNSIGNED_INT;
+			case TextureFormat::DEPTH_24_STENCIL_8:
+				return GL_UNSIGNED_INT_24_8;
+			default:
+				LOGE("err! invalid texture format[%u]", fmt);
+				std::abort();
+				return GL_NONE;
 		}
 	}
 

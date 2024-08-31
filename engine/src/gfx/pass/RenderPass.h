@@ -48,14 +48,20 @@ namespace pio
 
 		const std::string& name() const { return m_name; }
 		RenderPassEvent event() const { return m_event; }
+		bool bActive() const { return m_bActive; }
 
-		virtual void execute(Ref<RenderContext> &context) {}
+		void setActive(bool val) { m_bActive = val; }
+
+		virtual void onAttach(Ref<RenderContext>& context) {}
+		virtual void onDetach(Ref<RenderContext>& context) {}
+		virtual void onExecute(Ref<RenderContext> &context) {}
 
 	public:
 		static bool PassSorter(Ref<RenderPass>& lhs, Ref<RenderPass>& rhs);
 
 	protected:
 		std::string m_name;
+		bool m_bActive{ true };
 		RenderPassEvent m_event;
 		Ref<FrameBuffer> m_frameBuff;
 	};

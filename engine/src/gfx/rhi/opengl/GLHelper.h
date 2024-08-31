@@ -23,6 +23,16 @@ namespace pio
 		static uint32_t CreateShaderProgram(const char* vert, const char* frag, const char* geo);
 		static uint32_t ShaderDataTypeToGLBaseType(ShaderDataType type);
 
+		static uint32_t GetTextureWrap(TextureWrap wrap);
+		static uint32_t GetTextureMinFilter(TextureFilterMin filter);
+		static uint32_t GetTextureMagFilter(TextureFilterMag filter);
+		//Specifies the number of color components in the texture.
+		static uint32_t GetTextureInternalFmt(TextureFormat fmt);
+		//Specifies the format of the pixel data.
+		static uint32_t GetTexturePixelFmt(TextureFormat fmt);
+		//Specifies the data type of the pixel data
+		static uint32_t GetTexturePixelType(TextureFormat fmt);
+
 	private:
 		static bool CreateShader(uint32_t type, const char* source, uint32_t& shader);
 		static void LogShaderInfo(uint32_t shader);

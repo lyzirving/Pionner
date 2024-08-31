@@ -1,6 +1,7 @@
 #include "FrameBuffer.h"
 
 #include "gfx/renderer/RenderContext.h"
+#include "gfx/rhi/opengl/GLFrameBuffer.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -14,7 +15,7 @@ namespace pio
 		switch (context->backendFlag())
 		{
 		case RenderBackend_OpenGL:
-			return Ref<FrameBuffer>();
+			return CreateRef<GLFrameBuffer>(context, spec);
 		default:
 			LOGE("err! backend[%u] has not been implemented", context->backendFlag());
 			std::abort();
