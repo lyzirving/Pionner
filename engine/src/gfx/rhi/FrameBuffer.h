@@ -7,15 +7,15 @@ namespace pio
 {
 	struct FrameBufferSpecific
 	{
-		FrameBufferUsage Usage{ FrameBufferUsage_Color };
 		std::string Name;
+		uint32_t Usage{ FrameBufferUsage_Color };
 		uint32_t Width{ 0 }, Height{ 0 };
 
 		std::vector<TextureSpecific> ColorSpec;
 		TextureSpecific DepthSpec;
 	};
 
-	#define PIO_FBO_ADD_USAGE(flags, usage)  (flags = (flags || (usage)))
+	#define PIO_FBO_ADD_USAGE(flags, usage)  (flags = (flags | (usage)))
 	#define PIO_FBO_RMV_USAGE(flags, usage)  (flags = (flags & (~usage)))
 	#define PIO_FBO_HAS_USAGE(flags, usage)  (flags & usage)
 

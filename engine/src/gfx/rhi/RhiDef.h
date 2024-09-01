@@ -14,13 +14,17 @@ namespace pio
 
 	enum ShaderSpecifier : uint8_t
 	{
-		ShaderSpec_Standard, 
-		ShaderSpec_Num
+		ShaderSpec_Standard
+	};
+
+	enum class ShaderType : uint8_t
+	{
+		GBuffer, Num
 	};
 
 	enum class RenderResourceType : uint8_t
 	{
-		UBO, VBO, EBO, VAO, FBO, Texture, Shader, Num
+		UBO, VBO, EBO, VAO, FBO, Texture, RenderBuffer, Shader, Num
 	};
 
 	enum class TextureSampler : uint8_t

@@ -560,6 +560,24 @@ namespace pio
 		}
 	}
 
+	uint32_t GLHelper::GetDepthAttachment(TextureFormat fmt)
+	{
+		switch (fmt)
+		{			
+			case TextureFormat::DEPTH_16:
+			case TextureFormat::DEPTH_24:
+			case TextureFormat::DEPTH_32:
+			case TextureFormat::DEPTH_32F:
+				return GL_DEPTH_ATTACHMENT;
+			case TextureFormat::DEPTH_24_STENCIL_8:
+				return GL_DEPTH_STENCIL_ATTACHMENT;
+			default:
+				LOGE("err! invalid texture format[%u]", fmt);
+				std::abort();
+				return GL_NONE;
+		}
+	}
+
 	bool GLHelper::CreateShader(uint32_t type, const char* source, uint32_t& shader)
 	{
 		shader = glCreateShader(type);

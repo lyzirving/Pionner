@@ -11,6 +11,7 @@ namespace pio
 	class RenderAPI
 	{
 	public:
+		RenderAPI(RenderBackendFlags flag) : m_renderBackend(flag) {}
 		virtual ~RenderAPI() = default;
 
 		virtual bool setupBackend() = 0;
@@ -22,10 +23,13 @@ namespace pio
 
 		virtual void releaseResource(ResourceGCDelegate &&resource) = 0;
 
-		virtual RenderBackendFlags type() const = 0;
+		RenderBackendFlags renderBackend() const { return m_renderBackend; }
+
+	protected:
+		const RenderBackendFlags m_renderBackend;
 
 	public:
-		static Ref<RenderAPI> Create(RenderBackendFlags type);
+		static Ref<RenderAPI> Create(RenderBackendFlags flag);
 	};
 }
 

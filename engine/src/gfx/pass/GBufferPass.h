@@ -10,6 +10,10 @@ namespace pio
 	public:
 		GBufferPass(const std::string &name, RenderPassEvent event) : RenderPass(name, event) {}
 		~GBufferPass() = default;
+
+		virtual void onAttach(Ref<RenderContext>& context) override;
+		virtual void onDetach(Ref<RenderContext>& context) override;
+		virtual void onExecute(Ref<RenderContext>& context, Ref<RenderPass>& lastPass) override;
 	};
 }
 

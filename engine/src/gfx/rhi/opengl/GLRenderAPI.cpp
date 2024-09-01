@@ -19,7 +19,7 @@
 
 namespace pio
 {
-	GLRenderAPI::GLRenderAPI(RenderBackendFlags type) : RenderAPI(), m_type(type)
+	GLRenderAPI::GLRenderAPI(RenderBackendFlags flag) : RenderAPI(flag)
 	{
 	}
 
@@ -142,14 +142,26 @@ namespace pio
 		}
 		case RenderResourceType::VAO:
 		{
-			LOGD("delete buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			LOGD("delete vertex array[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			glDeleteVertexArrays(1, &resource.Id);
 			break;
 		}
 		case RenderResourceType::FBO:
 		{
-			LOGD("delete buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			LOGD("delete fame buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			glDeleteFramebuffers(1, &resource.Id);
+			break;
+		}
+		case RenderResourceType::Texture:
+		{
+			LOGD("delete texture[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			glDeleteTextures(1, &resource.Id);
+			break;
+		}
+		case RenderResourceType::RenderBuffer:
+		{
+			LOGD("delete render buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			glDeleteBuffers(1, &resource.Id);
 			break;
 		}
 		case RenderResourceType::Shader:

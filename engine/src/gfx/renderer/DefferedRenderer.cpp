@@ -51,13 +51,14 @@ namespace pio
 
 	void DefferedRenderer::onExecute(Ref<RenderContext> &context)
 	{
-		executeBlock(RenderBlockFlags::MainBeforeRendering, m_activeQueue, context);
-		executeBlock(RenderBlockFlags::MainRenderingOpaque, m_activeQueue, context);
-		executeBlock(RenderBlockFlags::MainRenderingTransparents, m_activeQueue, context);
-		executeBlock(RenderBlockFlags::MainAfterRendering, m_activeQueue, context);
+		Ref<RenderPass> lastPass;
+		executeBlock(RenderBlockFlags::MainBeforeRendering, m_activeQueue, context, lastPass);
+		executeBlock(RenderBlockFlags::MainRenderingOpaque, m_activeQueue, context, lastPass);
+		executeBlock(RenderBlockFlags::MainRenderingTransparents, m_activeQueue, context, lastPass);
+		executeBlock(RenderBlockFlags::MainAfterRendering, m_activeQueue, context, lastPass);
 	}
 
-	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>> &queue, Ref<RenderContext> &context)
+	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context, Ref<RenderPass>& lastPass)
 	{		
 		BlockRange range = RenderBlock::GetBlockRange(flag);
 		if(range.intersect(queue))
@@ -66,7 +67,8 @@ namespace pio
 			{
 				if(range.contains(queue[i]))
 				{					
-					queue[i]->onExecute(context);
+					queue[i]->onExecute(context, lastPass);
+					lastPass = queue[i];
 				}
 			}
 		}

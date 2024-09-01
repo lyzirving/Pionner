@@ -8,7 +8,7 @@ namespace pio
 	class GLRenderAPI : public RenderAPI
 	{
 	public:
-		GLRenderAPI(RenderBackendFlags type);
+		GLRenderAPI(RenderBackendFlags flag);
 		~GLRenderAPI() = default;
 
 		virtual bool setupBackend() override;
@@ -20,10 +20,7 @@ namespace pio
 
 		virtual void releaseResource(ResourceGCDelegate &&resource) override;
 
-		virtual RenderBackendFlags type() const override { return m_type; }
-
 	private:
-		const RenderBackendFlags m_type;
 		bool m_backendSetup{false}, m_uiSetup{ false };
 	};
 }

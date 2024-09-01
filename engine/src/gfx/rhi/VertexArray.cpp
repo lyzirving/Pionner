@@ -12,12 +12,12 @@ namespace pio
 {
 	Ref<VertexArray> VertexArray::Create(Ref<RenderContext>& context)
 	{
-		switch (context->backendFlag())
+		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
 			return CreateRef<GLVertexArray>(context);
 		default:
-			LOGE("err! current backend[%u] has not been implemented", context->backendFlag());
+			LOGE("err! current backend[%u] has not been implemented", context->renderBackend());
 			std::abort();
 			return Ref<VertexArray>();
 		}

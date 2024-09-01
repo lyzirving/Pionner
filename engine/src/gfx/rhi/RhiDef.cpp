@@ -324,6 +324,10 @@ namespace pio
 					return "Vertex Array Object";
 				case RenderResourceType::FBO:
 					return "Frame Buffer Object";
+				case RenderResourceType::Texture:
+					return "Texture";
+				case RenderResourceType::RenderBuffer:
+					return "Render Buffer";
 				case RenderResourceType::Shader:
 					return "Shader";
 				default:
@@ -345,11 +349,16 @@ namespace pio
 				case TextureFormat::RGB_16:
 					return 3;
 				case TextureFormat::RG_FLOAT:
+				case TextureFormat::DEPTH_24_STENCIL_8:
 					return 2;
 				case TextureFormat::R_16:
 				case TextureFormat::R_8:
 				case TextureFormat::R_FLOAT:
 				case TextureFormat::Alpha_8:
+				case TextureFormat::DEPTH_16:
+				case TextureFormat::DEPTH_24:
+				case TextureFormat::DEPTH_32:
+				case TextureFormat::DEPTH_32F:
 					return 1;
 				default:
 					LOGE("err! texture format[%u] has not been implemented", fmt);
@@ -365,10 +374,16 @@ namespace pio
 				case TextureFormat::RGBA_FLOAT:
 				case TextureFormat::RG_FLOAT:
 				case TextureFormat::R_FLOAT:
+				case TextureFormat::DEPTH_32:
+				case TextureFormat::DEPTH_32F:
+				case TextureFormat::DEPTH_24_STENCIL_8:
 					return 4;
+				case TextureFormat::DEPTH_24:
+					return 3;
 				case TextureFormat::RGBA_HALF:
 				case TextureFormat::RGB_16:
 				case TextureFormat::R_16:
+				case TextureFormat::DEPTH_16:
 					return 2;
 				case TextureFormat::RGBA_32:
 				case TextureFormat::RGB_24:

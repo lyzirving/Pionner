@@ -12,7 +12,8 @@ namespace pio
 		~DefferedPass() = default;
 
 		virtual void onAttach(Ref<RenderContext>& context) override;
-		virtual void onExecute(Ref<RenderContext> &context) override;
+		virtual void onDetach(Ref<RenderContext>& context) override;
+		virtual void onExecute(Ref<RenderContext> &context, Ref<RenderPass>& lastPass) override;
 	};
 }
 

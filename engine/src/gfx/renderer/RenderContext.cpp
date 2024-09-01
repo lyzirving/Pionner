@@ -12,9 +12,10 @@
 
 namespace pio
 {
-	RenderContext::RenderContext(RenderBackendFlags type, Ref<Window>& window) : m_window(window)
+	RenderContext::RenderContext(RenderBackendFlags flag, Ref<Window>& window) : m_window(window)
 	{
-		m_api = RenderAPI::Create(type);
+		m_api = RenderAPI::Create(flag);
+		m_state = RenderState::Create(flag);
 	}
 
 	void RenderContext::renderLoop()
@@ -26,6 +27,7 @@ namespace pio
 		m_window->init();
 		m_window->makeCurrent();
 		m_window->setVSync(true);
+		onWindowSizeChange(m_window->width(), m_window->height());
 		m_api->setupBackend();
 		m_api->setupUiBackend(m_window->nativeWindow());
 
@@ -62,26 +64,28 @@ namespace pio
 		std::swap(m_renderingData, RenderingData());
 	}
 
+	void RenderContext::onWindowSizeChange(uint32_t w, uint32_t h)
+	{
+		m_viewport.setX(0);
+		m_viewport.setY(0);
+		m_viewport.setW(w);
+		m_viewport.setH(h);
+	}
+
 	void RenderContext::initShaders()
 	{
 		auto context = self();
-		for (uint8_t i = 0; i < ShaderSpec_Num; i++)
+		for (uint8_t i = 0; i < PIO_UINT8(ShaderType::Num); i++)
 		{
-			if (!m_shaders[i])
-			{
-				m_shaders[i] = ShaderCompiler::Compile(context, ShaderUtils::GetShaderPath(ShaderSpecifier(i)));
-			}
+			m_shaders[i] = ShaderCompiler::Compile(context, ShaderUtils::GetShaderPath(ShaderType(i)));
 		}
 	}
 
 	void RenderContext::releaseShaders()
 	{
-		for (uint8_t i = 0; i < ShaderSpec_Num; i++)
+		for (uint8_t i = 0; i < PIO_UINT8(ShaderType::Num); i++)
 		{
-			if (m_shaders[i])
-			{
-				m_shaders[i].reset();//Real release will be executed at garbage queue
-			}
+			m_shaders[i].reset();//Real release will be executed at garbage queue
 		}
 	}
 

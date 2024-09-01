@@ -20,7 +20,7 @@ namespace pio
 		virtual void onExecute(Ref<RenderContext> &context) override;
 
 	protected:
-		void executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>> &queue, Ref<RenderContext>& context);		
+		void executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context, Ref<RenderPass>& lastPass);
 
 	private:
 		std::vector<Ref<RenderPass>> m_passQueue;

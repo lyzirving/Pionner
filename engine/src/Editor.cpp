@@ -98,7 +98,11 @@ namespace pio
 
 	bool Editor::onWindowResize(Ref<WindowResizeEvent> &event)
 	{
-		return false;
+		if (m_context)
+		{
+			m_context->onWindowSizeChange(event->getWidth(), event->getHeight());
+		}
+		return true;
 	}
 
 	void Editor::run()

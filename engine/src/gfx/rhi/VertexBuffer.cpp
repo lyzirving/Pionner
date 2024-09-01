@@ -13,12 +13,12 @@ namespace pio
 {
 	Ref<VertexBuffer> VertexBuffer::Create(Ref<RenderContext>& context, uint32_t size, BufferUsage usage)
 	{
-		switch (context->backendFlag())
+		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
 			return CreateRef<GLVertexBuffer>(context, size, usage);
 		default:
-			LOGE("err! current backend[%u] has not been implemented", context->backendFlag());
+			LOGE("err! current backend[%u] has not been implemented", context->renderBackend());
 			std::abort();
 			return Ref<VertexBuffer>();
 		}
@@ -26,12 +26,12 @@ namespace pio
 
 	Ref<VertexBuffer> VertexBuffer::Create(Ref<RenderContext>& context, const void* data, uint32_t size, BufferUsage usage)
 	{
-		switch (context->backendFlag())
+		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
 			return CreateRef<GLVertexBuffer>(context, data, size, usage);
 		default:
-			LOGE("err! current backend[%u] has not been implemented", context->backendFlag());
+			LOGE("err! current backend[%u] has not been implemented", context->renderBackend());
 			std::abort();
 			return Ref<VertexBuffer>();
 		}

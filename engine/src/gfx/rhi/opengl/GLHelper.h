@@ -32,6 +32,7 @@ namespace pio
 		static uint32_t GetTexturePixelFmt(TextureFormat fmt);
 		//Specifies the data type of the pixel data
 		static uint32_t GetTexturePixelType(TextureFormat fmt);
+		static uint32_t GetDepthAttachment(TextureFormat fmt);
 
 	private:
 		static bool CreateShader(uint32_t type, const char* source, uint32_t& shader);

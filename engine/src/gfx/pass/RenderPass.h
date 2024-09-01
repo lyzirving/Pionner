@@ -2,6 +2,7 @@
 #define __PIONNER_GFX_PASS_RENDERPASS_H__
 
 #include "Entry.h"
+#include "gfx/rhi/RenderStateAttrs.h"
 
 namespace pio
 {
@@ -54,7 +55,7 @@ namespace pio
 
 		virtual void onAttach(Ref<RenderContext>& context) {}
 		virtual void onDetach(Ref<RenderContext>& context) {}
-		virtual void onExecute(Ref<RenderContext> &context) {}
+		virtual void onExecute(Ref<RenderContext> &context, Ref<RenderPass>& lastPass) {}
 
 	public:
 		static bool PassSorter(Ref<RenderPass>& lhs, Ref<RenderPass>& rhs);
@@ -63,7 +64,9 @@ namespace pio
 		std::string m_name;
 		bool m_bActive{ true };
 		RenderPassEvent m_event;
+
 		Ref<FrameBuffer> m_frameBuff;
+		RenderStateAttrs m_attrs;
 	};
 
 	struct BlockRange

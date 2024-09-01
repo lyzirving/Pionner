@@ -12,13 +12,13 @@ namespace pio
 {
 	Ref<UniformBuffer> UniformBuffer::Create(Ref<RenderContext>& context, uint32_t size, UBBinding binding, BufferUsage usage)
 	{
-		switch (context->backendFlag())
+		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
 			return CreateRef<GLUniformBuffer>(context, size, binding, usage);
 		case RenderBackend_Vulkan:
 		default:
-			LOGE("Err! backend[%u] has not been implemented", context->backendFlag());
+			LOGE("Err! backend[%u] has not been implemented", context->renderBackend());
 			std::abort();
 			return Ref<UniformBuffer>();
 		}

@@ -24,7 +24,7 @@ namespace pio
 			const TextureSpecific& texSpec = m_spec.ColorSpec[i];
 			if (texSpec.Type == TextureType::Num)
 				continue;
-			m_colorBuffs[i] = Texture::Create(context, texSpec);
+			m_colorBuffs.push_back(Texture::Create(context, texSpec));			
 		}
 		m_colorBuffs.shrink_to_fit();
 
@@ -69,6 +69,17 @@ namespace pio
 
 				if (m_depthBuff)
 				{
+					if (m_depthBuff->is<RenderBuffer>())
+					{
+						m_depthBuff->bind();
+						glFramebufferRenderbuffer(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_spec.DepthSpec.Format),
+												  GL_RENDERBUFFER, m_depthBuff->id());
+					}
+					else
+					{
+						LOGE("err! color frame buffer's depth buffer must be render buffer");
+						std::abort();
+					}
 				}
 			}
 			else if (PIO_FBO_IS_DEPTH_STENCIL(m_spec.Usage) && m_depthBuff)

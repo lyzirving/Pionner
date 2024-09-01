@@ -85,19 +85,19 @@ namespace pio
 			return SHADER_STAGE_ALL;
 		}
 
-		inline const char *GetShaderPath(ShaderSpecifier spec)
+		inline const char *GetShaderPath(ShaderType type)
 		{
-			switch(spec)
+			switch(type)
 			{
-				case ShaderSpec_Standard:
+				case ShaderType::GBuffer:
 					return "shader/MaterialPreview.glsl";
 				default:
 					#ifdef LOCAL_TAG
 					#undef LOCAL_TAG
 					#endif
 					#define LOCAL_TAG "ShaderUtils"
-
-					LOGE("err! invalid shader spec[%u]", spec);
+					LOGE("err! invalid shader spec[%u]", type);
+					std::abort();
 					return "Invalid shader spec";
 			}
 		}

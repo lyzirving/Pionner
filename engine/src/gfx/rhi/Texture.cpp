@@ -3,7 +3,9 @@
 #include "asset/AssetMgr.h"
 
 #include "gfx/renderer/RenderContext.h"
+
 #include "gfx/rhi/opengl/GLTexture2D.h"
+#include "gfx/rhi/opengl/GLRenderBuffer.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -19,9 +21,16 @@ namespace pio
 		m_size = m_spec.Width * m_spec.Height * m_spec.Channel * Rhi::GetTextureByteSize(spec.Format);
 	}
 
+	RenderBuffer::RenderBuffer(Ref<RenderContext>& context, const TextureSpecific& spec)
+		: Texture(context, spec, RenderResourceType::RenderBuffer)
+	{
+		m_spec.Channel = Rhi::GetTextureChannelNum(spec.Format);
+		m_size = m_spec.Width * m_spec.Height * m_spec.Channel * Rhi::GetTextureByteSize(spec.Format);
+	}
+
 	Ref<Texture> Texture::Create(Ref<RenderContext>& context, const TextureSpecific& spec)
 	{
-		switch (context->backendFlag())
+		switch (context->renderBackend())
 		{
 			case RenderBackendFlags::RenderBackend_OpenGL:
 			{
@@ -30,6 +39,10 @@ namespace pio
 					case TextureType::TwoDimen:
 					{
 						return AssetMgr::MakeRuntimeAsset<GLTexture2D>(context, spec);
+					}
+					case TextureType::RenderBuffer:
+					{
+						return CreateRef<GLRenderBuffer>(context, spec);
 					}
 					default:
 					{
@@ -41,7 +54,7 @@ namespace pio
 			}
 			default:
 			{
-				LOGE("err! render backend[%u] has not been implemented", context->backendFlag());
+				LOGE("err! render backend[%u] has not been implemented", context->renderBackend());
 				std::abort();
 				return Ref<Texture>();
 			}
@@ -59,10 +72,11 @@ namespace pio
 			auto type = as<Texture>()->spec().Type;
 			return (type == TextureType::TwoDimen ||
 					type == TextureType::SingleChannel ||
-					type == TextureType::NormalMap ||
-					type == TextureType::RenderBuffer);
+					type == TextureType::NormalMap);
 		}
 		return false;
 	}
-		                                    
+
+	template<>
+	bool Asset::is<RenderBuffer>() const { return is<Texture>() && (as<Texture>()->spec().Type == TextureType::RenderBuffer); }
 }

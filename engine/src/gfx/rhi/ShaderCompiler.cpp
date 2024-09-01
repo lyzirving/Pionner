@@ -12,14 +12,14 @@ namespace pio
 {
 	Ref<Shader> ShaderCompiler::Compile(Ref<RenderContext>& context, const std::string& path)
 	{
-		switch (context->backendFlag())
+		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
 		{
 			return GLShaderCompiler::DoExecute(context, path);
 		}
 		default:
-			LOGE("err! render backend[%u] has not been implemented", context->backendFlag());
+			LOGE("err! render backend[%u] has not been implemented", context->renderBackend());
 			return Ref<Shader>();			
 		}		
 	}

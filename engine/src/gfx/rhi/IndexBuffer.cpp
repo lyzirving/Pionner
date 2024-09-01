@@ -12,12 +12,12 @@ namespace pio
 {
 	Ref<IndexBuffer> IndexBuffer::Create(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum, BufferUsage usage)
 	{
-		switch (context->backendFlag())
+		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
 			return CreateRef<GLIndexBuffer>(context, size, indiceNum, usage);
 		default:
-			LOGE("err! current backend[%u] has not been implemented", context->backendFlag());
+			LOGE("err! current backend[%u] has not been implemented", context->renderBackend());
 			std::abort();
 			return Ref<IndexBuffer>();
 		}
@@ -25,12 +25,12 @@ namespace pio
 
 	Ref<IndexBuffer> IndexBuffer::Create(Ref<RenderContext>& context, const void* data, uint32_t size, uint32_t indiceNum, BufferUsage usage)
 	{
-		switch (context->backendFlag())
+		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
 			return CreateRef<GLIndexBuffer>(context, data, size, indiceNum, usage);
 		default:
-			LOGE("err! current backend[%u] has not been implemented", context->backendFlag());
+			LOGE("err! current backend[%u] has not been implemented", context->renderBackend());
 			std::abort();
 			return Ref<IndexBuffer>();
 		}
