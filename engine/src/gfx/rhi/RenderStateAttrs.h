@@ -255,6 +255,12 @@ namespace pio
 		Blend AttrBlend{};
 		DepthTest AttrDepth{};
 		StencilTest AttrStencil{};
+
+		RenderStateAttrs &setClear(const Clear &val) { AttrClear = val; return *this; }
+		RenderStateAttrs &setCull(const CullFace &val) { AttrCull = val; return *this; }
+		RenderStateAttrs &setBlend(const Blend &val) { AttrBlend = val; return *this; }
+		RenderStateAttrs &setDepth(const DepthTest &val) { AttrDepth = val; return *this; }
+		RenderStateAttrs &setStencil(const StencilTest &val) { AttrStencil = val; return *this; }
 	};
 }
 

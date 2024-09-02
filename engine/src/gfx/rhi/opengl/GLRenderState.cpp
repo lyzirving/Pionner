@@ -240,4 +240,13 @@ namespace pio
 			glStencilOp(GetFuncAttr(stencil.Op(FaceMode_FrontAndBack).sFail), GetFuncAttr(stencil.Op(FaceMode_FrontAndBack).dpFail), GetFuncAttr(stencil.Op(FaceMode_FrontAndBack).dpPass));
 		}
 	}
+
+	void GLRenderState::setStateMachine(const RenderStateAttrs &attrs)
+	{
+		setClear(attrs.AttrClear);
+		setCullFace(attrs.AttrCull);
+		setBlendMode(attrs.AttrBlend);
+		setDepthTest(attrs.AttrDepth);
+		setStencilTest(attrs.AttrStencil);
+	}
 }

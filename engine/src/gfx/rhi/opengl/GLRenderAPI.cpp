@@ -3,8 +3,9 @@
 #include "GLHelper.h"
 #include "GLHeader.h"
 
-#include "gfx/renderer/RenderContext.h"
+#include "GlobalSettings.h"
 #include "window/Window.h"
+#include "gfx/renderer/RenderContext.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -94,20 +95,57 @@ namespace pio
 		m_backendSetup = false;
 	}
 
-	void GLRenderAPI::beginFrame(RenderContext& ctx)
+	void GLRenderAPI::setViewport(int32_t x, int32_t y, int32_t w, int32_t h)
 	{
-		auto& window = ctx.window();
+		glViewport(x, y, w, h);
+	}
 
-		glViewport(0, 0, window->width(), window->height());
-		glClearColor(0.f, 0.f, 0.f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT);
+	bool GLRenderAPI::bindUnimBlock(uint32_t program, uint32_t bindingPt, const std::string& blockName)
+	{
+		if(program == 0)
+		{
+			LOGE("err! invalid shader program");
+			return false;
+		}
+
+		if(blockName.empty())
+		{
+			LOGE("err! empty block name");
+			return false;
+		}		
+
+		uint32_t index = glGetUniformBlockIndex(program, blockName.c_str());
+		if(index == GL_INVALID_INDEX)
+		{
+			LOGE("err! fail to get block[%s]'s index in program[%u]", blockName.c_str(), program);
+			GLHelper::CheckError("fail to get uniform block's index in program");
+			return false;
+		}
+
+		GLint blockSize{ 0 };
+		glGetActiveUniformBlockiv(program, index, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+		//LOGD("block[%s] in program[%u]'s size is [%d]", blockName.c_str(), program, blockSize);
+
+		glUniformBlockBinding(program, index, bindingPt);
+		return GLHelper::CheckError("fail to bind program[%u]'s uniform block[%s][%u] to binding point[%u]",
+									program, blockName.c_str(), index, bindingPt);
+	}
+
+	void GLRenderAPI::onBeginFrame(RenderContext& context)
+	{		
+		const auto& vp = context.vp();
+		const auto& color = GlobalSettings::RenderConfig.ClearColor;
+
+		glViewport(vp.offsetX(), vp.offsetY(), vp.ratioW(), vp.ratioH());
+		glClearColor(color.r, color.g, color.b, color.a);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 	}
 
-	void GLRenderAPI::endFrame(RenderContext& ctx)
+	void GLRenderAPI::onEndFrame(RenderContext& context)
 	{
 		// Prepare the data for rendering so you can call GetDrawData()
 		ImGui::Render();

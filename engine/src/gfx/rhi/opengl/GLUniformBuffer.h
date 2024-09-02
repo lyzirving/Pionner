@@ -21,7 +21,7 @@ namespace pio
 		virtual uint32_t size() const override { return m_size; }
 		virtual void setData(const void *data, uint32_t size, uint32_t offset) override;
 
-		virtual void bind(int64_t offset, int64_t size) override;
+		virtual void bindAt(int64_t offset, int64_t size) override;
 		virtual UBBinding binding() const override { return m_binding; };		
 
 	private:

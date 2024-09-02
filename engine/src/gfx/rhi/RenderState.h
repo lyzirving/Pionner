@@ -16,6 +16,7 @@ namespace pio
 		virtual void setBlendMode(const Blend& blend) = 0;
 		virtual void setDepthTest(const DepthTest& depth) = 0;
 		virtual void setStencilTest(const StencilTest& stencil) = 0;
+		virtual void setStateMachine(const RenderStateAttrs& attrs) = 0;
 
 		RenderBackendFlags renderBackend() const { return m_renderBackend; }
 

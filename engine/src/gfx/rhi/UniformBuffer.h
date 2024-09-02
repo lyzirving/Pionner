@@ -14,7 +14,7 @@ namespace pio
 		UniformBuffer(Ref<RenderContext>& context) : RenderResource(context, RenderResourceType::UBO) {}
 		virtual ~UniformBuffer() = default;
 
-		virtual void bind(int64_t offset, int64_t size) = 0;
+		virtual void bindAt(int64_t offset, int64_t size) = 0;
 		virtual UBBinding binding() const = 0;
 
 	public:
@@ -27,17 +27,17 @@ namespace pio
 		UniformBufferSet() {}
 		~UniformBufferSet();
 
-		UniformBufferSet(const UniformBufferSet &rhs);
-		UniformBufferSet(UniformBufferSet &&rhs) noexcept;
+		UniformBufferSet(const UniformBufferSet& rhs);
+		UniformBufferSet(UniformBufferSet&& rhs) noexcept;
 
-		UniformBufferSet &operator=(const UniformBufferSet &rhs);
-		UniformBufferSet &operator=(UniformBufferSet &&rhs) noexcept;
+		UniformBufferSet& operator=(const UniformBufferSet& rhs);
+		UniformBufferSet& operator=(UniformBufferSet&& rhs) noexcept;
 
 		void release();
 
-		void put(Ref<UniformBuffer> &unimBuff);
-		Ref<UniformBuffer> &get(uint32_t binding);
-		Ref<UniformBuffer> &operator[](uint32_t binding) { return get(binding); }
+		void put(Ref<UniformBuffer>& unimBuff);
+		Ref<UniformBuffer>& get(uint32_t binding);
+		Ref<UniformBuffer>& operator[](uint32_t binding) { return get(binding); }
 
 	private:
 		std::map<uint32_t, Ref<UniformBuffer>> m_bufferSet{};

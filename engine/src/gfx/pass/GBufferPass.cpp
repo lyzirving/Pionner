@@ -41,11 +41,9 @@ namespace pio
         m_frameBuff = FrameBuffer::Create(context, fboSpec);
         context->uploadData(m_frameBuff);
 
-        m_attrs.AttrClear = Clear::Common();
-        m_attrs.AttrBlend = Blend::Disable();
-        m_attrs.AttrDepth = DepthTest::Common();
-        m_attrs.AttrCull = CullFace::Common();
-        m_attrs.AttrStencil = StencilTest::Disable();
+        m_attrs.setClear(Clear::Common()).setBlend(Blend::Disable())
+               .setDepth(DepthTest::Common()).setCull(CullFace::Common())
+               .setStencil(StencilTest::Disable());        
 	}
 
 	void GBufferPass::onDetach(Ref<RenderContext>& context)
@@ -56,22 +54,32 @@ namespace pio
 	void GBufferPass::onExecute(Ref<RenderContext>& context, Ref<RenderPass>& lastPass)
 	{
         auto &renderingData = context->renderingData();
-        std::vector<MeshCmd> opaqueMeshCmd = std::move(renderingData.OpaqueMeshCmd);
-        if (opaqueMeshCmd.empty())
+        std::vector<MeshCmd> opaqueMesh = std::move(renderingData.OpaqueMeshCmd);
+        if (opaqueMesh.empty())
         {
             return;
         }
         Ref<FrameBuffer>& fbo = m_frameBuff;
         Ref<Shader> &shader = context->shader(ShaderType::GBuffer);
-        RenderStateAttrs& attr = m_attrs;
+        const RenderStateAttrs& attr = m_attrs;
+		Ref<UniformBuffer>& camBuff = renderingData.UnimBuffSet.get(UBBinding_Camera);      
 
-		context->submitRC([&context, &fbo, &shader, &attr]() mutable
+		context->submitRC([&context, &fbo, &shader, &attr, &camBuff, opaqueMesh]() mutable
         {
-            fbo->bind();
+            context->onBeginFrameBuffer(fbo, attr);
 
             shader->bind();
+            /*context->bindUnimBlock(shader, camBuff->binding() , "");
+            camBuff->bind();*/
 
-            fbo->unbind();
+            for(auto &mesh : opaqueMesh)
+            {
+
+            }
+
+            shader->unbind();
+
+            context->onEndFrameBuffer(fbo);
         });
 	}
 }

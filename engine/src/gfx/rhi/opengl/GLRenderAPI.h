@@ -15,8 +15,11 @@ namespace pio
 		virtual bool setupUiBackend(void* nativeWindow = nullptr) override;
 		virtual void shutdown() override;
 
-		virtual void beginFrame(RenderContext& ctx) override;
-		virtual void endFrame(RenderContext& ctx) override;
+		virtual void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) override;
+		virtual bool bindUnimBlock(uint32_t program, uint32_t bindingPt, const std::string& blockName) override;
+
+		virtual void onBeginFrame(RenderContext& ctx) override;
+		virtual void onEndFrame(RenderContext& ctx) override;
 
 		virtual void releaseResource(ResourceGCDelegate &&resource) override;
 

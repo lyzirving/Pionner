@@ -12,15 +12,15 @@ namespace pio
 {
 	Ref<UniformBuffer> UniformBuffer::Create(Ref<RenderContext>& context, uint32_t size, UBBinding binding, BufferUsage usage)
 	{
-		switch (context->renderBackend())
+		switch(context->renderBackend())
 		{
-		case RenderBackend_OpenGL:
-			return CreateRef<GLUniformBuffer>(context, size, binding, usage);
-		case RenderBackend_Vulkan:
-		default:
-			LOGE("Err! backend[%u] has not been implemented", context->renderBackend());
-			std::abort();
-			return Ref<UniformBuffer>();
+			case RenderBackend_OpenGL:
+				return CreateRef<GLUniformBuffer>(context, size, binding, usage);
+			case RenderBackend_Vulkan:
+			default:
+				LOGE("Err! backend[%u] has not been implemented", context->renderBackend());
+				std::abort();
+				return Ref<UniformBuffer>();
 		}
 	}
 
@@ -41,7 +41,7 @@ namespace pio
 
 	UniformBufferSet& UniformBufferSet::operator=(const UniformBufferSet& rhs)
 	{
-		if (this != &rhs)
+		if(this != &rhs)
 		{
 			this->UniformBufferSet::UniformBufferSet(rhs);
 		}
@@ -50,7 +50,7 @@ namespace pio
 
 	UniformBufferSet& UniformBufferSet::operator=(UniformBufferSet&& rhs) noexcept
 	{
-		if (this != &rhs)
+		if(this != &rhs)
 		{
 			this->UniformBufferSet::UniformBufferSet(std::forward<UniformBufferSet>(rhs));
 		}
@@ -60,7 +60,7 @@ namespace pio
 	void UniformBufferSet::release()
 	{
 		auto it = m_bufferSet.begin();
-		while (it != m_bufferSet.end())
+		while(it != m_bufferSet.end())
 		{
 			it->second.reset();
 			it = m_bufferSet.erase(it);
@@ -69,10 +69,10 @@ namespace pio
 
 	void UniformBufferSet::put(Ref<UniformBuffer>& unimBuff)
 	{
-		if (!unimBuff)
+		if(!unimBuff)
 			return;
 
-		if (m_bufferSet.find(unimBuff->binding()) == m_bufferSet.end())
+		if(m_bufferSet.find(unimBuff->binding()) == m_bufferSet.end())
 		{
 			m_bufferSet[unimBuff->binding()] = unimBuff;
 		}
@@ -80,7 +80,7 @@ namespace pio
 
 	Ref<UniformBuffer>& UniformBufferSet::get(uint32_t binding)
 	{
-		if (m_bufferSet.find(binding) != m_bufferSet.end())
+		if(m_bufferSet.find(binding) != m_bufferSet.end())
 		{
 			return m_bufferSet[binding];
 		}

@@ -20,6 +20,7 @@ namespace pio
 	struct RenderConfig
 	{
 		RenderingStrategy Strategy{ RenderingStrategy::Deffered };
+		glm::vec4 ClearColor{ 0.f, 0.f, 0.f, 1.f };
 	};
 }
 

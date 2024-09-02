@@ -15,6 +15,7 @@ namespace pio
 {
 	class Window;
 	class Shader;
+	class FrameBuffer;
 
 	class RenderContext : public std::enable_shared_from_this<RenderContext>
 	{
@@ -26,11 +27,13 @@ namespace pio
 
 		RenderBackendFlags renderBackend() const { return m_api->renderBackend(); }
 		uint64_t frame() const { return m_frameNum; }
+		const Viewport &vp() const { return m_vp; }
+
 		RenderingEntities& renderingEntities() { return m_renderingEntities; }
 		RenderingData& renderingData() { return m_renderingData; }
 		Ref<RenderContext> self() { return shared_from_this(); }
 		RenderThread& thread() { return m_thread; }
-		Ref<Window>&  window() { return m_window; }
+		Ref<Window>& window() { return m_window; }
 		Ref<RenderState>& state() { return m_state; }
 		
 		Ref<Shader> &shader(ShaderType type) { return m_shaders[PIO_UINT8(type)]; }
@@ -106,7 +109,11 @@ namespace pio
 
 		void onBeginFrameRendering();
 		void onEndFrameRendering();
-		void onWindowSizeChange(uint32_t w, uint32_t h);
+
+		void onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs);
+		void onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer);
+
+		bool bindUnimBlock(Ref<Shader> &shader, uint32_t bindingPt, const std::string &blockName);
 
 	private:
 		static constexpr uint32_t k_queueNum = 2;		
@@ -115,6 +122,8 @@ namespace pio
 		void initShaders();
 		void releaseShaders();
 		void waitAndRender();
+
+		void onWindowSizeChange(int32_t x, int32_t y, int32_t w, int32_t h);
 
 		uint32_t submitIdx() const { return m_submitIdx; }
 		uint32_t queueIdx()  const { return (m_submitIdx + 1) % k_queueNum; }
@@ -128,7 +137,7 @@ namespace pio
 		Ref<RenderState> m_state;
 
 		Ref<Window> m_window;
-		Viewport m_viewport;
+		Viewport m_vp;
 		RenderThread m_thread;
 		uint64_t m_threadId{ 0 };
 

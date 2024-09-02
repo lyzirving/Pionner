@@ -56,7 +56,7 @@ namespace pio
 		}
 	}
 
-	void GLUniformBuffer::bind(int64_t offset, int64_t size)
+	void GLUniformBuffer::bindAt(int64_t offset, int64_t size)
 	{
 		init();
 

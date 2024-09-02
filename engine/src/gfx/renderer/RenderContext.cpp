@@ -3,6 +3,7 @@
 #include "window/Window.h"
 
 #include "gfx/rhi/Shader.h"
+#include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/ShaderCompiler.h"
 
 #ifdef LOCAL_TAG
@@ -26,8 +27,7 @@ namespace pio
 		// Initialization
 		m_window->init();
 		m_window->makeCurrent();
-		m_window->setVSync(true);
-		onWindowSizeChange(m_window->width(), m_window->height());
+		m_window->setVSync(true);		
 		m_api->setupBackend();
 		m_api->setupUiBackend(m_window->nativeWindow());
 
@@ -36,6 +36,8 @@ namespace pio
 		while (m_thread.isRunning())
 		{
 			m_window->pollEvents();
+
+			onWindowSizeChange(0, 0, m_window->width(), m_window->height());
 
 			waitAndRender();
 
@@ -64,12 +66,22 @@ namespace pio
 		std::swap(m_renderingData, RenderingData());
 	}
 
-	void RenderContext::onWindowSizeChange(uint32_t w, uint32_t h)
+	void RenderContext::onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer,const RenderStateAttrs& attrs)
+	{		
+		m_api->setViewport(0, 0, frameBuffer->width(), frameBuffer->height());
+		frameBuffer->bind();
+		m_state->setStateMachine(attrs);
+	}
+
+	void RenderContext::onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer)
 	{
-		m_viewport.setX(0);
-		m_viewport.setY(0);
-		m_viewport.setW(w);
-		m_viewport.setH(h);
+		frameBuffer->unbind();		
+		m_api->setViewport(m_vp.offsetX(), m_vp.offsetY(), m_vp.ratioW(), m_vp.ratioH());// restore viewport
+	}
+
+	bool RenderContext::bindUnimBlock(Ref<Shader>& shader, uint32_t bindingPt, const std::string& blockName)
+	{
+		return m_api->bindUnimBlock(shader->id(), bindingPt, blockName);
 	}
 
 	void RenderContext::initShaders()
@@ -94,7 +106,7 @@ namespace pio
 		// Wait for kick, then set render thread to busy
 		m_thread.waitAndSet(RenderThread::State::Kick, RenderThread::State::Busy);
 
-		m_api->beginFrame(*this);
+		m_api->onBeginFrame(*this);
 
 		// task before render cmd
 		m_taskQueue[queueIdx()].execute();
@@ -103,9 +115,21 @@ namespace pio
 		// garbage collection
 		m_garbageQueue[queueIdx()].execute();
 
-		m_api->endFrame(*this);
+		m_api->onEndFrame(*this);
 
 		// finish waiting, begin execute draw cmd
 		m_thread.set(RenderThread::State::Idle);
+	}
+
+	void RenderContext::onWindowSizeChange(int32_t x, int32_t y, int32_t w, int32_t h)
+	{
+		if(m_vp.w() != w || m_vp.h() != h || 
+		   m_vp.x() != x || m_vp.y() != y)
+		{
+			m_vp.setX(x);
+			m_vp.setY(y);
+			m_vp.setW(w);
+			m_vp.setH(h);
+		}
 	}
 }
