@@ -6,6 +6,8 @@
 #include "GLHelper.h"
 #include "GLHeader.h"
 
+#include "gfx/rhi/UniformData.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -39,19 +41,6 @@ namespace pio
 		}
 	}
 
-	void GLShader::setTextureSampler(const std::string& name, TextureSampler slot)
-	{
-		if (isInit())
-		{
-			GLint ind = glGetUniformLocation(m_id, name.c_str());
-			glUniform1i(ind, (int32_t)slot);
-			m_occupiedSlots.set((int32_t)slot);
-			GLHelper::CheckError("setTextureSampler err, program[%u], name[%s], slot[%d]",
-								 m_id, name.c_str(), (int32_t)slot);
-			//LOGD("name[%s], slot[%d]", name.c_str(), (int32_t)slot);
-		}
-	}
-
 	void GLShader::setUInt(const std::string& name, uint32_t val)
 	{
 		if (isInit())
@@ -71,6 +60,16 @@ namespace pio
 			glUniform1i(ind, val ? 1 : 0);
 			GLHelper::CheckError("setBool err, program[%u], name[%s], val[%s]", m_id, name.c_str(), val ? "true" : "false");
 			//LOGD("name[%s], val[%s]", name.c_str(), val ? "true" : "false");
+		}
+	}
+
+	void GLShader::setMat2(const std::string& name, const glm::mat2& mat)
+	{
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_id, name.c_str());
+			glUniformMatrix2fv(ind, 1, GL_FALSE, glm::value_ptr(mat));
+			GLHelper::CheckError("setMat2 err, program[%u], name[%s]", m_id, name.c_str());
 		}
 	}
 
@@ -166,6 +165,19 @@ namespace pio
 			glUniform4i(ind, vec4.x, vec4.y, vec4.z, vec4.w);
 			GLHelper::CheckError("setIVec4 err, program[%u], name[%s], val[%d, %d, %d, %d]", m_id, name.c_str(), vec4.x, vec4.y, vec4.z, vec4.w);
 			//LOGD("name[%s], val[%d, %d, %d, %d]", name.c_str(), vec4.x, vec4.y, vec4.z, vec4.w);
+		}
+	}
+
+	void GLShader::setTextureSampler(const std::string& name, TextureSampler slot)
+	{
+		if (isInit())
+		{
+			GLint ind = glGetUniformLocation(m_id, name.c_str());
+			glUniform1i(ind, (int32_t)slot);
+			m_occupiedSlots.set((int32_t)slot);
+			GLHelper::CheckError("setTextureSampler err, program[%u], name[%s], slot[%d]",
+								 m_id, name.c_str(), (int32_t)slot);
+			//LOGD("name[%s], slot[%d]", name.c_str(), (int32_t)slot);
 		}
 	}
 

@@ -11,12 +11,12 @@ namespace pio
 		GLShader(Ref<RenderContext>& context);
 		~GLShader() = default;
 
+		virtual void setBool(const std::string& name, bool val) override;
 		virtual void setFloat(const std::string &name, float val) override;
 		virtual void setUInt(const std::string &name, uint32_t val) override;
-		virtual void setBool(const std::string &name, bool val) override;
 		virtual void setInt(const std::string &name, int32_t val) override;
-		virtual void setTextureSampler(const std::string &name, TextureSampler slot) override;
 
+		virtual void setMat2(const std::string& name, const glm::mat2& mat) override;
 		virtual void setMat3(const std::string &name, const glm::mat3 &mat) override;
 		virtual void setMat4(const std::string &name, const glm::mat4 &mat) override;
 
@@ -27,6 +27,8 @@ namespace pio
 		virtual void setIVec2(const std::string &name, const glm::ivec2 &vec2) override;
 		virtual void setIVec3(const std::string &name, const glm::ivec3 &vec3) override;
 		virtual void setIVec4(const std::string &name, const glm::ivec4 &vec4) override;
+
+		virtual void setTextureSampler(const std::string& name, TextureSampler slot) override;
 
 		virtual bool init() override;
 		virtual bool isInit() const override { return m_id > 0; }

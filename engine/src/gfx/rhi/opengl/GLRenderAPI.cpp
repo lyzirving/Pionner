@@ -5,7 +5,11 @@
 
 #include "GlobalSettings.h"
 #include "window/Window.h"
+
 #include "gfx/renderer/RenderContext.h"
+#include "gfx/rhi/VertexArray.h"
+#include "gfx/rhi/VertexBuffer.h"
+#include "gfx/rhi/IndexBuffer.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -129,6 +133,12 @@ namespace pio
 		glUniformBlockBinding(program, index, bindingPt);
 		return GLHelper::CheckError("fail to bind program[%u]'s uniform block[%s][%u] to binding point[%u]",
 									program, blockName.c_str(), index, bindingPt);
+	}
+
+	void GLRenderAPI::drawElements(DrawMode mode, uint32_t indexNum)
+	{
+		glDrawElements(GLHelper::GetDrawMode(mode), indexNum, GL_UNSIGNED_INT, nullptr);
+		GLHelper::CheckError("err! drawElements fail");
 	}
 
 	void GLRenderAPI::onBeginFrame(RenderContext& context)

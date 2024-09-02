@@ -62,24 +62,33 @@ namespace pio
         Ref<FrameBuffer>& fbo = m_frameBuff;
         Ref<Shader> &shader = context->shader(ShaderType::GBuffer);
         const RenderStateAttrs& attr = m_attrs;
-		Ref<UniformBuffer>& camBuff = renderingData.UnimBuffSet.get(UBBinding_Camera);      
+		Ref<UniformBuffer> camBuff = renderingData.UnimBuffSet.get(UBBinding_Camera);
 
-		context->submitRC([&context, &fbo, &shader, &attr, &camBuff, opaqueMesh]() mutable
+		context->submitRC([&context, &fbo, &shader, &attr, camBuff, opaqueMesh]() mutable
         {
-            context->onBeginFrameBuffer(fbo, attr);
+            //context->onBeginFrameBuffer(fbo, attr);
 
-            shader->bind();
-            /*context->bindUnimBlock(shader, camBuff->binding() , "");
-            camBuff->bind();*/
+            //shader->bind();
 
-            for(auto &mesh : opaqueMesh)
-            {
+            ////[TODO]memory leak of camBuff
+            //context->bindUnimBlock(shader, camBuff , "");
+            //camBuff->bind();
 
-            }
+            //for(auto &mesh : opaqueMesh)
+            //{
+            //    for (auto it : mesh.Uniforms) 
+            //    { 
+            //        shader->setUniformData(it.second); 
+            //    }
 
-            shader->unbind();
+            //    shader->setMaterial(mesh.Material);
 
-            context->onEndFrameBuffer(fbo);
+            //    context->drawTriangles(mesh.Data.Vao, mesh.Data.Ebo);
+            //}
+
+            //shader->unbind();
+
+            //context->onEndFrameBuffer(fbo);
         });
 	}
 }

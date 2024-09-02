@@ -36,7 +36,7 @@ namespace pio
 
 	UniformBufferSet::UniformBufferSet(UniformBufferSet&& rhs) noexcept
 	{
-		m_bufferSet = std::move(rhs.m_bufferSet);
+		m_bufferSet = std::forward<std::map<uint32_t, Ref<UniformBuffer>>>(rhs.m_bufferSet);
 	}
 
 	UniformBufferSet& UniformBufferSet::operator=(const UniformBufferSet& rhs)

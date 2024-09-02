@@ -5,6 +5,12 @@
 
 namespace pio
 {
+	enum DrawMode : uint8_t
+	{
+		DrawMode_Triangle, DrawMode_Triangle_Strip, DrawMode_Triangle_Fan,
+		DrawMode_Line, DrawMode_Line_Strip, DrawMode_Line_Loop
+	};
+
 	enum FrameBufferBlockBit : uint8_t
 	{
 		FB_ColorBuffer_Bit = 1 << 0,

@@ -4,7 +4,12 @@
 
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/FrameBuffer.h"
+#include "gfx/rhi/UniformBuffer.h"
 #include "gfx/rhi/ShaderCompiler.h"
+
+#include "gfx/rhi/VertexArray.h"
+#include "gfx/rhi/VertexBuffer.h"
+#include "gfx/rhi/IndexBuffer.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -79,9 +84,20 @@ namespace pio
 		m_api->setViewport(m_vp.offsetX(), m_vp.offsetY(), m_vp.ratioW(), m_vp.ratioH());// restore viewport
 	}
 
-	bool RenderContext::bindUnimBlock(Ref<Shader>& shader, uint32_t bindingPt, const std::string& blockName)
+	bool RenderContext::bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName)
 	{
-		return m_api->bindUnimBlock(shader->id(), bindingPt, blockName);
+		return m_api->bindUnimBlock(shader->id(), unimBuff->binding(), blockName);
+	}
+
+	void RenderContext::drawTriangles(Ref<VertexArray>& vao, Ref<IndexBuffer>& ebo)
+	{
+		vao->bind();
+		ebo->bind();
+
+		m_api->drawElements(DrawMode_Triangle, ebo->indiceNum());
+
+		ebo->unbind();
+		vao->unbind();
 	}
 
 	void RenderContext::initShaders()

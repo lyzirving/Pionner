@@ -38,11 +38,6 @@ namespace pio
 		Clockwise, CouterClockwise
 	};
 
-	enum class DrawMode : uint8_t
-	{
-		Lines, Line_Strip, Line_Loop, Triangles, Triangle_Strip, Triangle_Fan,
-	};
-
 	enum FaceMode : uint8_t 
 	{ 
 		FaceMode_Back, FaceMode_Front, FaceMode_FrontAndBack, FaceMode_Num 

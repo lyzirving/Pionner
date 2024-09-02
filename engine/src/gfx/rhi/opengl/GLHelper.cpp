@@ -578,6 +578,23 @@ namespace pio
 		}
 	}
 
+	uint32_t GLHelper::GetDrawMode(DrawMode mode)
+	{
+		switch (mode)
+		{
+			case DrawMode_Triangle:
+				return GL_TRIANGLES;
+			case DrawMode_Triangle_Strip:
+				return GL_TRIANGLE_STRIP;
+			case DrawMode_Triangle_Fan:
+				return GL_TRIANGLE_FAN;
+			default:
+				LOGE("err! draw mode[%u] has not been implemented", mode);
+				std::abort();
+				break;
+		}
+	}
+
 	bool GLHelper::CreateShader(uint32_t type, const char* source, uint32_t& shader)
 	{
 		shader = glCreateShader(type);
