@@ -46,7 +46,7 @@ namespace pio
 		if (s_GLFWWindowCount == 0)
 		{
 			int success = glfwInit();
-			PIO_ASSERT_RETURN_FALSE(success == GLFW_TRUE, "err! fail to init glfw[%d]", success);
+			PIO_CHECK_RETURN_FALSE(success == GLFW_TRUE, "err! fail to init glfw[%d]", success);
 			glfwSetErrorCallback(windowErrorCallback);
 		}
 
@@ -93,13 +93,13 @@ namespace pio
 
 	void WindowsWindow::makeCurrent()
 	{
-		PIO_ASSERT_RETURN(m_window != nullptr, "err! GLFW window handle is null");
+		PIO_CHECK_RETURN(m_window != nullptr, "err! GLFW window handle is null");
 		glfwMakeContextCurrent(m_window);
 	}
 
 	void WindowsWindow::swapBuffer()
 	{
-		PIO_ASSERT_RETURN(m_window != nullptr, "err! GLFW window handle is null");
+		PIO_CHECK_RETURN(m_window != nullptr, "err! GLFW window handle is null");
 		glfwSwapBuffers(m_window);
 	}
 

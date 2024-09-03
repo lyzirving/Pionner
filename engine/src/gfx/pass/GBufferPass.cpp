@@ -33,22 +33,64 @@ namespace pio
         fboSpec.Height = colorH;
         PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Color);
 
-        TextureSpecificBuilder texBuilder;
-        texBuilder.name("GeoBuffer").type(TextureType::TwoDimen)
-            .format(TextureFormat::RGB_24).width(colorW).height(colorH);
-        fboSpec.ColorSpec.push_back(texBuilder.build());
+		TextureSpecificBuilder geoBuffBuilder;
+		geoBuffBuilder.name("GeoBuffer")
+			.type(TextureType::TwoDimen)
+			.format(TextureFormat::RGBA_HALF)
+			.width(colorW).height(colorH)
+            .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
+            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+		fboSpec.ColorSpec.push_back(geoBuffBuilder.build());
+
+        TextureSpecificBuilder normalBuffBuilder;
+        normalBuffBuilder.name("NormalBuffer")
+            .type(TextureType::TwoDimen)
+            .format(TextureFormat::RGBA_HALF)
+            .width(colorW).height(colorH)
+            .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
+            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+        fboSpec.ColorSpec.push_back(normalBuffBuilder.build());
+
+        TextureSpecificBuilder albeoBuffBuilder;
+        albeoBuffBuilder.name("AlbedoBuffer")
+            .type(TextureType::TwoDimen)
+            .format(TextureFormat::RGBA_HALF)
+            .width(colorW).height(colorH)
+            .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
+            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+        fboSpec.ColorSpec.push_back(albeoBuffBuilder.build());
+
+        TextureSpecificBuilder matBuffBuilder;
+        matBuffBuilder.name("MaterialBuffer")
+            .type(TextureType::TwoDimen)
+            .format(TextureFormat::RGBA_HALF)
+            .width(colorW).height(colorH)
+            .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
+            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+        fboSpec.ColorSpec.push_back(matBuffBuilder.build());
+
+        TextureSpecificBuilder emissionBuffBuilder;
+        emissionBuffBuilder.name("EmissionBuffer")
+            .type(TextureType::TwoDimen)
+            .format(TextureFormat::RGBA_HALF)
+            .width(colorW).height(colorH)
+            .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
+            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+        fboSpec.ColorSpec.push_back(emissionBuffBuilder.build());
 
         TextureSpecificBuilder depthBuilder;
-        depthBuilder.name("GeoBuffPass Depth Buffer").type(TextureType::RenderBuffer)
-            .format(TextureFormat::DEPTH_24).width(depthW).height(depthH);
+        depthBuilder.name("GeoPass Depth Buffer").type(TextureType::RenderBuffer)
+            .format(TextureFormat::DEPTH_24_STENCIL_8).width(depthW).height(depthH);
         fboSpec.DepthSpec = depthBuilder.build();
 
         m_frameBuff = FrameBuffer::Create(context, fboSpec);
         context->uploadData(m_frameBuff);
 
-        m_attrs.setClear(Clear::Common()).setBlend(Blend::Disable())
-               .setDepth(DepthTest::Common()).setCull(CullFace::Common())
-               .setStencil(StencilTest::Disable());        
+		m_attrs.setClear(Clear::Common())
+			.setBlend(Blend::Disable())
+			.setDepth(DepthTest::Common())
+            .setCull(CullFace::Common())
+			.setStencil(StencilTest::Disable());
 	}
 
 	void GBufferPass::onDetach(Ref<RenderContext>& context)
@@ -87,7 +129,7 @@ namespace pio
 
             shader->bind();
 
-            context->bindUnimBlock(shader, camBuff , "");
+            context->bindUnimBlock(shader, camBuff , GpuAttr::BINDING_CAM_BLOCK);
             camBuff->bind();
 
             for(const auto& item : opaqueMeshItems)

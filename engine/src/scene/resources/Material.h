@@ -16,16 +16,16 @@ namespace pio
 		Material(ShaderSpecifier spec, RenderingMode mode, const std::string &name = "");
 		virtual ~Material() = default;
 
-		void setShaderSpec(ShaderSpecifier spec) { m_shaderSpec = spec; }
+		void setSpec(ShaderSpecifier spec) { m_spec = spec; }
 		void setRenderingMode(RenderingMode mode) { m_renderingMode = mode; }
 
-		ShaderSpecifier shaderSpec() const { return m_shaderSpec; }
+		ShaderSpecifier spec() const { return m_spec; }
 		RenderingMode renderingMode() const { return m_renderingMode; }
 		const std::string& name() const { return m_name; }
 		const std::map<std::string, Ref<UniformData>>& uniforms() const { return m_uniforms; }
 
 	protected:
-		ShaderSpecifier m_shaderSpec{ ShaderSpec_Standard };
+		ShaderSpecifier m_spec{ ShaderSpec_Standard };
 		RenderingMode m_renderingMode{ RenderingMode_Opaque };
 		std::map<std::string, Ref<UniformData>> m_uniforms;
 		std::string m_name;

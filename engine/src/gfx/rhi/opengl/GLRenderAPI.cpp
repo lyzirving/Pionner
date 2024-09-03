@@ -35,7 +35,7 @@ namespace pio
 			LOGD("render api already initilized");
 			return true;
 		}
-		PIO_ASSERT_RETURN_FALSE(glewInit() == GLEW_OK, "err! glew fail to init");
+		PIO_CHECK_RETURN_FALSE(glewInit() == GLEW_OK, "err! glew fail to init");
 		GLint major{ 0 }, minor{ 0 };
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
@@ -46,7 +46,7 @@ namespace pio
 
 	bool GLRenderAPI::setupUiBackend(void* nativeWindow)
 	{
-		PIO_ASSERT_RETURN_FALSE(nativeWindow, "invalid native window");
+		PIO_CHECK_RETURN_FALSE(nativeWindow, "invalid native window");
 		if (m_uiSetup)
 		{
 			LOGD("Ui backend already initilized");

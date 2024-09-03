@@ -28,7 +28,7 @@ namespace pio
 		data.Mesh = m_registry.view<MeshFilter, MeshRenderer>();
 
 		auto cameraEntities = m_registry.view<CameraComponent>();
-		auto cameras = pipeline::FetchCamera(context, cameraEntities);
+		auto cameras = Pipeline::FetchCamera(context, cameraEntities);
 
 		context->setRenderingEntities(std::move(data));
 		pipeline->onRender(context, cameras);

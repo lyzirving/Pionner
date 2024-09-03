@@ -90,7 +90,7 @@ namespace pio
 			switch(type)
 			{
 				case ShaderType::GBuffer:
-					return "shader/MaterialPreview.glsl";
+					return "shader/GBufferPass.glsl";
 				default:
 					#ifdef LOCAL_TAG
 					#undef LOCAL_TAG

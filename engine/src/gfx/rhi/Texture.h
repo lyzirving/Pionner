@@ -36,7 +36,7 @@ namespace pio
 		TextureSpecificBuilder& width(int32_t val) { m_spec.Width = val; return *this; }
 		TextureSpecificBuilder& height(int32_t val) { m_spec.Height = val; return *this; }
 		TextureSpecificBuilder& channel(int32_t val) { m_spec.Channel = val; return *this; }
-		TextureSpecificBuilder& texWrap(TextureWrap s, TextureWrap t, TextureWrap r) { m_spec.WrapS = s; m_spec.WrapT = t; m_spec.WrapR = r; return *this; }
+		TextureSpecificBuilder& texWrap(TextureWrap s, TextureWrap t, TextureWrap r = TextureWrap::ClampEdge) { m_spec.WrapS = s; m_spec.WrapT = t; m_spec.WrapR = r; return *this; }
 		TextureSpecificBuilder& texFilter(TextureFilterMin min, TextureFilterMag mag) { m_spec.MinFilter = min; m_spec.MaxFilter = mag; return *this; }
 		TextureSpecificBuilder& border(const glm::vec4& color) { m_spec.BorderColor = color; return *this; }
 		TextureSpecificBuilder& mipmap(bool gen) { m_spec.GenerateMips = gen; return *this; }

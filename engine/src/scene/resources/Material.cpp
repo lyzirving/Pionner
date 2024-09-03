@@ -14,7 +14,7 @@ namespace pio
 	}
 
 	Material::Material(ShaderSpecifier spec, RenderingMode mode, const std::string &name)
-		: Asset(), m_shaderSpec(spec), m_renderingMode(mode), m_name(name)
+		: Asset(), m_spec(spec), m_renderingMode(mode), m_name(name)
 	{
 	}
 

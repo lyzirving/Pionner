@@ -85,10 +85,9 @@ namespace pio
 	// Size of a static C-style array. Don't use on pointers!
 	#define PIO_ARRAY_SIZE(ARR) ((int)(sizeof(ARR) / sizeof(*(ARR))))
 	
-	#define PIO_ASSERT(check, fmt, ...)   { if(!(check)) { LOGE(fmt, __VA_ARGS__) } }
-	#define PIO_ASSERT_RETURN(check, fmt, ...) { if(!(check)) { LOGE(fmt, __VA_ARGS__) return; } }
-	#define PIO_ASSERT_RETURN_FALSE(check, fmt, ...) { if(!(check)) { LOGE(fmt, __VA_ARGS__) return false; } }
-	#define PIO_ASSERT_CONTINUE(check, fmt, ...) { if(!(check)) { LOGW(fmt, __VA_ARGS__) continue; } }
+	#define PIO_CHECK_RETURN(check, fmt, ...) { if(!(check)) { LOGE(fmt, __VA_ARGS__) return; } }
+	#define PIO_CHECK_RETURN_FALSE(check, fmt, ...) { if(!(check)) { LOGE(fmt, __VA_ARGS__) return false; } }
+	#define PIO_CHECK_CONTINUE(check, fmt, ...) { if(!(check)) { LOGW(fmt, __VA_ARGS__) continue; } }
 
 	// Fill __VA_ARGS__ with std::placeholders::_1, std::placeholders::_2 or std::placeholders::_N 
 	// referencing to the param num of function

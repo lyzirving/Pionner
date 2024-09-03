@@ -17,27 +17,20 @@ namespace pio
 		if (!m_data.valid())
 		{
 			MeshData::Create(context, m_data, m_triMesh.Vertices, m_triMesh.Indices);
-			context->uploadData(m_data.Vbo);
-			context->uploadData(m_data.Ebo);
-			context->uploadData(m_data.Vao);
 
-			auto transUnim = CreateRef<UniformMat4>("transform");
+			auto transUnim = CreateRef<UniformMat4>(GpuAttr::UNI_MODEL_MAT);
 			m_uniforms.insert({ transUnim->name(), transUnim });
 		}
 	}
 
 	void Mesh::update(const TransformComponent& comp)
 	{
-		if (!m_data.valid())
-		{
-			LOGE("err! mesh data has not been set up");
-			return;
-		}
+		PIO_CHECK_RETURN(m_data.valid(), "err! mesh data has not been set up");
 		m_transform.Euler = comp.Rotation;
 		m_transform.Scale = comp.Scale;
 		m_transform.Position = comp.Position;
 
-		m_uniforms["transform"]->write(&m_transform.mat());
+		m_uniforms[GpuAttr::UNI_MODEL_MAT]->write(&m_transform.mat());
 	}
 
 	template<>

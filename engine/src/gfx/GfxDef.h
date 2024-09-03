@@ -5,6 +5,14 @@
 
 namespace pio
 {
+	namespace GpuAttr
+	{
+		//Uniform data
+		static const char* UNI_MODEL_MAT = "u_modelMat";
+		//Uniform block
+		static const char* BINDING_CAM_BLOCK = "CameraBlock";
+	}
+
 	enum RenderingMode : uint8_t
 	{
 		RenderingMode_Opaque = 0,

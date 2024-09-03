@@ -19,9 +19,12 @@ namespace pio
 	Ref<Entity> Factory::MakeCamera(Ref<Scene>& scene, const std::string& name, int32_t depth)
 	{
 		auto entity	= scene->addEntity<CameraComponent, TransformComponent>(name);
-		auto *pComp = entity->getComponent<CameraComponent>();
-		pComp->Depth = depth;
-		pComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->assetHnd();
+		auto* camComp = entity->getComponent<CameraComponent>();
+		auto* transComp = entity->getComponent<TransformComponent>();
+
+		camComp->Depth = depth;
+		camComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->assetHnd();
+		transComp->Position = glm::vec3(0.f, 5.f, 4.f);
 		return entity;
 	}
 

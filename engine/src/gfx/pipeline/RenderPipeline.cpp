@@ -119,7 +119,7 @@ namespace pio
 		auto &meshEnts = renderingEntities.Mesh;
 		for (auto &ent : meshEnts)
 		{
-			pipeline::ProcessMeshEnt(context, ent, renderingData);
+			Pipeline::ProcessMeshEnt(context, ent, renderingData);
 		}
 	}
 }

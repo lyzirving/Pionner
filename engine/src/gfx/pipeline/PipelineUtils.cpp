@@ -17,7 +17,7 @@
 
 namespace pio
 {
-	namespace pipeline
+	namespace Pipeline
 	{
 		std::vector<Ref<Camera>> FetchCamera(Ref<RenderContext>& context, const std::list<Ref<Entity>>& entities)
 		{

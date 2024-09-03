@@ -1,6 +1,6 @@
 #pragma once
 
-struct MaterialAttributes 
+struct PBRMaterial 
 {
     vec3 AlbedoColor;
     vec3 Emission;
@@ -16,3 +16,5 @@ struct MaterialAttributes
     sampler2D NormalTexture;
     sampler2D AOTexture;
 };
+
+uniform PBRMaterial u_pbrMaterial;

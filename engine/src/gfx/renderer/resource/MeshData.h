@@ -36,9 +36,9 @@ namespace pio
 			#define LOCAL_TAG "MeshData"
 				LOGW("warning! invalid vertex list[%s] or indice list[%s]", vertexList.empty() ? "true" : "false", indice.empty() ? "true" : "false");
 			}
-			buff.Vbo = VertexBuffer::Create(context, vertexList.data(), vertexList.size() * sizeof(VertexType), BufferUsage::Static);
+			buff.Vbo = VertexBuffer::Create(context, &vertexList[0], vertexList.size() * sizeof(VertexType), BufferUsage::Static);
 			buff.Vbo->setBufferLayout(VertexBuffer::To<VertexType>());
-			buff.Ebo = IndexBuffer::Create(context, indice.data(), indice.size() * sizeof(IndiceType), indice.size(), BufferUsage::Static);
+			buff.Ebo = IndexBuffer::Create(context, &indice[0], indice.size() * sizeof(IndiceType), indice.size(), BufferUsage::Static);
 			buff.Vao = VertexArray::Create(context);
 			buff.Vao->addVertexBuffer(buff.Vbo);
 			return true;

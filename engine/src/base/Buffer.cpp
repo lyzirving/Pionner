@@ -148,7 +148,7 @@ namespace pio
 
 	void Buffer::replace(const void *data, uint64_t size, uint64_t offset)
 	{
-		PIO_ASSERT_RETURN(offset + size <= m_capacity,
+		PIO_CHECK_RETURN(offset + size <= m_capacity,
 						  "Buffer overflow, offset[%lu] + size[%lu] > capacity[%lu]", offset, size, m_capacity);
 		// replace() will not change buffer's current offset
 		std::memcpy((byte *)m_data + offset, data, size);
