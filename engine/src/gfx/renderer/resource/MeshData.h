@@ -7,9 +7,7 @@
 
 namespace pio
 {
-	class UniformData;
 	class RenderContext;
-	class Material;
 
 	struct MeshData
 	{
@@ -45,14 +43,7 @@ namespace pio
 			buff.Vao->addVertexBuffer(buff.Vbo);
 			return true;
 		}
-	};
-
-	struct MeshCmd
-	{
-		MeshData Data;
-		Ref<Material> Material;
-		std::map<std::string, Ref<UniformData>> Uniforms;
-	};
+	};	
 }
 
 #endif

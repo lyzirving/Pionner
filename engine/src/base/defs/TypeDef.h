@@ -5,8 +5,6 @@
 
 namespace pio
 {
-	constexpr static const uint32_t InvalidId = 0U;
-
 	using byte = uint8_t;
 
 	enum RenderBackendFlags : uint8_t

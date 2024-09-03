@@ -2,10 +2,15 @@
 
 #include "GlobalSettings.h"
 
+#include "asset/AssetMgr.h"
+
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/FrameBuffer.h"
-
+#include "gfx/rhi/UniformBuffer.h"
 #include "gfx/renderer/RenderContext.h"
+
+#include "scene/resources/Mesh.h"
+#include "scene/resources/Material.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -54,41 +59,58 @@ namespace pio
 	void GBufferPass::onExecute(Ref<RenderContext>& context, Ref<RenderPass>& lastPass)
 	{
         auto &renderingData = context->renderingData();
-        std::vector<MeshCmd> opaqueMesh = std::move(renderingData.OpaqueMeshCmd);
-        if (opaqueMesh.empty())
+        std::vector<MeshRenderingItem> opaqueMeshItems = std::move(renderingData.OpaqueMeshItems);
+        if (opaqueMeshItems.empty())
         {
             return;
         }
+        auto it = renderingData.UnimBuffSet.find(UBBinding_Camera);
+        if(it == renderingData.UnimBuffSet.end())
+        {
+            LOGE("err! fail to find camera buff id");
+            return;
+        }
+        UUID32 camFilter = it->second;
+
         Ref<FrameBuffer>& fbo = m_frameBuff;
         Ref<Shader> &shader = context->shader(ShaderType::GBuffer);
-        const RenderStateAttrs& attr = m_attrs;
-		Ref<UniformBuffer> camBuff = renderingData.UnimBuffSet.get(UBBinding_Camera);
+        const RenderStateAttrs& attr = m_attrs;        
 
-		context->submitRC([&context, &fbo, &shader, &attr, camBuff, opaqueMesh]() mutable
+		context->submitRC([&context, &fbo, &shader, &attr, camFilter, opaqueMeshItems]()
         {
-            //context->onBeginFrameBuffer(fbo, attr);
+            auto camBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(camFilter);
 
-            //shader->bind();
+            if(!camBuff)
+                return;
 
-            ////[TODO]memory leak of camBuff
-            //context->bindUnimBlock(shader, camBuff , "");
-            //camBuff->bind();
+            context->onBeginFrameBuffer(fbo, attr);
 
-            //for(auto &mesh : opaqueMesh)
-            //{
-            //    for (auto it : mesh.Uniforms) 
-            //    { 
-            //        shader->setUniformData(it.second); 
-            //    }
+            shader->bind();
 
-            //    shader->setMaterial(mesh.Material);
+            context->bindUnimBlock(shader, camBuff , "");
+            camBuff->bind();
 
-            //    context->drawTriangles(mesh.Data.Vao, mesh.Data.Ebo);
-            //}
+            for(const auto& item : opaqueMeshItems)
+            {
+                Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(item.MeshFilter);
+                Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(item.MaterialFilter);
+                if(!mesh || !material)
+                {
+                    LOGW("warning! fail to find mesh or material in asset, it might be deleted");
+                    continue;
+                }
+                const auto &unims = mesh->unims();
+                for (auto it : unims)
+                { 
+                    shader->setUniformData(it.second); 
+                }
+                shader->setMaterial(material);
+                context->drawTriangles(mesh->data().Vao, mesh->data().Ebo);
+            }
 
-            //shader->unbind();
+            shader->unbind();
 
-            //context->onEndFrameBuffer(fbo);
+            context->onEndFrameBuffer(fbo);                      
         });
 	}
 }

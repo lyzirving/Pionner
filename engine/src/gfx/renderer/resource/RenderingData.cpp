@@ -39,15 +39,15 @@ namespace pio
 	RenderingData::RenderingData(const RenderingData &rhs)
 	{
 		UnimBuffSet = rhs.UnimBuffSet;
-		OpaqueMeshCmd = rhs.OpaqueMeshCmd;
-		TransparentMeshCmd = rhs.TransparentMeshCmd;
+		OpaqueMeshItems = rhs.OpaqueMeshItems;
+		TransparentMeshItems = rhs.TransparentMeshItems;
 	}
 
 	RenderingData::RenderingData(RenderingData &&rhs) noexcept
 	{
 		UnimBuffSet = std::move(rhs.UnimBuffSet);
-		OpaqueMeshCmd = std::move(rhs.OpaqueMeshCmd);
-		TransparentMeshCmd = std::move(rhs.TransparentMeshCmd);
+		OpaqueMeshItems = std::move(rhs.OpaqueMeshItems);
+		TransparentMeshItems = std::move(rhs.TransparentMeshItems);
 	}
 
 	RenderingData &RenderingData::operator=(const RenderingData &rhs)

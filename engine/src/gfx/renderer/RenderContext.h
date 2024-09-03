@@ -5,6 +5,7 @@
 
 #include "gfx/rhi/RenderAPI.h"
 #include "gfx/rhi/RenderState.h"
+#include "gfx/rhi/RenderResource.h"
 
 #include "gfx/renderer/resource/RenderingData.h"
 

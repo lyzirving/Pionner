@@ -19,26 +19,50 @@ namespace pio
 	{
 	}
 
-	UUID::UUID(const UUID &other) : m_UUID(other.m_UUID)
+	UUID::UUID(const UUID& other) : m_UUID(other.m_UUID)
 	{
 	}
 
-	bool UUID::operator==(UUID &rhs)
+	UUID::UUID(UUID&& other) noexcept
+	{
+		m_UUID = other.m_UUID;
+		other.m_UUID = InvalidId;
+	}
+
+	UUID& UUID::operator=(const UUID& other)
+	{
+		if(this != &other)
+		{
+			this->UUID::UUID(other);
+		}
+		return *this;
+	}
+
+	UUID& UUID::operator=(UUID&& other) noexcept
+	{
+		if(this != &other)
+		{
+			this->UUID::UUID(std::forward<UUID>(other));
+		}
+		return *this;
+	}
+
+	bool UUID::operator==(UUID& rhs)
 	{
 		return m_UUID == rhs.m_UUID;
 	}
 
-	bool UUID::operator!=(UUID &rhs)
+	bool UUID::operator!=(UUID& rhs)
 	{
 		return !(*this == rhs);
 	}
 
-	bool UUID::operator<(UUID &rhs)
+	bool UUID::operator<(UUID& rhs)
 	{
 		return m_UUID < rhs.m_UUID;
 	}
 
-	bool UUID::operator<=(UUID &rhs)
+	bool UUID::operator<=(UUID& rhs)
 	{
 		return m_UUID <= rhs.m_UUID;
 	}
@@ -52,26 +76,50 @@ namespace pio
 	{
 	}
 
-	UUID32::UUID32(const UUID32 &other) : m_UUID(other.m_UUID)
+	UUID32::UUID32(const UUID32& other) : m_UUID(other.m_UUID)
 	{
 	}
 
-	bool UUID32::operator==(UUID32 &rhs)
+	UUID32::UUID32(UUID32&& other) noexcept
+	{
+		m_UUID = other.m_UUID;
+		other.m_UUID = InvalidId;
+	}
+
+	UUID32& UUID32::operator=(const UUID32& other)
+	{
+		if(this != &other)
+		{
+			this->UUID32::UUID32(other);
+		}
+		return *this;
+	}
+
+	UUID32& UUID32::operator=(UUID32&& other) noexcept
+	{
+		if(this != &other)
+		{
+			this->UUID32::UUID32(std::forward<UUID32>(other));
+		}
+		return *this;
+	}
+
+	bool UUID32::operator==(UUID32& rhs)
 	{
 		return m_UUID == rhs.m_UUID;
 	}
 
-	bool UUID32::operator!=(UUID32 &rhs)
+	bool UUID32::operator!=(UUID32& rhs)
 	{
 		return !(*this == rhs);
 	}
 
-	bool UUID32::operator<(UUID32 &rhs)
+	bool UUID32::operator<(UUID32& rhs)
 	{
 		return m_UUID < rhs.m_UUID;
 	}
 
-	bool UUID32::operator<=(UUID32 &rhs)
+	bool UUID32::operator<=(UUID32& rhs)
 	{
 		return m_UUID <= rhs.m_UUID;
 	}

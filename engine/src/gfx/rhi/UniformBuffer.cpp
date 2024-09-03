@@ -1,5 +1,7 @@
 #include "UniformBuffer.h"
 
+#include "asset/AssetMgr.h"
+
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/rhi/opengl/GLUniformBuffer.h"
 
@@ -15,7 +17,7 @@ namespace pio
 		switch(context->renderBackend())
 		{
 			case RenderBackend_OpenGL:
-				return CreateRef<GLUniformBuffer>(context, size, binding, usage);
+				return AssetMgr::MakeRuntimeAsset<GLUniformBuffer>(context, size, binding, usage);				
 			case RenderBackend_Vulkan:
 			default:
 				LOGE("Err! backend[%u] has not been implemented", context->renderBackend());

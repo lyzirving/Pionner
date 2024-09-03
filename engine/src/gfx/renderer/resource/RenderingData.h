@@ -1,13 +1,11 @@
 #ifndef __PIONNER_GFX_RENDERER_RESOURCE_RENDERING_DATA_H__
 #define __PIONNER_GFX_RENDERER_RESOURCE_RENDERING_DATA_H__
 
-#include "gfx/rhi/UniformBuffer.h"
-#include "gfx/renderer/resource/MeshData.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {
 	class Entity;
-	class UniformData;
 
 	//Entity collection that is about to be uploaded
 	struct RenderingEntities
@@ -26,6 +24,15 @@ namespace pio
 		std::list<Ref<Entity>> SkinnedMesh;
 	};
 
+	struct MeshRenderingItem
+	{
+		UUID32 MeshFilter{ InvalidId };
+		UUID32 MaterialFilter{ InvalidId };
+	};
+
+	/*
+	* @brief: RenderingData is transient data in rendering pipeline, so you'd better use id to search for its member filed
+	*/
 	struct RenderingData
 	{
 		RenderingData() {}
@@ -37,9 +44,9 @@ namespace pio
 		RenderingData &operator=(const RenderingData &rhs);
 		RenderingData &operator=(RenderingData &&rhs) noexcept;
 
-		UniformBufferSet UnimBuffSet{};
-		std::vector<MeshCmd> OpaqueMeshCmd{};
-		std::vector<MeshCmd> TransparentMeshCmd{};
+		std::map<uint8_t, UUID32> UnimBuffSet{};
+		std::vector<MeshRenderingItem> OpaqueMeshItems{};
+		std::vector<MeshRenderingItem> TransparentMeshItems{};
 	};
 }
 

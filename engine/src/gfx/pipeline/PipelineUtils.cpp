@@ -65,25 +65,24 @@ namespace pio
 			mesh->setUp(context);
 			mesh->update(*transComp);
 
-			MeshCmd cmd;
-			cmd.Data = mesh->data();
-			cmd.Uniforms = mesh->unims();
-			cmd.Material = mat;
+			MeshRenderingItem item;
+			item.MeshFilter = filter->Uid;
+			item.MaterialFilter = render->MatUid;
 
-			switch (mat->renderingMode())
+			switch(mat->renderingMode())
 			{
-			case RenderingMode_Opaque:
-			{
-				renderingData.OpaqueMeshCmd.push_back(std::move(cmd));
-				break;
-			}
-			case RenderingMode_Transparent:
-			{
-				renderingData.TransparentMeshCmd.push_back(std::move(cmd));
-				break;
-			}
-			default:
-				break;
+				case RenderingMode_Opaque:
+				{
+					renderingData.OpaqueMeshItems.push_back(std::move(item));
+					break;
+				}
+				case RenderingMode_Transparent:
+				{
+					renderingData.TransparentMeshItems.push_back(std::move(item));
+					break;
+				}
+				default:
+					break;
 			}
 		}
 	}
