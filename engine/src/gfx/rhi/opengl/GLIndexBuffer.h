@@ -8,8 +8,8 @@ namespace pio
 	class GLIndexBuffer : public IndexBuffer
 	{
 	public:
-		GLIndexBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum, BufferUsage usage);
-		GLIndexBuffer(Ref<RenderContext>& context, const void *data, uint32_t size, uint32_t indiceNum, BufferUsage usage);
+		GLIndexBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t indexCount, IndexInternalFmt internalFmt, BufferUsage usage);
+		GLIndexBuffer(Ref<RenderContext>& context, const void *data, uint32_t size, uint32_t indexCount, IndexInternalFmt internalFmt, BufferUsage usage);
 		virtual ~GLIndexBuffer() = default;
 
 		virtual bool init() override;
@@ -22,12 +22,14 @@ namespace pio
 		virtual uint32_t size() const override { return m_size; }
 		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
 
-		virtual void setData(uint32_t indiceNum, const void* data, uint32_t size, uint32_t offset = 0) override;
-		virtual uint32_t indiceNum() const override { return m_indiceNum; }
+		virtual void setData(uint32_t indexCount, const void* data, uint32_t size, uint32_t offset = 0) override;
+		virtual uint32_t indexCount() const override { return m_indexCount; }
+		virtual IndexInternalFmt internalFmt() const override { return m_format; }
 
 	private:
 		BufferUsage m_usage{ BufferUsage::Static };
-		uint32_t m_indiceNum{ 0 };
+		IndexInternalFmt m_format{ IndexInternalFmt::U_BYTE };
+		uint32_t m_indexCount{ 0 };
 	};
 }
 

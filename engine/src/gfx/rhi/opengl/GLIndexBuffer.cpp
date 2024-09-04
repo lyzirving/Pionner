@@ -12,12 +12,14 @@
 
 namespace pio
 {
-	GLIndexBuffer::GLIndexBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum, BufferUsage usage) : IndexBuffer(context), m_indiceNum(indiceNum), m_usage(usage)
+	GLIndexBuffer::GLIndexBuffer(Ref<RenderContext>& context, uint32_t size, uint32_t indexCount, IndexInternalFmt internalFmt, BufferUsage usage)
+		: IndexBuffer(context), m_usage(usage), m_format(internalFmt), m_indexCount(indexCount)
 	{
 		m_size = size;
 	}
 
-	GLIndexBuffer::GLIndexBuffer(Ref<RenderContext>& context, const void* data, uint32_t size, uint32_t indiceNum, BufferUsage usage) : IndexBuffer(context), m_indiceNum(indiceNum), m_usage(usage)
+	GLIndexBuffer::GLIndexBuffer(Ref<RenderContext>& context, const void* data, uint32_t size, uint32_t indexCount, IndexInternalFmt internalFmt, BufferUsage usage)
+		: IndexBuffer(context), m_usage(usage), m_format(internalFmt), m_indexCount(indexCount)
 	{
 		m_size = size;
 
@@ -89,7 +91,7 @@ namespace pio
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	void GLIndexBuffer::setData(uint32_t indiceNum, const void* data, uint32_t size, uint32_t offset)
+	void GLIndexBuffer::setData(uint32_t indexCount, const void* data, uint32_t size, uint32_t offset)
 	{
 		if (!data || size == 0)
 		{
@@ -105,7 +107,7 @@ namespace pio
 
 		init();
 
-		m_indiceNum = indiceNum;
+		m_indexCount = indexCount;
 
 		if (isInit())
 		{

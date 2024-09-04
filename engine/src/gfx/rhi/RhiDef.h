@@ -76,6 +76,12 @@ namespace pio
 		DEPTH_24_STENCIL_8 // 24 bits for depth channel and 8 bits for stencil channel
 	};
 
+	//Only three types are allowed
+	enum class IndexInternalFmt : uint8_t
+	{
+		U_BYTE, U_SHORT, U_INT
+	};
+
 	enum class ShaderDataType : uint8_t
 	{
 		Byte, Byte2, Byte3, Byte4,
@@ -128,6 +134,18 @@ namespace pio
 		const char* RenderResourceTypeStr(RenderResourceType type);
 		uint32_t GetTextureChannelNum(TextureFormat fmt);
 		uint32_t GetTextureByteSize(TextureFormat fmt);
+
+		template<typename T>
+		IndexInternalFmt GetIndexInternalFmt()
+		{
+		#ifdef LOCAL_TAG
+		#undef LOCAL_TAG
+		#endif
+		#define LOCAL_TAG "Rhi"
+			LOGE("err! invalid index internal format");
+			std::abort();
+			return IndexInternalFmt::U_BYTE;
+		};
 	}
 }
 

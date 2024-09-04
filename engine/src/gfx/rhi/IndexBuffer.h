@@ -11,13 +11,26 @@ namespace pio
 		IndexBuffer(Ref<RenderContext>& context) : RenderResource(context, RenderResourceType::EBO) {}
 		virtual ~IndexBuffer() = default;
 
-		virtual void setData(uint32_t indiceNum, const void* data, uint32_t size, uint32_t offset = 0) = 0;
-		virtual uint32_t indiceNum() const = 0;
+		virtual void setData(uint32_t indexCount, const void* data, uint32_t size, uint32_t offset = 0) = 0;
+		virtual uint32_t indexCount() const = 0;
+		virtual IndexInternalFmt internalFmt() const = 0;
 
 	public:
-		static Ref<IndexBuffer> Create(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum, BufferUsage usage = BufferUsage::Static);
-		static Ref<IndexBuffer> Create(Ref<RenderContext>& context, const void *data, uint32_t size, uint32_t indiceNum, BufferUsage usage = BufferUsage::Static);
+		static Ref<IndexBuffer> Create(Ref<RenderContext>& context, uint32_t size, uint32_t indexCount, IndexInternalFmt internalFmt = IndexInternalFmt::U_BYTE, BufferUsage usage = BufferUsage::Static);
+		static Ref<IndexBuffer> Create(Ref<RenderContext>& context, const void *data, uint32_t size, uint32_t indexCount, IndexInternalFmt internalFmt = IndexInternalFmt::U_BYTE, BufferUsage usage = BufferUsage::Static);
 	};
+
+	namespace Rhi
+	{
+		template<>
+		IndexInternalFmt GetIndexInternalFmt<uint8_t>();
+
+		template<>
+		IndexInternalFmt GetIndexInternalFmt<uint16_t>();
+
+		template<>
+		IndexInternalFmt GetIndexInternalFmt<uint32_t>();
+	}
 }
 
 #endif

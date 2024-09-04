@@ -595,6 +595,23 @@ namespace pio
 		}
 	}
 
+	uint32_t GLHelper::GetIndexInternalFormat(IndexInternalFmt fmt)
+	{
+		switch(fmt)
+		{
+			case IndexInternalFmt::U_BYTE:
+				return GL_UNSIGNED_BYTE;
+			case IndexInternalFmt::U_SHORT:
+				return GL_UNSIGNED_SHORT;
+			case IndexInternalFmt::U_INT:
+				return GL_UNSIGNED_INT;
+			default:
+				LOGE("err! undefined index internal format[%u]", fmt);
+				std::abort();
+				return GL_UNSIGNED_BYTE;
+		}
+	}
+
 	bool GLHelper::CreateShader(uint32_t type, const char* source, uint32_t& shader)
 	{
 		shader = glCreateShader(type);

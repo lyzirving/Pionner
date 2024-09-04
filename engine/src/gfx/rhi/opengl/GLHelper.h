@@ -35,6 +35,7 @@ namespace pio
 		static uint32_t GetDepthAttachment(TextureFormat fmt);
 
 		static uint32_t GetDrawMode(DrawMode mode);
+		static uint32_t GetIndexInternalFormat(IndexInternalFmt fmt);
 
 	private:
 		static bool CreateShader(uint32_t type, const char* source, uint32_t& shader);

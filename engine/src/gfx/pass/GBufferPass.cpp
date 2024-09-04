@@ -129,7 +129,7 @@ namespace pio
 
             shader->bind();
 
-            context->bindUnimBlock(shader, camBuff , GpuAttr::BINDING_CAM_BLOCK);
+            context->bindUnimBlock(shader, camBuff, GpuAttr::BINDING_CAM_BLOCK);
             camBuff->bind();
 
             for(const auto& item : opaqueMeshItems)

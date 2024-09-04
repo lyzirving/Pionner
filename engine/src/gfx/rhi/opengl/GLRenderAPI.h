@@ -17,7 +17,7 @@ namespace pio
 
 		virtual void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) override;
 		virtual bool bindUnimBlock(uint32_t program, uint32_t bindingPt, const std::string& blockName) override;
-		virtual void drawElements(DrawMode mode, uint32_t indexNum) override;
+		virtual void drawElements(DrawMode mode, uint32_t indexNum, IndexInternalFmt fmt) override;
 
 		virtual void onBeginFrame(RenderContext& ctx) override;
 		virtual void onEndFrame(RenderContext& ctx) override;

@@ -135,9 +135,9 @@ namespace pio
 									program, blockName.c_str(), index, bindingPt);
 	}
 
-	void GLRenderAPI::drawElements(DrawMode mode, uint32_t indexNum)
+	void GLRenderAPI::drawElements(DrawMode mode, uint32_t indexNum, IndexInternalFmt fmt)
 	{
-		glDrawElements(GLHelper::GetDrawMode(mode), indexNum, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GLHelper::GetDrawMode(mode), indexNum, GLHelper::GetIndexInternalFormat(fmt), nullptr);
 		GLHelper::CheckError("err! drawElements fail");
 	}
 

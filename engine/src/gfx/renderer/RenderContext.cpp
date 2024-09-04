@@ -94,7 +94,7 @@ namespace pio
 		vao->bind();
 		ebo->bind();
 
-		m_api->drawElements(DrawMode_Triangle, ebo->indiceNum());
+		m_api->drawElements(DrawMode_Triangle, ebo->indexCount(), ebo->internalFmt());
 
 		ebo->unbind();
 		vao->unbind();

@@ -18,13 +18,13 @@ namespace pio
 {
 	Ref<Entity> Factory::MakeCamera(Ref<Scene>& scene, const std::string& name, int32_t depth)
 	{
-		auto entity	= scene->addEntity<CameraComponent, TransformComponent>(name);
+		auto entity = scene->addEntity<CameraComponent, TransformComponent>(name);
 		auto* camComp = entity->getComponent<CameraComponent>();
 		auto* transComp = entity->getComponent<TransformComponent>();
 
 		camComp->Depth = depth;
 		camComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->assetHnd();
-		transComp->Position = glm::vec3(0.f, 5.f, 4.f);
+		transComp->Position = glm::vec3(-3.f, 5.f, 2.5f);
 		return entity;
 	}
 
@@ -37,7 +37,7 @@ namespace pio
 
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
 		mesh->m_triMesh = Geometry3dFactory::MakePlane();
-		
+
 		auto material = AssetMgr::MakeRuntimeAsset<Material>("My Material");
 
 		meshFilter->Type = MeshType::Plane;
@@ -52,13 +52,13 @@ namespace pio
 	{
 		TriangleMesh triMesh;
 		glm::vec3 origin(-float(n) / 2.f, 0.f, -float(n) / 2.f);
-		for (uint32_t row = 0; row < n; row++)
+		for(uint32_t row = 0; row < n; row++)
 		{
-			for (uint32_t col = 0; col < n; col++)
+			for(uint32_t col = 0; col < n; col++)
 			{
 				Vertex3d v0, v1, v2, v3;
-				v0.Pos = origin + World::Right * float(col) + World::Forward * float(row);				
-				v1.Pos = v0.Pos + World::Forward;			
+				v0.Pos = origin + World::Right * float(col) + World::Forward * float(row);
+				v1.Pos = v0.Pos + World::Forward;
 				v2.Pos = v1.Pos + World::Right;
 				v3.Pos = v2.Pos - World::Forward;
 
@@ -81,7 +81,7 @@ namespace pio
 				triMesh.Indices.push_back(idx + 2);
 				triMesh.Indices.push_back(idx + 3);
 				triMesh.Indices.push_back(idx);
-				
+
 				triMesh.Triangles.push_back(Triangle((v0.Normal + v1.Normal + v2.Normal) / 3.f,
 											{ idx, (uint16_t)(idx + 1), (uint16_t)(idx + 2) }));
 				triMesh.Triangles.push_back(Triangle((v2.Normal + v3.Normal + v0.Normal) / 3.f,

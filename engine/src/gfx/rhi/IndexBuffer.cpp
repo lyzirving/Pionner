@@ -10,12 +10,12 @@
 
 namespace pio
 {
-	Ref<IndexBuffer> IndexBuffer::Create(Ref<RenderContext>& context, uint32_t size, uint32_t indiceNum, BufferUsage usage)
+	Ref<IndexBuffer> IndexBuffer::Create(Ref<RenderContext>& context, uint32_t size, uint32_t indexCount, IndexInternalFmt internalFmt, BufferUsage usage)
 	{
 		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
-			return CreateRef<GLIndexBuffer>(context, size, indiceNum, usage);
+			return CreateRef<GLIndexBuffer>(context, size, indexCount, internalFmt, usage);
 		default:
 			LOGE("err! current backend[%u] has not been implemented", context->renderBackend());
 			std::abort();
@@ -23,16 +23,28 @@ namespace pio
 		}
 	}
 
-	Ref<IndexBuffer> IndexBuffer::Create(Ref<RenderContext>& context, const void* data, uint32_t size, uint32_t indiceNum, BufferUsage usage)
+	Ref<IndexBuffer> IndexBuffer::Create(Ref<RenderContext>& context, const void* data, uint32_t size, uint32_t indexCount, IndexInternalFmt internalFmt, BufferUsage usage)
 	{
 		switch (context->renderBackend())
 		{
 		case RenderBackend_OpenGL:
-			return CreateRef<GLIndexBuffer>(context, data, size, indiceNum, usage);
+			return CreateRef<GLIndexBuffer>(context, data, size, indexCount, internalFmt, usage);
 		default:
 			LOGE("err! current backend[%u] has not been implemented", context->renderBackend());
 			std::abort();
 			return Ref<IndexBuffer>();
 		}
+	}
+
+	namespace Rhi
+	{
+		template<>
+		IndexInternalFmt GetIndexInternalFmt<uint8_t>() { return IndexInternalFmt::U_BYTE; };
+
+		template<>
+		IndexInternalFmt GetIndexInternalFmt<uint16_t>() { return IndexInternalFmt::U_SHORT; }
+
+		template<>
+		IndexInternalFmt GetIndexInternalFmt<uint32_t>() { return IndexInternalFmt::U_INT; }
 	}
 }
