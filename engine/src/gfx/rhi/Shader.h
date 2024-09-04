@@ -6,7 +6,6 @@
 namespace pio
 {
 	class UniformData;
-	class Material;
 
 	class Shader : public RenderResource
 	{
@@ -37,7 +36,6 @@ namespace pio
 		virtual void setTextureSampler(const std::string& name, TextureSampler slot) = 0;
 
 	public:
-		void setMaterial(Ref<Material>& material);
 		void setUniformData(Ref<UniformData>& unimData);
 	};
 }

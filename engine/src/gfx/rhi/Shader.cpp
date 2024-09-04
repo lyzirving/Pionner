@@ -1,7 +1,5 @@
 #include "Shader.h"
 
-#include "scene/resources/Material.h"
-
 #include "gfx/rhi/UniformData.h"
 
 #ifdef LOCAL_TAG
@@ -11,15 +9,6 @@
 
 namespace pio
 {
-	void Shader::setMaterial(Ref<Material>& material)
-	{
-		const auto& unims = material->uniforms();
-		for (auto it : unims)
-		{
-			setUniformData(it.second);
-		}
-	}
-
 	void Shader::setUniformData(Ref<UniformData>& unimData)
 	{
 		UniformDataType type = unimData->type();

@@ -146,7 +146,7 @@ namespace pio
                 { 
                     shader->setUniformData(it.second); 
                 }
-                shader->setMaterial(material);
+                material->bind(shader);
                 context->drawTriangles(mesh->data().Vao, mesh->data().Ebo);
             }
 
