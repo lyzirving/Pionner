@@ -47,6 +47,7 @@ namespace pio
 	};
 
 	class RenderContext;
+	class Buffer;
 
 	class Texture : public RenderResource
 	{
@@ -77,6 +78,9 @@ namespace pio
 		virtual ~Texture2D() = default;
 
 		virtual void active(TextureSampler sampler) = 0;
+
+	public:
+		static Ref<Texture2D> Create(Ref<RenderContext>& context, const TextureSpecific& spec, const Buffer& data);
 	};
 
 	class RenderBuffer : public Texture

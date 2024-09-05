@@ -19,7 +19,7 @@ namespace pio
 	{
 		m_spec.Channel = Rhi::GetTextureChannelNum(spec.Format);
 		m_size = m_spec.Width * m_spec.Height * m_spec.Channel * Rhi::GetTextureByteSize(spec.Format);
-	}
+	}	
 
 	RenderBuffer::RenderBuffer(Ref<RenderContext>& context, const TextureSpecific& spec)
 		: Texture(context, spec, RenderResourceType::RenderBuffer)
@@ -59,6 +59,11 @@ namespace pio
 				return Ref<Texture>();
 			}
 		}
+	}
+
+	Ref<Texture2D> Texture2D::Create(Ref<RenderContext>& context, const TextureSpecific& spec, const Buffer& data)
+	{
+		return Ref<Texture2D>();
 	}
 
 	template<>

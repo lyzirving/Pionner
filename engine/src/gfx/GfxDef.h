@@ -7,6 +7,9 @@ namespace pio
 {
 	namespace GpuAttr
 	{
+		//Default texture
+		static const char* WHITE_TEXTURE = "WhiteTexture";
+		static const char* BLACK_TEXTURE = "BlackTexture";
 		//Uniform data
 		static const char* UNI_MODEL_MAT = "u_modelMat";
 		//Uniform block
