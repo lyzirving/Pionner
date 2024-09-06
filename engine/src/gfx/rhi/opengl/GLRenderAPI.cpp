@@ -175,7 +175,7 @@ namespace pio
 	{
 		if (resource.Id == 0)
 		{
-			LOGW("warning! invalid resource id[0] for type[%s]", Rhi::RenderResourceTypeStr(resource.Type));
+			LOGW("warning! resource id[0] as type[%s] has not been initialized", Rhi::RenderResourceTypeStr(resource.Type));
 			return;
 		}
 		switch (resource.Type)

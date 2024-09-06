@@ -3,7 +3,7 @@
 
 #include "TriangleMesh.h"
 #include "asset/Asset.h"
-#include "gfx/renderer/resource/MeshData.h"
+#include "gfx/resource/MeshData.h"
 
 namespace pio
 {

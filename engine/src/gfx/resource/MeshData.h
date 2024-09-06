@@ -1,5 +1,5 @@
-#ifndef __PIONNER_GFX_RENDERER_RESOURCE_MESH_DATA_H__
-#define __PIONNER_GFX_RENDERER_RESOURCE_MESH_DATA_H__
+#ifndef __PIONNER_GFX_RESOURCE_MESH_DATA_H__
+#define __PIONNER_GFX_RESOURCE_MESH_DATA_H__
 
 #include "gfx/rhi/VertexArray.h"
 #include "gfx/rhi/VertexBuffer.h"

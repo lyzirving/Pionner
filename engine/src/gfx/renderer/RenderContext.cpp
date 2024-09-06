@@ -36,7 +36,7 @@ namespace pio
 		m_api->setupBackend();
 		m_api->setupUiBackend(m_window->nativeWindow());
 
-		initShaders();
+		initResource();
 
 		while (m_thread.isRunning())
 		{
@@ -52,7 +52,7 @@ namespace pio
 		}
 		LOGD("exit render thread[%lu]", m_threadId);
 		//Call before garbage queue is executed
-		releaseShaders();
+		releaseResource();
 		// Clear resources submitted at the last frame
 		m_garbageQueue[submitIdx()].execute();
 
@@ -100,21 +100,23 @@ namespace pio
 		vao->unbind();
 	}
 
-	void RenderContext::initShaders()
+	void RenderContext::initResource()
 	{
 		auto context = self();
 		for (uint8_t i = 0; i < PIO_UINT8(ShaderType::Num); i++)
 		{
 			m_shaders[i] = ShaderCompiler::Compile(context, ShaderUtils::GetShaderPath(ShaderType(i)));
 		}
+		m_textureMgr.init(context);
 	}
 
-	void RenderContext::releaseShaders()
+	void RenderContext::releaseResource()
 	{
 		for (uint8_t i = 0; i < PIO_UINT8(ShaderType::Num); i++)
 		{
 			m_shaders[i].reset();//Real release will be executed at garbage queue
 		}
+		m_textureMgr.release();
 	}
 
 	void RenderContext::waitAndRender()

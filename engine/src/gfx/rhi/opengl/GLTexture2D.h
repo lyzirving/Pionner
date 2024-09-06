@@ -8,7 +8,8 @@ namespace pio
 	class GLTexture2D : public Texture2D
 	{
 	public:
-		GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec) : Texture2D(context, spec) {}
+		GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec);
+		GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buff);
 		~GLTexture2D() = default;
 
 		virtual bool init() override;

@@ -107,8 +107,7 @@ namespace pio
 	{
 		if (m_data) { PIO_FREE(m_data); }		
 		m_data = nullptr;
-		m_capacity = 0;
-		m_offset = 0;
+		m_offset = m_capacity = 0;		 
 	}
 
 	void Buffer::reset()

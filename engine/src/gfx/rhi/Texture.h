@@ -66,6 +66,10 @@ namespace pio
 
 	public:
 		static Ref<Texture> Create(Ref<RenderContext>& context, const TextureSpecific& spec);
+		/*
+		* @param buffer		Buffer is not marked as const, data inside the buffer will be moved into texture.
+		*/
+		static Ref<Texture> Create(Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buffer);
 
 	protected:
 		TextureSpecific m_spec;
@@ -78,9 +82,6 @@ namespace pio
 		virtual ~Texture2D() = default;
 
 		virtual void active(TextureSampler sampler) = 0;
-
-	public:
-		static Ref<Texture2D> Create(Ref<RenderContext>& context, const TextureSpecific& spec, const Buffer& data);
 	};
 
 	class RenderBuffer : public Texture

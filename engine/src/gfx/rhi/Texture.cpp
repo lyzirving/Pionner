@@ -37,6 +37,8 @@ namespace pio
 				switch (spec.Type)
 				{
 					case TextureType::TwoDimen:
+					case TextureType::SingleChannel:
+					case TextureType::NormalMap:
 					{
 						return AssetMgr::MakeRuntimeAsset<GLTexture2D>(context, spec);
 					}
@@ -61,9 +63,35 @@ namespace pio
 		}
 	}
 
-	Ref<Texture2D> Texture2D::Create(Ref<RenderContext>& context, const TextureSpecific& spec, const Buffer& data)
+	Ref<Texture> Texture::Create(Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buffer)
 	{
-		return Ref<Texture2D>();
+		switch(context->renderBackend())
+		{
+			case RenderBackendFlags::RenderBackend_OpenGL:
+			{
+				switch(spec.Type)
+				{
+					case TextureType::TwoDimen:
+					case TextureType::SingleChannel:
+					case TextureType::NormalMap:
+					{
+						return AssetMgr::MakeRuntimeAsset<GLTexture2D>(context, spec, buffer);
+					}
+					default:
+					{
+						LOGE("err! texture type[%u] has not been implemented", spec.Type);
+						std::abort();
+						return Ref<Texture>();
+					}
+				}
+			}
+			default:
+			{
+				LOGE("err! render backend[%u] has not been implemented", context->renderBackend());
+				std::abort();
+				return Ref<Texture>();
+			}
+		}
 	}
 
 	template<>

@@ -10,6 +10,15 @@
 
 namespace pio
 {
+	GLTexture2D::GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec) : Texture2D(context, spec)
+	{
+	}
+
+	GLTexture2D::GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buff) : Texture2D(context, spec)
+	{
+		buff.move(m_data);
+	}
+
 	bool GLTexture2D::init()
 	{
 		if (!isInit())

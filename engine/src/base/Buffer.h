@@ -29,7 +29,7 @@ namespace pio
 
 		void write(const void *data, uint64_t size);
 		void writeAt(const void *data, uint64_t size, uint64_t offset);
-		void replace(const void *data, uint64_t size, uint64_t offset);
+		void replace(const void *data, uint64_t size, uint64_t offset);		
 
 	private:
 		void extend(uint64_t cap);
@@ -61,6 +61,14 @@ namespace pio
 		T *as() const
 		{
 			return (T *)m_data;
+		}
+
+		template<typename T>
+		void move(T* data)
+		{			
+			data = as<T>();
+			m_data = nullptr;
+			m_capacity = m_offset = 0;
 		}
 
 	private:

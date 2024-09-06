@@ -7,7 +7,8 @@
 #include "gfx/rhi/RenderState.h"
 #include "gfx/rhi/RenderResource.h"
 
-#include "gfx/renderer/resource/RenderingData.h"
+#include "gfx/resource/RenderingData.h"
+#include "gfx/resource/TextureMgr.h"
 
 #include "base/utils/SystemUtils.h"
 #include "base/CommandQueue.h"
@@ -125,8 +126,8 @@ namespace pio
 		static constexpr uint32_t k_queueNum = 2;		
 
 	protected:
-		void initShaders();
-		void releaseShaders();
+		void initResource();
+		void releaseResource();
 		void waitAndRender();
 
 		void onWindowSizeChange(int32_t x, int32_t y, int32_t w, int32_t h);
@@ -155,6 +156,7 @@ namespace pio
 		uint64_t m_frameNum{ 0 };
 
 		Ref<Shader> m_shaders[PIO_UINT8(ShaderType::Num)];
+		TextureMgr m_textureMgr;
 
 		RenderingEntities m_renderingEntities;
 		RenderingData m_renderingData;
