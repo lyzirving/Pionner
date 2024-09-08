@@ -2,12 +2,12 @@
 #define __PIONNER_SCENE_FACTORY_H__
 
 #include "Entry.h"
+#include "scene/resources/TriangleMesh.h"
 
 namespace pio
 {
 	class Scene;
 	class Entity;
-	struct TriangleMesh;
 
 	class Factory
 	{
@@ -27,9 +27,8 @@ namespace pio
 		* @brief	Make a plane whose length is n and laies on xz plane, the shape of the plane is square
 		* @param n	length of the square
 		*/
-		static TriangleMesh MakePlane(uint32_t n = 5);
-		static TriangleMesh MakeScreenQuad();
-
+		static TriangleMesh3d MakePlane(uint32_t n = 5);
+		static TriangleMesh3d MakeScreenQuad();
 
 	private:
 		GeometryFactory() {}

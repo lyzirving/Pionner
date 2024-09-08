@@ -72,7 +72,7 @@ namespace pio
         m_frameBuff.reset();
     }
 
-	void DefferedPass::onExecute(Ref<RenderContext>& context, Ref<RenderPass>& lastPass)
+	void DefferedPass::onExecute(Ref<RenderContext>& context, Ref<Camera>& camera, Ref<RenderPass>& lastPass)
     {
         if (!lastPass || !lastPass->is<GBufferPass>())
         {

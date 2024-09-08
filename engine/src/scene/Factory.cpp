@@ -50,9 +50,9 @@ namespace pio
 		return entity;
 	}
 
-	TriangleMesh GeometryFactory::MakePlane(uint32_t n)
+	TriangleMesh3d GeometryFactory::MakePlane(uint32_t n)
 	{
-		TriangleMesh triangles;
+		TriangleMesh3d triangles;
 		glm::vec3 origin(-float(n) / 2.f, 0.f, -float(n) / 2.f);
 		for(uint32_t row = 0; row < n; row++)
 		{
@@ -93,9 +93,9 @@ namespace pio
 		return triangles;
 	}
 
-	TriangleMesh GeometryFactory::MakeScreenQuad()
+	TriangleMesh3d GeometryFactory::MakeScreenQuad()
 	{
-		TriangleMesh triangles;
+		TriangleMesh3d triangles;
 		Vertex3d v0, v1, v2, v3;
 		v0.Pos = glm::vec3(-1.f, 1.f, 0.f);
 		v1.Pos = glm::vec3(-1.f, -1.f, 0.f);

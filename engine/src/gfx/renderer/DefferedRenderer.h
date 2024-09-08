@@ -17,10 +17,10 @@ namespace pio
 		virtual void onAttach(Ref<RenderContext>& context) override;
 		virtual void onDetach(Ref<RenderContext>& context) override;
 		virtual void onSetUp() override;
-		virtual void onExecute(Ref<RenderContext> &context) override;
+		virtual void onExecute(Ref<RenderContext> &context, Ref<Camera>& camera) override;
 
 	protected:
-		void executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context, Ref<RenderPass>& lastPass);
+		void executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context, Ref<Camera>& camera, Ref<RenderPass>& lastPass);
 
 	private:
 		std::vector<Ref<RenderPass>> m_passQueue;

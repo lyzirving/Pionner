@@ -82,7 +82,7 @@ namespace pio
 
 		m_renderer->onSetUp();
 
-		m_renderer->onExecute(context);
+		m_renderer->onExecute(context, camera);
 	}
 
 	void RenderPipeline::onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
