@@ -85,6 +85,11 @@ namespace pio
 		{
 			m_data.UnimBuff = UniformBuffer::Create(context, m_data.UnimData.Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
 		}
+	}
+
+	void Camera::update(Ref<RenderContext>& context)
+	{
+		setUp(context);
 
 		if (anyChange())
 		{
@@ -102,6 +107,34 @@ namespace pio
 		}
 	}
 
+	void Camera::setPosition(const glm::vec3& position)
+	{
+		if (m_transform.setPosition(position))
+		{
+			m_attrBits.set(CameraAttrBits_Pos);
+		}
+	}
+
+	void Camera::setEuler(const glm::vec3& euler)
+	{
+		if (m_transform.setEuler(euler))
+		{
+			m_attrBits.set(CameraAttrBits_Rot);
+		}
+	}
+
+	void Camera::addTranslation(const glm::vec3& delta)
+	{
+		m_transform.addTranslation(delta);
+		m_attrBits.set(CameraAttrBits_Pos);
+	}
+
+	void Camera::addEuler(const glm::vec3& delta)
+	{
+		m_transform.addEuler(delta);
+		m_attrBits.set(CameraAttrBits_Rot);
+	}
+
 	void Camera::flush()
 	{
 		calcViewMat();
@@ -109,82 +142,26 @@ namespace pio
 		m_orthoFrustum.flush();
 	}
 
-	void Camera::setPosition(const glm::vec3& position)
-	{
-		if (m_transform.Position != position)
-		{
-			m_transform.Position = position;
-			m_attrBits.set(CameraAttrBits_Pos);
-		}
-	}
-
-	void Camera::setPosition(const SphereCoord& position)
-	{
-		if (m_transform.Position != position)
-		{
-			m_transform.Position = position;
-			m_attrBits.set(CameraAttrBits_Pos);
-		}
-	}
-
-	void Camera::setPositionDelta(const glm::vec3& delta)
-	{
-		m_transform.Position += delta;
-		m_attrBits.set(CameraAttrBits_Pos);
-	}
-
-	void Camera::setPositionDelta(const SphereCoord& delta)
-	{
-		m_transform.Position += delta;
-		m_attrBits.set(CameraAttrBits_Pos);
-	}
-
-	void Camera::setLookAt(const glm::vec3& lookAt)
-	{
-		if (m_pose.LookAt != lookAt)
-		{
-			m_pose.LookAt = lookAt;
-			m_attrBits.set(CameraAttrBits_LookAt);
-		}
-	}
-
 	void Camera::calcViewMat()
 	{
 		if (m_attrBits.any())
-		{
+		{			
+			m_transform.flush();
 			calcCameraPose();
-			m_pose.ViewMat = glm::lookAt(m_transform.Position.ccs(), m_pose.LookAt, m_pose.Up);
+			m_viewMat = glm::lookAt(m_transform.position(), m_transform.position() + m_viewDir * 10.f, m_up);
 			m_attrBits.reset();
 		}
 	}
 
 	void Camera::calcCameraPose()
 	{
-		if (m_attrBits.test(CameraAttrBits_Rot))
-		{
-			float len = glm::length(m_transform.Position.ccs() - m_pose.LookAt);
-			if (Math::IsZero(len)) { len += 0.01f; }
-			glm::mat4 rotMat = m_transform.Euler.mat();
+		m_viewDir = -World::Forward;
+		m_viewDir = m_transform.rotMat() * glm::vec4(m_viewDir, 0.f);
 
-			m_pose.Right = rotMat * glm::vec4(1.f, 0.f, 0.f, 0.f);
-			m_pose.Up = rotMat * glm::vec4(0.f, 1.f, 0.f, 0.f);
-			m_pose.Front = rotMat * glm::vec4(0.f, 0.f, 1.f, 0.f);
-
-			m_pose.LookAt = m_transform.Position - m_pose.Front * len;
-		}
-		else
-		{
-			glm::vec3 viewDir = glm::normalize(m_pose.LookAt - m_transform.Position.ccs());
-			// compute the right and up vector by view direction and world up
-			m_pose.Right = glm::normalize(glm::cross(viewDir, glm::vec3(0.f, 1.f, 0.f)));
-			m_pose.Up = glm::normalize(glm::cross(m_pose.Right, viewDir));
-			m_pose.Front = -viewDir;
-
-			// camera pose axis -> rotation matrix -> quaternion -> euler angle
-			glm::mat3 rotMat = glm::mat3(m_pose.Right, m_pose.Up, m_pose.Front);
-			glm::quat quat = glm::toQuat(rotMat);
-			m_transform.Euler = glm::degrees(glm::eulerAngles(quat));
-		}
+		// compute the right and up vector by view direction and world up
+		m_right = glm::normalize(glm::cross(m_viewDir, glm::vec3(0.f, 1.f, 0.f)));
+		m_up = glm::normalize(glm::cross(m_right, m_viewDir));
+		m_front = -m_viewDir;
 	}
 
 	glm::mat4 Camera::ViewportMat(const Viewport& vp)

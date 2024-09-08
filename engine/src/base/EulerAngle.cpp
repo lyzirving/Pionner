@@ -70,13 +70,13 @@ namespace pio
 		return *this;
 	}
 
-	glm::mat4 EulerAngle::mat() const
+	const glm::mat4& EulerAngle::mat() const
 	{
 		flush();
 		return m_rotMat;
 	}
 
-	glm::quat EulerAngle::quat() const
+	const glm::quat& EulerAngle::quat() const
 	{
 		flush();
 		return m_quat;

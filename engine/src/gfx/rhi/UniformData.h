@@ -33,6 +33,19 @@ namespace pio
 		const std::string &name() const { return m_name; }
 		uint32_t byteUsed() const { return m_byteUsed; }
 
+	public:
+		template<typename T>
+		static Ref<UniformData> Create(const std::string& name) 
+		{ 
+			#ifdef LOCAL_TAG
+			#undef LOCAL_TAG
+			#endif
+			#define LOCAL_TAG "UniformData"
+			LOGE("err! type has not been implemented");
+			std::abort();
+			return Ref<UniformData>(); 
+		}
+
 	protected:
 		UniformDataType m_type{ UniformDataType::Bool };
 		std::string m_name{};
@@ -130,6 +143,45 @@ namespace pio
 	public:
 		UniformMat4(const std::string &name) : UniformData(UniformDataType::Mat4, name) {}
 	};
+
+	template<>
+	Ref<UniformData> UniformData::Create<bool>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<int32_t>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<uint32_t>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<float>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::vec2>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::vec3>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::vec4>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::ivec2>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::ivec3>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::ivec4>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::mat2>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::mat3>(const std::string& name);
+
+	template<>
+	Ref<UniformData> UniformData::Create<glm::mat4>(const std::string& name);
 }
 
 #endif

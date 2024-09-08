@@ -10,6 +10,8 @@ namespace pio
 		UBBinding_Camera = 0, UBBinding_Num
 	};
 
+	const char* GetBindingName(UBBinding binding);
+
 	/*
 	* UniformPack records the data layout of a specific data type: Bool, Float, Int, Vec2, Vec3, Vec4,
 	*                                                              IVec2, IVec3, IVec4, UVec2, UVec3, UVec4,

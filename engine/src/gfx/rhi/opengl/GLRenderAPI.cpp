@@ -175,7 +175,7 @@ namespace pio
 	{
 		if (resource.Id == 0)
 		{
-			LOGW("warning! resource id[0] as type[%s] has not been initialized", Rhi::RenderResourceTypeStr(resource.Type));
+			LOGW("warning! resource[%s][%s] has not been initialized", resource.Name.c_str(), Rhi::RenderResourceTypeStr(resource.Type));
 			return;
 		}
 		switch (resource.Type)
@@ -184,42 +184,42 @@ namespace pio
 		case RenderResourceType::VBO:
 		case RenderResourceType::EBO:
 		{
-			LOGD("delete buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			LOGD("delete buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			glDeleteBuffers(1, &resource.Id);
 			break;
 		}
 		case RenderResourceType::VAO:
 		{
-			LOGD("delete vertex array[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			LOGD("delete vertex array[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			glDeleteVertexArrays(1, &resource.Id);
 			break;
 		}
 		case RenderResourceType::FBO:
 		{
-			LOGD("delete fame buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			LOGD("delete fame buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			glDeleteFramebuffers(1, &resource.Id);
 			break;
 		}
 		case RenderResourceType::Texture:
 		{
-			LOGD("delete texture[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			LOGD("delete texture[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			glDeleteTextures(1, &resource.Id);
 			break;
 		}
 		case RenderResourceType::RenderBuffer:
 		{
-			LOGD("delete render buffer[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			LOGD("delete render buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			glDeleteBuffers(1, &resource.Id);
 			break;
 		}
 		case RenderResourceType::Shader:
 		{
-			LOGD("delete shader[%u], type[%s]", resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+			LOGD("delete shader[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			glDeleteProgram(resource.Id);
 			break;
 		}
 		default:
-			LOGE("err! invalid resource type[%s], id[%u]", Rhi::RenderResourceTypeStr(resource.Type), resource.Id);
+			LOGE("err! invalid resource [%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
 			break;
 		}
 	}

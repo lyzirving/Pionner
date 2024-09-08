@@ -17,6 +17,16 @@ namespace pio
 		void init(Ref<RenderContext>& context);
 		void release();
 
+		Ref<Texture> get(const std::string& name)
+		{
+			auto it = m_textures.find(name);
+			if (it == m_textures.end())
+			{
+				return Ref<Texture>();
+			}
+			return it->second;
+		}
+
 	private:
 		WeakRef<RenderContext> m_context;
 		std::unordered_map<std::string, Ref<Texture>> m_textures;

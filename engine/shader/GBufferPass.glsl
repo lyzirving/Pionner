@@ -45,17 +45,25 @@ in VsOut {
 
 // Different render target for G-Buffer
 layout (location = 0) out vec4 gPosition;
-layout (location = 1) out vec4 gNormal;      // normal(3) + type(1)
+layout (location = 1) out vec4 gNormal;
 layout (location = 2) out vec4 gAlbedoAlpha;
-layout (location = 3) out vec4 gMaterial;    // roughness + metalness + ao
+layout (location = 3) out vec4 gMaterial;// roughness(r) + metalness(g) + ao(b)
 layout (location = 4) out vec4 gEmission;
 
 void main() {
     vec4 albedoColor = texture(u_pbrMaterial.AlbedoTexture, v_texCoord);
+    vec4 metallicRoughness = texture(u_pbrMaterial.MetallicRoughnessTexture, v_texCoord);
 
     gPosition = vec4(v_worldPos, 1.f);
     gNormal = vec4(v_normal, 1.f); 
-    gAlbedoAlpha = vec4(albedoColor.rgb * u_pbrMaterial.AlbedoColor, albedoColor.a);
-    gMaterial = vec4(1.f);
-    gEmission = vec4(0.f);
+
+    gAlbedoAlpha = vec4(albedoColor.rgb * u_pbrMaterial.AlbedoColor, u_pbrMaterial.Alpha);
+    // In metallic-roughness flow, g channel is roughness factor, b is metallic factor
+    // Minimum roughness of 0.05 to keep specular highlight
+    gMaterial.r = max(metallicRoughness.g * u_pbrMaterial.Roughness, 0.05);
+    gMaterial.g = metallicRoughness.b * u_pbrMaterial.Metalness;
+    gMaterial.b = 0.f;
+    gMaterial.a = 1.f;
+
+    gEmission = vec4(texture(u_pbrMaterial.EmissionTexture, v_texCoord).rgb * u_pbrMaterial.Emission, 1.f);
 }

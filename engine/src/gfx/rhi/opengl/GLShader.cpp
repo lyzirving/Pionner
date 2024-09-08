@@ -15,7 +15,7 @@
 
 namespace pio
 {
-	GLShader::GLShader(Ref<RenderContext>& context) : Shader(context)
+	GLShader::GLShader(Ref<RenderContext>& context, const std::string& name) : Shader(context, name)
 	{
 	}
 

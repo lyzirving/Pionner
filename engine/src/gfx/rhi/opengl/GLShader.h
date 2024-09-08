@@ -8,7 +8,7 @@ namespace pio
 	class GLShader : public Shader
 	{
 	public:
-		GLShader(Ref<RenderContext>& context);
+		GLShader(Ref<RenderContext>& context, const std::string& name);
 		~GLShader() = default;
 
 		virtual void setBool(const std::string& name, bool val) override;
@@ -39,11 +39,9 @@ namespace pio
 		virtual uint32_t size() const override { return 0;/*do nothing*/ }
 		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
 
-		virtual const std::string& name() const override { return m_name; };
 		virtual bool getSampler(TextureSampler& out) const override;
 
 	private:
-		std::string m_name{};
 		std::string m_vert{}, m_frag{}, m_geo{};
 		std::bitset<PIO_UINT8(TextureSampler::MaxSlotNum)> m_occupiedSlots;
 

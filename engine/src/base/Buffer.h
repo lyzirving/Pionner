@@ -64,9 +64,9 @@ namespace pio
 		}
 
 		template<typename T>
-		void move(T* data)
+		void move(T** data)
 		{			
-			data = as<T>();
+			*data = as<T>();
 			m_data = nullptr;
 			m_capacity = m_offset = 0;
 		}

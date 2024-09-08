@@ -3,18 +3,16 @@
 struct PBRMaterial 
 {
     vec3 AlbedoColor;
-    vec3 Emission;
-    float Roughness;
+    vec3 Emission;    
     float Metalness;
-    float AO;
+    float Roughness;
     float Alpha;
     bool UseNormalMap;
 
     sampler2D AlbedoTexture;
     sampler2D EmissionTexture;
     sampler2D MetallicRoughnessTexture;
-    sampler2D NormalTexture;
-    sampler2D AOTexture;
+    sampler2D NormalMap;
 };
 
 uniform PBRMaterial u_pbrMaterial;

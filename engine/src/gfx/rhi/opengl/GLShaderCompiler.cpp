@@ -69,9 +69,8 @@ namespace pio
 		Ref<Shader> shader;
 		if (program > 0)
 		{
-			shader = CreateRef<GLShader>(context);
-			auto* p = static_cast<GLShader*>(shader.get());
-			p->m_name = m_name;
+			shader = CreateRef<GLShader>(context, m_name);
+			auto* p = static_cast<GLShader*>(shader.get());			
 			p->m_vert = vertSource;
 			p->m_frag = fragSource;
 			p->m_geo  = geoSource;

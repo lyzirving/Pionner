@@ -33,7 +33,7 @@ namespace pio
 
 		RenderBackendFlags renderBackend() const { return m_api->renderBackend(); }
 		uint64_t frame() const { return m_frameNum; }
-		const Viewport &vp() const { return m_vp; }
+		const Viewport& vp() const { return m_vp; }		
 
 		RenderingEntities& renderingEntities() { return m_renderingEntities; }
 		RenderingData& renderingData() { return m_renderingData; }
@@ -41,6 +41,7 @@ namespace pio
 		RenderThread& thread() { return m_thread; }
 		Ref<Window>& window() { return m_window; }
 		Ref<RenderState>& state() { return m_state; }
+		TextureMgr& textureMgr() { return m_textureMgr; }
 		
 		Ref<Shader> &shader(ShaderType type) { return m_shaders[PIO_UINT8(type)]; }
 		void setRenderingEntities(RenderingEntities&& data) { m_renderingEntities = std::forward<RenderingEntities>(data); }

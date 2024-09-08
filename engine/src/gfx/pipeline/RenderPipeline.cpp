@@ -105,7 +105,7 @@ namespace pio
 
 	void RenderPipeline::onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingData &renderingData)
 	{
-		camera->setUp(context);
+		camera->update(context);
 		auto &camBuff = camera->unimBuffer();
 		renderingData.UnimBuffSet.insert({ camBuff->binding(), camBuff->assetHnd() });
 	}

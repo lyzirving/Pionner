@@ -18,7 +18,7 @@ namespace pio
 		virtual ~Mesh() = default;
 
 		void setUp(Ref<RenderContext>& context);
-		void update(const TransformComponent &comp);
+		void update(Ref<RenderContext>& context, const TransformComponent &comp);
 
 		MeshData& data() { return m_data; }
 		TriangleMesh& triMesh() { return m_triMesh; }
@@ -33,7 +33,7 @@ namespace pio
 		MeshData m_data;
 		std::map<std::string, Ref<UniformData>> m_uniforms;
 
-		Transform m_transform;		
+		Transform3D m_transform;		
 
 	private:
 		friend class Factory;

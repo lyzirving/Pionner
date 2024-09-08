@@ -7,6 +7,17 @@
 
 namespace pio
 {
+	const char* GetBindingName(UBBinding binding)
+	{
+		switch (binding)
+		{
+			case UBBinding_Camera:
+				return "UBBinding_Camera";
+			default:
+				return "Unknown_Binding";
+		}
+	}
+
 	// ------------------------ UniformPack -------------------------
 	// --------------------------------------------------------------
 	bool UniformPack::IsPrimitive(UniformDataType type)
@@ -587,5 +598,5 @@ namespace pio
 	bool UniformPack::is<UnimPackStruct>() { return m_type == UniformDataType::Struct; }
 
 	template<>
-	bool UniformPack::is<UnimPackStructArray>() { return m_type == UniformDataType::StructArray; }
+	bool UniformPack::is<UnimPackStructArray>() { return m_type == UniformDataType::StructArray; }	
 }

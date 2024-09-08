@@ -29,6 +29,9 @@ namespace pio
 
 		void run();
 
+	protected:
+		void prepareScene();
+
 	public:
 		static Editor *Get();
 

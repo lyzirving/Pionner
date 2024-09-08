@@ -31,12 +31,13 @@ namespace pio
 				{
 					return cameras;
 				}
-				auto cam = AssetMgr::GetRuntimeAsset<Camera>(camComp->Uid);
+				auto cam = AssetMgr::GetRuntimeAsset<Camera>(camComp->Uid);				
 
 				cam->setPrjType(camComp->PrjType);
 				cam->setFov(camComp->Fov);
 				cam->setSize(camComp->Size);
 				cam->setPosition(transComp->Position);
+				cam->setEuler(transComp->Rotation);
 
 				cameras.push_back(cam);
 			}
@@ -62,8 +63,8 @@ namespace pio
 			Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->Uid);
 			Ref<Material> mat = AssetMgr::GetRuntimeAsset<Material>(render->MatUid);
 
-			mesh->setUp(context);
-			mesh->update(*transComp);
+			mesh->update(context, *transComp);
+			mat->update(context);
 
 			MeshRenderingItem item;
 			item.MeshFilter = filter->Uid;

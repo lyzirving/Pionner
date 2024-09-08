@@ -11,7 +11,7 @@
 namespace pio
 {
 	GLUniformBuffer::GLUniformBuffer(Ref<RenderContext>& context, uint32_t size, UBBinding binding, BufferUsage usage)
-		: UniformBuffer(context), m_usage(usage), m_binding(binding)
+		: UniformBuffer(context, GetBindingName(binding)), m_usage(usage), m_binding(binding)
 	{
 		m_size = size;
 	}

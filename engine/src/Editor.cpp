@@ -1,4 +1,5 @@
 #include "Editor.h"
+#include "Editor.h"
 
 #include "window/Window.h"
 
@@ -50,14 +51,6 @@ namespace pio
 		m_context = CreateRef<RenderContext>(RenderBackend_OpenGL, m_window);
 		m_pipeline = CreateRef<RenderPipeline>();
 		m_pipeline->onAttach(m_context);
-
-		auto scene = CreateRef<Scene>();
-		{
-			//Default entities
-			Factory::MakeCamera(scene, "MainCamera", 0);
-			Factory::MakePlane(scene, "Plane");
-		}
-		m_sceneMgr.add(scene, true);
 	}
 
 	void Editor::onDetach()
@@ -110,6 +103,8 @@ namespace pio
 		// Block until the first frame has been done
 		renderThread.pump();
 
+		prepareScene();
+
 		while(m_running)
 		{
 			// Wait for render thread to finish commands
@@ -134,5 +129,14 @@ namespace pio
 		// After this call, render thread is waiting for kick
 		renderThread.blockUntilRenderComplete();
 		onDetach();
+	}
+
+	void pio::Editor::prepareScene()
+	{
+		auto scene = CreateRef<Scene>();
+		//Default entities
+		Factory::MakeCamera(scene, "MainCamera", 0);
+		Factory::MakePlane(scene, "Plane");
+		m_sceneMgr.add(scene, true);
 	}
 }

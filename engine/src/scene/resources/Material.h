@@ -2,11 +2,14 @@
 #define __PIONNER_SCENE_RESOURCES_MATERIAL_H__
 
 #include "asset/Asset.h"
+
 #include "gfx/GfxDef.h"
+#include "gfx/rhi/UniformData.h"
 
 namespace pio
 {
-	class UniformData;
+	class RenderContext;
+	class Texture;
 	class Shader;
 
 	class Material : public Asset
@@ -15,7 +18,9 @@ namespace pio
 	public:
 		Material(const std::string& name, RenderingMode mode, ShaderSpecifier spec);
 		virtual ~Material() = default;
-		virtual void bind(Ref<Shader>& shader) = 0;
+		virtual void update(Ref<RenderContext>& context) = 0;
+
+		void bind(Ref<Shader>& shader);
 
 		void setSpec(ShaderSpecifier spec) { m_spec = spec; }
 		void setRenderingMode(RenderingMode mode) { m_renderingMode = mode; }
@@ -30,10 +35,42 @@ namespace pio
 		static Ref<Material> Create(const std::string& name, RenderingMode mode, ShaderSpecifier spec);
 
 	protected:
+		template<typename T>
+		void updateUnimData(const std::string& name, const T& data)
+		{
+			auto it = m_uniforms.find(name);
+			if (it != m_uniforms.end())
+			{
+				it->second->write(&data);
+			}
+			else
+			{
+				auto unimData = UniformData::Create<T>(name);
+				unimData->write(&data);
+				m_uniforms.insert({ name, unimData });
+			}
+		}
+
+		void updateTexture(const std::string& name, Ref<Texture>& texture)
+		{
+			auto it = m_textures.find(name);
+			if (it == m_textures.end())
+			{
+				m_textures.insert({ name, texture });
+			}
+			else if (it->second != texture)
+			{
+				m_textures[name] = texture;
+			}
+		}
+
+	protected:
 		std::string m_name;		
 		RenderingMode m_renderingMode{ RenderingMode_Opaque };
 		ShaderSpecifier m_spec{ ShaderSpec_Standard };
-		std::map<std::string, Ref<UniformData>> m_uniforms;		
+
+		std::map<std::string, Ref<UniformData>> m_uniforms;
+		std::map<std::string, Ref<Texture>> m_textures;
 	};
 
 	template<>

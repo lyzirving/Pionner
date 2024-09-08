@@ -23,14 +23,15 @@ namespace pio
 		}
 	}
 
-	void Mesh::update(const TransformComponent& comp)
+	void Mesh::update(Ref<RenderContext>& context, const TransformComponent& comp)
 	{
-		PIO_CHECK_RETURN(m_data.valid(), "err! mesh data has not been set up");
-		m_transform.Euler = comp.Rotation;
-		m_transform.Scale = comp.Scale;
-		m_transform.Position = comp.Position;
+		setUp(context);
 
-		m_uniforms[GpuAttr::UNI_MODEL_MAT]->write(&m_transform.mat());
+		m_transform.setEuler(comp.Rotation);
+		m_transform.setScale(comp.Scale);
+		m_transform.setPosition(comp.Position);
+
+		m_uniforms[GpuAttr::UNI_MODEL_MAT]->write(&m_transform.transformMat());
 	}
 
 	template<>

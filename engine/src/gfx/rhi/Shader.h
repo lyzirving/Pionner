@@ -10,10 +10,9 @@ namespace pio
 	class Shader : public RenderResource
 	{
 	public:
-		Shader(Ref<RenderContext>& context) : RenderResource(context, RenderResourceType::Shader) {}
+		Shader(Ref<RenderContext>& context, const std::string& name) : RenderResource(context, RenderResourceType::Shader, name) {}
 		virtual ~Shader() = default;
 
-		virtual const std::string& name() const = 0;
 		virtual bool getSampler(TextureSampler& out) const = 0;
 
 		virtual void setBool(const std::string& name, bool val) = 0;

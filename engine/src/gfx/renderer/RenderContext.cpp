@@ -38,6 +38,7 @@ namespace pio
 
 		initResource();
 
+		LOGD("enter render loop");
 		while (m_thread.isRunning())
 		{
 			m_window->pollEvents();

@@ -53,8 +53,8 @@ namespace pio
 	{
 		OVERRIDE_ASSET_TYPE(AssetType::Texture)
 	public:
-		Texture(Ref<RenderContext>& context, const TextureSpecific& spec) : RenderResource(context, RenderResourceType::Texture), m_spec(spec) {}
-		Texture(Ref<RenderContext>& context, const TextureSpecific& spec, RenderResourceType type) : RenderResource(context, type), m_spec(spec) {}
+		Texture(Ref<RenderContext>& context, const TextureSpecific& spec) : RenderResource(context, RenderResourceType::Texture, spec.Name), m_spec(spec) {}
+		Texture(Ref<RenderContext>& context, const TextureSpecific& spec, RenderResourceType type) : RenderResource(context, type, spec.Name), m_spec(spec) {}
 		virtual ~Texture() = default;
 
 		TextureSpecific& spec() { return m_spec; }

@@ -25,6 +25,7 @@ namespace pio
 		camComp->Depth = depth;
 		camComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->assetHnd();
 		transComp->Position = glm::vec3(-3.f, 5.f, 2.5f);
+		transComp->Rotation = glm::vec3(-45.f, -60.f, 0.f);
 		return entity;
 	}
 
