@@ -7,10 +7,14 @@ namespace pio
 {
 	class MainLightShadowCasterPass : public RenderPass
 	{
+		OVERRIDE_PASS_TYPE(RenderPassType::MainLightShadowCaster)
 	public:
 		MainLightShadowCasterPass(const std::string &name, RenderPassEvent event) : RenderPass(name, event) {}
 		~MainLightShadowCasterPass() = default;
 	};
+
+	template<>
+	bool RenderPass::is<MainLightShadowCasterPass>() const;
 }
 
 #endif

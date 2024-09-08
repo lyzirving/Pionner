@@ -102,16 +102,16 @@ namespace pio
 	};
 
 	template<>
-	bool Event::is<MouseMovedEvent>();
+	bool Event::is<MouseMovedEvent>() const;
 
 	template<>
-	bool Event::is<MouseScrolledEvent>();
+	bool Event::is<MouseScrolledEvent>() const;
 
 	template<>
-	bool Event::is<MouseButtonPressedEvent>();
+	bool Event::is<MouseButtonPressedEvent>() const;
 
 	template<>
-	bool Event::is<MouseButtonReleasedEvent>();
+	bool Event::is<MouseButtonReleasedEvent>() const;
 
 }
 

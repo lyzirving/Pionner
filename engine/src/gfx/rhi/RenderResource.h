@@ -2,7 +2,6 @@
 #define __PIONNER_GFX_RHI_RENDER_RESOURCE_H__
 
 #include "RhiDef.h"
-#include "asset/Asset.h"
 
 namespace pio
 {

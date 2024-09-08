@@ -14,6 +14,13 @@ namespace pio
 		static const char* UNI_MODEL_MAT = "u_modelMat";
 		//Uniform block
 		static const char* BINDING_CAM_BLOCK = "CameraBlock";
+
+		//GBuffer in Deferred pass
+		static const char* UNI_GBUFFER_POS      = "u_GPosition";
+		static const char* UNI_GBUFFER_NORMAL   = "u_GNormal";
+		static const char* UNI_GBUFFER_ALBEDO   = "u_GAlbedoAlpha";
+		static const char* UNI_GBUFFER_MATERIAL = "u_GMaterial";
+		static const char* UNI_GBUFFER_EMISSION = "u_GEmission";
 	}
 
 	enum RenderingMode : uint8_t

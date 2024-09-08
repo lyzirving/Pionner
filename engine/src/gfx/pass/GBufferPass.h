@@ -7,6 +7,7 @@ namespace pio
 {
 	class GBufferPass : public RenderPass
 	{
+		OVERRIDE_PASS_TYPE(RenderPassType::GBuffer)
 	public:
 		GBufferPass(const std::string &name, RenderPassEvent event) : RenderPass(name, event) {}
 		~GBufferPass() = default;
@@ -15,6 +16,9 @@ namespace pio
 		virtual void onDetach(Ref<RenderContext>& context) override;
 		virtual void onExecute(Ref<RenderContext>& context, Ref<RenderPass>& lastPass) override;
 	};
+
+	template<>
+	bool RenderPass::is<GBufferPass>() const;
 }
 
 #endif

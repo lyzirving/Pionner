@@ -19,11 +19,13 @@ namespace pio
 	class UniformData
 	{
 	public:
-		UniformData(UniformDataType type, const std::string &name = "Uniform None") 
-			: m_type(type), m_name(name), m_byteUsed(Rhi::GetUniformByteSize(type))
-		{
-			m_buffer.allocate(0, m_byteUsed);
-		}
+		UniformData(UniformDataType type, const std::string& name = "Uniform None");
+
+		UniformData(const UniformData& rhs);
+		UniformData(UniformData&& rhs) noexcept;
+
+		UniformData& operator=(const UniformData& rhs);
+		UniformData& operator=(UniformData&& rhs) noexcept;
 
 		virtual ~UniformData() {  m_buffer.release(); }
 		virtual void read(void *reader, uint32_t offset = 0) const {/*do nothing*/}

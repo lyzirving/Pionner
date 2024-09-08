@@ -32,6 +32,9 @@ namespace pio
 		FrameBuffer(Ref<RenderContext>& context, const FrameBufferSpecific& spec) : RenderResource(context, RenderResourceType::FBO, spec.Name), m_spec(spec) {}
 		virtual ~FrameBuffer() = default;
 
+		virtual const std::vector<Ref<Texture>>& colorBuffers() const = 0;
+		virtual const Ref<Texture>& depthBuffer() const = 0;
+
 		const FrameBufferSpecific& spec() const { return m_spec; }
 
 		uint32_t width() const { return spec().Width; }

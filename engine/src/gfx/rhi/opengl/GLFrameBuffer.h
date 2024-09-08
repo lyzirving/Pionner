@@ -21,6 +21,9 @@ namespace pio
 		virtual uint32_t size() const override { return 0; }
 		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
 
+		virtual const std::vector<Ref<Texture>>& colorBuffers() const override { return m_colorBuffs; }
+		virtual const Ref<Texture>& depthBuffer() const override { return m_depthBuff; };
+
 	private:
 		std::vector<Ref<Texture>> m_colorBuffs;
 		Ref<Texture> m_depthBuff;

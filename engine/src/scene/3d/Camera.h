@@ -51,8 +51,7 @@ namespace pio
 		Camera() : Asset() {}
 		~Camera() = default;
 
-		void culling(RenderingEntities& renderingEntities);
-		void setUp(Ref<RenderContext>& context);
+		void culling(RenderingEntities& renderingEntities);		
 		void update(Ref<RenderContext>& context);				
 
 		void setPosition(const glm::vec3& position);
@@ -101,6 +100,8 @@ namespace pio
 
 	private:
 		void flush();
+		void setUp(Ref<RenderContext>& context);
+
 		void calcViewMat();
 		void calcCameraPose();
 

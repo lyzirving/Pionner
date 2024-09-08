@@ -8,8 +8,15 @@ namespace pio
 	enum class AssetType : uint8_t
 	{
 		None, 
-		SceneResource, Camera, Mesh, Material,
-		RenderResource, Texture
+		// Asset that has Cpu resource
+		SceneResource, 
+		Camera,
+		Mesh, 
+		Material,
+		// Asset that has Gpu resource
+		RenderResource, 
+		MeshRenderBuffer, 
+		Texture
 	};
 
 	#define OVERRIDE_ASSET_TYPE(TypeName)  public:\
@@ -18,6 +25,7 @@ namespace pio
 
 	class Asset
 	{
+		PIO_IS_AS_INTERFACE_DECLARE(Asset)
 	public:
 		Asset() : m_hnd(), m_parentHnd(0) {}
 
@@ -33,27 +41,14 @@ namespace pio
 		}
 
 		virtual ~Asset() = default;
-		virtual AssetType assetType() const { return StaticType(); }
+		virtual AssetType assetType() const { return AssetType::None; }
 
 	public:
 		UUID32 assetHnd() { return m_hnd; }
 		const UUID32& assetHnd() const { return m_hnd; }
 		const UUID32& parentHnd() const { return m_parentHnd; }
 
-		void setParentHnd(const UUID32& hnd) { m_parentHnd = hnd; }
-
-	public:
-		template<typename T>
-		bool is() const { return false; }
-
-		template<typename T>
-		const T* as() const { if (std::is_base_of<Asset, T>() && is<T>()) { return static_cast<const T*>(this); } else { return nullptr; } }
-
-		template<typename T>
-		T* as() { if (std::is_base_of<Asset, T>() && is<T>()) { return static_cast<T*>(this); } else { return nullptr; } }
-
-	public:
-		static AssetType StaticType() { return AssetType::None; }
+		void setParentHnd(const UUID32& hnd) { m_parentHnd = hnd; }		
 
 	protected:
 		UUID32 m_hnd, m_parentHnd;

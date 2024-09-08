@@ -25,7 +25,7 @@ namespace pio
 
 	enum class ShaderType : uint8_t
 	{
-		GBuffer, Num
+		GBuffer, Deferred, Num
 	};
 
 	enum class RenderResourceType : uint8_t

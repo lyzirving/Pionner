@@ -31,26 +31,18 @@ namespace pio
 								   virtual EventType getEventType() const override { return StaticType(); }\
 								   virtual const char* getName() const override { return #type; }
 
-	#define EVENT_CLASS_CATEGORY(category) virtual int getCategoryFlags() const override { return category; }
+	#define EVENT_CLASS_CATEGORY(category) virtual int categoryFlags() const override { return category; }
 
 	class Event
 	{
+		PIO_IS_AS_INTERFACE_DECLARE(Event)
 	public:
 		virtual ~Event() = default;
 
 		virtual EventType getEventType() const = 0;
 		virtual const char *getName() const = 0;
-		virtual int getCategoryFlags() const = 0;
+		virtual int categoryFlags() const = 0;
 		virtual std::string toString() const { return getName(); }
-
-		bool isInCategory(EventCategory category) { return getCategoryFlags() & category; }
-
-		template<typename T>
-		T *as() { if (is<T>()) { return static_cast<T *>(this); } else { return nullptr; } }
-
-	protected:
-		template<typename T>
-		bool is() { return false; }
 
 	public:
 		bool Handled{ false };

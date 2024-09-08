@@ -3,17 +3,17 @@
 namespace pio
 {
 	template<>
-	bool Event::is<WindowResizeEvent>() { return getEventType() == EventType::WindowResize; }
+	bool Event::is<WindowResizeEvent>() const { return getEventType() == EventType::WindowResize; }
 
 	template<>
-	bool Event::is<WindowCloseEvent>() { return getEventType() == EventType::WindowClose; }
+	bool Event::is<WindowCloseEvent>() const { return getEventType() == EventType::WindowClose; }
 
 	template<>
-	bool Event::is<AppTickEvent>() { return getEventType() == EventType::AppTick; }
+	bool Event::is<AppTickEvent>() const { return getEventType() == EventType::AppTick; }
 
 	template<>
-	bool Event::is<AppUpdateEvent>() { return getEventType() == EventType::AppUpdate; }
+	bool Event::is<AppUpdateEvent>() const { return getEventType() == EventType::AppUpdate; }
 
 	template<>
-	bool Event::is<AppRenderEvent>() { return getEventType() == EventType::AppRender; }
+	bool Event::is<AppRenderEvent>() const { return getEventType() == EventType::AppRender; }
 }

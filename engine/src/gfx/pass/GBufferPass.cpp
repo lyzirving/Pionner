@@ -8,6 +8,7 @@
 #include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/UniformBuffer.h"
 #include "gfx/renderer/RenderContext.h"
+#include "gfx/resource/MeshRenderBuffer.h"
 
 #include "scene/resources/Mesh.h"
 #include "scene/resources/Material.h"
@@ -34,53 +35,56 @@ namespace pio
         PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Color);
 
 		TextureSpecificBuilder geoBuffBuilder;
-		geoBuffBuilder.name("GeoBuffer")
+		geoBuffBuilder.name(GpuAttr::UNI_GBUFFER_POS)
 			.type(TextureType::TwoDimen)
 			.format(TextureFormat::RGBA_HALF)
 			.width(colorW).height(colorH)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
-		fboSpec.ColorSpec.push_back(geoBuffBuilder.build());
+            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);		
 
         TextureSpecificBuilder normalBuffBuilder;
-        normalBuffBuilder.name("NormalBuffer")
+        normalBuffBuilder.name(GpuAttr::UNI_GBUFFER_NORMAL)
             .type(TextureType::TwoDimen)
             .format(TextureFormat::RGBA_HALF)
             .width(colorW).height(colorH)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
-        fboSpec.ColorSpec.push_back(normalBuffBuilder.build());
 
         TextureSpecificBuilder albeoBuffBuilder;
-        albeoBuffBuilder.name("AlbedoBuffer")
+        albeoBuffBuilder.name(GpuAttr::UNI_GBUFFER_ALBEDO)
             .type(TextureType::TwoDimen)
             .format(TextureFormat::RGBA_HALF)
             .width(colorW).height(colorH)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
-        fboSpec.ColorSpec.push_back(albeoBuffBuilder.build());
 
         TextureSpecificBuilder matBuffBuilder;
-        matBuffBuilder.name("MaterialBuffer")
+        matBuffBuilder.name(GpuAttr::UNI_GBUFFER_MATERIAL)
             .type(TextureType::TwoDimen)
             .format(TextureFormat::RGBA_HALF)
             .width(colorW).height(colorH)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
-        fboSpec.ColorSpec.push_back(matBuffBuilder.build());
 
         TextureSpecificBuilder emissionBuffBuilder;
-        emissionBuffBuilder.name("EmissionBuffer")
+        emissionBuffBuilder.name(GpuAttr::UNI_GBUFFER_EMISSION)
             .type(TextureType::TwoDimen)
             .format(TextureFormat::RGBA_HALF)
             .width(colorW).height(colorH)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
-        fboSpec.ColorSpec.push_back(emissionBuffBuilder.build());
 
         TextureSpecificBuilder depthBuilder;
-        depthBuilder.name("GeoPass Depth Buffer").type(TextureType::RenderBuffer)
-            .format(TextureFormat::DEPTH_24_STENCIL_8).width(depthW).height(depthH);
+        depthBuilder.name("GeoPass Depth Buffer")
+            .type(TextureType::RenderBuffer)
+            .format(TextureFormat::DEPTH_24_STENCIL_8)
+            .width(depthW).height(depthH);
+
+        fboSpec.ColorSpec.push_back(geoBuffBuilder.build());
+        fboSpec.ColorSpec.push_back(normalBuffBuilder.build());
+        fboSpec.ColorSpec.push_back(albeoBuffBuilder.build());
+        fboSpec.ColorSpec.push_back(matBuffBuilder.build());
+        fboSpec.ColorSpec.push_back(emissionBuffBuilder.build());
         fboSpec.DepthSpec = depthBuilder.build();
 
         m_frameBuff = FrameBuffer::Create(context, fboSpec);
@@ -114,9 +118,9 @@ namespace pio
         }
         UUID32 camFilter = it->second;
 
-        Ref<FrameBuffer>& fbo = m_frameBuff;
-        Ref<Shader> &shader = context->shader(ShaderType::GBuffer);
-        const RenderStateAttrs& attr = m_attrs;        
+        auto& fbo = m_frameBuff;
+        auto& shader = context->shader(ShaderType::GBuffer);
+        const auto& attr = m_attrs;        
 
 		context->submitRC([&context, &fbo, &shader, &attr, camFilter, opaqueMeshItems]()
         {
@@ -134,20 +138,20 @@ namespace pio
 
             for(const auto& item : opaqueMeshItems)
             {
-                Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(item.MeshFilter);
+                Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
                 Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(item.MaterialFilter);
-                if(!mesh || !material)
+                if(!meshBuff || !material)
                 {
-                    LOGW("warning! fail to find mesh or material in asset, it might be deleted");
+                    LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
                     continue;
                 }
-                const auto &unims = mesh->unims();
-                for (auto it : unims)
+               
+                for (auto it : meshBuff->Uniforms)
                 { 
                     shader->setUniformData(it.second); 
                 }
                 material->bind(shader);
-                context->drawTriangles(mesh->data().Vao, mesh->data().Ebo);
+                context->drawTriangles(meshBuff);
             }
 
             shader->unbind();
@@ -155,4 +159,7 @@ namespace pio
             context->onEndFrameBuffer(fbo);                      
         });
 	}
+
+    template<>
+    bool RenderPass::is<GBufferPass>() const { return type() == RenderPassType::GBuffer; }
 }

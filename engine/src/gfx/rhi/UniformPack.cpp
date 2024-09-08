@@ -587,7 +587,7 @@ namespace pio
 	}
 
 	template<>
-	bool UniformPack::is<UnimPackMatArray>() 
+	bool UniformPack::is<UnimPackMatArray>() const
 	{
 		return m_type == UniformDataType::Mat2Array ||
 			   m_type == UniformDataType::Mat3Array ||
@@ -595,8 +595,8 @@ namespace pio
 	}
 
 	template<>
-	bool UniformPack::is<UnimPackStruct>() { return m_type == UniformDataType::Struct; }
+	bool UniformPack::is<UnimPackStruct>() const { return m_type == UniformDataType::Struct; }
 
 	template<>
-	bool UniformPack::is<UnimPackStructArray>() { return m_type == UniformDataType::StructArray; }	
+	bool UniformPack::is<UnimPackStructArray>() const { return m_type == UniformDataType::StructArray; }
 }

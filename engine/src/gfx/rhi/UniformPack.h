@@ -18,6 +18,7 @@ namespace pio
 	*/
 	class UniformPack
 	{
+		PIO_IS_AS_INTERFACE_DECLARE(UniformPack)
 	public:
 		UniformPack();
 		UniformPack(UniformDataType type);
@@ -38,17 +39,11 @@ namespace pio
 		void setAlignOffset(uint32_t offset) { m_alignOffset = offset; }
 		void setByteUsed(uint32_t used) { m_byteUsed = used; }
 
-		template<class T>
-		T *as() { if (is<T>()) { return static_cast<T *>(this); } else { return nullptr; } }
-
 	public:
 		static bool IsPrimitive(UniformDataType type);
 
 	protected:
 		static uint32_t CalcAlignOffset(uint32_t occupied, uint32_t baseAlign);
-
-		template<class T>
-		bool is() { return false; }
 
 	protected:
 		std::string m_name{};
@@ -251,13 +246,13 @@ namespace pio
 	};
 
 	template<>
-	bool UniformPack::is<UnimPackMatArray>();
+	bool UniformPack::is<UnimPackMatArray>() const;
 
 	template<>
-	bool UniformPack::is<UnimPackStruct>();
+	bool UniformPack::is<UnimPackStruct>() const;
 
 	template<>
-	bool UniformPack::is<UnimPackStructArray>();
+	bool UniformPack::is<UnimPackStructArray>() const;
 }
 
 #endif

@@ -7,9 +7,7 @@
 #include "gfx/rhi/UniformBuffer.h"
 #include "gfx/rhi/ShaderCompiler.h"
 
-#include "gfx/rhi/VertexArray.h"
-#include "gfx/rhi/VertexBuffer.h"
-#include "gfx/rhi/IndexBuffer.h"
+#include "gfx/resource/MeshRenderBuffer.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -90,15 +88,15 @@ namespace pio
 		return m_api->bindUnimBlock(shader->id(), unimBuff->binding(), blockName);
 	}
 
-	void RenderContext::drawTriangles(Ref<VertexArray>& vao, Ref<IndexBuffer>& ebo)
+	void RenderContext::drawTriangles(Ref<MeshRenderBuffer>& meshBuff)
 	{
-		vao->bind();
-		ebo->bind();
+		meshBuff->Vao->bind();
+		meshBuff->Ebo->bind();
 
-		m_api->drawElements(DrawMode_Triangle, ebo->indexCount(), ebo->internalFmt());
+		m_api->drawElements(DrawMode_Triangle, meshBuff->Ebo->indexCount(), meshBuff->Ebo->internalFmt());
 
-		ebo->unbind();
-		vao->unbind();
+		meshBuff->Ebo->unbind();
+		meshBuff->Vao->unbind();
 	}
 
 	void RenderContext::initResource()

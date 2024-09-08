@@ -19,9 +19,7 @@ namespace pio
 	class Shader;
 	class FrameBuffer;
 	class UniformBuffer;
-	class VertexBuffer;
-	class IndexBuffer;
-	class VertexArray;
+	class MeshRenderBuffer;
 
 	class RenderContext : public std::enable_shared_from_this<RenderContext>
 	{
@@ -120,8 +118,8 @@ namespace pio
 		void onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs);
 		void onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer);
 
-		bool bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName);
-		void drawTriangles(Ref<VertexArray>& vao, Ref<IndexBuffer>& ebo);
+		bool bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName);		
+		void drawTriangles(Ref<MeshRenderBuffer>& meshBuff);
 
 	private:
 		static constexpr uint32_t k_queueNum = 2;		

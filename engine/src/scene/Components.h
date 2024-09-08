@@ -35,7 +35,8 @@ namespace pio
 
 	struct MeshRenderer : public Component
 	{
-		UUID32 MatUid{ InvalidId };//Uid for material asset
+		UUID32 MatUid{ InvalidId }; //Uid for material asset
+		UUID32 BuffUid{ InvalidId };//Uid for MeshRenderBuffer
 	};
 }
 

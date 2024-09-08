@@ -40,10 +40,10 @@ namespace pio
 	template<>
 	VertexBufferLayout VertexBuffer::To<Vertex3d>()
 	{
-		VertexBufferElement pos{ "Pos", ShaderDataType::Float3, false };
-		VertexBufferElement normal{ "Normal", ShaderDataType::Float3, false };
+		VertexBufferElement pos{ "Pos", ShaderDataType::Float3, false };		
 		VertexBufferElement texCoord{ "TexCoord", ShaderDataType::Float2, false };
-		VertexBufferLayout layout{ pos, normal, texCoord };
+		VertexBufferElement normal{ "Normal", ShaderDataType::Float3, false };
+		VertexBufferLayout layout{ pos, texCoord, normal };
 		return layout;
 	}
 }

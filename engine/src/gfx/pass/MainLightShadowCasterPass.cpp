@@ -7,5 +7,6 @@
 
 namespace pio
 {
-
+	template<>
+	bool RenderPass::is<MainLightShadowCasterPass>() const { return type() == RenderPassType::MainLightShadowCaster; }
 }

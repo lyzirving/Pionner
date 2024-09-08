@@ -38,32 +38,47 @@ namespace pio
 		MainAfterRendering
 	};
 
+	enum class RenderPassType : uint8_t
+	{
+		MainLightShadowCaster, GBuffer, Deferred, Num
+	};
+
 	class RenderContext;
 	class FrameBuffer;
 
+	#define OVERRIDE_PASS_TYPE(TypeName)  public:\
+									      static  RenderPassType StaticType() { return TypeName; }\
+									      virtual RenderPassType type() const override { return StaticType(); }
+
 	class RenderPass
 	{
+		PIO_IS_AS_INTERFACE_DECLARE(RenderPass)
 	public:
 		RenderPass(const std::string& name, RenderPassEvent event) : m_name(name), m_event(event) {}
-		virtual ~RenderPass() = default;
-
-		const std::string& name() const { return m_name; }
-		RenderPassEvent event() const { return m_event; }
-		bool bActive() const { return m_bActive; }
-
-		void setActive(bool val) { m_bActive = val; }
+		virtual ~RenderPass() = default;				
 
 		virtual void onAttach(Ref<RenderContext>& context) {}
 		virtual void onDetach(Ref<RenderContext>& context) {}
 		virtual void onExecute(Ref<RenderContext> &context, Ref<RenderPass>& lastPass) {}
+		virtual RenderPassType type() const { return RenderPassType::Num; }
+
+	public:
+		void setActive(bool val) { m_bActive = val; }
+
+		Ref<FrameBuffer>& frameBuffer() { return m_frameBuff; }
+
+		const std::string& name() const { return m_name; }
+		RenderPassEvent event() const { return m_event; }
+		bool bActive() const { return m_bActive; }
+		const Ref<FrameBuffer>& frameBuffer() const { return m_frameBuff; }
 
 	public:
 		static bool PassSorter(Ref<RenderPass>& lhs, Ref<RenderPass>& rhs);
 
 	protected:
-		std::string m_name;
-		bool m_bActive{ true };
+		std::string m_name;		
 		RenderPassEvent m_event;
+		bool m_bActive{ true };
 
 		Ref<FrameBuffer> m_frameBuff;
 		RenderStateAttrs m_attrs;

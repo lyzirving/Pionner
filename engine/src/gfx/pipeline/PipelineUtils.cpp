@@ -9,6 +9,7 @@
 #include "scene/resources/Material.h"
 
 #include "gfx/renderer/RenderContext.h"
+#include "gfx/resource/MeshRenderBuffer.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -60,17 +61,19 @@ namespace pio
 				return;
 			}
 
-			Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->Uid);
-			Ref<Material> mat = AssetMgr::GetRuntimeAsset<Material>(render->MatUid);
-
+			auto mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->Uid);
 			mesh->update(context, *transComp);
-			mat->update(context);
+
+			Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(render->MatUid);
+			Ref<MeshRenderBuffer> buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(render->BuffUid);
+			material->update(context);
+			buff->update(context, mesh);
 
 			MeshRenderingItem item;
-			item.MeshFilter = filter->Uid;
+			item.RenderBuffFilter = render->BuffUid;
 			item.MaterialFilter = render->MatUid;
 
-			switch(mat->renderingMode())
+			switch(material->renderingMode())
 			{
 				case RenderingMode_Opaque:
 				{

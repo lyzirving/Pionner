@@ -79,14 +79,6 @@ namespace pio
 		//TODO
 	}
 
-	void Camera::setUp(Ref<RenderContext>& context)
-	{
-		if (!m_data.UnimBuff)
-		{
-			m_data.UnimBuff = UniformBuffer::Create(context, m_data.UnimData.Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
-		}
-	}
-
 	void Camera::update(Ref<RenderContext>& context)
 	{
 		setUp(context);
@@ -140,6 +132,14 @@ namespace pio
 		calcViewMat();
 		m_persFrustum.flush();
 		m_orthoFrustum.flush();
+	}
+
+	void Camera::setUp(Ref<RenderContext>& context)
+	{
+		if (!m_data.UnimBuff)
+		{
+			m_data.UnimBuff = UniformBuffer::Create(context, m_data.UnimData.Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
+		}
 	}
 
 	void Camera::calcViewMat()

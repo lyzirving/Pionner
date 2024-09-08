@@ -71,13 +71,13 @@ namespace pio
 	};
 
 	template<>
-	bool Event::is<KeyPressedEvent>();
+	bool Event::is<KeyPressedEvent>() const;
 
 	template<>
-	bool Event::is<KeyReleasedEvent>();
+	bool Event::is<KeyReleasedEvent>() const;
 
 	template<>
-	bool Event::is<KeyTypedEvent>();
+	bool Event::is<KeyTypedEvent>() const;
 }
 
 

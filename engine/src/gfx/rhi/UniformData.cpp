@@ -2,6 +2,46 @@
 
 namespace pio
 {
+	UniformData::UniformData(UniformDataType type, const std::string& name)
+		: m_type(type), m_name(name), m_byteUsed(Rhi::GetUniformByteSize(type))
+	{
+		m_buffer.allocate(0, m_byteUsed);
+	}
+
+	UniformData::UniformData(const UniformData& rhs)
+	{
+		m_type = rhs.m_type;
+		m_name = rhs.m_name;
+		m_byteUsed = rhs.m_byteUsed;
+		m_buffer = rhs.m_buffer;
+	}
+
+	UniformData::UniformData(UniformData&& rhs) noexcept
+	{
+		m_type = std::move(rhs.m_type);
+		m_name = std::move(rhs.m_name);
+		m_byteUsed = std::move(rhs.m_byteUsed);
+		m_buffer = std::move(rhs.m_buffer);
+	}
+
+	UniformData& UniformData::operator=(const UniformData& rhs)
+	{
+		if (this != &rhs)
+		{
+			this->UniformData::UniformData(rhs);
+		}
+		return *this;
+	}
+
+	UniformData& UniformData::operator=(UniformData&& rhs) noexcept
+	{
+		if (this != &rhs)
+		{
+			this->UniformData::UniformData(std::forward<UniformData>(rhs));
+		}
+		return *this;
+	}
+
 	template<>
 	Ref<UniformData> UniformData::Create<bool>(const std::string& name)
 	{

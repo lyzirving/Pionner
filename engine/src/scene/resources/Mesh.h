@@ -2,13 +2,13 @@
 #define __PIONNER_SCENE_RESOURCES_MESH_H__
 
 #include "TriangleMesh.h"
+
 #include "asset/Asset.h"
-#include "gfx/resource/MeshData.h"
 
 namespace pio
 {
+	class RenderContext;
 	struct TransformComponent;
-	class UniformData;
 
 	class Mesh : public Asset
 	{
@@ -17,23 +17,20 @@ namespace pio
 		Mesh() : Asset() {}
 		virtual ~Mesh() = default;
 
-		void setUp(Ref<RenderContext>& context);
-		void update(Ref<RenderContext>& context, const TransformComponent &comp);
+		void update(Ref<RenderContext>& context, const TransformComponent& comp);
 
-		MeshData& data() { return m_data; }
-		TriangleMesh& triMesh() { return m_triMesh; }
-		std::map<std::string, Ref<UniformData>>& unims() { return m_uniforms; }
+		void setTriangleMesh(const TriangleMesh& mesh) { m_triangles = mesh; }
+		void setTriangleMesh(TriangleMesh&& mesh) { m_triangles = std::forward<TriangleMesh>(mesh); }
 
-		const MeshData& data() const { return m_data; }	
-		const TriangleMesh& triMesh() const { return m_triMesh; }
-		const std::map<std::string, Ref<UniformData>>& unims() const { return m_uniforms; }
+		TriangleMesh& triangles() { return m_triangles; }
+		Transform3D& transform() { return m_transform; }
 
-	protected:
-		TriangleMesh m_triMesh;
-		MeshData m_data;
-		std::map<std::string, Ref<UniformData>> m_uniforms;
+		const TriangleMesh& triangles() const { return m_triangles; }
+		const Transform3D& transform() const { return m_transform; }
 
-		Transform3D m_transform;		
+	private:
+		TriangleMesh m_triangles;
+		Transform3D m_transform;
 
 	private:
 		friend class Factory;

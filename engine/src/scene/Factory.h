@@ -20,14 +20,20 @@ namespace pio
 		~Factory() = default;
 	};
 
-	class Geometry3dFactory
+	class GeometryFactory
 	{
 	public:
+		/*
+		* @brief	Make a plane whose length is n and laies on xz plane, the shape of the plane is square
+		* @param n	length of the square
+		*/
 		static TriangleMesh MakePlane(uint32_t n = 5);
+		static TriangleMesh MakeScreenQuad();
+
 
 	private:
-		Geometry3dFactory() {}
-		~Geometry3dFactory() = default;
+		GeometryFactory() {}
+		~GeometryFactory() = default;
 	};
 }
 

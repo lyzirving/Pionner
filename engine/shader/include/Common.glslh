@@ -1,9 +1,5 @@
 #pragma once
 
-// NOTE: should not use 1 for type, because component's default value might be 1
-const int FRAG_TYPE_MESH    = 2;
-const int FRAG_TYPE_OUTLINE = 3;
-
 const float Epsilon = 0.00001;
 
 const float PI = 3.14159265359;

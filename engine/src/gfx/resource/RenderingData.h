@@ -26,7 +26,7 @@ namespace pio
 
 	struct MeshRenderingItem
 	{
-		UUID32 MeshFilter{ InvalidId };
+		UUID32 RenderBuffFilter{ InvalidId };
 		UUID32 MaterialFilter{ InvalidId };
 	};
 

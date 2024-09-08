@@ -65,19 +65,19 @@ namespace pio
 	};
 
 	template<>
-	bool Event::is<WindowResizeEvent>();
+	bool Event::is<WindowResizeEvent>() const;
 
 	template<>
-	bool Event::is<WindowCloseEvent>();
+	bool Event::is<WindowCloseEvent>() const;
 
 	template<>
-	bool Event::is<AppTickEvent>();
+	bool Event::is<AppTickEvent>() const;
 
 	template<>
-	bool Event::is<AppUpdateEvent>();
+	bool Event::is<AppUpdateEvent>() const;
 
 	template<>
-	bool Event::is<AppRenderEvent>();
+	bool Event::is<AppRenderEvent>() const;
 }
 
 #endif

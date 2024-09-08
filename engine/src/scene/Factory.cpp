@@ -9,6 +9,8 @@
 #include "scene/resources/Mesh.h"
 #include "scene/resources/Material.h"
 
+#include "gfx/resource/MeshRenderBuffer.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -37,21 +39,20 @@ namespace pio
 		auto* meshRender = entity->getComponent<MeshRenderer>();
 
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
-		mesh->m_triMesh = Geometry3dFactory::MakePlane();
-
-		auto material = Material::MakeStandardMaterial("My Material");
+		mesh->m_triangles = GeometryFactory::MakePlane();
 
 		meshFilter->Type = MeshType::Plane;
 		meshFilter->Uid = mesh->assetHnd();
 
-		meshRender->MatUid = material->assetHnd();
+		meshRender->MatUid = Material::MakeStandardMaterial("My Material")->assetHnd();
+		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
 
 		return entity;
 	}
 
-	TriangleMesh Geometry3dFactory::MakePlane(uint32_t n)
+	TriangleMesh GeometryFactory::MakePlane(uint32_t n)
 	{
-		TriangleMesh triMesh;
+		TriangleMesh triangles;
 		glm::vec3 origin(-float(n) / 2.f, 0.f, -float(n) / 2.f);
 		for(uint32_t row = 0; row < n; row++)
 		{
@@ -63,32 +64,69 @@ namespace pio
 				v2.Pos = v1.Pos + World::Right;
 				v3.Pos = v2.Pos - World::Forward;
 
-				v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Up;
-
 				v0.TexCoord = glm::vec2(float(col) / float(n), 1.f - float(row) / float(n));
 				v1.TexCoord = glm::vec2(float(col) / float(n), 1.f - float(row + 1) / float(n));
 				v2.TexCoord = glm::vec2(float(col + 1) / float(n), 1.f - float(row + 1) / float(n));
 				v3.TexCoord = glm::vec2(float(col + 1) / float(n), 1.f - float(row) / float(n));
 
-				uint16_t idx = triMesh.Vertices.size();
-				triMesh.Vertices.push_back(v0);
-				triMesh.Vertices.push_back(v1);
-				triMesh.Vertices.push_back(v2);
-				triMesh.Vertices.push_back(v3);
+				v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Up;				
 
-				triMesh.Indices.push_back(idx);
-				triMesh.Indices.push_back(idx + 1);
-				triMesh.Indices.push_back(idx + 2);
-				triMesh.Indices.push_back(idx + 2);
-				triMesh.Indices.push_back(idx + 3);
-				triMesh.Indices.push_back(idx);
+				uint16_t idx = triangles.Vertices.size();
+				triangles.Vertices.push_back(v0);
+				triangles.Vertices.push_back(v1);
+				triangles.Vertices.push_back(v2);
+				triangles.Vertices.push_back(v3);
 
-				triMesh.Triangles.push_back(Triangle((v0.Normal + v1.Normal + v2.Normal) / 3.f,
+				triangles.Indices.push_back(idx);
+				triangles.Indices.push_back(idx + 1);
+				triangles.Indices.push_back(idx + 2);
+				triangles.Indices.push_back(idx + 2);
+				triangles.Indices.push_back(idx + 3);
+				triangles.Indices.push_back(idx);
+
+				triangles.Triangles.push_back(Triangle((v0.Normal + v1.Normal + v2.Normal) / 3.f,
 											{ idx, (uint16_t)(idx + 1), (uint16_t)(idx + 2) }));
-				triMesh.Triangles.push_back(Triangle((v2.Normal + v3.Normal + v0.Normal) / 3.f,
+				triangles.Triangles.push_back(Triangle((v2.Normal + v3.Normal + v0.Normal) / 3.f,
 											{ (uint16_t)(idx + 2), (uint16_t)(idx + 3), idx }));
 			}
 		}
-		return triMesh;
+		return triangles;
+	}
+
+	TriangleMesh GeometryFactory::MakeScreenQuad()
+	{
+		TriangleMesh triangles;
+		Vertex3d v0, v1, v2, v3;
+		v0.Pos = glm::vec3(-1.f, 1.f, 0.f);
+		v1.Pos = glm::vec3(-1.f, -1.f, 0.f);
+		v2.Pos = glm::vec3(1.f, -1.f, 0.f);
+		v3.Pos = glm::vec3(1.f, 1.f, 0.f);
+
+		v0.TexCoord = glm::vec2(0.f, 1.f);
+		v1.TexCoord = glm::vec2(0.f, 0.f);
+		v2.TexCoord = glm::vec2(1.f, 0.f);
+		v3.TexCoord = glm::vec2(1.f, 1.f);
+
+		v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Forward;
+
+		uint16_t idx = triangles.Vertices.size();
+		triangles.Vertices.push_back(v0);
+		triangles.Vertices.push_back(v1);
+		triangles.Vertices.push_back(v2);
+		triangles.Vertices.push_back(v3);
+
+		triangles.Indices.push_back(idx);
+		triangles.Indices.push_back(idx + 1);
+		triangles.Indices.push_back(idx + 2);
+		triangles.Indices.push_back(idx + 2);
+		triangles.Indices.push_back(idx + 3);
+		triangles.Indices.push_back(idx);
+
+		triangles.Triangles.push_back(Triangle((v0.Normal + v1.Normal + v2.Normal) / 3.f,
+									  { idx, (uint16_t)(idx + 1), (uint16_t)(idx + 2) }));
+		triangles.Triangles.push_back(Triangle((v2.Normal + v3.Normal + v0.Normal) / 3.f,
+									  { (uint16_t)(idx + 2), (uint16_t)(idx + 3), idx }));
+
+		return triangles;
 	}
 }
