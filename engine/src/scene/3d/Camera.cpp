@@ -87,15 +87,15 @@ namespace pio
 		{
 			flush();
 
-			m_data.UnimData.ViewMat = viewMat();
-			m_data.UnimData.PrjMat = prjMat();
-			m_data.UnimData.OrthoMat = orthoMat();
-			m_data.UnimData.CameraPosition = position();
-			m_data.UnimData.FrustumFar = frustFar();
-			m_data.UnimData.PrjType = prjType();
-			m_data.UnimData.serialize();
+			m_unimData.ViewMat = viewMat();
+			m_unimData.PrjMat = prjMat();
+			m_unimData.OrthoMat = orthoMat();
+			m_unimData.CameraPosition = position();
+			m_unimData.FrustumFar = frustFar();
+			m_unimData.PrjType = prjType();
+			m_unimData.serialize();
 
-			context->uploadData(m_data.UnimData.Block.getBuffer()->as<void*>(), m_data.UnimData.Block.getByteUsed(), m_data.UnimBuff);
+			context->uploadData(m_unimData.Block.getBuffer()->as<void*>(), m_unimData.Block.getByteUsed(), m_unimBuff);
 		}
 	}
 
@@ -136,9 +136,10 @@ namespace pio
 
 	void Camera::setUp(Ref<RenderContext>& context)
 	{
-		if (!m_data.UnimBuff)
+		if (!m_unimBuff)
 		{
-			m_data.UnimBuff = UniformBuffer::Create(context, m_data.UnimData.Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
+			m_unimData.obtainBlock();
+			m_unimBuff = UniformBuffer::Create(context, m_unimData.Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
 		}
 	}
 

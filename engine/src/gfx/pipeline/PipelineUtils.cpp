@@ -37,6 +37,7 @@ namespace pio
 				cam->setPrjType(camComp->PrjType);
 				cam->setFov(camComp->Fov);
 				cam->setSize(camComp->Size);
+				cam->setAspect(camComp->Aspect);
 				cam->setPosition(transComp->Position);
 				cam->setEuler(transComp->Rotation);
 

@@ -132,15 +132,15 @@ namespace pio
 											void serialize();\
 	                                        static UniformBlock CreateBlock();
 
-	#define PIO_IS_AS_INTERFACE_DECLARE(CLAZZ)  public:\
-                                                template<typename T>\
-												bool is() const { return false; }\
-                                                \
-                                                template<typename T>\
-	                                            const T* as() const { if (std::is_base_of<CLAZZ, T>() && is<T>()) { return static_cast<const T*>(this); } else { return nullptr; } }\
-                                                \
-                                                template<typename T>\
-												T* as() { if (std::is_base_of<CLAZZ, T>() && is<T>()) { return static_cast<T*>(this); } else { return nullptr; } }
+	#define PIO_DECLARE_IS_AS(CLAZZ)  public:\
+                                      template<typename T>\
+									  bool is() const { return false; }\
+                                      \
+                                      template<typename T>\
+	                                  const T* as() const { if (std::is_base_of<CLAZZ, T>() && is<T>()) { return static_cast<const T*>(this); } else { return nullptr; } }\
+                                      \
+                                      template<typename T>\
+									  T* as() { if (std::is_base_of<CLAZZ, T>() && is<T>()) { return static_cast<T*>(this); } else { return nullptr; } }
 }
 
 #endif

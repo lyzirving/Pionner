@@ -22,13 +22,10 @@ namespace pio
 		removeAllEntities();
 	}
 
-	void Scene::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline)
+	void Scene::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<Camera>>& cameras)
 	{
 		RenderingEntities data;
 		data.Mesh = m_registry.view<MeshFilter, MeshRenderer>();
-
-		auto cameraEntities = m_registry.view<CameraComponent>();
-		auto cameras = Pipeline::FetchCamera(context, cameraEntities);
 
 		context->setRenderingEntities(std::move(data));
 		pipeline->onRender(context, cameras);

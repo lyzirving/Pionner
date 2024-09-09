@@ -22,23 +22,20 @@ namespace pio
 {
 	void GBufferPass::onAttach(Ref<RenderContext>& context)
 	{
-        uint32_t colorW = GlobalSettings::ColorResolution(GlobalSettings::ColorResoSetting);
-        uint32_t colorH = colorW / GlobalSettings::AspectRatio(GlobalSettings::AspectSetting);
-
-        uint32_t depthW = GlobalSettings::ShadowResolution(GlobalSettings::ShadowResoSetting);
-        uint32_t depthH = depthW / GlobalSettings::AspectRatio(GlobalSettings::AspectSetting);
+        auto colorSize = GlobalSettings::ColorResolution();
+        auto depthSize = GlobalSettings::ShadowResolution();
 
         FrameBufferSpecific fboSpec;
         fboSpec.Name = "GeoBuffPass";
-        fboSpec.Width = colorW;
-        fboSpec.Height = colorH;
+        fboSpec.Width = colorSize.x;
+        fboSpec.Height = colorSize.y;
         PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Color);
 
 		TextureSpecificBuilder geoBuffBuilder;
 		geoBuffBuilder.name(GpuAttr::UNI_GBUFFER_POS)
 			.type(TextureType::TwoDimen)
 			.format(TextureFormat::RGBA_HALF)
-			.width(colorW).height(colorH)
+			.width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);		
 
@@ -46,7 +43,7 @@ namespace pio
         normalBuffBuilder.name(GpuAttr::UNI_GBUFFER_NORMAL)
             .type(TextureType::TwoDimen)
             .format(TextureFormat::RGBA_HALF)
-            .width(colorW).height(colorH)
+            .width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 
@@ -54,7 +51,7 @@ namespace pio
         albeoBuffBuilder.name(GpuAttr::UNI_GBUFFER_ALBEDO)
             .type(TextureType::TwoDimen)
             .format(TextureFormat::RGBA_HALF)
-            .width(colorW).height(colorH)
+            .width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 
@@ -62,7 +59,7 @@ namespace pio
         matBuffBuilder.name(GpuAttr::UNI_GBUFFER_MATERIAL)
             .type(TextureType::TwoDimen)
             .format(TextureFormat::RGBA_HALF)
-            .width(colorW).height(colorH)
+            .width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 
@@ -70,7 +67,7 @@ namespace pio
         emissionBuffBuilder.name(GpuAttr::UNI_GBUFFER_EMISSION)
             .type(TextureType::TwoDimen)
             .format(TextureFormat::RGBA_HALF)
-            .width(colorW).height(colorH)
+            .width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 
@@ -78,7 +75,7 @@ namespace pio
         depthBuilder.name("GeoPass Depth Buffer")
             .type(TextureType::RenderBuffer)
             .format(TextureFormat::DEPTH_24_STENCIL_8)
-            .width(depthW).height(depthH);
+            .width(depthSize.x).height(depthSize.y);
 
         fboSpec.ColorSpec.push_back(geoBuffBuilder.build());
         fboSpec.ColorSpec.push_back(normalBuffBuilder.build());

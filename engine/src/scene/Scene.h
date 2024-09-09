@@ -6,12 +6,13 @@
 
 namespace pio
 {
+	class Camera;
 	class RenderContext;
 	class RenderPipeline;
 
 	class Scene : public Asset
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::SceneResource)
+		PIO_DEFINE_ASSET_TYPE(AssetType::SceneResource)
 	public:
 		Scene() : Asset() {}
 		~Scene() = default;
@@ -19,7 +20,7 @@ namespace pio
 		virtual void onAttach();
 		virtual void onDetach();
 
-		virtual void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline);
+		virtual void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<Camera>>& cameras);
 
 		Ref<Entity> addEntity(const std::string& name = "")
 		{

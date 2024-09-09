@@ -37,7 +37,7 @@ namespace pio
 		}
 		else
 		{
-			LOGE("err! depth attachment's texture type is not valid");
+			LOGW("warning! depth attachment is not defined or type is invalid");
 		}
 	}
 

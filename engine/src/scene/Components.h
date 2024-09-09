@@ -23,6 +23,7 @@ namespace pio
 		ProjectionType PrjType{ ProjectionType_Perspective };
 		int32_t Depth{ 0 };
 		float Fov{ 60.f };
+		float Aspect{ 1.f };
 		float Size{ 5.f };
 		UUID32 Uid{ InvalidId };
 	};

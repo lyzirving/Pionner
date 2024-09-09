@@ -15,7 +15,7 @@ namespace pio
 
 	class MeshRenderBuffer : public Asset
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::MeshRenderBuffer)
+		PIO_DEFINE_ASSET_TYPE(AssetType::MeshRenderBuffer)
 	public:
 		MeshRenderBuffer();
 

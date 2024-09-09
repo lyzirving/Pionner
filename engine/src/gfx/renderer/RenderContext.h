@@ -18,6 +18,7 @@ namespace pio
 	class Window;
 	class Shader;
 	class FrameBuffer;
+	class RenderTarget;
 	class UniformBuffer;
 	class MeshRenderBuffer;
 
@@ -117,6 +118,9 @@ namespace pio
 
 		void onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs);
 		void onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer);
+
+		void onBeginRenderTarget(Ref<RenderTarget>& target, const RenderStateAttrs& attrs);
+		void onEndRenderTarget(Ref<RenderTarget>& target);
 
 		bool bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName);		
 		void drawTriangles(Ref<MeshRenderBuffer>& meshBuff);

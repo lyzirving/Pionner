@@ -28,9 +28,12 @@ namespace pio
 		static ColorResolutionSetting ColorResoSetting;
 		static ColorAspectSetting AspectSetting;
 
-		static uint32_t ShadowResolution(ShadowResolutionSetting setting);
+		static uint32_t ShadowResolution(ShadowResolutionSetting setting);		
 		static uint32_t ColorResolution(ColorResolutionSetting setting);
 		static float AspectRatio(ColorAspectSetting setting);
+
+		static glm::uvec2 ColorResolution();
+		static glm::uvec2 ShadowResolution();
 	};
 }
 

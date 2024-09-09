@@ -15,17 +15,18 @@ namespace pio
 		Material,
 		// Asset that has Gpu resource
 		RenderResource, 
-		MeshRenderBuffer, 
+		MeshRenderBuffer,
+		RenderTarget,
 		Texture
 	};
 
-	#define OVERRIDE_ASSET_TYPE(TypeName)  public:\
+	#define PIO_DEFINE_ASSET_TYPE(TypeName)  public:\
 									       static  AssetType StaticType() { return TypeName; }\
 									       virtual AssetType assetType() const override { return StaticType(); }
 
 	class Asset
 	{
-		PIO_IS_AS_INTERFACE_DECLARE(Asset)
+		PIO_DECLARE_IS_AS(Asset)
 	public:
 		Asset() : m_hnd(), m_parentHnd(0) {}
 

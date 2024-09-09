@@ -8,12 +8,13 @@ namespace pio
 {
 	class Scene;
 	class Entity;
+	class RenderContext;
 
 	class Factory
 	{
 	public:
-		static Ref<Entity> MakeCamera(Ref<Scene>& scene, const std::string& name = "", int32_t depth = 0);
-		static Ref<Entity> MakePlane(Ref<Scene>& scene, const std::string& name = "");
+		static Ref<Entity> MakeCamera(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name = "", int32_t depth = 0);
+		static Ref<Entity> MakePlane(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name = "");
 
 	private:
 		Factory() {}

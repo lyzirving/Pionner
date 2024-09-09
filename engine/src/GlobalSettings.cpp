@@ -50,4 +50,20 @@ namespace pio
 				return 1.f;
 		}
 	}
+
+	glm::uvec2 GlobalSettings::ColorResolution()
+	{
+		glm::uvec2 resolution;
+		resolution.x = GlobalSettings::ColorResolution(GlobalSettings::ColorResoSetting);
+		resolution.y = resolution.x / GlobalSettings::AspectRatio(GlobalSettings::AspectSetting);
+		return resolution;
+	}
+
+	glm::uvec2 GlobalSettings::ShadowResolution()
+	{
+		glm::uvec2 resolution;
+		resolution.x = GlobalSettings::ShadowResolution(GlobalSettings::ShadowResoSetting);
+		resolution.y = resolution.x / GlobalSettings::AspectRatio(GlobalSettings::AspectSetting);
+		return resolution;
+	}
 }

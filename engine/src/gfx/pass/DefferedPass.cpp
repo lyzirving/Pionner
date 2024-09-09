@@ -7,8 +7,10 @@
 #include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/Shader.h"
 #include "gfx/resource/MeshRenderBuffer.h"
+#include "gfx/resource/RenderTarget.h"
 
 #include "scene/Factory.h"
+#include "scene/3d/Camera.h"
 #include "scene/resources/Mesh.h"
 
 #ifdef LOCAL_TAG
@@ -20,38 +22,6 @@ namespace pio
 {
     void DefferedPass::onAttach(Ref<RenderContext>& context)
     {
-        uint32_t colorW = GlobalSettings::ColorResolution(GlobalSettings::ColorResoSetting);      
-        uint32_t colorH = colorW / GlobalSettings::AspectRatio(GlobalSettings::AspectSetting);
-
-        uint32_t depthW = GlobalSettings::ShadowResolution(GlobalSettings::ShadowResoSetting);
-        uint32_t depthH = depthW / GlobalSettings::AspectRatio(GlobalSettings::AspectSetting);
-
-        FrameBufferSpecific fboSpec;
-        fboSpec.Name = "DefferedPass";
-        fboSpec.Width = colorW;
-        fboSpec.Height = colorH;
-        PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Color);
-
-        TextureSpecificBuilder texBuilder;
-        texBuilder.name("Deferred Pass Color Buffer")
-            .type(TextureType::TwoDimen)
-            .format(TextureFormat::RGBA_HALF)
-            .width(colorW).height(colorH)
-            .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);       
-
-        TextureSpecificBuilder depthBuilder;
-        depthBuilder.name("Deferred Pass Depth Buffer")
-            .type(TextureType::RenderBuffer)
-            .format(TextureFormat::DEPTH_24_STENCIL_8)
-            .width(depthW).height(depthH);
-
-        fboSpec.ColorSpec.push_back(texBuilder.build()); 
-        fboSpec.DepthSpec = depthBuilder.build();
-
-        m_frameBuff = FrameBuffer::Create(context, fboSpec);
-        context->uploadData(m_frameBuff);
-
         m_attrs.setClear(Clear::Common())
             .setBlend(Blend::Disable())
             .setDepth(DepthTest::Common())
@@ -69,27 +39,24 @@ namespace pio
     {
         m_screenMesh.reset();
         m_screenBuff.reset();
-        m_frameBuff.reset();
     }
 
 	void DefferedPass::onExecute(Ref<RenderContext>& context, Ref<Camera>& camera, Ref<RenderPass>& lastPass)
     {
-        if (!lastPass || !lastPass->is<GBufferPass>())
-        {
-            LOGE("err! invalid last pass");
-            return;
-        }
+        PIO_CHECK_RETURN(lastPass && lastPass->is<GBufferPass>(), "err! invalid last pass");
+        auto& target = camera->renderTarget();
+        PIO_CHECK_RETURN(target, "err! render target has not been set!");
+
         auto& lastFbo = lastPass->frameBuffer();
-        auto& fbo = m_frameBuff;
         auto& shader = context->shader(ShaderType::Deferred);
         auto& meshBuff = m_screenBuff;
         const auto& attr = m_attrs;
 
-        context->submitRC([&context, &fbo, &lastFbo, &shader, &meshBuff, &attr]()
+        context->submitRC([&context, &target, &lastFbo, &shader, &meshBuff, &attr]()
         {
             const auto& colorBuffers = lastFbo->colorBuffers();
 
-            context->onBeginFrameBuffer(fbo, attr);
+            context->onBeginRenderTarget(target, attr);
 
             shader->bind();
 
@@ -118,7 +85,7 @@ namespace pio
 
             shader->unbind();
 
-            context->onEndFrameBuffer(fbo);
+            context->onEndRenderTarget(target);
         });
     }
 

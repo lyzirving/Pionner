@@ -14,7 +14,7 @@ namespace pio
 
 	class Material : public Asset
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::Material)
+		PIO_DEFINE_ASSET_TYPE(AssetType::Material)
 	public:
 		Material(const std::string& name, RenderingMode mode, ShaderSpecifier spec);
 		virtual ~Material() = default;

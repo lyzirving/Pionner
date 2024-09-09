@@ -8,6 +8,7 @@
 #include "gfx/rhi/ShaderCompiler.h"
 
 #include "gfx/resource/MeshRenderBuffer.h"
+#include "gfx/resource/RenderTarget.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -81,6 +82,16 @@ namespace pio
 	{
 		frameBuffer->unbind();		
 		m_api->setViewport(m_vp.offsetX(), m_vp.offsetY(), m_vp.ratioW(), m_vp.ratioH());// restore viewport
+	}
+
+	void RenderContext::onBeginRenderTarget(Ref<RenderTarget>& target, const RenderStateAttrs& attrs)
+	{
+		onBeginFrameBuffer(target->frameBuffer(), attrs);
+	}
+
+	void RenderContext::onEndRenderTarget(Ref<RenderTarget>& target)
+	{
+		onEndFrameBuffer(target->frameBuffer());
 	}
 
 	bool RenderContext::bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName)

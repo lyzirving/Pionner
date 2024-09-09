@@ -53,7 +53,7 @@ namespace pio
 
 	class RenderPass
 	{
-		PIO_IS_AS_INTERFACE_DECLARE(RenderPass)
+		PIO_DECLARE_IS_AS(RenderPass)
 	public:
 		RenderPass(const std::string& name, RenderPassEvent event) : m_name(name), m_event(event) {}
 		virtual ~RenderPass() = default;				

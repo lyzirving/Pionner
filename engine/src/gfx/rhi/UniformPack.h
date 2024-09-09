@@ -18,7 +18,7 @@ namespace pio
 	*/
 	class UniformPack
 	{
-		PIO_IS_AS_INTERFACE_DECLARE(UniformPack)
+		PIO_DECLARE_IS_AS(UniformPack)
 	public:
 		UniformPack();
 		UniformPack(UniformDataType type);

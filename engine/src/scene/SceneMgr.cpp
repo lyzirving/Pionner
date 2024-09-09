@@ -1,6 +1,11 @@
 #include "SceneMgr.h"
+#include "Components.h"
+#include "scene/3d/Camera.h"
 
-#include "gfx/renderer/RenderContext.h"
+#include "ui/ViewMgr.h"
+
+#include "gfx/resource/RenderTarget.h"
+#include "gfx/pipeline/PipelineUtils.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -48,11 +53,17 @@ namespace pio
 		}
 	}
 
-	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline)
+	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<ViewMgr>& viewMgr)
 	{
+		Ref<RenderTarget> target;
 		if (m_active)
 		{
-			m_active->onUpdate(context, pipeline);
+			auto cameraEntities = m_active->registry().view<CameraComponent>();
+			auto cameras = Pipeline::FetchCamera(context, cameraEntities);
+			PIO_CHECK_RETURN(!cameras.empty(), "err! camera must be added into scene before rendering");
+			m_active->onUpdate(context, pipeline, cameras);
+			target = cameras[0]->renderTarget();
 		}
+		viewMgr->onUpdate(context, target);
 	}
 }

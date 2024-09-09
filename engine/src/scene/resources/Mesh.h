@@ -12,7 +12,7 @@ namespace pio
 
 	class Mesh : public Asset
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::Mesh)
+		PIO_DEFINE_ASSET_TYPE(AssetType::Mesh)
 	public:
 		Mesh() : Asset() {}
 		virtual ~Mesh() = default;

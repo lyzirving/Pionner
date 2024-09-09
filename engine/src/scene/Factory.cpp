@@ -1,7 +1,8 @@
 #include "Factory.h"
-
 #include "Components.h"
 #include "Scene.h"
+
+#include "GlobalSettings.h"
 
 #include "asset/AssetMgr.h"
 
@@ -10,6 +11,8 @@
 #include "scene/resources/Material.h"
 
 #include "gfx/resource/MeshRenderBuffer.h"
+#include "gfx/resource/RenderTarget.h"
+#include "gfx/rhi/FrameBuffer.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -18,20 +21,50 @@
 
 namespace pio
 {
-	Ref<Entity> Factory::MakeCamera(Ref<Scene>& scene, const std::string& name, int32_t depth)
+	Ref<Entity> Factory::MakeCamera(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name, int32_t depth)
 	{
 		auto entity = scene->addEntity<CameraComponent, TransformComponent>(name);
 		auto* camComp = entity->getComponent<CameraComponent>();
 		auto* transComp = entity->getComponent<TransformComponent>();
 
+		auto camera = AssetMgr::MakeRuntimeAsset<Camera>();
+
+		auto colorSize = GlobalSettings::ColorResolution();
+		auto depthSize = GlobalSettings::ShadowResolution();
+		FrameBufferSpecific fboSpec;
+		fboSpec.Name = name + "-target";
+		fboSpec.Width = colorSize.x;
+		fboSpec.Height = colorSize.y;
+		PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Color);
+
+		TextureSpecificBuilder texBuilder;
+		texBuilder.name(fboSpec.Name + "-texture")
+			.type(TextureType::TwoDimen)
+			.format(TextureFormat::RGBA_HALF)
+			.width(colorSize.x).height(colorSize.y)
+			.texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
+			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+
+		TextureSpecificBuilder depthBuilder;
+		depthBuilder.name(fboSpec.Name + "-depthStencil")
+			.type(TextureType::RenderBuffer)
+			.format(TextureFormat::DEPTH_24_STENCIL_8)
+			.width(depthSize.x).height(depthSize.y);
+
+		fboSpec.ColorSpec.push_back(texBuilder.build());
+		fboSpec.DepthSpec = depthBuilder.build();
+
+		camera->setRenderTarget(RenderTarget::Create(context, fboSpec));
+
 		camComp->Depth = depth;
-		camComp->Uid = AssetMgr::MakeRuntimeAsset<Camera>()->assetHnd();
+		camComp->Aspect = float(colorSize.x) / float(colorSize.y);
+		camComp->Uid = camera->assetHnd();
 		transComp->Position = glm::vec3(-3.f, 5.f, 2.5f);
 		transComp->Rotation = glm::vec3(-45.f, -60.f, 0.f);
 		return entity;
 	}
 
-	Ref<Entity> Factory::MakePlane(Ref<Scene>& scene, const std::string& name)
+	Ref<Entity> Factory::MakePlane(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name)
 	{
 		auto entity = scene->addEntity<MeshFilter, MeshRenderer, TransformComponent>(name);
 

@@ -2,17 +2,19 @@
 #define __PIONNER_EDITOR_H__
 
 #include "event/EventHub.h"
-#include "scene/SceneMgr.h"
 
 namespace pio
 {
-	class Event;
+	class Event;	
 	class Window;
 	class WindowCloseEvent;
 	class WindowResizeEvent;
 
 	class RenderContext;
 	class RenderPipeline;
+
+	class ViewMgr;
+	class SceneMgr;
 
 	class Editor : public EventHubObj
 	{
@@ -40,7 +42,9 @@ namespace pio
 
 	private:
 		bool m_running{ true };
-		SceneMgr m_sceneMgr;
+
+		Ref<ViewMgr> m_viewMgr;
+		Ref<SceneMgr> m_sceneMgr;
 
 		Ref<Window> m_window{ nullptr };
 		Ref<RenderContext>  m_context{ nullptr };

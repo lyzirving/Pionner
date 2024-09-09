@@ -9,8 +9,11 @@
 
 #include "asset/AssetMgr.h"
 
+#include "scene/SceneMgr.h"
 #include "scene/Components.h"
 #include "scene/Factory.h"
+
+#include "ui/ViewMgr.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/pipeline/RenderPipeline.h"
@@ -51,6 +54,9 @@ namespace pio
 		m_context = CreateRef<RenderContext>(RenderBackend_OpenGL, m_window);
 		m_pipeline = CreateRef<RenderPipeline>();
 		m_pipeline->onAttach(m_context);
+		
+		m_viewMgr = CreateRef<ViewMgr>();
+		m_sceneMgr = CreateRef<SceneMgr>();
 	}
 
 	void Editor::onDetach()
@@ -58,7 +64,7 @@ namespace pio
 		LOGD("begin to destroy resource");
 		auto& renderThread = m_context->thread();
 
-		m_sceneMgr.removeAll();
+		m_sceneMgr->removeAll();
 		AssetMgr::Shutdown();
 		m_pipeline->onDetach(m_context);
 
@@ -121,7 +127,7 @@ namespace pio
 			EventBus::Get()->dispatch();
 			EventHub::Get()->dispatch();
 
-			m_sceneMgr.onUpdate(m_context, m_pipeline);
+			m_sceneMgr->onUpdate(m_context, m_pipeline, m_viewMgr);
 
 			Time::RecordTime();
 		}
@@ -135,8 +141,8 @@ namespace pio
 	{
 		auto scene = CreateRef<Scene>();
 		//Default entities
-		Factory::MakeCamera(scene, "MainCamera", 0);
-		Factory::MakePlane(scene, "Plane");
-		m_sceneMgr.add(scene, true);
+		Factory::MakeCamera(m_context, scene, "MainCamera", 0);
+		Factory::MakePlane(m_context, scene, "Plane");
+		m_sceneMgr->add(scene, true);
 	}
 }

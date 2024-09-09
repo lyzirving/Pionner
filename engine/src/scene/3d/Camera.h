@@ -11,6 +11,7 @@ namespace pio
 	struct RenderingEntities;
 	struct CameraComponent;
 	class RenderContext;
+	class RenderTarget;
 	class Entity;
 
 	struct CameraUD
@@ -46,7 +47,7 @@ namespace pio
 
 	class Camera : public Asset
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::Camera)
+		PIO_DEFINE_ASSET_TYPE(AssetType::Camera)
 	public:
 		Camera() : Asset() {}
 		~Camera() = default;
@@ -72,6 +73,7 @@ namespace pio
 		void attrChange(CameraAttrBits bit) { m_attrBits.set(bit); }
 		void setClearFlag(CameraClearFlags f) { m_clearFlag = f; }
 		void setDepth(int32_t depth) { m_depth = depth; }
+		void setRenderTarget(const Ref<RenderTarget>& target) { m_target = target; }
 
 		int32_t depth() const { return m_depth; }
 		ProjectionType prjType() const { return m_prjType; }
@@ -96,7 +98,8 @@ namespace pio
 		const glm::vec3& position() const { return m_transform.position(); }
 		CameraClearFlags clearFlag() const { return m_clearFlag; }
 
-		Ref<UniformBuffer>& unimBuffer() { return m_data.UnimBuff; }
+		Ref<UniformBuffer>& unimBuffer() { return m_unimBuff; }
+		Ref<RenderTarget>& renderTarget() { return m_target; }
 
 	private:
 		void flush();
@@ -123,17 +126,10 @@ namespace pio
 		CameraClearFlags m_clearFlag{ CameraClearFlag_Skybox };
 
 		int32_t m_depth{ 0 };
-		
-	private:
-		struct Data
-		{
-			CameraUD UnimData{};
-			Ref<UniformBuffer> UnimBuff;
 
-			Data() { UnimData.obtainBlock(); }
-		};
-
-		Data m_data{};
+		CameraUD m_unimData{};
+		Ref<UniformBuffer> m_unimBuff;
+		Ref<RenderTarget> m_target;
 	};
 
 	template<>

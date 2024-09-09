@@ -35,7 +35,7 @@ namespace pio
 
 	class Event
 	{
-		PIO_IS_AS_INTERFACE_DECLARE(Event)
+		PIO_DECLARE_IS_AS(Event)
 	public:
 		virtual ~Event() = default;
 

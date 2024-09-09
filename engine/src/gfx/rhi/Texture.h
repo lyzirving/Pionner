@@ -51,7 +51,7 @@ namespace pio
 
 	class Texture : public RenderResource
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::Texture)
+		PIO_DEFINE_ASSET_TYPE(AssetType::Texture)
 	public:
 		Texture(Ref<RenderContext>& context, const TextureSpecific& spec) : RenderResource(context, RenderResourceType::Texture, spec.Name), m_spec(spec) {}
 		Texture(Ref<RenderContext>& context, const TextureSpecific& spec, RenderResourceType type) : RenderResource(context, type, spec.Name), m_spec(spec) {}

@@ -19,7 +19,7 @@ namespace pio
 
 	class RenderResource : public Asset
 	{
-		OVERRIDE_ASSET_TYPE(AssetType::RenderResource)
+		PIO_DEFINE_ASSET_TYPE(AssetType::RenderResource)
 	public:
 		RenderResource(Ref<RenderContext>& context, RenderResourceType type, const std::string& name = "");
 		virtual ~RenderResource();
