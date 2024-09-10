@@ -53,17 +53,23 @@ namespace pio
 		}
 	}
 
+	void SceneMgr::onDetach()
+	{		
+		removeAll();
+		m_active.reset();
+		m_target.reset();
+	}
+
 	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<LayerMgr>& layerMgr)
 	{
-		Ref<RenderTarget> target;
 		if (m_active)
 		{
 			auto cameraEntities = m_active->registry().view<CameraComponent>();
 			auto cameras = Pipeline::FetchCamera(context, cameraEntities);
 			PIO_CHECK_RETURN(!cameras.empty(), "err! camera must be added into scene before rendering");
 			m_active->onUpdate(context, pipeline, cameras);
-			target = cameras[0]->renderTarget();
+			m_target = cameras[0]->renderTarget();
 		}
-		layerMgr->onUpdate(context, target);
+		layerMgr->onUpdate(context, m_active, m_target);
 	}
 }

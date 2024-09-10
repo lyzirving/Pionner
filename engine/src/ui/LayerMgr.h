@@ -7,6 +7,7 @@ namespace pio
 {
 	class RenderContext;
 	class RenderTarget;
+	class Scene;
 	class Event;
 
 	class LayerMgr
@@ -15,7 +16,7 @@ namespace pio
 		LayerMgr();
 		~LayerMgr();
 
-		void onUpdate(Ref<RenderContext>& context, Ref<RenderTarget>& target);
+		void onUpdate(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target);
 		bool onEvent(Ref<Event>& event);
 
 		void pushLayer(Ref<RenderContext>& context, const Ref<Layer> &layer) { if (layer) m_stack.pushLayer(context, layer); }

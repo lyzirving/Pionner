@@ -43,7 +43,7 @@ namespace pio
 			.format(TextureFormat::RGBA_HALF)
 			.width(colorSize.x).height(colorSize.y)
 			.texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
 
 		TextureSpecificBuilder depthBuilder;
 		depthBuilder.name(fboSpec.Name + "-depthStencil")

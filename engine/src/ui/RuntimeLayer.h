@@ -13,7 +13,12 @@ namespace pio
 
 		virtual void onAttach(Ref<RenderContext>& context) override;
 		virtual void onDetach() override;
-		virtual void onUpdate(Ref<RenderContext>& context, Ref<RenderTarget>& target) override;
+		virtual void onUpdate(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target) override;
+
+	private:
+		void onDrawSceneView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime);
+		void onDrawHierarchyView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime);
+		void onDrawInspectorView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime);
 
 	private:
 		bool m_firstTimeShow{ true };

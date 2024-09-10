@@ -68,30 +68,30 @@ namespace pio
 	/*
 	* @brief: LayoutParams is mainly used for layout on the entire window.
 	*		  LayoutParams.Ratio defines the rect on window by ratio in [0, 1].
-	*		  LayoutParams.Position is the pixel result of Ratio with origin on the left-top.
+	*		  LayoutParams.Rect is the pixel result of Ratio with origin on the left-top.
 	*		  LayoutParams.Vp is the rendering viewport setup by this panel, whose origin is the left-bottom of panel.
 	*/
 	struct LayoutParams
 	{
 		LayoutRatio Ratio;//Layout ratio on entire window
-		Rect2d Position;  //Position on entire window
+		Rect2d Rect;      //Position on entire window
 		Viewport Vp;      // Rendering panel on window
 
 		LayoutParams() {}
 
-		LayoutParams(float l, float t, float r, float b) : Ratio(l, t, r, b), Position(), Vp() {}
+		LayoutParams(float l, float t, float r, float b) : Ratio(l, t, r, b), Rect(), Vp() {}
 
 		void calculate(uint32_t wid, uint32_t height)
 		{
-			Position.Left = wid * Ratio.Left;
-			Position.Top = height * Ratio.Top;
-			Position.Right = wid * Ratio.Right;
-			Position.Bottom = height * Ratio.Bottom;
+			Rect.Left = wid * Ratio.Left;
+			Rect.Top = height * Ratio.Top;
+			Rect.Right = wid * Ratio.Right;
+			Rect.Bottom = height * Ratio.Bottom;
 
-			Vp.setW(Position.Right - Position.Left);
-			Vp.setH(Position.Bottom - Position.Top);
-			Vp.setX(Position.Left);
-			Vp.setY(height - Position.Top - Vp.h());
+			Vp.setW(Rect.Right - Rect.Left);
+			Vp.setH(Rect.Bottom - Rect.Top);
+			Vp.setX(Rect.Left);
+			Vp.setY(height - Rect.Top - Vp.h());
 		}
 	};
 }

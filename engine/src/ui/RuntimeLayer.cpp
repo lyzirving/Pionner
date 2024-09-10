@@ -3,6 +3,7 @@
 
 #include "window/Window.h"
 #include "asset/AssetMgr.h"
+#include "scene/Scene.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/resource/RenderTarget.h"
@@ -29,31 +30,74 @@ namespace pio
 	{
 	}
 
-	void RuntimeLayer::onUpdate(Ref<RenderContext>& context, Ref<RenderTarget>& target)
-	{		
-		if(!target)
-			return;
+	void RuntimeLayer::onUpdate(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target)
+	{
+		onDrawHierarchyView(context, scene, target, LayoutRatio(0.6f, 0.f, 0.75f, 1.f), m_firstTimeShow);
+		onDrawInspectorView(context, scene, target, LayoutRatio(0.75f, 0.f, 1.f, 1.f), m_firstTimeShow);
+		onDrawSceneView(context, scene, target, LayoutRatio(0.f, 0.f, 0.6f, 1.f), m_firstTimeShow);
+		m_firstTimeShow = false;
+	}
 
-		auto uid = target->assetHnd();
+	void RuntimeLayer::onDrawSceneView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime)
+	{
 		auto& param = m_layoutParam;
-		auto& firstTime = m_firstTimeShow;
-		context->submitRC([uid, &param, &firstTime]()
-		{			
-			auto t = AssetMgr::GetRuntimeAsset<RenderTarget>(uid);
-			const auto& texture = t->frameBuffer()->colorBuffers()[0];
-						
-			if(firstTime)
+		context->submitRC([layout, firstTime, &context, &target, &param]()
+		{		
+			if (firstTime)
 			{
 				auto* mainVp = ImGui::GetMainViewport();
-				ImGui::SetNextWindowPos(mainVp->Pos);
-				ImGui::SetNextWindowSize(ImVec2(param.Vp.w(), param.Vp.h()));
-				firstTime = false;
-			}	
-			ImGuiUtils::SetWindowPadding(glm::vec2(0.f));
-			ImGui::Begin("Scene", 0, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse);
-			ImGuiUtils::DrawImage(texture->id(), glm::vec2(param.Vp.w(), param.Vp.h()), glm::vec2(0.f, 1.f), glm::vec2(1.f, 0.f), 0.f, 0.f);
+				ImVec2 pos = mainVp->Pos;
+				pos.x += param.Rect.Left + layout.Left * param.Vp.w();
+				pos.y += param.Rect.Top + layout.Top * param.Vp.h();
+				ImGui::SetNextWindowPos(pos);
+				ImGui::SetNextWindowSize(ImVec2((layout.Right - layout.Left) * param.Vp.w(), (layout.Bottom - layout.Top) * param.Vp.h()));
+			}		
+			const auto& texture = target->frameBuffer()->colorBuffers()[0];
+
+			ImGui::Begin("Scene", 0, ImGuiUtils::k_FlagCommonWindow);
+			auto availSize = ImGui::GetContentRegionAvail();
+			ImGuiUtils::DrawImage(texture->id(), glm::vec2(availSize.x, availSize.y), glm::vec2(0.f, 1.f), glm::vec2(1.f, 0.f), 0.f, 0.f);
 			ImGui::End();
-			ImGuiUtils::ResetWindowPadding();
+		});
+	}
+
+	void RuntimeLayer::onDrawHierarchyView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime)
+	{
+		auto& param = m_layoutParam;
+		context->submitRC([layout, firstTime, &context, &param]()
+		{
+			if (firstTime)
+			{
+				auto* mainVp = ImGui::GetMainViewport();
+				ImVec2 pos = mainVp->Pos;
+				pos.x += param.Rect.Left + layout.Left * param.Vp.w();
+				pos.y += param.Rect.Top + layout.Top * param.Vp.h();
+				ImGui::SetNextWindowPos(pos);
+				ImGui::SetNextWindowSize(ImVec2((layout.Right - layout.Left) * param.Vp.w(), (layout.Bottom - layout.Top) * param.Vp.h()));
+			}
+
+			ImGui::Begin("Hierachy", 0, ImGuiUtils::k_FlagCommonWindow);
+			ImGui::End();
+		});
+	}
+
+	void RuntimeLayer::onDrawInspectorView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime)
+	{
+		auto& param = m_layoutParam;
+		context->submitRC([layout, firstTime, &context, &param]()
+		{
+			if (firstTime)
+			{
+				auto* mainVp = ImGui::GetMainViewport();
+				ImVec2 pos = mainVp->Pos;
+				pos.x += param.Rect.Left + layout.Left * param.Vp.w();
+				pos.y += param.Rect.Top + layout.Top * param.Vp.h();
+				ImGui::SetNextWindowPos(pos);
+				ImGui::SetNextWindowSize(ImVec2((layout.Right - layout.Left) * param.Vp.w(), (layout.Bottom - layout.Top) * param.Vp.h()));
+			}
+
+			ImGui::Begin("Inspector", 0, ImGuiUtils::k_FlagCommonWindow);
+			ImGui::End();
 		});
 	}
 }

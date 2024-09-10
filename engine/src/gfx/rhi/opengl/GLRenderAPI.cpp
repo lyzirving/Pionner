@@ -115,13 +115,18 @@ namespace pio
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;     // Enable Multi-Viewport / Platform Windows
+		/*io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;*/   // Enable Multi-Viewport / Platform Windows
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsLight();
-
 		ImGuiStyle& style = ImGui::GetStyle();
+		// ---------- Custom style --------------
+		style.WindowPadding = ImVec2(0.f, 0.f);
+		style.WindowBorderSize = 1.f;
+		style.TabBarBorderSize = 0.f;
+		style.TabRounding = 0.f;
+		// --------------------------------------
+
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			style.WindowRounding = 0.0f;

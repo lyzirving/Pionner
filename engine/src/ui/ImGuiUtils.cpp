@@ -2,19 +2,21 @@
 
 namespace pio
 {
-	const int32_t ImGuiUtils::Flag_Collapse_Header = ImGuiTreeNodeFlags_DefaultOpen |
+	const int32_t ImGuiUtils::k_FlagCollapseHeader = ImGuiTreeNodeFlags_DefaultOpen |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick |
 		ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	const int32_t ImGuiUtils::Flag_Selected_TreeNode = ImGuiTreeNodeFlags_OpenOnArrow |
+	const int32_t ImGuiUtils::k_FlagSelectedNode = ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick |
 		ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	const int32_t ImGuiUtils::Flag_TreeLeaf = ImGuiTreeNodeFlags_Leaf |
+	const int32_t ImGuiUtils::k_FlagTreeLeaf = ImGuiTreeNodeFlags_Leaf |
 		ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
-	static ImVec2 k_WindowPadding{};
+	const int32_t ImGuiUtils::k_FlagCommonWindow = ImGuiWindowFlags_NoScrollbar | 
+		ImGuiWindowFlags_NoScrollWithMouse | 
+		ImGuiWindowFlags_NoCollapse;
 
 	void ImGuiUtils::DrawImage(int32_t texId, const glm::vec2& imgSize, const glm::vec2& ltTexCoord, const glm::vec2& rbTexCoord, float rowWidth, float indent)
 	{
@@ -64,17 +66,5 @@ namespace pio
 	bool ImGuiUtils::ItemBeingClicked()
 	{
 		return ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen();
-	}
-
-	void ImGuiUtils::SetWindowPadding(const glm::vec2& padding)
-	{
-		k_WindowPadding = ImGui::GetStyle().WindowPadding;
-		ImGui::GetStyle().WindowPadding.x = padding.x;
-		ImGui::GetStyle().WindowPadding.y = padding.y;
-	}
-
-	void ImGuiUtils::ResetWindowPadding()
-	{
-		ImGui::GetStyle().WindowPadding = k_WindowPadding;
 	}
 }

@@ -64,9 +64,9 @@ namespace pio
 	{		
 		LOGD("begin to destroy resource");
 		auto& renderThread = m_context->thread();
-
-		m_sceneMgr->removeAll();
-		m_layerMgr->popAll();
+		
+		m_sceneMgr->onDetach();
+		m_layerMgr->popAll();	
 		AssetMgr::Shutdown();
 		m_pipeline->onDetach(m_context);
 
@@ -149,7 +149,7 @@ namespace pio
 		Factory::MakePlane(m_context, scene, "Plane");
 		m_sceneMgr->add(scene, true);
 
-		auto runtimeLayer = CreateRef<RuntimeLayer>(LayoutParams(0.f, 0.f, 0.6f, 1.f));
+		auto runtimeLayer = CreateRef<RuntimeLayer>(LayoutParams(0.f, 0.f, 1.f, 1.f));
 		m_layerMgr->pushLayer(m_context, runtimeLayer);
 	}
 }

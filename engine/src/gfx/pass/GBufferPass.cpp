@@ -37,7 +37,7 @@ namespace pio
 			.format(TextureFormat::RGBA_HALF)
 			.width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);		
+            .texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
 
         TextureSpecificBuilder normalBuffBuilder;
         normalBuffBuilder.name(GpuAttr::UNI_GBUFFER_NORMAL)
@@ -45,7 +45,7 @@ namespace pio
             .format(TextureFormat::RGBA_HALF)
             .width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+            .texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
 
         TextureSpecificBuilder albeoBuffBuilder;
         albeoBuffBuilder.name(GpuAttr::UNI_GBUFFER_ALBEDO)
@@ -53,7 +53,7 @@ namespace pio
             .format(TextureFormat::RGBA_HALF)
             .width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+            .texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
 
         TextureSpecificBuilder matBuffBuilder;
         matBuffBuilder.name(GpuAttr::UNI_GBUFFER_MATERIAL)
@@ -61,7 +61,7 @@ namespace pio
             .format(TextureFormat::RGBA_HALF)
             .width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+            .texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
 
         TextureSpecificBuilder emissionBuffBuilder;
         emissionBuffBuilder.name(GpuAttr::UNI_GBUFFER_EMISSION)
@@ -69,7 +69,7 @@ namespace pio
             .format(TextureFormat::RGBA_HALF)
             .width(colorSize.x).height(colorSize.y)
             .texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-            .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+            .texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
 
         TextureSpecificBuilder depthBuilder;
         depthBuilder.name("GeoPass Depth Buffer")
