@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_PASS_RENDERPASS_H__
 #define __PIONNER_GFX_PASS_RENDERPASS_H__
 
-#include "Entry.h"
+#include "Common.h"
 #include "gfx/rhi/RenderStateAttrs.h"
 
 namespace pio

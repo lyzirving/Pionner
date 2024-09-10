@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_RESOURCES_TRIANGLE_MESH_H__
 #define __PIONNER_SCENE_RESOURCES_TRIANGLE_MESH_H__
 
-#include "Entry.h"
+#include "Common.h"
 
 namespace pio
 {

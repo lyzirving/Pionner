@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_FACTORY_H__
 #define __PIONNER_SCENE_FACTORY_H__
 
-#include "Entry.h"
+#include "Common.h"
 #include "scene/resources/TriangleMesh.h"
 
 namespace pio

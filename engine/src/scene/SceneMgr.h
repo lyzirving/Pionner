@@ -5,7 +5,7 @@
 
 namespace pio
 {
-	class ViewMgr;
+	class LayerMgr;
 
 	class SceneMgr
 	{
@@ -17,7 +17,7 @@ namespace pio
 		void remove(const Ref<Scene>& scene);
 		void removeAll();
 
-		void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<ViewMgr>& viewMgr);
+		void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<LayerMgr>& layerMgr);
 
 	private:
 		std::map<UUID32, Ref<Scene>> m_scenes;

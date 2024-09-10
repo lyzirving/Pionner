@@ -13,7 +13,7 @@ namespace pio
 	class RenderContext;
 	class RenderPipeline;
 
-	class ViewMgr;
+	class LayerMgr;
 	class SceneMgr;
 
 	class Editor : public EventHubObj
@@ -32,7 +32,7 @@ namespace pio
 		void run();
 
 	protected:
-		void prepareScene();
+		void onPrepare();
 
 	public:
 		static Editor *Get();
@@ -43,7 +43,7 @@ namespace pio
 	private:
 		bool m_running{ true };
 
-		Ref<ViewMgr> m_viewMgr;
+		Ref<LayerMgr> m_layerMgr;
 		Ref<SceneMgr> m_sceneMgr;
 
 		Ref<Window> m_window{ nullptr };

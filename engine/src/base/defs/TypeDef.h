@@ -42,51 +42,6 @@ namespace pio
 	};
 
 	/*
-	* @brief: Rectangle of a panel on window whose origin is left-top
-	*/
-	struct Rect2d
-	{
-		uint32_t Left{ 0 };
-		uint32_t Top{ 0 };
-		uint32_t Right{ 0 };
-		uint32_t Bottom{ 0 };
-
-		Rect2d() {}
-		Rect2d(uint32_t l, uint32_t t, uint32_t r, uint32_t b) : Left(l), Top(t), Right(r), Bottom(b) {}
-		Rect2d(const glm::ivec2 lt, uint32_t width, uint32_t height) : Left(lt.x), Top(lt.y), Right(lt.x + width), Bottom(lt.y + height) {}
-
-		uint32_t width()  const { return Right - Left; }
-		uint32_t height() const { return Bottom - Top; }
-		bool contain(uint32_t x, uint32_t y) const { return x >= Left && x <= Right && y >= Top && y <= Bottom; }
-
-		bool operator==(const Rect2d& rhs)
-		{
-			if (this == &rhs) return true;
-			return this->Left == rhs.Left && this->Top == rhs.Top && this->Right == rhs.Right && this->Bottom == rhs.Bottom;
-		}
-
-		bool operator!=(const Rect2d& rhs) { return !((*this) == rhs); }
-
-		bool bIntersect(const Rect2d& rhs)
-		{
-			glm::uvec2 lt = glm::uvec2(std::max(Left, rhs.Left), std::max(Top, rhs.Top));
-			glm::uvec2 rb = glm::uvec2(std::min(Right, rhs.Right), std::min(Bottom, rhs.Bottom));
-			return lt.x <= rb.x && lt.y <= rb.y;
-		}
-
-		void doUnion(const Rect2d& rhs)
-		{
-			if (this != &rhs && bIntersect(rhs))
-			{
-				Left = std::min(Left, rhs.Left);
-				Top = std::min(Top, rhs.Top);
-				Right = std::max(Right, rhs.Right);
-				Bottom = std::max(Bottom, rhs.Bottom);
-			}
-		}
-	};
-
-	/*
 	* @brief: Render area on window whose origin is left-bottom
 	*/
 	struct Viewport

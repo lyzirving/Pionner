@@ -1,7 +1,7 @@
 #ifndef __PIONNER_ASSET_ASSET_H__
 #define __PIONNER_ASSET_ASSET_H__
 
-#include "Entry.h"
+#include "Common.h"
 
 namespace pio
 {
@@ -21,8 +21,8 @@ namespace pio
 	};
 
 	#define PIO_DEFINE_ASSET_TYPE(TypeName)  public:\
-									       static  AssetType StaticType() { return TypeName; }\
-									       virtual AssetType assetType() const override { return StaticType(); }
+									         static  AssetType StaticType() { return TypeName; }\
+									         virtual AssetType assetType() const override { return StaticType(); }
 
 	class Asset
 	{

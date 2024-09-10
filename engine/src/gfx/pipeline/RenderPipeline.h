@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_PIPELINE_RENDERPIPELINE_H__
 #define __PIONNER_GFX_PIPELINE_RENDERPIPELINE_H__
 
-#include "Entry.h"
+#include "Common.h"
 
 namespace pio
 {

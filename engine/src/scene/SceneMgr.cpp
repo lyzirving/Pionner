@@ -2,7 +2,7 @@
 #include "Components.h"
 #include "scene/3d/Camera.h"
 
-#include "ui/ViewMgr.h"
+#include "ui/LayerMgr.h"
 
 #include "gfx/resource/RenderTarget.h"
 #include "gfx/pipeline/PipelineUtils.h"
@@ -53,7 +53,7 @@ namespace pio
 		}
 	}
 
-	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<ViewMgr>& viewMgr)
+	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<LayerMgr>& layerMgr)
 	{
 		Ref<RenderTarget> target;
 		if (m_active)
@@ -64,6 +64,6 @@ namespace pio
 			m_active->onUpdate(context, pipeline, cameras);
 			target = cameras[0]->renderTarget();
 		}
-		viewMgr->onUpdate(context, target);
+		layerMgr->onUpdate(context, target);
 	}
 }

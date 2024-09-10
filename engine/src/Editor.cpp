@@ -13,7 +13,8 @@
 #include "scene/Components.h"
 #include "scene/Factory.h"
 
-#include "ui/ViewMgr.h"
+#include "ui/LayerMgr.h"
+#include "ui/RuntimeLayer.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/pipeline/RenderPipeline.h"
@@ -55,7 +56,7 @@ namespace pio
 		m_pipeline = CreateRef<RenderPipeline>();
 		m_pipeline->onAttach(m_context);
 		
-		m_viewMgr = CreateRef<ViewMgr>();
+		m_layerMgr = CreateRef<LayerMgr>();
 		m_sceneMgr = CreateRef<SceneMgr>();
 	}
 
@@ -65,6 +66,7 @@ namespace pio
 		auto& renderThread = m_context->thread();
 
 		m_sceneMgr->removeAll();
+		m_layerMgr->popAll();
 		AssetMgr::Shutdown();
 		m_pipeline->onDetach(m_context);
 
@@ -86,6 +88,8 @@ namespace pio
 
 		dispatcher.dispatch<WindowResizeEvent>(PIO_BIND_FN_SELF(Editor::onWindowResize, std::placeholders::_1));
 		PIO_CHECK_EVT_HANDLE_AND_RETURN(event);
+
+		m_layerMgr->onEvent(event);
 	}
 
 	bool Editor::onWindowClose(Ref<WindowCloseEvent> &event)
@@ -109,7 +113,7 @@ namespace pio
 		// Block until the first frame has been done
 		renderThread.pump();
 
-		prepareScene();
+		onPrepare();
 
 		while(m_running)
 		{
@@ -127,7 +131,7 @@ namespace pio
 			EventBus::Get()->dispatch();
 			EventHub::Get()->dispatch();
 
-			m_sceneMgr->onUpdate(m_context, m_pipeline, m_viewMgr);
+			m_sceneMgr->onUpdate(m_context, m_pipeline, m_layerMgr);
 
 			Time::RecordTime();
 		}
@@ -137,12 +141,15 @@ namespace pio
 		onDetach();
 	}
 
-	void pio::Editor::prepareScene()
+	void pio::Editor::onPrepare()
 	{
 		auto scene = CreateRef<Scene>();
 		//Default entities
 		Factory::MakeCamera(m_context, scene, "MainCamera", 0);
 		Factory::MakePlane(m_context, scene, "Plane");
 		m_sceneMgr->add(scene, true);
+
+		auto runtimeLayer = CreateRef<RuntimeLayer>(LayoutParams(0.f, 0.f, 0.6f, 1.f));
+		m_layerMgr->pushLayer(m_context, runtimeLayer);
 	}
 }
