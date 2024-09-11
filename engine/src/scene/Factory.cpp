@@ -7,11 +7,12 @@
 #include "asset/AssetMgr.h"
 
 #include "scene/3d/Camera.h"
-#include "scene/resources/Mesh.h"
-#include "scene/resources/Material.h"
 
+#include "gfx/resource/Mesh.h"
+#include "gfx/resource/Material.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 #include "gfx/resource/RenderTarget.h"
+#include "gfx/renderer/RenderContext.h"
 #include "gfx/rhi/FrameBuffer.h"
 
 #ifdef LOCAL_TAG
@@ -77,7 +78,7 @@ namespace pio
 		meshFilter->Type = MeshType::Plane;
 		meshFilter->Uid = mesh->assetHnd();
 
-		meshRender->MatUid = Material::MakeStandardMaterial("My Material")->assetHnd();
+		meshRender->MatUid = context->materialMgr().get(GpuAttr::STANDARD_MATERIAL)->assetHnd();
 		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
 
 		return entity;

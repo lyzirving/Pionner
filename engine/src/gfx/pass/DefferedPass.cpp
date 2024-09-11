@@ -8,10 +8,10 @@
 #include "gfx/rhi/Shader.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 #include "gfx/resource/RenderTarget.h"
+#include "gfx/resource/Mesh.h"
 
 #include "scene/Factory.h"
 #include "scene/3d/Camera.h"
-#include "scene/resources/Mesh.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

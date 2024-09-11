@@ -24,7 +24,7 @@ namespace pio
 			const TextureSpecific& texSpec = m_spec.ColorSpec[i];
 			if (texSpec.Type == TextureType::Num)
 				continue;
-			m_colorBuffs.push_back(Texture::Create(context, texSpec));			
+			m_colorBuffs.push_back(context->createTexture(texSpec));
 		}
 		m_colorBuffs.shrink_to_fit();
 
@@ -33,7 +33,7 @@ namespace pio
 			m_spec.DepthSpec.Type == TextureType::CubeArray ||
 			m_spec.DepthSpec.Type == TextureType::RenderBuffer)
 		{
-			m_depthBuff = Texture::Create(context, m_spec.DepthSpec);
+			m_depthBuff = context->createTexture(m_spec.DepthSpec);
 		}
 		else
 		{

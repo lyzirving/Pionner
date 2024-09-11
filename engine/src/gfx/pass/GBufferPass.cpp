@@ -9,9 +9,8 @@
 #include "gfx/rhi/UniformBuffer.h"
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/resource/MeshRenderBuffer.h"
-
-#include "scene/resources/Mesh.h"
-#include "scene/resources/Material.h"
+#include "gfx/resource/Mesh.h"
+#include "gfx/resource/Material.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

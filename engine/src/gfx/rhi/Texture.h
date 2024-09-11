@@ -64,11 +64,10 @@ namespace pio
 		TextureType textureType() const { return spec().Type; }
 		TextureFormat textureFmt() const { return spec().Format; }
 
-	public:
+	private:
+		friend class TextureMgr;
+
 		static Ref<Texture> Create(Ref<RenderContext>& context, const TextureSpecific& spec);
-		/*
-		* @param buffer		Buffer is not marked as const, data inside the buffer will be moved into texture.
-		*/
 		static Ref<Texture> Create(Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buffer);
 
 	protected:

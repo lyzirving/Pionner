@@ -52,11 +52,25 @@ namespace pio
 				ImGui::SetNextWindowPos(pos);
 				ImGui::SetNextWindowSize(ImVec2((layout.Right - layout.Left) * param.Vp.w(), (layout.Bottom - layout.Top) * param.Vp.h()));
 			}		
-			const auto& texture = target->frameBuffer()->colorBuffers()[0];
 
+			const auto& texture = target->frameBuffer()->colorBuffers()[0];
 			ImGui::Begin("Scene", 0, ImGuiUtils::k_FlagCommonWindow);
 			auto availSize = ImGui::GetContentRegionAvail();
-			ImGuiUtils::DrawImage(texture->id(), glm::vec2(availSize.x, availSize.y), glm::vec2(0.f, 1.f), glm::vec2(1.f, 0.f), 0.f, 0.f);
+			float aspect0 = availSize.x / availSize.y;
+			float aspect1 = float(texture->width()) / float(texture->height());
+			glm::vec2 imgSize;
+			//Let image always fills the window size
+			if(aspect0 < aspect1)
+			{
+				imgSize.x = aspect1 * availSize.y;
+				imgSize.y = availSize.y;
+			}
+			else
+			{
+				imgSize.x = availSize.x;
+				imgSize.y = availSize.x / aspect1;
+			}
+			ImGuiUtils::DrawImage(texture->id(), imgSize, glm::vec2(0.f, 1.f), glm::vec2(1.f, 0.f), 0.f, 0.f);
 			ImGui::End();
 		});
 	}

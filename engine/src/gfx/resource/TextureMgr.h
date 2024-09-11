@@ -7,6 +7,7 @@ namespace pio
 {
 	class RenderContext;
 	class Texture;
+	struct TextureSpecific;
 
 	class TextureMgr
 	{
@@ -26,6 +27,9 @@ namespace pio
 			}
 			return it->second;
 		}
+
+		Ref<Texture> create(const TextureSpecific& spec);
+		Ref<Texture> create(const TextureSpecific& spec, Buffer& buffer);
 
 	private:
 		WeakRef<RenderContext> m_context;

@@ -1,5 +1,5 @@
-#ifndef __PIONNER_SCENE_RESOURCES_MESH_H__
-#define __PIONNER_SCENE_RESOURCES_MESH_H__
+#ifndef __PIONNER_GFX_RESOURCES_MESH_H__
+#define __PIONNER_GFX_RESOURCES_MESH_H__
 
 #include "asset/Asset.h"
 

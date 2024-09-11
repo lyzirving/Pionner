@@ -5,9 +5,9 @@
 #include "scene/Entity.h"
 #include "scene/Components.h"
 #include "scene/3d/Camera.h"
-#include "scene/resources/Mesh.h"
-#include "scene/resources/Material.h"
 
+#include "gfx/resource/Mesh.h"
+#include "gfx/resource/Material.h"
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 

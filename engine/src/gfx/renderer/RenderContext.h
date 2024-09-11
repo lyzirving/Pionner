@@ -9,6 +9,7 @@
 
 #include "gfx/resource/RenderingData.h"
 #include "gfx/resource/TextureMgr.h"
+#include "gfx/resource/MaterialMgr.h"
 
 #include "base/utils/SystemUtils.h"
 #include "base/CommandQueue.h"
@@ -41,6 +42,7 @@ namespace pio
 		Ref<Window>& window() { return m_window; }
 		Ref<RenderState>& state() { return m_state; }
 		TextureMgr& textureMgr() { return m_textureMgr; }
+		MaterialMgr& materialMgr() { return m_materialMgr; }
 		
 		Ref<Shader> &shader(ShaderType type) { return m_shaders[PIO_UINT8(type)]; }
 		void setRenderingEntities(RenderingEntities&& data) { m_renderingEntities = std::forward<RenderingEntities>(data); }
@@ -125,6 +127,14 @@ namespace pio
 		bool bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName);		
 		void drawTriangles(Ref<MeshRenderBuffer>& meshBuff);
 
+		// ----------------------------- Create resource api ----------------------------------		
+		Ref<Texture> createTexture(const TextureSpecific& spec);
+		/*
+		* @param buffer Buffer is not marked as const, data inside the buffer will be moved into texture.
+		*/
+		Ref<Texture> createTexture(const TextureSpecific& spec, Buffer& buffer);
+		// ------------------------------------------------------------------------------------
+
 	private:
 		static constexpr uint32_t k_queueNum = 2;		
 
@@ -160,6 +170,7 @@ namespace pio
 
 		Ref<Shader> m_shaders[PIO_UINT8(ShaderType::Num)];
 		TextureMgr m_textureMgr;
+		MaterialMgr m_materialMgr;
 
 		RenderingEntities m_renderingEntities;
 		RenderingData m_renderingData;

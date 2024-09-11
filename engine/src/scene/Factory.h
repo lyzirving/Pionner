@@ -2,7 +2,7 @@
 #define __PIONNER_SCENE_FACTORY_H__
 
 #include "Common.h"
-#include "scene/resources/TriangleMesh.h"
+#include "gfx/resource/TriangleMesh.h"
 
 namespace pio
 {

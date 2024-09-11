@@ -37,6 +37,11 @@ namespace pio
 		Time::RecordTime();
 		LogSystem::Initialize();
 		EventBus::Init();		
+		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
+		AssetMgr::Init();
+
+		m_window = Window::create(WindowProps("Pionner", 1400, 720, RenderBackend_OpenGL));
+		m_context = CreateRef<RenderContext>(RenderBackend_OpenGL, m_window);		
 	}
 
 	Editor::~Editor()
@@ -47,17 +52,9 @@ namespace pio
 	}
 
 	void Editor::onAttach()
-	{		 
-		AssetMgr::Init();		
-		EventHub::Get()->registerCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));
-
-		m_window = Window::create(WindowProps("Pionner", 1400, 720, RenderBackend_OpenGL));
-		m_context = CreateRef<RenderContext>(RenderBackend_OpenGL, m_window);
+	{		 		
 		m_pipeline = CreateRef<RenderPipeline>();
-		m_pipeline->onAttach(m_context);
-		
-		m_layerMgr = CreateRef<LayerMgr>();
-		m_sceneMgr = CreateRef<SceneMgr>();
+		m_pipeline->onAttach(m_context);			
 	}
 
 	void Editor::onDetach()
@@ -105,13 +102,13 @@ namespace pio
 	}
 
 	void Editor::run()
-	{
-		onAttach();
-
+	{			
 		auto &renderThread = m_context->thread();
 		renderThread.run(PIO_BIND_FN_OTHER(RenderContext::renderLoop, m_context.get()));
 		// Block until the first frame has been done
 		renderThread.pump();
+
+		onAttach();
 
 		onPrepare();
 
@@ -143,6 +140,9 @@ namespace pio
 
 	void pio::Editor::onPrepare()
 	{
+		m_layerMgr = CreateRef<LayerMgr>();
+		m_sceneMgr = CreateRef<SceneMgr>();
+
 		auto scene = CreateRef<Scene>();
 		//Default entities
 		Factory::MakeCamera(m_context, scene, "MainCamera", 0);

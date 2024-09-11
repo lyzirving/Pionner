@@ -1,9 +1,9 @@
 #include "MeshRenderBuffer.h"
 
 #include "gfx/rhi/UniformData.h"
+#include "gfx/resource/Mesh.h"
 
 #include "scene/Components.h"
-#include "scene/resources/Mesh.h"
 
 namespace pio
 {

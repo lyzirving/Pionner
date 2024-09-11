@@ -3,6 +3,11 @@
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/rhi/Texture.h"
 
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "TextureMgr"
+
 namespace pio
 {
 	TextureMgr::TextureMgr()
@@ -46,5 +51,30 @@ namespace pio
 			it->second.reset();
 			it = m_textures.erase(it);
 		}
+		m_context.reset();
+	}
+
+	Ref<Texture> TextureMgr::create(const TextureSpecific& spec)
+	{
+		Ref<Texture> texture;
+		auto ctx = m_context.lock();
+		if(ctx)
+		{
+			texture = Texture::Create(ctx, spec);
+			m_textures.insert({ texture->name(), texture });
+		}
+		return texture;
+	}
+
+	Ref<Texture> TextureMgr::create(const TextureSpecific& spec, Buffer& buffer)
+	{
+		Ref<Texture> texture;
+		auto ctx = m_context.lock();
+		if(ctx)
+		{
+			texture = Texture::Create(ctx, spec, buffer);
+			m_textures.insert({ texture->name(), texture });
+		}
+		return texture;
 	}
 }

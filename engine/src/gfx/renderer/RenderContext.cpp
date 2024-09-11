@@ -110,6 +110,16 @@ namespace pio
 		meshBuff->Vao->unbind();
 	}
 
+	Ref<Texture> RenderContext::createTexture(const TextureSpecific& spec)
+	{
+		return m_textureMgr.create(spec);
+	}
+
+	Ref<Texture> RenderContext::createTexture(const TextureSpecific& spec, Buffer& buffer)
+	{
+		return m_textureMgr.create(spec, buffer);
+	}
+
 	void RenderContext::initResource()
 	{
 		auto context = self();
@@ -118,6 +128,7 @@ namespace pio
 			m_shaders[i] = ShaderCompiler::Compile(context, ShaderUtils::GetShaderPath(ShaderType(i)));
 		}
 		m_textureMgr.init(context);
+		m_materialMgr.init(context);
 	}
 
 	void RenderContext::releaseResource()
@@ -127,6 +138,7 @@ namespace pio
 			m_shaders[i].reset();//Real release will be executed at garbage queue
 		}
 		m_textureMgr.release();
+		m_materialMgr.release();
 	}
 
 	void RenderContext::waitAndRender()

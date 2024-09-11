@@ -10,6 +10,10 @@ namespace pio
 		//Default texture
 		static const char* WHITE_TEXTURE = "WhiteTexture";
 		static const char* BLACK_TEXTURE = "BlackTexture";
+
+		//Default material
+		static const char* STANDARD_MATERIAL = "StandardMaterial";		
+
 		//Uniform data
 		static const char* UNI_MODEL_MAT = "u_modelMat";
 		//Uniform block
