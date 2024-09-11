@@ -17,6 +17,8 @@ namespace pio
 		void init(Ref<RenderContext>& context);
 		void release();
 
+		Ref<Material> create(const std::string& name, ShaderSpecifier spec, RenderingMode mode = RenderingMode_Opaque);
+
 		Ref<Material> get(const std::string& name)
 		{
 			auto it = m_materials.find(name);

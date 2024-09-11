@@ -11,6 +11,8 @@ namespace pio
 	{
 	public:
 		PbrMaterial(const std::string& name, RenderingMode mode);
+		PbrMaterial(const PbrMaterial& rhs);
+		PbrMaterial& operator=(const PbrMaterial& rhs);
 		~PbrMaterial() = default;
 		virtual void update(Ref<RenderContext>& context) override;
 
@@ -27,6 +29,8 @@ namespace pio
 		void setNormalMap(const Ref<Texture>& texture) { m_normalMap = texture; }
 		void setHeightMap(const Ref<Texture>& texture) { m_heightMap = texture; }
 		void setOcclusion(const Ref<Texture>& texture) { m_occlusion = texture; }
+
+		virtual Ref<Asset> clone() const override;
 
 	public:	
 		struct GpuAttr

@@ -19,6 +19,25 @@ namespace pio
 	{
 	}
 
+	Material::Material(const Material& rhs) : Asset(rhs)
+	{
+		m_name = rhs.m_name;
+		m_renderingMode = rhs.m_renderingMode;
+		m_spec = rhs.m_spec;
+
+		m_uniforms = rhs.m_uniforms;
+		m_textures = rhs.m_textures;
+	}
+
+	Material& Material::operator=(const Material& rhs)
+	{
+		if (this != &rhs)
+		{
+			this->Material::Material(rhs);
+		}
+		return *this;
+	}
+
 	void Material::bind(Ref<Shader>& shader)
 	{
 		for (auto& it : m_uniforms)
@@ -47,12 +66,7 @@ namespace pio
 		}		
 	}
 
-	Ref<Material> Material::MakeStandardMaterial(const std::string& name, RenderingMode mode)
-	{
-		return Material::Create(name, mode, ShaderSpec_Standard);
-	}
-
-	Ref<Material> Material::Create(const std::string& name, RenderingMode mode, ShaderSpecifier spec)
+	Ref<Material> Material::Create(const std::string& name, ShaderSpecifier spec, RenderingMode mode)
 	{
 		switch (spec)
 		{

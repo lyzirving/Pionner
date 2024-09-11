@@ -15,6 +15,31 @@ namespace pio
 	{
 	}
 
+	PbrMaterial::PbrMaterial(const PbrMaterial& rhs) : Material(rhs)
+	{
+		m_albedo = rhs.m_albedo;
+		m_emission = rhs.m_emission;
+		m_alpha = rhs.m_alpha;
+		m_metallic = rhs.m_metallic;
+		m_roughness = rhs.m_roughness;
+
+		m_albedoTexture = rhs.m_albedoTexture;
+		m_emissionTexture = rhs.m_emissionTexture;
+		m_metallicRoughnessTexture = rhs.m_metallicRoughnessTexture;
+		m_normalMap = rhs.m_normalMap;
+		m_heightMap = rhs.m_heightMap;
+		m_occlusion = rhs.m_occlusion;
+	}
+
+	PbrMaterial& PbrMaterial::operator=(const PbrMaterial& rhs)
+	{
+		if (this != &rhs)
+		{
+			this->PbrMaterial::PbrMaterial(rhs);
+		}
+		return *this;
+	}
+
 	void PbrMaterial::update(Ref<RenderContext>& context)
 	{
 		updateUnimData(GpuAttr::AlbedoColor, m_albedo);
@@ -24,11 +49,17 @@ namespace pio
 		updateUnimData(GpuAttr::Alpha, m_alpha);
 		updateUnimData(GpuAttr::UseNormalMap, m_normalMap.use_count() != 0);
 
-		auto& textureMgr = context->textureMgr();
-		updateTexture(GpuAttr::AlbedoTexture, m_albedoTexture.use_count() != 0 ? m_albedoTexture : textureMgr.get(pio::GpuAttr::WHITE_TEXTURE));
-		updateTexture(GpuAttr::EmissionTexture, m_emissionTexture.use_count() != 0 ? m_emissionTexture : textureMgr.get(pio::GpuAttr::BLACK_TEXTURE));
-		updateTexture(GpuAttr::MetallicRoughnssTexture, m_metallicRoughnessTexture.use_count() != 0 ? m_metallicRoughnessTexture : textureMgr.get(pio::GpuAttr::WHITE_TEXTURE));
-		updateTexture(GpuAttr::NormalMap, m_normalMap.use_count() != 0 ? m_normalMap : textureMgr.get(pio::GpuAttr::BLACK_TEXTURE));
+		updateTexture(GpuAttr::AlbedoTexture, m_albedoTexture.use_count() != 0 ? m_albedoTexture : context->getTexture(pio::GpuAttr::WHITE_TEXTURE));
+		updateTexture(GpuAttr::EmissionTexture, m_emissionTexture.use_count() != 0 ? m_emissionTexture : context->getTexture(pio::GpuAttr::BLACK_TEXTURE));
+		updateTexture(GpuAttr::MetallicRoughnssTexture, m_metallicRoughnessTexture.use_count() != 0 ? m_metallicRoughnessTexture : context->getTexture(pio::GpuAttr::WHITE_TEXTURE));
+		updateTexture(GpuAttr::NormalMap, m_normalMap.use_count() != 0 ? m_normalMap : context->getTexture(pio::GpuAttr::BLACK_TEXTURE));
+	}
+
+	Ref<Asset> PbrMaterial::clone() const
+	{
+		auto material = CreateRef<PbrMaterial>(m_name, m_renderingMode);
+		*(material.get()) = *this;
+		return material;
 	}
 
 	template<>

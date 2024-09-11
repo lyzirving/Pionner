@@ -7,6 +7,8 @@
 #include "gfx/rhi/UniformBuffer.h"
 #include "gfx/rhi/ShaderCompiler.h"
 
+#include "gfx/resource/TextureMgr.h"
+#include "gfx/resource/MaterialMgr.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 #include "gfx/resource/RenderTarget.h"
 
@@ -112,12 +114,27 @@ namespace pio
 
 	Ref<Texture> RenderContext::createTexture(const TextureSpecific& spec)
 	{
-		return m_textureMgr.create(spec);
+		return m_textureMgr->create(spec);
 	}
 
 	Ref<Texture> RenderContext::createTexture(const TextureSpecific& spec, Buffer& buffer)
 	{
-		return m_textureMgr.create(spec, buffer);
+		return m_textureMgr->create(spec, buffer);
+	}
+
+	Ref<Texture> RenderContext::getTexture(const std::string& name)
+	{
+		return m_textureMgr->get(name);
+	}
+
+	Ref<Material> RenderContext::createMaterial(const std::string& name, ShaderSpecifier spec, RenderingMode mode)
+	{
+		return m_materialMgr->create(name, spec, mode);
+	}
+
+	Ref<Material> RenderContext::getMaterial(const std::string& name)
+	{
+		return m_materialMgr->get(name);
 	}
 
 	void RenderContext::initResource()
@@ -127,8 +144,11 @@ namespace pio
 		{
 			m_shaders[i] = ShaderCompiler::Compile(context, ShaderUtils::GetShaderPath(ShaderType(i)));
 		}
-		m_textureMgr.init(context);
-		m_materialMgr.init(context);
+		m_textureMgr = CreateRef<TextureMgr>();
+		m_materialMgr = CreateRef<MaterialMgr>();
+
+		m_textureMgr->init(context);
+		m_materialMgr->init(context);
 	}
 
 	void RenderContext::releaseResource()
@@ -137,8 +157,8 @@ namespace pio
 		{
 			m_shaders[i].reset();//Real release will be executed at garbage queue
 		}
-		m_textureMgr.release();
-		m_materialMgr.release();
+		m_textureMgr->release();
+		m_materialMgr->release();
 	}
 
 	void RenderContext::waitAndRender()

@@ -24,25 +24,23 @@ namespace pio
 									         static  AssetType StaticType() { return TypeName; }\
 									         virtual AssetType assetType() const override { return StaticType(); }
 
-	class Asset
+	class Asset : public std::enable_shared_from_this<Asset>
 	{
 		PIO_DECLARE_IS_AS(Asset)
 	public:
-		Asset() : m_hnd(), m_parentHnd(0) {}
-
-		Asset(const Asset& rhs) : m_hnd(rhs.m_hnd), m_parentHnd(rhs.m_parentHnd) {}
-		Asset operator=(const Asset& rhs)
-		{
-			if (this != &rhs)
-			{
-				m_hnd = rhs.m_hnd;
-				m_parentHnd = rhs.m_parentHnd;
-			}
-			return *this;
-		}
-
+		Asset();
 		virtual ~Asset() = default;
+
+		Asset(const Asset& rhs);
+		Asset(Asset&& rhs) noexcept;
+		Asset operator=(const Asset& rhs);
+		Asset operator=(Asset&& rhs) noexcept;
+		
 		virtual AssetType assetType() const { return AssetType::None; }
+		virtual Ref<Asset> clone() const { return Ref<Asset>(); }
+
+		template<typename T>
+		Ref<T> self() { return RefCast<Asset, T>(shared_from_this()); }
 
 	public:
 		UUID32 assetHnd() { return m_hnd; }

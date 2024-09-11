@@ -8,8 +8,6 @@
 #include "gfx/rhi/RenderResource.h"
 
 #include "gfx/resource/RenderingData.h"
-#include "gfx/resource/TextureMgr.h"
-#include "gfx/resource/MaterialMgr.h"
 
 #include "base/utils/SystemUtils.h"
 #include "base/CommandQueue.h"
@@ -22,6 +20,11 @@ namespace pio
 	class RenderTarget;
 	class UniformBuffer;
 	class MeshRenderBuffer;
+	class TextureMgr;
+	class Texture;
+	class MaterialMgr;
+	class Material;
+	struct TextureSpecific;
 
 	class RenderContext : public std::enable_shared_from_this<RenderContext>
 	{
@@ -41,8 +44,6 @@ namespace pio
 		RenderThread& thread() { return m_thread; }
 		Ref<Window>& window() { return m_window; }
 		Ref<RenderState>& state() { return m_state; }
-		TextureMgr& textureMgr() { return m_textureMgr; }
-		MaterialMgr& materialMgr() { return m_materialMgr; }
 		
 		Ref<Shader> &shader(ShaderType type) { return m_shaders[PIO_UINT8(type)]; }
 		void setRenderingEntities(RenderingEntities&& data) { m_renderingEntities = std::forward<RenderingEntities>(data); }
@@ -133,6 +134,10 @@ namespace pio
 		* @param buffer Buffer is not marked as const, data inside the buffer will be moved into texture.
 		*/
 		Ref<Texture> createTexture(const TextureSpecific& spec, Buffer& buffer);
+		Ref<Texture> getTexture(const std::string& name);
+
+		Ref<Material> createMaterial(const std::string& name, ShaderSpecifier spec, RenderingMode mode = RenderingMode_Opaque);
+		Ref<Material> getMaterial(const std::string& name);
 		// ------------------------------------------------------------------------------------
 
 	private:
@@ -169,8 +174,8 @@ namespace pio
 		uint64_t m_frameNum{ 0 };
 
 		Ref<Shader> m_shaders[PIO_UINT8(ShaderType::Num)];
-		TextureMgr m_textureMgr;
-		MaterialMgr m_materialMgr;
+		Ref<TextureMgr> m_textureMgr;
+		Ref<MaterialMgr> m_materialMgr;
 
 		RenderingEntities m_renderingEntities;
 		RenderingData m_renderingData;

@@ -17,6 +17,9 @@ namespace pio
 		PIO_DEFINE_ASSET_TYPE(AssetType::Material)
 	public:
 		Material(const std::string& name, RenderingMode mode, ShaderSpecifier spec);
+		Material(const Material& rhs);
+		Material& operator=(const Material& rhs);
+
 		virtual ~Material() = default;
 		virtual void update(Ref<RenderContext>& context) = 0;
 
@@ -30,9 +33,9 @@ namespace pio
 		const std::string& name() const { return m_name; }
 		const std::map<std::string, Ref<UniformData>>& uniforms() const { return m_uniforms; }
 
-	public:
-		static Ref<Material> MakeStandardMaterial(const std::string& name, RenderingMode mode = RenderingMode_Opaque);
-		static Ref<Material> Create(const std::string& name, RenderingMode mode, ShaderSpecifier spec);
+	private:
+		friend class MaterialMgr;
+		static Ref<Material> Create(const std::string& name, ShaderSpecifier spec, RenderingMode mode = RenderingMode_Opaque);
 
 	protected:
 		template<typename T>

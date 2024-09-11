@@ -19,7 +19,7 @@ namespace pio
 	void MaterialMgr::init(Ref<RenderContext>& context)
 	{
 		m_context = context;
-		m_materials.insert({ GpuAttr::STANDARD_MATERIAL, Material::MakeStandardMaterial(GpuAttr::STANDARD_MATERIAL) });
+		m_materials.insert({ GpuAttr::STANDARD_MATERIAL, Material::Create(GpuAttr::STANDARD_MATERIAL, ShaderSpec_Standard)});
 	}
 
 	void MaterialMgr::release()
@@ -31,5 +31,10 @@ namespace pio
 			it = m_materials.erase(it);
 		}
 		m_context.reset();
+	}
+
+	Ref<Material> MaterialMgr::create(const std::string& name, ShaderSpecifier spec, RenderingMode mode)
+	{
+		return Material::Create(name, spec, mode);
 	}
 }
