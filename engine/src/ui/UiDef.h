@@ -21,7 +21,8 @@ namespace pio
 
 		uint32_t width()  const { return Right - Left; }
 		uint32_t height() const { return Bottom - Top; }
-		bool contain(uint32_t x, uint32_t y) const { return x >= Left && x <= Right && y >= Top && y <= Bottom; }
+		glm::vec2 center() const { return glm::vec2(Left + width() * 0.5f, Top + height() * 0.5f); }
+		bool contain(uint32_t x, uint32_t y) const { return x >= Left && x <= Right && y >= Top && y <= Bottom; }	
 
 		bool operator==(const Rect2d& rhs)
 		{

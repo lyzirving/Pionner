@@ -14,6 +14,7 @@ namespace pio
 		virtual void onAttach(Ref<RenderContext>& context) override;
 		virtual void onDetach() override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target) override;
+		virtual bool onEvent(Ref<Event>& event) override;
 
 	private:
 		void onDrawSceneView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime);

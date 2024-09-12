@@ -15,6 +15,7 @@ namespace pio
 	public:
 		static Ref<Entity> MakeCamera(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name = "", int32_t depth = 0);
 		static Ref<Entity> MakePlane(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name = "");
+		static Ref<Entity> MakeCube(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name = "");
 
 	private:
 		Factory() {}

@@ -147,6 +147,7 @@ namespace pio
 		//Default entities
 		Factory::MakeCamera(m_context, scene, "MainCamera", 0);
 		Factory::MakePlane(m_context, scene, "Plane");
+		Factory::MakeCube(m_context, scene, "Cube");
 		m_sceneMgr->add(scene, true);
 
 		auto runtimeLayer = CreateRef<RuntimeLayer>(LayoutParams(0.f, 0.f, 1.f, 1.f));

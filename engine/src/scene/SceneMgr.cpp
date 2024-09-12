@@ -68,6 +68,7 @@ namespace pio
 			auto cameras = Pipeline::FetchCamera(context, cameraEntities);
 			PIO_CHECK_RETURN(!cameras.empty(), "err! camera must be added into scene before rendering");
 			m_active->onUpdate(context, pipeline, cameras);
+			m_active->setMainCamera(cameras[0]);
 			m_target = cameras[0]->renderTarget();
 		}
 		layerMgr->onUpdate(context, m_active, m_target);

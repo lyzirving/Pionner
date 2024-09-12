@@ -38,6 +38,11 @@ namespace pio
 		m_firstTimeShow = false;
 	}
 
+	bool RuntimeLayer::onEvent(Ref<Event>& event)
+	{
+		return false;
+	}
+
 	void RuntimeLayer::onDrawSceneView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime)
 	{
 		auto& param = m_layoutParam;
@@ -78,7 +83,7 @@ namespace pio
 	void RuntimeLayer::onDrawHierarchyView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime)
 	{
 		auto& param = m_layoutParam;
-		context->submitRC([layout, firstTime, &context, &param]()
+		context->submitRC([layout, firstTime, &context, &scene, &param]()
 		{
 			if (firstTime)
 			{
@@ -90,7 +95,9 @@ namespace pio
 				ImGui::SetNextWindowSize(ImVec2((layout.Right - layout.Left) * param.Vp.w(), (layout.Bottom - layout.Top) * param.Vp.h()));
 			}
 
+			const auto& ents = scene->entities();
 			ImGui::Begin("Hierachy", 0, ImGuiUtils::k_FlagCommonWindow);
+			ImGuiUtils::ShowHierarchy(ents);
 			ImGui::End();
 		});
 	}

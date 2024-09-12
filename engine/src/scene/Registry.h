@@ -11,17 +11,17 @@ namespace pio
 		Registry() {}
 		~Registry() { shutdown(); }
 
-		Ref<Entity> create(const std::string& name = "")
+		Ref<Entity> create(EntityType type, const std::string& name = "")
 		{
-			auto entity = CreateRef<Entity>(m_registry.create(), m_registry, name);
+			auto entity = CreateRef<Entity>(m_registry.create(), m_registry, type, name);
 			m_entCache[entity->index()] = entity;
 			return entity;
 		}
 
 		template <typename T, typename ... Comps>
-		Ref<Entity> create(const std::string& name = "")
+		Ref<Entity> create(EntityType type, const std::string& name = "")
 		{
-			auto entity = CreateRef<Entity>(m_registry.create(), m_registry, name);
+			auto entity = CreateRef<Entity>(m_registry.create(), m_registry, type, name);
 			m_entCache[entity->index()] = entity;
 			entity->addComponent<T, Comps...>();
 			return entity;

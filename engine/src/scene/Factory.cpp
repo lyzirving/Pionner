@@ -24,7 +24,7 @@ namespace pio
 {
 	Ref<Entity> Factory::MakeCamera(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name, int32_t depth)
 	{
-		auto entity = scene->addEntity<CameraComponent, TransformComponent>(name);
+		auto entity = scene->addEntity<CameraComponent, TransformComponent>(EntityType::Camera, name);
 		auto* camComp = entity->getComponent<CameraComponent>();
 		auto* transComp = entity->getComponent<TransformComponent>();
 
@@ -67,7 +67,7 @@ namespace pio
 
 	Ref<Entity> Factory::MakePlane(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name)
 	{
-		auto entity = scene->addEntity<MeshFilter, MeshRenderer, TransformComponent>(name);
+		auto entity = scene->addEntity<MeshFilter, MeshRenderer, TransformComponent>(EntityType::Mesh, name);
 
 		auto* meshFilter = entity->getComponent<MeshFilter>();
 		auto* meshRender = entity->getComponent<MeshRenderer>();
@@ -80,6 +80,28 @@ namespace pio
 
 		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL)->assetHnd();
 		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
+
+		return entity;
+	}
+
+	Ref<Entity> Factory::MakeCube(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name)
+	{
+		auto entity = scene->addEntity<MeshFilter, MeshRenderer, TransformComponent>(EntityType::Mesh, name);
+
+		auto* meshFilter = entity->getComponent<MeshFilter>();
+		auto* meshRender = entity->getComponent<MeshRenderer>();
+		auto* transform = entity->getComponent<TransformComponent>();
+
+		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
+		mesh->m_triangles = GeometryFactory::MakeCube();
+
+		meshFilter->Type = MeshType::Cube;
+		meshFilter->Uid = mesh->assetHnd();
+
+		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL)->assetHnd();
+		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
+
+		transform->Position = glm::vec3(0.f, 1.f, 0.f);
 
 		return entity;
 	}

@@ -9,10 +9,15 @@ namespace pio
 {
 	#define PIO_ENT_KEY_2_IDX(key) ((uint32_t)key)
 
+	enum class EntityType : uint8_t
+	{
+		Camera, Mesh
+	};
+
 	class Entity
 	{
 	public:
-		Entity(const entt::entity& key, entt::registry &regi, const std::string& name = "");
+		Entity(const entt::entity& key, entt::registry &regi, EntityType type, const std::string& name = "");
 		~Entity() = default;
 
 		uint32_t index() const { return PIO_ENT_KEY_2_IDX(m_key); }
@@ -21,6 +26,7 @@ namespace pio
 
 		const std::string& name() const { return m_name; }
 		const std::vector<Ref<Entity>>& children() const { return m_children; }
+		EntityType type() const { return m_type; }
 
 		void setName(const std::string& name) { m_name = name; }
 
@@ -63,6 +69,7 @@ namespace pio
 		UUID32 m_id;
 		std::string m_name;
 		std::vector<Ref<Entity>> m_children;
+		EntityType m_type;
 	};
 }
 

@@ -1,5 +1,7 @@
 #include "ImGuiUtils.h"
 
+#include "scene/Entity.h"
+
 namespace pio
 {
 	const int32_t ImGuiUtils::k_FlagCollapseHeader = ImGuiTreeNodeFlags_DefaultOpen |
@@ -66,5 +68,9 @@ namespace pio
 	bool ImGuiUtils::ItemBeingClicked()
 	{
 		return ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen();
+	}
+
+	void ImGuiUtils::ShowHierarchy(const std::vector<Ref<Entity>>& ents)
+	{
 	}
 }
