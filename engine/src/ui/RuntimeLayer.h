@@ -23,6 +23,7 @@ namespace pio
 
 	private:
 		bool m_firstTimeShow{ true };
+		uint32_t m_selectEntIdx{ InvalidId };
 	};
 }
 

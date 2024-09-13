@@ -5,7 +5,7 @@
 
 namespace pio
 {
-	constexpr static const uint32_t InvalidId = 0U;
+	constexpr static const uint32_t InvalidId = ~0U;
 
 	// "UUID" (universally unique identifier) or GUID is (usually) a 128-bit integer
 	// used to "uniquely" identify information. In Pionner, even though we use the term

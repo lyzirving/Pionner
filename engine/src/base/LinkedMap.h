@@ -19,17 +19,10 @@ namespace pio
 	public:
 		typedef typename std::list<T>::iterator ListIterator;
 		typedef typename std::list<T>::const_iterator ListCIterator;
-
 		typedef typename std::map<K, T>::iterator MapIterator;
 
-		LinkedMap() : m_list(), m_map() 
-		{
-		}
-
-		~LinkedMap() 
-		{ 
-			release(); 
-		}
+		LinkedMap() : m_list(), m_map() {}
+		~LinkedMap()  { release(); }
 
 		void add(const K &key, const T &val)
 		{
@@ -72,40 +65,14 @@ namespace pio
 			m_map.erase(it);
 		}
 
-		bool exist(const K &key) const
-		{
-			return m_map.find(key) != m_map.end();
-		}
-
-		uint32_t size() const
-		{
-			return m_map.size();
-		}
-
-		bool empty() const
-		{
-			return m_map.empty();
-		}
-
-		ListIterator begin()
-		{
-			return m_list.begin();
-		}
-
-		ListIterator end()
-		{
-			return m_list.end();
-		}
-
-		ListCIterator cbegin() const
-		{
-			return m_list.cbegin();
-		}
-
-		ListCIterator cend() const
-		{
-			return m_list.cend();
-		}
+		bool exist(const K &key) const { return m_map.find(key) != m_map.end(); }
+		uint32_t size() const { return m_map.size(); }
+		bool empty() const { return m_map.empty(); }
+		ListIterator begin() { return m_list.begin(); }
+		ListIterator end() { return m_list.end(); }
+		ListCIterator cbegin() const { return m_list.cbegin(); }
+		ListCIterator cend() const { return m_list.cend(); }
+		const std::list<T>& items() const { return m_list; }
 
 		T &operator[](uint32_t index)
 		{
@@ -132,7 +99,7 @@ namespace pio
 			{
 				it1 = m_map.erase(it1);
 			}
-		}
+		}		
 
 	private:
 		std::list<T> m_list{};

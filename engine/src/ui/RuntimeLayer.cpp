@@ -83,7 +83,8 @@ namespace pio
 	void RuntimeLayer::onDrawHierarchyView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime)
 	{
 		auto& param = m_layoutParam;
-		context->submitRC([layout, firstTime, &context, &scene, &param]()
+		auto& selectIdx = m_selectEntIdx;
+		context->submitRC([layout, firstTime, &context, &scene, &param, &selectIdx]()
 		{
 			if (firstTime)
 			{
@@ -97,7 +98,7 @@ namespace pio
 
 			const auto& ents = scene->entities();
 			ImGui::Begin("Hierachy", 0, ImGuiUtils::k_FlagCommonWindow);
-			ImGuiUtils::ShowHierarchy(ents);
+			ImGuiUtils::ShowHierarchy(ents, selectIdx);
 			ImGui::End();
 		});
 	}
@@ -105,7 +106,8 @@ namespace pio
 	void RuntimeLayer::onDrawInspectorView(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target, const LayoutRatio& layout, bool firstTime)
 	{
 		auto& param = m_layoutParam;
-		context->submitRC([layout, firstTime, &context, &param]()
+		uint32_t& selectIdx = m_selectEntIdx;
+		context->submitRC([layout, firstTime, &context, &scene, &param, &selectIdx]()
 		{
 			if (firstTime)
 			{
@@ -116,8 +118,12 @@ namespace pio
 				ImGui::SetNextWindowPos(pos);
 				ImGui::SetNextWindowSize(ImVec2((layout.Right - layout.Left) * param.Vp.w(), (layout.Bottom - layout.Top) * param.Vp.h()));
 			}
-
 			ImGui::Begin("Inspector", 0, ImGuiUtils::k_FlagCommonWindow);
+			const auto& ent = scene->getEntity(selectIdx);
+			if(ent)
+			{
+				ImGuiUtils::ShowEntity(ent);
+			}
 			ImGui::End();
 		});
 	}

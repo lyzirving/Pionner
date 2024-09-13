@@ -1,6 +1,7 @@
 #include "ImGuiUtils.h"
 
 #include "scene/Entity.h"
+#include "scene/Components.h"
 
 namespace pio
 {
@@ -9,7 +10,7 @@ namespace pio
 		ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	const int32_t ImGuiUtils::k_FlagSelectedNode = ImGuiTreeNodeFlags_OpenOnArrow |
+	const int32_t ImGuiUtils::k_FlagSelectedTreeNode = ImGuiTreeNodeFlags_OpenOnArrow |
 		ImGuiTreeNodeFlags_OpenOnDoubleClick |
 		ImGuiTreeNodeFlags_SpanAvailWidth;
 
@@ -70,7 +71,116 @@ namespace pio
 		return ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen();
 	}
 
-	void ImGuiUtils::ShowHierarchy(const std::vector<Ref<Entity>>& ents)
+	void ImGuiUtils::ShowHierarchy(const std::vector<Ref<Entity>>& ents, uint32_t& selectIdx)
 	{
+		if(ents.empty())
+			return;
+
+		uint32_t clickIdx = InvalidId;
+		if(selectIdx == InvalidId)
+		{
+			selectIdx = ents[0]->index();
+		}
+		ShowRelation(ents, selectIdx, clickIdx);
+	}
+
+	void ImGuiUtils::ShowEntity(const Ref<Entity>& entity)
+	{
+		auto type = entity->type();
+		switch(type)
+		{
+			case EntityType::Camera:
+			{
+				DrawCameraPanel(entity);
+				break;
+			}
+			case EntityType::Mesh:				
+			default:
+				break;
+		}
+	}
+
+	void ImGuiUtils::ShowRelation(const std::vector<Ref<Entity>>& ents, uint32_t& selectIdx, uint32_t& clickIdx)
+	{
+		for(size_t i = 0; i < ents.size(); i++)
+		{
+			ImGuiTreeNodeFlags tnFlags = ImGuiUtils::k_FlagSelectedTreeNode;
+			tnFlags |= (selectIdx == ents[i]->index()) ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
+			bool hasChild = !ents[i]->children().empty();
+			if(!hasChild)
+			{
+				tnFlags |= ImGuiUtils::k_FlagTreeLeaf;
+			}
+			bool bOpen = ImGui::TreeNodeEx(ents[i]->name().c_str(), tnFlags);
+			if(ImGuiUtils::ItemBeingClicked())
+			{
+				clickIdx = ents[i]->index();
+			}
+			if(bOpen && hasChild)
+			{
+				ShowRelation(ents[i]->children(), selectIdx, clickIdx);
+				ImGui::TreePop();
+			}
+			if(clickIdx != InvalidId)
+			{
+				selectIdx = clickIdx;
+			}
+		}
+	}
+
+	void ImGuiUtils::DrawCameraPanel(const Ref<Entity>& entity)
+	{
+		if(!entity || !entity->has<CameraComponent>())
+		{
+			return;
+		}
+		auto* cameraComp = entity->getComponent<CameraComponent>();
+		auto* transComp = entity->getComponent<TransformComponent>();
+
+		DrawTransformPanel(transComp);
+
+		if(ImGui::CollapsingHeader("Camera", ImGuiUtils::k_FlagCollapseHeader))
+		{
+			int prjType{ cameraComp->PrjType };
+			const char* items[2]{ "Perspective", "Orthographic" };
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Projection");
+			ImGui::SameLine();
+			ImGui::Combo("##Prj_type", &prjType, items, ProjectionType_Num);
+			cameraComp->PrjType = ProjectionType(prjType);
+
+			if(prjType == ProjectionType_Perspective)
+			{				
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Fov       ");
+				ImGui::SameLine();
+				ImGui::DragFloat("##FOV", &cameraComp->Fov, 1.f, 0.1, 179.f, "%.1f");				
+			}
+			else
+			{
+			}
+		}
+	}
+
+	void ImGuiUtils::DrawTransformPanel(TransformComponent* comp)
+	{
+		if(ImGui::CollapsingHeader("Transform", ImGuiUtils::k_FlagCollapseHeader))
+		{
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Position");
+			ImGui::SameLine();
+			ImGui::DragFloat3("##Position", glm::value_ptr(comp->Position), 0.05f, -100.f, 100.f, "%.1f");
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Rotation");
+			ImGui::SameLine();
+			ImGui::DragFloat3("##Rotation", glm::value_ptr(comp->Rotation), 0.1f, -360.f, 360.f, "%.1f");
+
+			ImGui::AlignTextToFramePadding();
+			//Enough text padding for text alignment
+			ImGui::Text("Scale   ");
+			ImGui::SameLine();
+			ImGui::DragFloat3("##Scale", glm::value_ptr(comp->Scale), 0.1f, 0.f, 10.f, "%.1f");
+		}
 	}
 }

@@ -49,7 +49,7 @@ namespace pio
 		}
 
 		template <typename T>
-		T* getComponent()
+		T* getComponent() const
 		{
 			return m_regi.try_get<T>(m_key);
 		}

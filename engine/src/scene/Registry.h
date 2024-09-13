@@ -59,6 +59,16 @@ namespace pio
 			}
 		}
 
+		const Ref<Entity>& getEntity(uint32_t index) const
+		{
+			auto it = m_entCache.find(index);
+			if(it != m_entCache.end())
+			{
+				return it->second;
+			}
+			return Ref<Entity>();
+		}
+
 	private:
 		entt::registry m_registry;
 		std::unordered_map<uint32_t, Ref<Entity>> m_entCache;

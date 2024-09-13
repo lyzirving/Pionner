@@ -36,7 +36,7 @@ namespace pio
 			m_ents.push_back(entity);
 			return entity;
 		}
-		
+
 		void setMainCamera(const Ref<Camera>& cam) { if (m_mainCamera != cam) { m_mainCamera = cam; } }
 
 		void removeEntity(Ref<Entity>& ent);
@@ -44,6 +44,8 @@ namespace pio
 
 		Registry& registry() { return m_registry; }
 
+		const Registry& registry() const { return m_registry; }
+		const Ref<Entity>& getEntity(uint32_t index) const { return m_registry.getEntity(index); }
 		const std::vector<Ref<Entity>>& entities() const { return m_ents; }
 		const Ref<Camera>& mainCamera() const { return m_mainCamera; }
 
