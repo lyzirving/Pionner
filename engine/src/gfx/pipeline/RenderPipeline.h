@@ -5,9 +5,10 @@
 
 namespace pio
 {
+	class Entity;
 	class Camera;
-	class RenderContext;
 	class Renderer;
+	class RenderContext;
 	struct RenderingEntities;
 	struct RenderingData;
 
@@ -19,20 +20,18 @@ namespace pio
 
 		virtual void onAttach(Ref<RenderContext>& context);
 		virtual void onDetach(Ref<RenderContext>& context);
-		virtual void onRender(Ref<RenderContext>& context, std::vector<Ref<Camera>>& cameras);
+		virtual void onRender(Ref<RenderContext>& context, std::vector<Ref<Entity>>& cameras);
 
 	protected:
 		void onBeginFrameRendering(Ref<RenderContext>& context);
 		void onEndFrameRendering(Ref<RenderContext>& context);
 
-		void onSortCameras(std::vector<Ref<Camera>>& cameras);
 		void onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
 		void onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
 		void onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
 
 		// Methods where make data  which is about to be uploaded
 		void onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingEntities& renderingEntities);
-		void onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingData &renderingData);
 		void onSetUpLight(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData);
 		void onSetUpObject(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData);
 

@@ -18,12 +18,12 @@ namespace pio
 		popAll();
 	}
 
-	void LayerMgr::onUpdate(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<RenderTarget>& target)
+	void LayerMgr::onUpdate(Ref<RenderContext>& context, Ref<Scene>& scene)
 	{
 		for(auto layer : m_stack)
 		{
 			if(layer)
-				layer->onUpdate(context, scene, target);
+				layer->onUpdate(context, scene);
 		}
 	}
 

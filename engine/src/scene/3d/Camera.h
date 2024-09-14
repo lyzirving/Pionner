@@ -110,6 +110,8 @@ namespace pio
 
 	public:
 		static glm::mat4 ViewportMat(const Viewport& vp);
+		static glm::vec3 CalcViewDir(const Ref<Entity> &entity);
+		static glm::vec3 CalcMotionDir(const Ref<Entity>& entity, uint16_t key);
 
 	private:	
 		Transform3D m_transform{};

@@ -20,8 +20,8 @@ namespace pio
 		RenderingEntities &operator=(RenderingEntities &&rhs) noexcept;
 
 		Ref<Entity> MainLight;
-		std::list<Ref<Entity>> Mesh;
-		std::list<Ref<Entity>> SkinnedMesh;
+		std::vector<Ref<Entity>> Mesh;
+		std::vector<Ref<Entity>> SkinnedMesh;
 	};
 
 	struct MeshRenderingItem

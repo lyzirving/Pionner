@@ -22,7 +22,7 @@ namespace pio
 		removeAllEntities();
 	}
 
-	void Scene::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<Camera>>& cameras)
+	void Scene::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<Entity>>& cameras)
 	{
 		RenderingEntities data;
 		data.Mesh = m_registry.view<MeshFilter, MeshRenderer>();

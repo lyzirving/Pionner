@@ -20,30 +20,19 @@ namespace pio
 {
 	namespace Pipeline
 	{
-		std::vector<Ref<Camera>> FetchCamera(Ref<RenderContext>& context, const std::list<Ref<Entity>>& entities)
+		void UpdateCamera(Ref<RenderContext>& context, Ref<Entity>& entity, Ref<Camera>& camera)
 		{
-			std::vector<Ref<Camera>> cameras;
-			for (auto& ent : entities)
-			{
-				CameraComponent* camComp{ nullptr };
-				TransformComponent* transComp{ nullptr };
-				if (!(camComp = ent->getComponent<CameraComponent>())||
-					!(transComp = ent->getComponent<TransformComponent>()))
-				{
-					return cameras;
-				}
-				auto cam = AssetMgr::GetRuntimeAsset<Camera>(camComp->Uid);				
+			auto* camComp = entity->getComponent<CameraComponent>();
+			auto* tranComp = entity->getComponent<TransformComponent>();
 
-				cam->setPrjType(camComp->PrjType);
-				cam->setFov(camComp->Fov);
-				cam->setSize(camComp->Size);
-				cam->setAspect(camComp->Aspect);
-				cam->setPosition(transComp->Position);
-				cam->setEuler(transComp->Rotation);
+			camera->setPrjType(camComp->PrjType);
+			camera->setFov(camComp->Fov);
+			camera->setSize(camComp->Size);
+			camera->setAspect(camComp->Aspect);
+			camera->setPosition(tranComp->Position);
+			camera->setEuler(tranComp->Rotation);			
 
-				cameras.push_back(cam);
-			}
-			return cameras;
+			camera->update(context);
 		}
 
 		void ProcessMeshEnt(Ref<RenderContext>& context, Ref<Entity>& entity, /*out*/RenderingData& renderingData)

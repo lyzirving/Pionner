@@ -6,7 +6,6 @@
 
 namespace pio
 {
-	class Camera;
 	class RenderContext;
 	class RenderPipeline;
 
@@ -20,7 +19,7 @@ namespace pio
 		virtual void onAttach();
 		virtual void onDetach();
 
-		virtual void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<Camera>>& cameras);
+		virtual void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<Entity>>& cameras);
 
 		Ref<Entity> addEntity(EntityType type, const std::string& name = "")
 		{
@@ -37,7 +36,7 @@ namespace pio
 			return entity;
 		}
 
-		void setMainCamera(const Ref<Camera>& cam) { if (m_mainCamera != cam) { m_mainCamera = cam; } }
+		void setCamera(const Ref<Entity>& cam) { if (m_camera != cam) { m_camera = cam; } }
 
 		void removeEntity(Ref<Entity>& ent);
 		void removeAllEntities();
@@ -47,12 +46,12 @@ namespace pio
 		const Registry& registry() const { return m_registry; }
 		const Ref<Entity>& getEntity(uint32_t index) const { return m_registry.getEntity(index); }
 		const std::vector<Ref<Entity>>& entities() const { return m_ents; }
-		const Ref<Camera>& mainCamera() const { return m_mainCamera; }
+		const Ref<Entity>& getCamera() const { return m_camera; }
 
 	private:
 		Registry m_registry{};
 		std::vector<Ref<Entity>> m_ents;
-		Ref<Camera> m_mainCamera;
+		Ref<Entity> m_camera;
 	};
 
 	template<>

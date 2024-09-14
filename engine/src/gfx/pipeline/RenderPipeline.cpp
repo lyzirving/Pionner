@@ -1,6 +1,10 @@
 #include "RenderPipeline.h"
 #include "PipelineUtils.h"
 
+#include "asset/AssetMgr.h"
+
+#include "scene/Entity.h"
+#include "scene/Components.h"
 #include "scene/3d/Camera.h"
 
 #include "gfx/renderer/RenderContext.h"
@@ -13,11 +17,6 @@
 
 namespace pio
 {
-	bool CameraSorter(Ref<Camera>& lhs, Ref<Camera>& rhs)
-	{
-		return lhs->depth() < rhs->depth();
-	}
-
 	RenderPipeline::RenderPipeline()
 	{
 	}
@@ -33,22 +32,17 @@ namespace pio
 		m_renderer->onDetach(context);
 	}
 
-	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<Camera>>& cameras)
+	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<Entity>>& cameras)
 	{
-		if (cameras.empty())
-		{
-			LOGE("err! empty camera list");
-		}
-
-		onBeginFrameRendering(context);
-
-		onSortCameras(cameras);
+		onBeginFrameRendering(context);		
 
 		for (int32_t i = 0; i < cameras.size(); i++)
-		{
-			onBeginCameraRendering(context, cameras[i]);
-			onRenderSingleCamera(context, cameras[i]);
-			onEndCameraRendering(context, cameras[i]);
+		{			
+			auto camera = AssetMgr::GetRuntimeAsset<Camera>(cameras[i]->getComponent<CameraComponent>()->Uid);
+			Pipeline::UpdateCamera(context, cameras[i], camera);
+			onBeginCameraRendering(context, camera);
+			onRenderSingleCamera(context, camera);
+			onEndCameraRendering(context, camera);
 		}
 
 		onEndFrameRendering(context);
@@ -60,12 +54,6 @@ namespace pio
 
 	void RenderPipeline::onEndFrameRendering(Ref<RenderContext>& context)
 	{
-	}
-
-	void pio::RenderPipeline::onSortCameras(std::vector<Ref<Camera>>& cameras)
-	{
-		if (cameras.size() >= 2)
-			std::sort(cameras.begin(), cameras.end(), CameraSorter);
 	}
 
 	void RenderPipeline::onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
@@ -93,21 +81,13 @@ namespace pio
 	void RenderPipeline::onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingEntities& renderingEntities)
 	{
 		RenderingData renderingData;
-
-		onSetUpCamera(context, camera, renderingData);
+		renderingData.UnimBuffSet.insert({ camera->unimBuffer()->binding(), camera->unimBuffer()->assetHnd()});
 
 		onSetUpLight(context, renderingEntities, renderingData);
 
 		onSetUpObject(context, renderingEntities, renderingData);
 
 		context->setRenderingData(std::move(renderingData));
-	}
-
-	void RenderPipeline::onSetUpCamera(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingData &renderingData)
-	{
-		camera->update(context);
-		auto &camBuff = camera->unimBuffer();
-		renderingData.UnimBuffSet.insert({ camBuff->binding(), camBuff->assetHnd() });
 	}
 
 	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData)

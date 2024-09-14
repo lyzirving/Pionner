@@ -1,10 +1,17 @@
 #include "Transform3D.h"
+#include "Transform3D.h"
 
 namespace pio
 {
 	Transform3D::Transform3D()
 	{
 		m_attrs.set();
+	}
+
+	Transform3D::Transform3D(const glm::vec3& pos, const glm::vec3& euler)
+	{
+		m_position = pos;
+		m_euler = euler;
 	}
 
 	Transform3D::Transform3D(const Transform3D& rhs)

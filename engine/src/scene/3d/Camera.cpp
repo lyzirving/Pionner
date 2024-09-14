@@ -1,6 +1,7 @@
 #include "Camera.h"
 
 #include "asset/AssetMgr.h"
+#include "event/KeyCodes.h"
 
 #include "scene/Components.h"
 #include "scene/Entity.h"
@@ -146,7 +147,7 @@ namespace pio
 	void Camera::calcViewMat()
 	{
 		if (m_attrBits.any())
-		{			
+		{
 			m_transform.flush();
 			calcCameraPose();
 			m_viewMat = glm::lookAt(m_transform.position(), m_transform.position() + m_viewDir * 10.f, m_up);
@@ -174,6 +175,47 @@ namespace pio
 								   float(vp.y()) + float(vp.h()) / 2.f,
 								   0.5f, 1.f);
 		return glm::mat4(col0, col1, col2, col3);
+	}
+
+	glm::vec3 Camera::CalcViewDir(const Ref<Entity>& entity)
+	{
+		Transform3D transform;
+		transform.setEuler(entity->getComponent<TransformComponent>()->Rotation);
+		glm::vec3 viewDir = -World::Forward;
+		return glm::normalize(transform.rotMat() * glm::vec4(viewDir, 0.f));
+	}
+
+	glm::vec3 Camera::CalcMotionDir(const Ref<Entity>& entity, uint16_t key)
+	{
+		glm::vec3 dir(0.f);
+		switch (key)
+		{
+			case Key::A:
+			{
+				//Camera's left
+				dir = -glm::normalize(glm::cross(CalcViewDir(entity), glm::vec3(0.f, 1.f, 0.f)));
+				break;
+			}
+			case Key::D:
+			{
+				//Camera's right
+				dir = glm::normalize(glm::cross(CalcViewDir(entity), glm::vec3(0.f, 1.f, 0.f)));
+				break;
+			}
+			case Key::W:
+			{
+				dir = CalcViewDir(entity);
+				break;
+			}
+			case Key::S:
+			{
+				dir = -CalcViewDir(entity);
+				break;
+			}
+			default:
+				break;
+		}
+		return dir;
 	}
 
 	template<>

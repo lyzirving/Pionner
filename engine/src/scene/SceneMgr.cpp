@@ -14,6 +14,11 @@
 
 namespace pio
 {
+	bool CameraSorter(Ref<Entity>& lhs, Ref<Entity>& rhs)
+	{
+		return lhs->getComponent<CameraComponent>()->Depth < rhs->getComponent<CameraComponent>()->Depth;
+	}
+
 	void SceneMgr::add(const Ref<Scene>& scene, bool bActive)
 	{
 		m_scenes[scene->assetHnd()] = scene;
@@ -57,20 +62,21 @@ namespace pio
 	{		
 		removeAll();
 		m_active.reset();
-		m_target.reset();
 	}
 
 	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<LayerMgr>& layerMgr)
 	{
-		if (m_active)
-		{
-			auto cameraEntities = m_active->registry().view<CameraComponent>();
-			auto cameras = Pipeline::FetchCamera(context, cameraEntities);
-			PIO_CHECK_RETURN(!cameras.empty(), "err! camera must be added into scene before rendering");
-			m_active->onUpdate(context, pipeline, cameras);
-			m_active->setMainCamera(cameras[0]);
-			m_target = cameras[0]->renderTarget();
-		}
-		layerMgr->onUpdate(context, m_active, m_target);
+		auto cameras = m_active->registry().view<CameraComponent>();
+		PIO_CHECK_RETURN(!cameras.empty(), "err! camera must be added into scene before rendering");
+		onSortCameras(cameras);
+		m_active->onUpdate(context, pipeline, cameras);
+		m_active->setCamera(cameras[0]);
+		layerMgr->onUpdate(context, m_active);
+	}
+
+	void SceneMgr::onSortCameras(std::vector<Ref<Entity>>& cameras)
+	{
+		if (cameras.size() >= 2)
+			std::sort(cameras.begin(), cameras.end(), CameraSorter);
 	}
 }

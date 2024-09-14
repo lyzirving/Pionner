@@ -10,6 +10,7 @@ namespace pio
 	{
 	public:
 		Transform3D();
+		Transform3D(const glm::vec3& pos, const glm::vec3& euler);
 		~Transform3D() = default;
 		Transform3D(const Transform3D& rhs);
 		Transform3D(Transform3D&& rhs) noexcept;

@@ -9,10 +9,11 @@ namespace pio
 	class Camera;
 	class RenderContext;
 	struct RenderingData;
+	struct CameraComponent;
 
 	namespace Pipeline
 	{
-		std::vector<Ref<Camera>> FetchCamera(Ref<RenderContext>& context, const std::list<Ref<Entity>>& entities);
+		void UpdateCamera(Ref<RenderContext>& context, Ref<Entity>& entity, Ref<Camera>& camera);
 		void ProcessMeshEnt(Ref<RenderContext>& context, Ref<Entity>& entity, /*out*/RenderingData& renderingData);
 	}
 }

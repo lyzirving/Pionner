@@ -6,7 +6,6 @@
 namespace pio
 {
 	class LayerMgr;
-	class RenderTarget;
 
 	class SceneMgr
 	{
@@ -22,9 +21,11 @@ namespace pio
 		void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<LayerMgr>& layerMgr);
 
 	private:
+		void onSortCameras(std::vector<Ref<Entity>>& cameras);
+
+	private:
 		std::map<UUID32, Ref<Scene>> m_scenes;
 		Ref<Scene> m_active;
-		Ref<RenderTarget> m_target;
 	};
 }
 

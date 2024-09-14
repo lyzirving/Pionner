@@ -60,8 +60,8 @@ namespace pio
 		camComp->Depth = depth;
 		camComp->Aspect = float(colorSize.x) / float(colorSize.y);
 		camComp->Uid = camera->assetHnd();
-		transComp->Position = glm::vec3(-3.f, 5.f, 2.5f);
-		transComp->Rotation = glm::vec3(-45.f, -60.f, 0.f);
+		transComp->Position = glm::vec3(0.f, 3.f, 4.5f);
+		transComp->Rotation = glm::vec3(-35.f, 0.f, 0.f);
 		return entity;
 	}
 
