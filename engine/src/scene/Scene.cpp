@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "Components.h"
+
 #include "scene/node/MeshNode.h"
+#include "scene/node/LightNode.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/pipeline/RenderPipeline.h"
@@ -24,9 +26,10 @@ namespace pio
 	void Scene::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<CameraNode>>& camNodes)
 	{
 		RenderingNodes data;
-		/*auto lights = m_registry.view<DirectionalLightComponent>();
-		data.MainLight = lights.empty() ? Ref<Entity>() : lights[0];*/
+		auto lights = m_registry.view<DirectionalLightNode, DirectionalLightComponent>();
+
 		data.Mesh = m_registry.view<MeshNode, MeshFilter, MeshRenderer>();
+		data.MainLight = lights.empty() ? Ref<DirectionalLightNode>() : lights[0];
 
 		context->setRenderingNodes(std::move(data));
 		pipeline->onRender(context, camNodes);

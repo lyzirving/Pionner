@@ -156,7 +156,7 @@ namespace pio
 				ImGui::SetNextWindowSize(ImVec2(param.Rect.width(), param.Rect.height()));
 			}
 			ImGui::Begin("Inspector", 0, ImGuiUtils::k_FlagCommonWindow);
-			const auto& node = scene->getNode(selectIdx);
+			auto node = scene->getNode(selectIdx);
 			if(node)
 			{
 				ImGuiUtils::ShowNode(node);

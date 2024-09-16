@@ -25,14 +25,8 @@ namespace pio
 
 	MeshNode::~MeshNode() = default;
 
-	void MeshNode::update()
+	void MeshNode::update(Ref<RenderContext>& context)
 	{
-		auto context = m_context.lock();
-		if (!context)
-		{
-			LOGE("err! context is invalid");
-			return;
-		}
 		MeshFilter* filter = getComponent<MeshFilter>(); 
 		MeshRenderer* render = getComponent<MeshRenderer>();
 		TransformComponent* transComp = getComponent<TransformComponent>();

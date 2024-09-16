@@ -30,7 +30,7 @@ namespace pio
 		DirectionalLightNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name);
 		~DirectionalLightNode();
 
-		virtual void update() override;
+		virtual void update(Ref<RenderContext>& context) override;
 
 	private:
 		friend class Node;

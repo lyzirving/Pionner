@@ -17,7 +17,7 @@ namespace pio
 		CameraNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name);
 		~CameraNode();
 
-		virtual void update() override;
+		virtual void update(Ref<RenderContext>& context) override;
 
 		void setDepth(int32_t depth) { m_depth = depth; }
 		void setRenderTarget(const Ref<RenderTarget>& target) { m_target = target; }

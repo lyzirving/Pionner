@@ -20,7 +20,7 @@ void main() {
 #pragma stage : frag 
 precision mediump float;
 
-#include <PBR.glslh>
+#include <Lighting.glslh>
 
 uniform sampler2D u_GPosition;   // vec3
 uniform sampler2D u_GNormal;     // vec4 noraml(3) + type(1)

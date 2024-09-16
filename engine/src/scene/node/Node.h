@@ -29,7 +29,7 @@ namespace pio
 
 		virtual ~Node() = default;
 		virtual NodeType nodeType() const = 0;		
-		virtual void update() = 0;
+		virtual void update(Ref<RenderContext>& context) = 0;
 
 		bool operator==(const Node& rhs) { return this->m_key == rhs.m_key && this->m_uuid == rhs.m_uuid; }
 

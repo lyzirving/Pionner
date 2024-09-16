@@ -7,6 +7,7 @@ namespace pio
 {
 	class Node;
 	class MeshNode;
+	class DirectionalLightNode;
 
 	//Node collection that is about to be uploaded
 	struct RenderingNodes
@@ -20,7 +21,7 @@ namespace pio
 		RenderingNodes &operator=(const RenderingNodes &rhs);
 		RenderingNodes &operator=(RenderingNodes &&rhs) noexcept;
 
-		Ref<Node> MainLight;
+		Ref<DirectionalLightNode> MainLight;
 		std::vector<Ref<MeshNode>> Mesh;
 		std::vector<Ref<Node>> SkinnedMesh;
 	};

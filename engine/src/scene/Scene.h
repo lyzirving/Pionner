@@ -31,6 +31,12 @@ namespace pio
 			return node;
 		}
 
+		template<typename T = Node>
+		Ref<T> getNode(uint32_t index) const
+		{
+			return m_registry.getNode<T>(index);
+		}
+
 		void setCameraNode(const Ref<CameraNode>& cam) { if (m_cameraNode != cam)  { m_cameraNode = cam; } }
 
 		void removeNode(Ref<Node>& node);
@@ -38,8 +44,7 @@ namespace pio
 
 		Registry& registry() { return m_registry; }
 
-		const Registry& registry() const { return m_registry; }
-		const Ref<Node>& getNode(uint32_t index) const { return m_registry.getNode(index); }
+		const Registry& registry() const { return m_registry; }		
 		const std::vector<Ref<Node>>& nodes() const { return m_nodes; }
 		const Ref<CameraNode>& cameraNode() const { return m_cameraNode; }
 

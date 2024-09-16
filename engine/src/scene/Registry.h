@@ -19,6 +19,9 @@ namespace pio
 			return node;
 		}
 
+		/*
+		* @brief: Get target nodes of type T width target components
+		*/
 		template<typename T, typename... Comps>
 		std::vector<Ref<T>> view() const
 		{
@@ -39,6 +42,21 @@ namespace pio
 			return nodes;
 		}
 
+		template<typename T = Node>
+		Ref<T> getNode(uint32_t index) const
+		{
+			auto it = m_nodes.find(index);
+			if (it != m_nodes.end())
+			{
+				if (typeid(T) == typeid(Node))
+				{
+					return it->second;
+				}
+				return it->second->self<T>();
+			}
+			return Ref<T>();
+		}
+
 		void destroy(Ref<Node>& node)
 		{
 			m_nodes.erase(node->idx());
@@ -53,16 +71,6 @@ namespace pio
 				m_registry.destroy(it->second->key());
 				it = m_nodes.erase(it);
 			}
-		}
-
-		const Ref<Node>& getNode(uint32_t index) const
-		{
-			auto it = m_nodes.find(index);
-			if (it != m_nodes.end())
-			{
-				return it->second;
-			}
-			return Ref<Node>();
 		}
 
 	private:

@@ -33,14 +33,8 @@ namespace pio
 
 	DirectionalLightNode::~DirectionalLightNode() = default;
 
-	void DirectionalLightNode::update()
+	void DirectionalLightNode::update(Ref<RenderContext>& context)
 	{
-		auto context = m_context.lock();
-		if (!context)
-		{
-			LOGE("err! context is invalid");
-			return;
-		}
 		auto* lightComp = getComponent<DirectionalLightComponent>();
 		auto* transComp = getComponent<TransformComponent>();
 

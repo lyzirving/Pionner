@@ -1,0 +1,17 @@
+#pragma once
+
+#include <Common.glslh>
+#include <Buffers.glslh>
+#include <PBR.glslh>
+
+layout (std140) uniform DirectionalLightBlock
+{
+	vec3 Direction;
+    vec3 Color;
+    float Intensity;
+    float Bias;
+    float NormalBias;
+    int ShadowMode;
+    bool CastShadow;
+    float ShadowIntensity;
+} u_directionalLight;

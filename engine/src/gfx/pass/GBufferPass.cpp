@@ -102,16 +102,10 @@ namespace pio
 	{
         auto &renderingData = context->renderingData();
         std::vector<MeshRenderingItem> opaqueMeshItems = std::move(renderingData.OpaqueMeshItems);
-        if (opaqueMeshItems.empty())
-        {
-            return;
-        }
+        if (opaqueMeshItems.empty()) { return; }
+
         auto it = renderingData.UnimBuffSet.find(UBBinding_Camera);
-        if(it == renderingData.UnimBuffSet.end())
-        {
-            LOGE("err! fail to find camera buff id");
-            return;
-        }
+        PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find camera buff id");
         UUID32 camFilter = it->second;
 
         auto& fbo = m_frameBuff;
@@ -121,9 +115,7 @@ namespace pio
 		context->submitRC([&context, &fbo, &shader, &attr, camFilter, opaqueMeshItems]()
         {
             auto camBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(camFilter);
-
-            if(!camBuff)
-                return;
+            PIO_CHECK_RETURN(camBuff, "err! invalid camera uniform buffer");
 
             context->onBeginFrameBuffer(fbo, attr);
 
@@ -149,6 +141,8 @@ namespace pio
                 material->bind(shader);
                 context->drawTriangles(meshBuff);
             }
+
+            camBuff->unbind();
 
             shader->unbind();
 

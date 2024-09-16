@@ -4,8 +4,10 @@
 
 #include "scene/Components.h"
 #include "scene/3d/Camera.h"
+
 #include "scene/node/CameraNode.h"
 #include "scene/node/MeshNode.h"
+#include "scene/node/LightNode.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/renderer/Renderer.h"
@@ -38,7 +40,7 @@ namespace pio
 
 		for (int32_t i = 0; i < camNodes.size(); i++)
 		{					
-			camNodes[i]->update();
+			camNodes[i]->update(context);
 			onBeginCameraRendering(context, camNodes[i]);
 			onRenderSingleCamera(context, camNodes[i]);
 			onEndCameraRendering(context, camNodes[i]);
@@ -81,8 +83,8 @@ namespace pio
 		auto camera = camNode->camera();
 
 		camera->culling(renderingNodes);
-		auto uBuff = camNode->getRenderingData<CameraNode, Ref<UniformBuffer>>();
-		renderingData.UnimBuffSet.insert({ uBuff->binding(), uBuff->assetHnd() });
+		auto uBuffer = camNode->getRenderingData<CameraNode, Ref<UniformBuffer>>();
+		renderingData.UnimBuffSet.insert({ uBuffer->binding(), uBuffer->assetHnd() });
 
 		onSetUpLight(context, renderingNodes, renderingData);
 
@@ -91,10 +93,12 @@ namespace pio
 		context->setRenderingData(std::move(renderingData));
 	}
 
-	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData)
+	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData& renderingData)
 	{
-		auto& mainLight = renderingNodes.MainLight;
-		//Pipeline::ProcessDirectionalLightEnt(context, mainLight, renderingData);
+		auto& mainLightNode = renderingNodes.MainLight;
+		mainLightNode->update(context);
+		auto uBuffer = mainLightNode->getRenderingData<DirectionalLightNode, Ref<UniformBuffer>>();
+		renderingData.UnimBuffSet.insert({ uBuffer->binding(), uBuffer->assetHnd() });
 	}
 
 	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData)
@@ -102,7 +106,7 @@ namespace pio
 		auto &meshNodes = renderingNodes.Mesh;
 		for (auto &mesh : meshNodes)
 		{
-			mesh->update();
+			mesh->update(context);
 			auto data = mesh->getRenderingData<MeshNode, MeshRenderingItem>();
 			switch (data.Mode)
 			{

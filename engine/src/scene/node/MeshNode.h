@@ -18,7 +18,7 @@ namespace pio
 		virtual ~MeshNode();
 
 		virtual MeshType meshType() const = 0;
-		virtual void update() override;
+		virtual void update(Ref<RenderContext>& context) override;
 	};
 
 	class PlaneNode : public MeshNode

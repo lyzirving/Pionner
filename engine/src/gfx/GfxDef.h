@@ -18,6 +18,7 @@ namespace pio
 		static const char* UNI_MODEL_MAT = "u_modelMat";
 		//Uniform block
 		static const char* BINDING_CAM_BLOCK = "CameraBlock";
+		static const char* BINDING_DIRECTIONAL_LIGHT_BLOCK = "DirectionalLightBlock";
 
 		//GBuffer in Deferred pass
 		static const char* UNI_GBUFFER_POS      = "u_GPosition";

@@ -67,7 +67,7 @@ namespace pio
 
 	CameraNode::~CameraNode() = default;
 
-	void CameraNode::update()
+	void CameraNode::update(Ref<RenderContext>& context)
 	{
 		auto* camComp = getComponent<CameraComponent>();
 		auto* tranComp = getComponent<TransformComponent>();
@@ -92,15 +92,7 @@ namespace pio
 			m_UData->PrjType = m_camera->prjType();
 			m_UData->serialize();
 
-			auto context = m_context.lock();
-			if (context)
-			{
-				context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
-			}
-			else
-			{
-				LOGE("err! context is invalid");
-			}
+			context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
 		}
 	}
 
