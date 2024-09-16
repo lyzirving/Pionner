@@ -45,7 +45,7 @@ namespace pio
 
 	class RenderContext;
 	class FrameBuffer;
-	class Camera;
+	class CameraNode;
 
 	#define OVERRIDE_PASS_TYPE(TypeName)  public:\
 									      static  RenderPassType StaticType() { return TypeName; }\
@@ -60,7 +60,7 @@ namespace pio
 
 		virtual void onAttach(Ref<RenderContext>& context) {}
 		virtual void onDetach(Ref<RenderContext>& context) {}
-		virtual void onExecute(Ref<RenderContext> &context, Ref<Camera>&camera, Ref<RenderPass>& lastPass) {}
+		virtual void onExecute(Ref<RenderContext> &context, Ref<CameraNode>&camera, Ref<RenderPass>& lastPass) {}
 		virtual RenderPassType type() const { return RenderPassType::Num; }
 
 	public:

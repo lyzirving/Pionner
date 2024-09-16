@@ -17,7 +17,7 @@ namespace pio
 
 		virtual void onAttach(Ref<RenderContext>& context) override;
 		virtual void onDetach(Ref<RenderContext>& context) override;
-		virtual void onExecute(Ref<RenderContext> &context, Ref<Camera>& camera, Ref<RenderPass>& lastPass) override;
+		virtual void onExecute(Ref<RenderContext> &context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass) override;
 	protected:
 		Ref<Mesh> m_screenMesh;
 		Ref<MeshRenderBuffer> m_screenBuff;

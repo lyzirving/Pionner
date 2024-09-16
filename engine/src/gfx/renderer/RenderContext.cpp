@@ -69,7 +69,7 @@ namespace pio
 
 	void RenderContext::onEndFrameRendering()
 	{
-		std::swap(m_renderingEntities, RenderingEntities());
+		std::swap(m_renderingNodes, RenderingNodes());
 		std::swap(m_renderingData, RenderingData());
 	}
 

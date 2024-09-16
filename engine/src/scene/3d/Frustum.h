@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_3D_FRUSTUM_H__
 #define __PIONNER_SCENE_3D_FRUSTUM_H__
 
-#include "Common.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {

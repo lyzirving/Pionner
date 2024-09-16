@@ -1,13 +1,15 @@
 #ifndef __PIONNER_GFX_RHI_UNIFORM_PACK_H__
 #define __PIONNER_GFX_RHI_UNIFORM_PACK_H__
 
-#include "RhiDef.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {
 	enum UBBinding : uint8_t
 	{
-		UBBinding_Camera = 0, UBBinding_Num
+		UBBinding_Camera = 0,
+		UBBinding_DirectionalLight,
+		UBBinding_Num
 	};
 
 	const char* GetBindingName(UBBinding binding);
@@ -243,6 +245,7 @@ namespace pio
 
 	private:
 		friend struct CameraUD;
+		friend struct DirectionalLightUD;
 	};
 
 	template<>

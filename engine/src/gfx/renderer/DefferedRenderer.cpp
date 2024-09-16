@@ -49,16 +49,16 @@ namespace pio
 			std::sort(m_activeQueue.begin(), m_activeQueue.end(), RenderPass::PassSorter);		
 	}
 
-	void DefferedRenderer::onExecute(Ref<RenderContext> &context, Ref<Camera>& camera)
+	void DefferedRenderer::onExecute(Ref<RenderContext> &context, Ref<CameraNode>& camNode)
 	{
 		Ref<RenderPass> lastPass;
-		executeBlock(RenderBlockFlags::MainBeforeRendering, m_activeQueue, context, camera, lastPass);
-		executeBlock(RenderBlockFlags::MainRenderingOpaque, m_activeQueue, context, camera, lastPass);
-		executeBlock(RenderBlockFlags::MainRenderingTransparents, m_activeQueue, context, camera, lastPass);
-		executeBlock(RenderBlockFlags::MainAfterRendering, m_activeQueue, context, camera, lastPass);
+		executeBlock(RenderBlockFlags::MainBeforeRendering, m_activeQueue, context, camNode, lastPass);
+		executeBlock(RenderBlockFlags::MainRenderingOpaque, m_activeQueue, context, camNode, lastPass);
+		executeBlock(RenderBlockFlags::MainRenderingTransparents, m_activeQueue, context, camNode, lastPass);
+		executeBlock(RenderBlockFlags::MainAfterRendering, m_activeQueue, context, camNode, lastPass);
 	}
 
-	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context, Ref<Camera>& camera, Ref<RenderPass>& lastPass)
+	void DefferedRenderer::executeBlock(RenderBlockFlags flag, std::vector<Ref<RenderPass>>& queue, Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
 	{		
 		BlockRange range = RenderBlock::GetBlockRange(flag);
 		if(range.intersect(queue))
@@ -67,7 +67,7 @@ namespace pio
 			{
 				if(range.contains(queue[i]))
 				{					
-					queue[i]->onExecute(context, camera, lastPass);
+					queue[i]->onExecute(context, camNode, lastPass);
 					lastPass = queue[i];
 				}
 			}

@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_REGISTRY_H__
 #define __PIONNER_SCENE_REGISTRY_H__
 
-#include "Entity.h"
+#include "scene/node/Node.h"
 
 namespace pio
 {
@@ -11,67 +11,63 @@ namespace pio
 		Registry() {}
 		~Registry() { shutdown(); }
 
-		Ref<Entity> create(EntityType type, const std::string& name = "")
+		template <typename T>
+		Ref<Node> create(Ref<RenderContext>& context, const std::string& name = "")
 		{
-			auto entity = CreateRef<Entity>(m_registry.create(), m_registry, type, name);
-			m_entCache[entity->index()] = entity;
-			return entity;
+			Ref<Node> node = CreateRef<T>(context, m_registry.create(), m_registry, name.empty() ? PIO_NODE_MAKE_NAME : name);
+			m_nodes[node->idx()] = node;
+			return node;
 		}
 
-		template <typename T, typename ... Comps>
-		Ref<Entity> create(EntityType type, const std::string& name = "")
+		template<typename T, typename... Comps>
+		std::vector<Ref<T>> view() const
 		{
-			auto entity = CreateRef<Entity>(m_registry.create(), m_registry, type, name);
-			m_entCache[entity->index()] = entity;
-			entity->addComponent<T, Comps...>();
-			return entity;
-		}
-
-		template<typename... Comps>
-		std::vector<Ref<Entity>> view() const
-		{
-			std::vector<Ref<Entity>> entities;
+			std::vector<Ref<T>> nodes;
 			auto v = m_registry.view<Comps...>();
-			for (auto ent : v)
+			for (auto n : v)
 			{
-				auto it = m_entCache.find(PIO_ENT_KEY_2_IDX(ent));
-				if (it != m_entCache.end())
+				auto it = m_nodes.find((uint32_t)n);
+				if (it != m_nodes.end())
 				{
-					entities.push_back(it->second);
+					auto real = it->second->self<T>();
+					if (real)
+					{
+						nodes.push_back(real);
+					}
 				}
 			}
-			return entities;
+			return nodes;
 		}
 
-		void destroy(Ref<Entity>& entity)
+		void destroy(Ref<Node>& node)
 		{
-			m_entCache.erase(entity->index());
-			m_registry.destroy(entity->key());
+			m_nodes.erase(node->idx());
+			m_registry.destroy(node->key());
 		}
 
 		void shutdown()
 		{
-			auto it = m_entCache.begin();
-			while (it != m_entCache.end())
+			auto it = m_nodes.begin();
+			while (it != m_nodes.end())
 			{
 				m_registry.destroy(it->second->key());
-				it = m_entCache.erase(it);
+				it = m_nodes.erase(it);
 			}
 		}
 
-		const Ref<Entity>& getEntity(uint32_t index) const
+		const Ref<Node>& getNode(uint32_t index) const
 		{
-			auto it = m_entCache.find(index);
-			if(it != m_entCache.end())
+			auto it = m_nodes.find(index);
+			if (it != m_nodes.end())
 			{
 				return it->second;
 			}
-			return Ref<Entity>();
+			return Ref<Node>();
 		}
 
 	private:
 		entt::registry m_registry;
-		std::unordered_map<uint32_t, Ref<Entity>> m_entCache;
+		std::unordered_map<uint32_t, Ref<Node>> m_nodes;
 	};
 }
 

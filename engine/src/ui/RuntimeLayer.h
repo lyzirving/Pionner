@@ -11,6 +11,7 @@ namespace pio
 	class MouseScrolledEvent;
 	class MouseButtonPressedEvent;
 	class MouseButtonReleasedEvent;
+	class WindowResizeEvent;
 
 	class RuntimeLayer : public Layer
 	{
@@ -34,6 +35,7 @@ namespace pio
 		bool onMouseBtnPress(Ref<MouseButtonPressedEvent>& event);
 		bool onMouseBtnRelease(Ref<MouseButtonReleasedEvent>& event);
 		bool onMouseScrolled(Ref<MouseScrolledEvent>& event);
+		bool onWindowResize(Ref<WindowResizeEvent>& event);
 
 	private:
 		struct CameraController

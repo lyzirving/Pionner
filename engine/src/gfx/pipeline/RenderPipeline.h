@@ -5,11 +5,10 @@
 
 namespace pio
 {
-	class Entity;
-	class Camera;
+	class CameraNode;
 	class Renderer;
 	class RenderContext;
-	struct RenderingEntities;
+	struct RenderingNodes;
 	struct RenderingData;
 
 	class RenderPipeline
@@ -20,20 +19,20 @@ namespace pio
 
 		virtual void onAttach(Ref<RenderContext>& context);
 		virtual void onDetach(Ref<RenderContext>& context);
-		virtual void onRender(Ref<RenderContext>& context, std::vector<Ref<Entity>>& cameras);
+		virtual void onRender(Ref<RenderContext>& context, std::vector<Ref<CameraNode>>& camNodes);
 
 	protected:
 		void onBeginFrameRendering(Ref<RenderContext>& context);
 		void onEndFrameRendering(Ref<RenderContext>& context);
 
-		void onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
-		void onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera);
-		void onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera);
+		void onBeginCameraRendering(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
+		void onRenderSingleCamera(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
+		void onEndCameraRendering(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
 
 		// Methods where make data  which is about to be uploaded
-		void onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingEntities& renderingEntities);
-		void onSetUpLight(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData);
-		void onSetUpObject(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData);
+		void onInitializeRenderingData(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
+		void onSetUpLight(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData);
+		void onSetUpObject(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData);
 
 	protected:
 		Ref<Renderer> m_renderer;

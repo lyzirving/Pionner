@@ -6,7 +6,7 @@
 
 namespace pio
 {
-	class Entity;
+	class Node;
 	struct TransformComponent;
 
 	class ImGuiUtils
@@ -29,12 +29,12 @@ namespace pio
 		static void DrawImage(int32_t texId, const glm::vec2& imgSize, const glm::vec2& ltTexCoord = glm::vec2(0.f), const glm::vec2& rbTexCoord = glm::vec2(1.f), float rowWidth = 0.f, float indent = 0.f);
 		static void HelpMaker(const char* msg);
 		static bool ItemBeingClicked();
-		static void ShowHierarchy(const std::vector<Ref<Entity>>& ents, uint32_t& curSelect);
-		static void ShowEntity(const Ref<Entity>& entity);
+		static void ShowHierarchy(const std::vector<Ref<Node>>& node, uint32_t& curSelect);
+		static void ShowNode(const Ref<Node>& node);
 
 	private:
-		static void ShowRelation(const std::vector<Ref<Entity>>& ents, uint32_t& curSelect, uint32_t& clickItem);
-		static void DrawCameraPanel(const Ref<Entity>& entity);
+		static void ShowRelation(const std::vector<Ref<Node>>& node, uint32_t& curSelect, uint32_t& clickItem);
+		static void DrawCameraPanel(const Ref<Node>& node);
 		static void DrawTransformPanel(TransformComponent* comp);
 	private:
 		ImGuiUtils() {}

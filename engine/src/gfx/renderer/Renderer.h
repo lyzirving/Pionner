@@ -6,7 +6,7 @@
 namespace pio
 {
 	class RenderContext;
-	class Camera;
+	class CameraNode;
 
 	class Renderer
 	{
@@ -17,7 +17,7 @@ namespace pio
 		virtual void onAttach(Ref<RenderContext>& context) = 0;
 		virtual void onDetach(Ref<RenderContext>& context) = 0;
 		virtual void onSetUp() = 0;
-		virtual void onExecute(Ref<RenderContext> &context, Ref<Camera>& camera) = 0;
+		virtual void onExecute(Ref<RenderContext> &context, Ref<CameraNode>& camNode) = 0;
 
 	public:
 		static Ref<Renderer> Create(const RenderConfig &config);

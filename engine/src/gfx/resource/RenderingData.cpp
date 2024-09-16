@@ -1,37 +1,37 @@
 #include "RenderingData.h"
 
-#include "scene/Entity.h"
+#include "scene/node/Node.h"
 
 namespace pio
 {
-	RenderingEntities::RenderingEntities(const RenderingEntities &rhs)
+	RenderingNodes::RenderingNodes(const RenderingNodes &rhs)
 	{
 		MainLight = rhs.MainLight;
 		Mesh = rhs.Mesh;
 		SkinnedMesh = rhs.SkinnedMesh;
 	}
 
-	RenderingEntities::RenderingEntities(RenderingEntities &&rhs) noexcept
+	RenderingNodes::RenderingNodes(RenderingNodes &&rhs) noexcept
 	{
 		MainLight = std::move(rhs.MainLight);
 		Mesh = std::move(rhs.Mesh);
 		SkinnedMesh = std::move(rhs.SkinnedMesh);
 	}
 
-	RenderingEntities &RenderingEntities::operator=(const RenderingEntities &rhs)
+	RenderingNodes &RenderingNodes::operator=(const RenderingNodes &rhs)
 	{
 		if(this != &rhs)
 		{
-			this->RenderingEntities::RenderingEntities(rhs);
+			this->RenderingNodes::RenderingNodes(rhs);
 		}
 		return *this;
 	}
 
-	RenderingEntities &RenderingEntities::operator=(RenderingEntities &&rhs) noexcept
+	RenderingNodes &RenderingNodes::operator=(RenderingNodes &&rhs) noexcept
 	{
 		if(this != &rhs)
 		{
-			this->RenderingEntities::RenderingEntities(std::forward<RenderingEntities>(rhs));
+			this->RenderingNodes::RenderingNodes(std::forward<RenderingNodes>(rhs));
 		}
 		return *this;
 	}

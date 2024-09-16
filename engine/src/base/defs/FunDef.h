@@ -130,6 +130,7 @@ namespace pio
 	#define PIO_UNIFORM_STRUCT_DECLARE(T)	UniformBlock Block;\
 											void obtainBlock() { this->Block = T::CreateBlock(); }\
 											void serialize();\
+											T() { obtainBlock(); }\
 	                                        static UniformBlock CreateBlock();
 
 	#define PIO_DECLARE_IS_AS(CLAZZ)  public:\

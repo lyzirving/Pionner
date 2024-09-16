@@ -27,7 +27,8 @@ void main() {
     v_normal = a_normal;
     v_TBN = mat3(1.f);
 
-    gl_Position = u_camera.PrjMat * u_camera.ViewMat * u_modelMat * vec4(a_pos, 1.f);
+    mat4 prjMat = (u_camera.PrjType == 0) ? u_camera.PrjMat : u_camera.Ortho;
+    gl_Position = prjMat * u_camera.ViewMat * u_modelMat * vec4(a_pos, 1.f);
 }
 
 #version 430 core 

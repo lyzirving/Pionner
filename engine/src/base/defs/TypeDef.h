@@ -14,26 +14,6 @@ namespace pio
 		RenderBackend_Num
 	};
 
-	enum ProjectionType : uint8_t
-	{
-		ProjectionType_Perspective,
-		ProjectionType_Orthographic,
-		ProjectionType_Num
-	};
-
-	enum class TextureType : uint8_t
-	{
-		TwoDimen, SingleChannel, 
-		NormalMap, RenderBuffer,
-		CubeMap, CubeArray,
-		Num
-	};
-
-	enum class MeshType : uint8_t
-	{
-		Plane, Cube, Num
-	};
-
 	struct Vertex3d
 	{
 		glm::vec3 Pos{ 0.f };		

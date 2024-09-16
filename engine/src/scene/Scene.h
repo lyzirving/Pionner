@@ -6,8 +6,10 @@
 
 namespace pio
 {
+	class Node;
 	class RenderContext;
-	class RenderPipeline;
+	class RenderPipeline;	
+	class CameraNode;
 
 	class Scene : public Asset
 	{
@@ -19,39 +21,33 @@ namespace pio
 		virtual void onAttach();
 		virtual void onDetach();
 
-		virtual void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<Entity>>& cameras);
+		virtual void onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<CameraNode>>& camNodes);
 
-		Ref<Entity> addEntity(EntityType type, const std::string& name = "")
+		template<typename T>
+		Ref<Node> addNode(Ref<RenderContext>& context, const std::string& name = "")
 		{
-			auto entity = m_registry.create(type, name);
-			m_ents.push_back(entity);
-			return entity;
+			auto node = m_registry.create<T>(context, name);
+			m_nodes.push_back(node);
+			return node;
 		}
 
-		template <typename T, typename ... Comps>
-		Ref<Entity> addEntity(EntityType type, const std::string& name = "")
-		{
-			auto entity = m_registry.create<T, Comps...>(type, name);
-			m_ents.push_back(entity);
-			return entity;
-		}
+		void setCameraNode(const Ref<CameraNode>& cam) { if (m_cameraNode != cam)  { m_cameraNode = cam; } }
 
-		void setCamera(const Ref<Entity>& cam) { if (m_camera != cam) { m_camera = cam; } }
-
-		void removeEntity(Ref<Entity>& ent);
-		void removeAllEntities();
+		void removeNode(Ref<Node>& node);
+		void removeAllNodes();
 
 		Registry& registry() { return m_registry; }
 
 		const Registry& registry() const { return m_registry; }
-		const Ref<Entity>& getEntity(uint32_t index) const { return m_registry.getEntity(index); }
-		const std::vector<Ref<Entity>>& entities() const { return m_ents; }
-		const Ref<Entity>& getCamera() const { return m_camera; }
+		const Ref<Node>& getNode(uint32_t index) const { return m_registry.getNode(index); }
+		const std::vector<Ref<Node>>& nodes() const { return m_nodes; }
+		const Ref<CameraNode>& cameraNode() const { return m_cameraNode; }
 
 	private:
 		Registry m_registry{};
-		std::vector<Ref<Entity>> m_ents;
-		Ref<Entity> m_camera;
+
+		Ref<CameraNode> m_cameraNode;
+		std::vector<Ref<Node>> m_nodes;
 	};
 
 	template<>

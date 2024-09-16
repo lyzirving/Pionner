@@ -34,6 +34,8 @@ namespace pio
 
 	private:
 		friend class Factory;
+		friend class PlaneNode;
+		friend class CubeNode;
 	};
 
 	template<>

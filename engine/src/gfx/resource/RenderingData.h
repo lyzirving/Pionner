@@ -5,27 +5,29 @@
 
 namespace pio
 {
-	class Entity;
+	class Node;
+	class MeshNode;
 
-	//Entity collection that is about to be uploaded
-	struct RenderingEntities
+	//Node collection that is about to be uploaded
+	struct RenderingNodes
 	{
-		RenderingEntities() {}
-		~RenderingEntities() = default;
+		RenderingNodes() {}
+		~RenderingNodes() = default;
 
-		RenderingEntities(const RenderingEntities &rhs);
-		RenderingEntities(RenderingEntities &&rhs) noexcept;
+		RenderingNodes(const RenderingNodes &rhs);
+		RenderingNodes(RenderingNodes &&rhs) noexcept;
 
-		RenderingEntities &operator=(const RenderingEntities &rhs);
-		RenderingEntities &operator=(RenderingEntities &&rhs) noexcept;
+		RenderingNodes &operator=(const RenderingNodes &rhs);
+		RenderingNodes &operator=(RenderingNodes &&rhs) noexcept;
 
-		Ref<Entity> MainLight;
-		std::vector<Ref<Entity>> Mesh;
-		std::vector<Ref<Entity>> SkinnedMesh;
+		Ref<Node> MainLight;
+		std::vector<Ref<MeshNode>> Mesh;
+		std::vector<Ref<Node>> SkinnedMesh;
 	};
 
 	struct MeshRenderingItem
 	{
+		RenderingMode Mode{ RenderingMode_Opaque };
 		UUID32 RenderBuffFilter{ InvalidId };
 		UUID32 MaterialFilter{ InvalidId };
 	};

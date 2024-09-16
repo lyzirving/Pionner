@@ -11,7 +11,7 @@
 #include "gfx/resource/Mesh.h"
 
 #include "scene/Factory.h"
-#include "scene/3d/Camera.h"
+#include "scene/node/CameraNode.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -31,7 +31,7 @@ namespace pio
         m_screenMesh = CreateRef<Mesh>();
         m_screenBuff = CreateRef<MeshRenderBuffer>();
 
-        m_screenMesh->setTriangleMesh(GeometryFactory::MakeScreenQuad());
+        m_screenMesh->setTriangleMesh(Factory::MakeScreenQuad());
         m_screenBuff->update(context, m_screenMesh);
     }
 
@@ -41,10 +41,10 @@ namespace pio
         m_screenBuff.reset();
     }
 
-	void DefferedPass::onExecute(Ref<RenderContext>& context, Ref<Camera>& camera, Ref<RenderPass>& lastPass)
+	void DefferedPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
     {
         PIO_CHECK_RETURN(lastPass && lastPass->is<GBufferPass>(), "err! invalid last pass");
-        auto& target = camera->renderTarget();
+        auto& target = camNode->renderTarget();
         PIO_CHECK_RETURN(target, "err! render target has not been set!");
 
         auto& lastFbo = lastPass->frameBuffer();

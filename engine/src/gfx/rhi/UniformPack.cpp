@@ -13,6 +13,8 @@ namespace pio
 		{
 			case UBBinding_Camera:
 				return "UBBinding_Camera";
+			case UBBinding_DirectionalLight:
+				return "UBBinding_DirectionalLight";
 			default:
 				return "Unknown_Binding";
 		}

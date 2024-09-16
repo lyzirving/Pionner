@@ -12,6 +12,9 @@
 #include "scene/SceneMgr.h"
 #include "scene/Components.h"
 #include "scene/Factory.h"
+#include "scene/node/CameraNode.h"
+#include "scene/node/MeshNode.h"
+#include "scene/node/LightNode.h"
 
 #include "ui/LayerMgr.h"
 #include "ui/RuntimeLayer.h"
@@ -59,15 +62,13 @@ namespace pio
 
 	void Editor::onDetach()
 	{		
-		LOGD("begin to destroy resource");
-		auto& renderThread = m_context->thread();
-		
+		LOGD("begin to destroy resource");		
 		m_sceneMgr->onDetach();
 		m_layerMgr->popAll();	
 		AssetMgr::Shutdown();
 		m_pipeline->onDetach(m_context);
 
-		renderThread.terminate();
+		m_context->thread().terminate();
 		LOGD("wake up from render thread");
 
 		EventHub::Get()->removeCallback(EventHubCb(this, (EventHubCbFun)&Editor::onEvent));		
@@ -83,9 +84,6 @@ namespace pio
 		dispatcher.dispatch<WindowCloseEvent>(PIO_BIND_FN_SELF(Editor::onWindowClose, std::placeholders::_1));
 		PIO_CHECK_EVT_HANDLE_AND_RETURN(event);
 
-		dispatcher.dispatch<WindowResizeEvent>(PIO_BIND_FN_SELF(Editor::onWindowResize, std::placeholders::_1));
-		PIO_CHECK_EVT_HANDLE_AND_RETURN(event);
-
 		m_layerMgr->onEvent(event);
 	}
 
@@ -94,11 +92,6 @@ namespace pio
 		LOGD("window is closed");
 		m_running = false;
 		return true;
-	}
-
-	bool Editor::onWindowResize(Ref<WindowResizeEvent> &event)
-	{
-		return false;
 	}
 
 	void Editor::run()
@@ -144,10 +137,10 @@ namespace pio
 		m_sceneMgr = CreateRef<SceneMgr>();
 
 		auto scene = CreateRef<Scene>();
-		//Default entities
-		Factory::MakeCamera(m_context, scene, "MainCamera", 0);
-		Factory::MakePlane(m_context, scene, "Plane");
-		Factory::MakeCube(m_context, scene, "Cube");
+		scene->addNode<CameraNode>(m_context, "MainCamera");
+		scene->addNode<PlaneNode>(m_context, "Plane");
+		scene->addNode<CubeNode>(m_context, "Cube");
+		scene->addNode<DirectionalLightNode>(m_context, "DirectionalLight");
 		m_sceneMgr->add(scene, true);
 
 		auto runtimeLayer = CreateRef<RuntimeLayer>(LayoutParams(m_window->width(), m_window->height(), 0.f, 0.f, 1.f, 1.f));

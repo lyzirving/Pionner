@@ -4,27 +4,14 @@
 #include "Frustum.h"
 
 #include "asset/Asset.h"
-#include "gfx/rhi/UniformBuffer.h"
+#include "gfx/resource/CameraData.h"
 
 namespace pio
-{
-	struct RenderingEntities;
+{	
+	class CameraNode;
+	class RenderContext;	
+	struct RenderingNodes;
 	struct CameraComponent;
-	class RenderContext;
-	class RenderTarget;
-	class Entity;
-
-	struct CameraUD
-	{
-		PIO_UNIFORM_STRUCT_DECLARE(CameraUD)
-
-		glm::mat4 ViewMat{ 1.f };
-		glm::mat4 PrjMat{ 1.f };
-		glm::mat4 OrthoMat{ 1.f };
-		glm::vec3 CameraPosition{ 0.f };
-		float FrustumFar{ 0.f };
-		ProjectionType PrjType{ ProjectionType_Perspective };
-	};
 
 	enum CameraClearFlags : uint8_t
 	{
@@ -40,6 +27,7 @@ namespace pio
 	{
 		CameraAttrBits_Pos = 0,
 		CameraAttrBits_Rot,
+		CameraAttrBits_PrjType,
 		CameraAttrBits_Num
 	};
 
@@ -52,8 +40,8 @@ namespace pio
 		Camera() : Asset() {}
 		~Camera() = default;
 
-		void culling(RenderingEntities& renderingEntities);		
-		void update(Ref<RenderContext>& context);				
+		void culling(RenderingNodes& renderingNodes);
+		void flush();
 
 		void setPosition(const glm::vec3& position);
 		void setEuler(const glm::vec3& euler);
@@ -61,7 +49,7 @@ namespace pio
 		void addTranslation(const glm::vec3& delta);
 		void addEuler(const glm::vec3& delta);
 
-		void setPrjType(ProjectionType type) { m_prjType = type; }
+		void setPrjType(ProjectionType type);
 		void setAspect(float aspect) { m_persFrustum.setAspect(aspect); m_orthoFrustum.setAspect(aspect); }
 		void setNear(float near) { m_persFrustum.setNear(near); m_orthoFrustum.setNear(near); }
 		void setFar(float far) { m_persFrustum.setFar(far); m_orthoFrustum.setFar(far); }
@@ -72,10 +60,7 @@ namespace pio
 		bool anyChange() const { return m_attrBits.any() || m_persFrustum.bDirty() || m_orthoFrustum.bDirty(); }
 		void attrChange(CameraAttrBits bit) { m_attrBits.set(bit); }
 		void setClearFlag(CameraClearFlags f) { m_clearFlag = f; }
-		void setDepth(int32_t depth) { m_depth = depth; }
-		void setRenderTarget(const Ref<RenderTarget>& target) { m_target = target; }
 
-		int32_t depth() const { return m_depth; }
 		ProjectionType prjType() const { return m_prjType; }
 		float fov() const { return m_persFrustum.fov(); }
 		float size() const { return m_orthoFrustum.size(); }
@@ -83,6 +68,7 @@ namespace pio
 		const glm::vec3& right() const { return m_right; }
 		const glm::vec3& up()    const { return m_up; }
 		const glm::vec3& front() const { return m_front; }
+		const glm::vec3& viewDir() const { return m_viewDir; }
 
 		float frustNear()   const { return m_prjType == ProjectionType_Perspective ? m_persFrustum.near() : m_orthoFrustum.near(); }
 		float frustFar()    const { return m_prjType == ProjectionType_Perspective ? m_persFrustum.far() : m_orthoFrustum.far(); }
@@ -98,20 +84,14 @@ namespace pio
 		const glm::vec3& position() const { return m_transform.position(); }
 		CameraClearFlags clearFlag() const { return m_clearFlag; }
 
-		Ref<UniformBuffer>& unimBuffer() { return m_unimBuff; }
-		Ref<RenderTarget>& renderTarget() { return m_target; }
-
 	private:
-		void flush();
-		void setUp(Ref<RenderContext>& context);
-
 		void calcViewMat();
 		void calcCameraPose();
 
 	public:
 		static glm::mat4 ViewportMat(const Viewport& vp);
-		static glm::vec3 CalcViewDir(const Ref<Entity> &entity);
-		static glm::vec3 CalcMotionDir(const Ref<Entity>& entity, uint16_t key);
+		static glm::vec3 GetViewDir(const Ref<CameraNode> &node);
+		static glm::vec3 GetMotionDir(const Ref<CameraNode>& node, uint16_t key);
 
 	private:	
 		Transform3D m_transform{};
@@ -126,12 +106,6 @@ namespace pio
 		OrthographicFrustum m_orthoFrustum;
 
 		CameraClearFlags m_clearFlag{ CameraClearFlag_Skybox };
-
-		int32_t m_depth{ 0 };
-
-		CameraUD m_unimData{};
-		Ref<UniformBuffer> m_unimBuff;
-		Ref<RenderTarget> m_target;
 	};
 
 	template<>

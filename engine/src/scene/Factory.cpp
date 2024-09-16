@@ -1,19 +1,4 @@
 #include "Factory.h"
-#include "Components.h"
-#include "Scene.h"
-
-#include "GlobalSettings.h"
-
-#include "asset/AssetMgr.h"
-
-#include "scene/3d/Camera.h"
-
-#include "gfx/resource/Mesh.h"
-#include "gfx/resource/Material.h"
-#include "gfx/resource/MeshRenderBuffer.h"
-#include "gfx/resource/RenderTarget.h"
-#include "gfx/renderer/RenderContext.h"
-#include "gfx/rhi/FrameBuffer.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -22,91 +7,7 @@
 
 namespace pio
 {
-	Ref<Entity> Factory::MakeCamera(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name, int32_t depth)
-	{
-		auto entity = scene->addEntity<CameraComponent, TransformComponent>(EntityType::Camera, name);
-		auto* camComp = entity->getComponent<CameraComponent>();
-		auto* transComp = entity->getComponent<TransformComponent>();
-
-		auto camera = AssetMgr::MakeRuntimeAsset<Camera>();
-
-		auto colorSize = GlobalSettings::ColorResolution();
-		auto depthSize = GlobalSettings::ShadowResolution();
-		FrameBufferSpecific fboSpec;
-		fboSpec.Name = name + "-target";
-		fboSpec.Width = colorSize.x;
-		fboSpec.Height = colorSize.y;
-		PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Color);
-
-		TextureSpecificBuilder texBuilder;
-		texBuilder.name(fboSpec.Name + "-texture")
-			.type(TextureType::TwoDimen)
-			.format(TextureFormat::RGBA_HALF)
-			.width(colorSize.x).height(colorSize.y)
-			.texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
-
-		TextureSpecificBuilder depthBuilder;
-		depthBuilder.name(fboSpec.Name + "-depthStencil")
-			.type(TextureType::RenderBuffer)
-			.format(TextureFormat::DEPTH_24_STENCIL_8)
-			.width(depthSize.x).height(depthSize.y);
-
-		fboSpec.ColorSpec.push_back(texBuilder.build());
-		fboSpec.DepthSpec = depthBuilder.build();
-
-		camera->setRenderTarget(RenderTarget::Create(context, fboSpec));
-
-		camComp->Depth = depth;
-		camComp->Aspect = float(colorSize.x) / float(colorSize.y);
-		camComp->Uid = camera->assetHnd();
-		transComp->Position = glm::vec3(0.f, 3.f, 4.5f);
-		transComp->Rotation = glm::vec3(-35.f, 0.f, 0.f);
-		return entity;
-	}
-
-	Ref<Entity> Factory::MakePlane(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name)
-	{
-		auto entity = scene->addEntity<MeshFilter, MeshRenderer, TransformComponent>(EntityType::Mesh, name);
-
-		auto* meshFilter = entity->getComponent<MeshFilter>();
-		auto* meshRender = entity->getComponent<MeshRenderer>();
-
-		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
-		mesh->m_triangles = GeometryFactory::MakePlane();
-
-		meshFilter->Type = MeshType::Plane;
-		meshFilter->Uid = mesh->assetHnd();
-
-		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL)->assetHnd();
-		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
-
-		return entity;
-	}
-
-	Ref<Entity> Factory::MakeCube(Ref<RenderContext>& context, Ref<Scene>& scene, const std::string& name)
-	{
-		auto entity = scene->addEntity<MeshFilter, MeshRenderer, TransformComponent>(EntityType::Mesh, name);
-
-		auto* meshFilter = entity->getComponent<MeshFilter>();
-		auto* meshRender = entity->getComponent<MeshRenderer>();
-		auto* transform = entity->getComponent<TransformComponent>();
-
-		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
-		mesh->m_triangles = GeometryFactory::MakeCube();
-
-		meshFilter->Type = MeshType::Cube;
-		meshFilter->Uid = mesh->assetHnd();
-
-		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL)->assetHnd();
-		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
-
-		transform->Position = glm::vec3(0.f, 1.f, 0.f);
-
-		return entity;
-	}
-
-	TriangleMesh3d GeometryFactory::MakePlane(float n)
+	TriangleMesh3d Factory::MakePlane(float n)
 	{
 		TriangleMesh3d triangles;
 		glm::vec3 origin(-n / 2.f, 0.f, -n / 2.f);
@@ -134,7 +35,7 @@ namespace pio
 		return triangles;
 	}
 
-	TriangleMesh3d GeometryFactory::MakeCube(float n)
+	TriangleMesh3d Factory::MakeCube(float n)
 	{
 		TriangleMesh3d triangles;
 		float half = n * 0.5f;
@@ -242,7 +143,7 @@ namespace pio
 		return triangles;
 	}
 
-	TriangleMesh3d GeometryFactory::MakeScreenQuad()
+	TriangleMesh3d Factory::MakeScreenQuad()
 	{
 		TriangleMesh3d triangles;
 		Vertex3d v0, v1, v2, v3;
@@ -279,7 +180,7 @@ namespace pio
 		return triangles;
 	}
 
-	void GeometryFactory::MakeTriangleMesh3d(const Vertex3d& v0, const Vertex3d& v1, const Vertex3d& v2, const Vertex3d& v3, TriangleMesh3d& triangles)
+	void Factory::MakeTriangleMesh3d(const Vertex3d& v0, const Vertex3d& v1, const Vertex3d& v2, const Vertex3d& v3, TriangleMesh3d& triangles)
 	{
 		uint16_t idx = triangles.Vertices.size();
 		triangles.Vertices.push_back(v0);

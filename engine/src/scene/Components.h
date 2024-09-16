@@ -22,6 +22,7 @@ namespace pio
 	{
 		ProjectionType PrjType{ ProjectionType_Perspective };
 		int32_t Depth{ 0 };
+		float Near{ 0.1f }, Far{ 30.f };
 		float Fov{ 60.f };
 		float Aspect{ 1.f };
 		float Size{ 5.f };
@@ -38,6 +39,21 @@ namespace pio
 	{
 		UUID32 MatUid{ InvalidId }; //Uid for material asset
 		UUID32 BuffUid{ InvalidId };//Uid for MeshRenderBuffer
+	};
+
+	struct DirectionalLightComponent : public Component
+	{
+		UUID32 BuffId{ InvalidId };
+		uint32_t Type{ (uint32_t)LightType::DirectionLight };
+		glm::vec3 Color{ 0.0f, 0.0f, 0.0f };
+		float Intensity{ 0.0f };
+		// ----- Shadow related -------
+		float Bias{ 0.05f };
+		float NormalBias{ 0.4f };
+		bool CastShadow{ true };
+		int ShadowMode{ ShadowMode_Soft };		
+		float ShadowIntensity{ 1.f };
+		// ----------------------------
 	};
 }
 

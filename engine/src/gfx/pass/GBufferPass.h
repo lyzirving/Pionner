@@ -14,7 +14,7 @@ namespace pio
 
 		virtual void onAttach(Ref<RenderContext>& context) override;
 		virtual void onDetach(Ref<RenderContext>& context) override;
-		virtual void onExecute(Ref<RenderContext>& context, Ref<Camera>& camera, Ref<RenderPass>& lastPass) override;
+		virtual void onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camera, Ref<RenderPass>& lastPass) override;
 	};
 
 	template<>

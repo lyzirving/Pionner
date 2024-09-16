@@ -98,7 +98,7 @@ namespace pio
         m_frameBuff.reset();
 	}
 
-	void GBufferPass::onExecute(Ref<RenderContext>& context, Ref<Camera>& camera, Ref<RenderPass>& lastPass)
+	void GBufferPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
 	{
         auto &renderingData = context->renderingData();
         std::vector<MeshRenderingItem> opaqueMeshItems = std::move(renderingData.OpaqueMeshItems);

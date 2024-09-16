@@ -1,9 +1,9 @@
-#include "RhiDef.h"
+#include "GfxDef.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "RhiDef"
+#define LOCAL_TAG "GfxDef"
 
 namespace pio
 {
@@ -370,7 +370,7 @@ namespace pio
 		uint32_t GetTextureByteSize(TextureFormat fmt)
 		{
 			switch (fmt)
-			{				
+			{
 				case TextureFormat::RGBA_FLOAT:
 				case TextureFormat::RG_FLOAT:
 				case TextureFormat::R_FLOAT:

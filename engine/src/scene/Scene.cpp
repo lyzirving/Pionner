@@ -1,10 +1,9 @@
 #include "Scene.h"
-#include "Entity.h"
 #include "Components.h"
+#include "scene/node/MeshNode.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/pipeline/RenderPipeline.h"
-#include "gfx/pipeline/PipelineUtils.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -19,41 +18,43 @@ namespace pio
 
 	void Scene::onDetach()
 	{
-		removeAllEntities();
+		removeAllNodes();
 	}
 
-	void Scene::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<Entity>>& cameras)
+	void Scene::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, std::vector<Ref<CameraNode>>& camNodes)
 	{
-		RenderingEntities data;
-		data.Mesh = m_registry.view<MeshFilter, MeshRenderer>();
+		RenderingNodes data;
+		/*auto lights = m_registry.view<DirectionalLightComponent>();
+		data.MainLight = lights.empty() ? Ref<Entity>() : lights[0];*/
+		data.Mesh = m_registry.view<MeshNode, MeshFilter, MeshRenderer>();
 
-		context->setRenderingEntities(std::move(data));
-		pipeline->onRender(context, cameras);
+		context->setRenderingNodes(std::move(data));
+		pipeline->onRender(context, camNodes);
 	}
 
-	void Scene::removeEntity(Ref<Entity>& ent)
+	void Scene::removeNode(Ref<Node>& node)
 	{
-		if (!ent)
+		if (!node)
 			return;
 
-		for (size_t i = 0; i < m_ents.size(); i++)
+		for (size_t i = 0; i < m_nodes.size(); i++)
 		{
-			if (m_ents[i] && ent && *m_ents[i].get() == *ent.get())
+			if (m_nodes[i] && node && *m_nodes[i].get() == *node.get())
 			{
-				m_ents.erase(m_ents.begin() + i);
-				m_registry.destroy(ent);
+				m_nodes.erase(m_nodes.begin() + i);
+				m_registry.destroy(node);
 				return;
 			}
 		}
 	}
 
-	void Scene::removeAllEntities()
+	void Scene::removeAllNodes()
 	{
-		auto it = m_ents.begin();
-		while (it != m_ents.end())
+		auto it = m_nodes.begin();
+		while (it != m_nodes.end())
 		{
 			m_registry.destroy((*it));
-			it = m_ents.erase(it);
+			it = m_nodes.erase(it);
 		}
 	}
 

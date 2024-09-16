@@ -20,7 +20,6 @@ namespace pio
 		virtual bool onEvent(Ref<Event>& event) { return false; }
 		// Ensure to be called in render thread		
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<Scene>& scene) {}
-		virtual void onWindowSizeChange(uint32_t width, uint32_t height) {}
 
 		const std::string &name() const { return m_name; }
 		const LayoutParams &layoutParam() const { return m_layoutParam; }

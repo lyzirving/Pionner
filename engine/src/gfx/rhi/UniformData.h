@@ -1,7 +1,7 @@
 #ifndef __PIONNER_GFX_RHI_UNIFORM_DATA_H__
 #define __PIONNER_GFX_RHI_UNIFORM_DATA_H__
 
-#include "RhiDef.h"
+#include "gfx/GfxDef.h"
 
 namespace pio
 {

@@ -1,6 +1,6 @@
 #include "ImGuiUtils.h"
 
-#include "scene/Entity.h"
+#include "scene/node/Node.h"
 #include "scene/Components.h"
 
 namespace pio
@@ -71,54 +71,51 @@ namespace pio
 		return ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen();
 	}
 
-	void ImGuiUtils::ShowHierarchy(const std::vector<Ref<Entity>>& ents, uint32_t& selectIdx)
+	void ImGuiUtils::ShowHierarchy(const std::vector<Ref<Node>>& nodes, uint32_t& selectIdx)
 	{
-		if(ents.empty())
+		if(nodes.empty())
 			return;
 
 		uint32_t clickIdx = InvalidId;
 		if(selectIdx == InvalidId)
 		{
-			selectIdx = ents[0]->index();
+			selectIdx = nodes[0]->idx();
 		}
-		ShowRelation(ents, selectIdx, clickIdx);
+		ShowRelation(nodes, selectIdx, clickIdx);
 	}
 
-	void ImGuiUtils::ShowEntity(const Ref<Entity>& entity)
+	void ImGuiUtils::ShowNode(const Ref<Node>& node)
 	{
-		auto type = entity->type();
-		switch(type)
+		auto type = node->nodeType();
+		switch (type)
 		{
-			case EntityType::Camera:
-			{
-				DrawCameraPanel(entity);
+			case pio::NodeType::Camera:
+				DrawCameraPanel(node);
 				break;
-			}
-			case EntityType::Mesh:				
 			default:
 				break;
 		}
 	}
 
-	void ImGuiUtils::ShowRelation(const std::vector<Ref<Entity>>& ents, uint32_t& selectIdx, uint32_t& clickIdx)
+	void ImGuiUtils::ShowRelation(const std::vector<Ref<Node>>& nodes, uint32_t& selectIdx, uint32_t& clickIdx)
 	{
-		for(size_t i = 0; i < ents.size(); i++)
+		for(size_t i = 0; i < nodes.size(); i++)
 		{
 			ImGuiTreeNodeFlags tnFlags = ImGuiUtils::k_FlagSelectedTreeNode;
-			tnFlags |= (selectIdx == ents[i]->index()) ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
-			bool hasChild = !ents[i]->children().empty();
+			tnFlags |= (selectIdx == nodes[i]->idx()) ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
+			bool hasChild = !nodes[i]->children().empty();
 			if(!hasChild)
 			{
 				tnFlags |= ImGuiUtils::k_FlagTreeLeaf;
 			}
-			bool bOpen = ImGui::TreeNodeEx(ents[i]->name().c_str(), tnFlags);
+			bool bOpen = ImGui::TreeNodeEx(nodes[i]->name().c_str(), tnFlags);
 			if(ImGuiUtils::ItemBeingClicked())
 			{
-				clickIdx = ents[i]->index();
+				clickIdx = nodes[i]->idx();
 			}
 			if(bOpen && hasChild)
 			{
-				ShowRelation(ents[i]->children(), selectIdx, clickIdx);
+				ShowRelation(nodes[i]->children(), selectIdx, clickIdx);
 				ImGui::TreePop();
 			}
 			if(clickIdx != InvalidId)
@@ -128,19 +125,29 @@ namespace pio
 		}
 	}
 
-	void ImGuiUtils::DrawCameraPanel(const Ref<Entity>& entity)
+	void ImGuiUtils::DrawCameraPanel(const Ref<Node>& node)
 	{
-		if(!entity || !entity->has<CameraComponent>())
+		if(!node || !node->has<CameraComponent>())
 		{
 			return;
 		}
-		auto* cameraComp = entity->getComponent<CameraComponent>();
-		auto* transComp = entity->getComponent<TransformComponent>();
+		auto* cameraComp = node->getComponent<CameraComponent>();
+		auto* transComp = node->getComponent<TransformComponent>();
 
 		DrawTransformPanel(transComp);
 
 		if(ImGui::CollapsingHeader("Camera", ImGuiUtils::k_FlagCollapseHeader))
 		{
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Near      ");
+			ImGui::SameLine();
+			ImGui::DragFloat("##Near", &cameraComp->Near, 1.f, 0.1, 100.f, "%.1f");
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("Far       ");
+			ImGui::SameLine();
+			ImGui::DragFloat("##Far", &cameraComp->Far, 1.f, 0.1, 1000.f, "%.1f");
+
 			int prjType{ cameraComp->PrjType };
 			const char* items[2]{ "Perspective", "Orthographic" };
 			ImGui::AlignTextToFramePadding();
@@ -157,7 +164,11 @@ namespace pio
 				ImGui::DragFloat("##FOV", &cameraComp->Fov, 1.f, 0.1, 179.f, "%.1f");				
 			}
 			else
-			{
+			{				
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Size      ");
+				ImGui::SameLine();
+				ImGui::DragFloat("##Size", &cameraComp->Size, 0.1f, 0.1, 100.f, "%.1f");
 			}
 		}
 	}

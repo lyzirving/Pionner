@@ -7,7 +7,9 @@
 #include "scene/Scene.h"
 #include "scene/Components.h"
 #include "scene/3d/Camera.h"
+#include "scene/node/CameraNode.h"
 
+#include "event/AppEvent.h"
 #include "event/KeyEvent.h"
 #include "event/MouseEvent.h"
 
@@ -59,6 +61,8 @@ namespace pio
 			return false;
 		}
 		EventDispatcher dispatcher(event);
+		dispatcher.dispatch<WindowResizeEvent>(PIO_BIND_FN_SELF(RuntimeLayer::onWindowResize, std::placeholders::_1));
+		if (event->Handled) { return true; }
 		dispatcher.dispatch<KeyPressedEvent>(PIO_BIND_FN_SELF(RuntimeLayer::onKeyPress, std::placeholders::_1));
 		if (event->Handled) { return true; }
 		dispatcher.dispatch<KeyReleasedEvent>(PIO_BIND_FN_SELF(RuntimeLayer::onKeyRelease, std::placeholders::_1));
@@ -77,8 +81,7 @@ namespace pio
 	{
 		auto& param = m_sceneParam;
 		bool resetPos = m_resetPosition;
-		auto camUid = scene->getCamera()->getComponent<CameraComponent>()->Uid;
-		context->submitRC([resetPos, camUid, &context, &param]()
+		context->submitRC([resetPos, &context, &scene, &param]()
 		{		
 			if (resetPos)
 			{
@@ -89,8 +92,8 @@ namespace pio
 				ImGui::SetNextWindowPos(pos);
 				ImGui::SetNextWindowSize(ImVec2(param.Rect.width(), param.Rect.height()));
 			}		
-			auto camera = AssetMgr::GetRuntimeAsset<Camera>(camUid);
-			const auto& texture = camera->renderTarget()->frameBuffer()->colorBuffers()[0];
+			auto camera = AssetMgr::GetRuntimeAsset<Camera>(scene->cameraNode()->camera()->assetHnd());
+			const auto& texture = scene->cameraNode()->renderTarget()->frameBuffer()->colorBuffers()[0];
 			ImGui::Begin("Scene", 0, ImGuiUtils::k_FlagCommonWindow);
 			auto availSize = ImGui::GetContentRegionAvail();
 			float aspect0 = availSize.x / availSize.y;
@@ -129,9 +132,9 @@ namespace pio
 				ImGui::SetNextWindowSize(ImVec2(param.Rect.width(), param.Rect.height()));
 			}
 
-			const auto& ents = scene->entities();
+			const auto& nodes = scene->nodes();
 			ImGui::Begin("Hierachy", 0, ImGuiUtils::k_FlagCommonWindow);
-			ImGuiUtils::ShowHierarchy(ents, selectIdx);
+			ImGuiUtils::ShowHierarchy(nodes, selectIdx);
 			ImGui::End();
 		});
 	}
@@ -153,10 +156,10 @@ namespace pio
 				ImGui::SetNextWindowSize(ImVec2(param.Rect.width(), param.Rect.height()));
 			}
 			ImGui::Begin("Inspector", 0, ImGuiUtils::k_FlagCommonWindow);
-			const auto& ent = scene->getEntity(selectIdx);
-			if(ent)
+			const auto& node = scene->getNode(selectIdx);
+			if(node)
 			{
-				ImGuiUtils::ShowEntity(ent);
+				ImGuiUtils::ShowNode(node);
 			}
 			ImGui::End();
 		});
@@ -168,8 +171,8 @@ namespace pio
 		m_camController.LeftAltPressed = event->getKeyCode() == Key::LeftAlt;
 		if (m_camController.RightMouseBtnPressed && m_activeScene)
 		{
-			auto* comp = m_activeScene->getCamera()->getComponent<TransformComponent>();
-			auto dir = Camera::CalcMotionDir(m_activeScene->getCamera(), event->getKeyCode());
+			auto* comp = m_activeScene->cameraNode()->getComponent<TransformComponent>();
+			auto dir = Camera::GetMotionDir(m_activeScene->cameraNode(), event->getKeyCode());
 			comp->Position = comp->Position + dir * (float)Time::k_Tick.Delta * 0.01f;
 		}
 		if (!m_camController.LeftAltPressed) { m_camController.bRotating = false; }
@@ -204,13 +207,13 @@ namespace pio
 		if (m_camController.bRotating)
 		{
 			auto delta = -glm::vec2(event->getCursorX() - m_camController.Cursor.x,
-								   event->getCursorY() - m_camController.Cursor.y);
+								    event->getCursorY() - m_camController.Cursor.y);
 			float threshold = 20.f;
 			bool valid = std::abs(delta.x) < threshold && std::abs(delta.y) < threshold;
 			if (valid && m_activeScene)
 			{
 				//LOGD("rotating, delta[%f, %f]", delta.x, delta.y);
-				auto* comp = m_activeScene->getCamera()->getComponent<TransformComponent>();
+				auto* comp = m_activeScene->cameraNode()->getComponent<TransformComponent>();
 				float ratio = 0.3f;
 				comp->Rotation.y += delta.x * ratio;
 				comp->Rotation.x += delta.y * ratio;
@@ -245,12 +248,22 @@ namespace pio
 		if (m_camController.InArea)
 		{
 			float delta = event->getYOffset() * 0.5f;			
-			auto* comp = m_activeScene->getCamera()->getComponent<TransformComponent>();
-			auto viewDir = Camera::CalcViewDir(m_activeScene->getCamera());
+			auto* comp = m_activeScene->cameraNode()->getComponent<TransformComponent>();
+			auto viewDir = Camera::GetViewDir(m_activeScene->cameraNode());
 			comp->Position = comp->Position + viewDir * delta;
 			//LOGD("scroll delta[%f], pos[%f, %f, %f]", delta, comp->Position.x, comp->Position.y, comp->Position.z);
 			return true;
 		}
+		return false;
+	}
+
+	bool RuntimeLayer::onWindowResize(Ref<WindowResizeEvent>& event)
+	{
+		m_layoutParam.calculate(event->getWidth(), event->getHeight());
+		m_sceneParam.calculate(event->getWidth(), event->getHeight());
+		m_hierarchyParam.calculate(event->getWidth(), event->getHeight());
+		m_inspectorParam.calculate(event->getWidth(), event->getHeight());
+		m_resetPosition = true;
 		return false;
 	}
 }

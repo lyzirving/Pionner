@@ -1,11 +1,11 @@
 #include "RenderPipeline.h"
-#include "PipelineUtils.h"
 
 #include "asset/AssetMgr.h"
 
-#include "scene/Entity.h"
 #include "scene/Components.h"
 #include "scene/3d/Camera.h"
+#include "scene/node/CameraNode.h"
+#include "scene/node/MeshNode.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/renderer/Renderer.h"
@@ -32,17 +32,16 @@ namespace pio
 		m_renderer->onDetach(context);
 	}
 
-	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<Entity>>& cameras)
+	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<CameraNode>>& camNodes)
 	{
 		onBeginFrameRendering(context);		
 
-		for (int32_t i = 0; i < cameras.size(); i++)
-		{			
-			auto camera = AssetMgr::GetRuntimeAsset<Camera>(cameras[i]->getComponent<CameraComponent>()->Uid);
-			Pipeline::UpdateCamera(context, cameras[i], camera);
-			onBeginCameraRendering(context, camera);
-			onRenderSingleCamera(context, camera);
-			onEndCameraRendering(context, camera);
+		for (int32_t i = 0; i < camNodes.size(); i++)
+		{					
+			camNodes[i]->update();
+			onBeginCameraRendering(context, camNodes[i]);
+			onRenderSingleCamera(context, camNodes[i]);
+			onEndCameraRendering(context, camNodes[i]);
 		}
 
 		onEndFrameRendering(context);
@@ -56,50 +55,70 @@ namespace pio
 	{
 	}
 
-	void RenderPipeline::onBeginCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
+	void RenderPipeline::onBeginCameraRendering(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
 		context->onBeginFrameRendering();
 	}
 
-	void RenderPipeline::onRenderSingleCamera(Ref<RenderContext>& context, Ref<Camera>& camera)
+	void RenderPipeline::onRenderSingleCamera(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
-		auto& renderingEntities = context->renderingEntities();
-		camera->culling(renderingEntities);
-
-		onInitializeRenderingData(context, camera, renderingEntities);
+		onInitializeRenderingData(context, camNode);
 
 		m_renderer->onSetUp();
 
-		m_renderer->onExecute(context, camera);
+		m_renderer->onExecute(context, camNode);
 	}
 
-	void RenderPipeline::onEndCameraRendering(Ref<RenderContext>& context, Ref<Camera>& camera)
+	void RenderPipeline::onEndCameraRendering(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
 		context->onEndFrameRendering();
 	}
 
-	void RenderPipeline::onInitializeRenderingData(Ref<RenderContext>& context, Ref<Camera>& camera, RenderingEntities& renderingEntities)
-	{
-		RenderingData renderingData;
-		renderingData.UnimBuffSet.insert({ camera->unimBuffer()->binding(), camera->unimBuffer()->assetHnd()});
+	void RenderPipeline::onInitializeRenderingData(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	{		
+		RenderingData renderingData;//Data to be committed
+		auto& renderingNodes = context->renderingNodes();		
+		auto camera = camNode->camera();
 
-		onSetUpLight(context, renderingEntities, renderingData);
+		camera->culling(renderingNodes);
+		auto uBuff = camNode->getRenderingData<CameraNode, Ref<UniformBuffer>>();
+		renderingData.UnimBuffSet.insert({ uBuff->binding(), uBuff->assetHnd() });
 
-		onSetUpObject(context, renderingEntities, renderingData);
+		onSetUpLight(context, renderingNodes, renderingData);
+
+		onSetUpObject(context, renderingNodes, renderingData);
 
 		context->setRenderingData(std::move(renderingData));
 	}
 
-	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData)
+	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData)
 	{
+		auto& mainLight = renderingNodes.MainLight;
+		//Pipeline::ProcessDirectionalLightEnt(context, mainLight, renderingData);
 	}
 
-	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, RenderingEntities& renderingEntities, RenderingData &renderingData)
+	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData)
 	{
-		auto &meshEnts = renderingEntities.Mesh;
-		for (auto &ent : meshEnts)
+		auto &meshNodes = renderingNodes.Mesh;
+		for (auto &mesh : meshNodes)
 		{
-			Pipeline::ProcessMeshEnt(context, ent, renderingData);
+			mesh->update();
+			auto data = mesh->getRenderingData<MeshNode, MeshRenderingItem>();
+			switch (data.Mode)
+			{
+				case RenderingMode_Opaque:
+				{
+					renderingData.OpaqueMeshItems.push_back(std::move(data));
+					break;
+				}
+				case RenderingMode_Transparent:
+				{
+					renderingData.TransparentMeshItems.push_back(std::move(data));
+					break;
+				}
+				default:
+					break;
+			}
 		}
 	}
 }

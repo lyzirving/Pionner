@@ -4,7 +4,7 @@
 #include "event/KeyCodes.h"
 
 #include "scene/Components.h"
-#include "scene/Entity.h"
+#include "scene/node/CameraNode.h"
 
 #include "gfx/renderer/RenderContext.h"
 
@@ -15,89 +15,9 @@
 
 namespace pio
 {
-	UniformBlock CameraUD::CreateBlock()
-	{
-		UniformBlock block;
-		block.pushBack("ViewMat", UniformBlock::CreateData(UniformDataType::Mat4, "ViewMat"));
-		block.pushBack("PrjMat", UniformBlock::CreateData(UniformDataType::Mat4, "PrjMat"));
-		block.pushBack("OrthoMat", UniformBlock::CreateData(UniformDataType::Mat4, "OrthoMat"));
-		block.pushBack("CameraPosition", UniformBlock::CreateData(UniformDataType::Vec3, "CameraPosition"));
-		block.pushBack("FrustumFar", UniformBlock::CreateData(UniformDataType::Float, "FrustumFar"));
-		block.pushBack("PrjType", UniformBlock::CreateData(UniformDataType::Int, "PrjType"));
-		block.calculate();
-		//LOGD("block CameraUD byte used[%u]", block.getByteUsed());
-		return block;
-	}
-
-	void CameraUD::serialize()
-	{
-		if (!Block.m_buffer || Block.m_buffer->getCapacity() == 0)
-		{
-			LOGE("UD buffer is invalid");
-			return;
-		}
-
-		auto viewMatUD = Block.m_blockItems.get("ViewMat");
-		if (viewMatUD)
-		{
-			Block.m_buffer->writeAt(glm::value_ptr(ViewMat), sizeof(glm::mat4), viewMatUD->getAlignOffset());
-		}
-
-		auto prjMatUD = Block.m_blockItems.get("PrjMat");
-		if (prjMatUD)
-		{
-			Block.m_buffer->writeAt(glm::value_ptr(PrjMat), sizeof(glm::mat4), prjMatUD->getAlignOffset());
-		}
-
-		auto orthoMatUD = Block.m_blockItems.get("OrthoMat");
-		if (orthoMatUD)
-		{
-			Block.m_buffer->writeAt(glm::value_ptr(OrthoMat), sizeof(glm::mat4), orthoMatUD->getAlignOffset());
-		}
-
-		auto cameraPositionUD = Block.m_blockItems.get("CameraPosition");
-		if (cameraPositionUD)
-		{
-			Block.m_buffer->writeAt(&CameraPosition, sizeof(glm::vec3), cameraPositionUD->getAlignOffset());
-		}
-
-		auto frustumFarUD = Block.m_blockItems.get("FrustumFar");
-		if (frustumFarUD)
-		{
-			Block.m_buffer->writeAt(&FrustumFar, sizeof(float), frustumFarUD->getAlignOffset());
-		}
-
-		auto prjTypeUD = Block.m_blockItems.get("PrjType");
-		if (prjTypeUD)
-		{
-			int32_t val = PrjType;
-			Block.m_buffer->writeAt(&val, sizeof(int32_t), prjTypeUD->getAlignOffset());
-		}
-	}
-
-	void Camera::culling(RenderingEntities& renderingEntities)
+	void Camera::culling(RenderingNodes& renderingNodes)
 	{
 		//TODO
-	}
-
-	void Camera::update(Ref<RenderContext>& context)
-	{
-		setUp(context);
-
-		if (anyChange())
-		{
-			flush();
-
-			m_unimData.ViewMat = viewMat();
-			m_unimData.PrjMat = prjMat();
-			m_unimData.OrthoMat = orthoMat();
-			m_unimData.CameraPosition = position();
-			m_unimData.FrustumFar = frustFar();
-			m_unimData.PrjType = prjType();
-			m_unimData.serialize();
-
-			context->uploadData(m_unimData.Block.getBuffer()->as<void*>(), m_unimData.Block.getByteUsed(), m_unimBuff);
-		}
 	}
 
 	void Camera::setPosition(const glm::vec3& position)
@@ -128,20 +48,20 @@ namespace pio
 		m_attrBits.set(CameraAttrBits_Rot);
 	}
 
+	void Camera::setPrjType(ProjectionType type)
+	{
+		if (m_prjType != type)
+		{
+			m_prjType = type;
+			m_attrBits.set(CameraAttrBits_PrjType);
+		};
+	}
+
 	void Camera::flush()
 	{
 		calcViewMat();
 		m_persFrustum.flush();
 		m_orthoFrustum.flush();
-	}
-
-	void Camera::setUp(Ref<RenderContext>& context)
-	{
-		if (!m_unimBuff)
-		{
-			m_unimData.obtainBlock();
-			m_unimBuff = UniformBuffer::Create(context, m_unimData.Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
-		}
 	}
 
 	void Camera::calcViewMat()
@@ -177,39 +97,34 @@ namespace pio
 		return glm::mat4(col0, col1, col2, col3);
 	}
 
-	glm::vec3 Camera::CalcViewDir(const Ref<Entity>& entity)
+	glm::vec3 Camera::GetViewDir(const Ref<CameraNode>& node)
 	{
-		Transform3D transform;
-		transform.setEuler(entity->getComponent<TransformComponent>()->Rotation);
-		glm::vec3 viewDir = -World::Forward;
-		return glm::normalize(transform.rotMat() * glm::vec4(viewDir, 0.f));
+		return node->camera()->viewDir();
 	}
 
-	glm::vec3 Camera::CalcMotionDir(const Ref<Entity>& entity, uint16_t key)
+	glm::vec3 Camera::GetMotionDir(const Ref<CameraNode>& node, uint16_t key)
 	{
 		glm::vec3 dir(0.f);
 		switch (key)
 		{
 			case Key::A:
 			{
-				//Camera's left
-				dir = -glm::normalize(glm::cross(CalcViewDir(entity), glm::vec3(0.f, 1.f, 0.f)));
+				dir = -node->camera()->right();
 				break;
 			}
 			case Key::D:
 			{
-				//Camera's right
-				dir = glm::normalize(glm::cross(CalcViewDir(entity), glm::vec3(0.f, 1.f, 0.f)));
+				dir = node->camera()->right();
 				break;
 			}
 			case Key::W:
 			{
-				dir = CalcViewDir(entity);
+				dir = node->camera()->up();
 				break;
 			}
 			case Key::S:
 			{
-				dir = -CalcViewDir(entity);
+				dir = -node->camera()->up();
 				break;
 			}
 			default:

@@ -38,7 +38,7 @@ namespace pio
 		uint64_t frame() const { return m_frameNum; }
 		const Viewport& vp() const { return m_vp; }		
 
-		RenderingEntities& renderingEntities() { return m_renderingEntities; }
+		RenderingNodes& renderingNodes() { return m_renderingNodes; }
 		RenderingData& renderingData() { return m_renderingData; }
 		Ref<RenderContext> self() { return shared_from_this(); }
 		RenderThread& thread() { return m_thread; }
@@ -46,7 +46,7 @@ namespace pio
 		Ref<RenderState>& state() { return m_state; }
 		
 		Ref<Shader> &shader(ShaderType type) { return m_shaders[PIO_UINT8(type)]; }
-		void setRenderingEntities(RenderingEntities&& data) { m_renderingEntities = std::forward<RenderingEntities>(data); }
+		void setRenderingNodes(RenderingNodes&& data) { m_renderingNodes = std::forward<RenderingNodes>(data); }
 		void setRenderingData(RenderingData &&data) { m_renderingData = std::forward<RenderingData>(data); }
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
 
@@ -177,7 +177,7 @@ namespace pio
 		Ref<TextureMgr> m_textureMgr;
 		Ref<MaterialMgr> m_materialMgr;
 
-		RenderingEntities m_renderingEntities;
+		RenderingNodes m_renderingNodes;
 		RenderingData m_renderingData;
 	};
 }

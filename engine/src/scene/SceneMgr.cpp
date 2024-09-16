@@ -1,11 +1,9 @@
 #include "SceneMgr.h"
 #include "Components.h"
-#include "scene/3d/Camera.h"
+
+#include "scene/node/CameraNode.h"
 
 #include "ui/LayerMgr.h"
-
-#include "gfx/resource/RenderTarget.h"
-#include "gfx/pipeline/PipelineUtils.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -14,9 +12,9 @@
 
 namespace pio
 {
-	bool CameraSorter(Ref<Entity>& lhs, Ref<Entity>& rhs)
+	bool CameraSorter(Ref<CameraNode>& lhs, Ref<CameraNode>& rhs)
 	{
-		return lhs->getComponent<CameraComponent>()->Depth < rhs->getComponent<CameraComponent>()->Depth;
+		return lhs->depth() < rhs->depth();
 	}
 
 	void SceneMgr::add(const Ref<Scene>& scene, bool bActive)
@@ -66,15 +64,15 @@ namespace pio
 
 	void pio::SceneMgr::onUpdate(Ref<RenderContext>& context, Ref<RenderPipeline>& pipeline, Ref<LayerMgr>& layerMgr)
 	{
-		auto cameras = m_active->registry().view<CameraComponent>();
+		auto cameras = m_active->registry().view<CameraNode, CameraComponent>();
 		PIO_CHECK_RETURN(!cameras.empty(), "err! camera must be added into scene before rendering");
 		onSortCameras(cameras);
 		m_active->onUpdate(context, pipeline, cameras);
-		m_active->setCamera(cameras[0]);
+		m_active->setCameraNode(cameras[0]);
 		layerMgr->onUpdate(context, m_active);
 	}
 
-	void SceneMgr::onSortCameras(std::vector<Ref<Entity>>& cameras)
+	void SceneMgr::onSortCameras(std::vector<Ref<CameraNode>>& cameras)
 	{
 		if (cameras.size() >= 2)
 			std::sort(cameras.begin(), cameras.end(), CameraSorter);

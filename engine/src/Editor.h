@@ -8,7 +8,6 @@ namespace pio
 	class Event;	
 	class Window;
 	class WindowCloseEvent;
-	class WindowResizeEvent;
 
 	class RenderContext;
 	class RenderPipeline;
@@ -24,7 +23,6 @@ namespace pio
 
 		void onEvent(Ref<Event> &event);
 		bool onWindowClose(Ref<WindowCloseEvent> &event);
-		bool onWindowResize(Ref<WindowResizeEvent> &event);
 
 		void onAttach();
 		void onDetach();
