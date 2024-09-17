@@ -1,7 +1,13 @@
 #include "ImGuiUtils.h"
 
-#include "scene/node/Node.h"
 #include "scene/Components.h"
+#include "scene/node/Node.h"
+#include "scene/node/LightNode.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "ImGuiUtils"
 
 namespace pio
 {
@@ -89,8 +95,11 @@ namespace pio
 		auto type = node->nodeType();
 		switch (type)
 		{
-			case pio::NodeType::Camera:
+			case NodeType::Camera:
 				DrawCameraPanel(node);
+				break;
+			case NodeType::Light:
+				DrawLightPanel(node);
 				break;
 			default:
 				break;
@@ -169,6 +178,35 @@ namespace pio
 				ImGui::Text("Size      ");
 				ImGui::SameLine();
 				ImGui::DragFloat("##Size", &cameraComp->Size, 0.1f, 0.1, 100.f, "%.1f");
+			}
+		}
+	}
+
+	void ImGuiUtils::DrawLightPanel(const Ref<Node>& node)
+	{
+		auto* lightNode = node->as<LightNode>();
+		if (!lightNode)
+			return;
+
+		auto* transComp = node->getComponent<TransformComponent>();
+		DrawTransformPanel(transComp);
+
+		auto type = lightNode->lightType();
+		if (type == LightType::DirectionLight)
+		{				
+			if (ImGui::CollapsingHeader("DirectionalLight", ImGuiUtils::k_FlagCollapseHeader))
+			{
+				auto* lightComp = node->getComponent<DirectionalLightComponent>();
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Color      ");
+				ImGui::SameLine();
+				ImGui::ColorEdit3("##Light_Color", &lightComp->Color.r);
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Intensity  ");
+				ImGui::SameLine();
+				ImGui::DragFloat("##Light_Intensity", &lightComp->Intensity, 0.02f, 0.1f, 50.f, "%.2f", 0);				
 			}
 		}
 	}

@@ -45,8 +45,8 @@ namespace pio
 	{
 		UUID32 BuffId{ InvalidId };
 		uint32_t Type{ (uint32_t)LightType::DirectionLight };
-		glm::vec3 Color{ 0.0f, 0.0f, 0.0f };
-		float Intensity{ 0.0f };
+		glm::vec3 Color{ 0.6f, 0.6f, 0.6f };//Each component of color should be clamped into [0, 1]
+		float Intensity{ 1.0f };
 		// ----- Shadow related -------
 		float Bias{ 0.05f };
 		float NormalBias{ 0.4f };

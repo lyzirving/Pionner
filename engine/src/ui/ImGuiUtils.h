@@ -35,6 +35,7 @@ namespace pio
 	private:
 		static void ShowRelation(const std::vector<Ref<Node>>& node, uint32_t& curSelect, uint32_t& clickItem);
 		static void DrawCameraPanel(const Ref<Node>& node);
+		static void DrawLightPanel(const Ref<Node>& node);
 		static void DrawTransformPanel(TransformComponent* comp);
 	private:
 		ImGuiUtils() {}

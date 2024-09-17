@@ -3,6 +3,7 @@
 #include "gfx/pass/MainLightShadowCasterPass.h"
 #include "gfx/pass/DefferedPass.h"
 #include "gfx/pass/GBufferPass.h"
+#include "gfx/pass/ColorCorrectPass.h"
 
 #include "gfx/renderer/RenderContext.h"
 
@@ -19,6 +20,7 @@ namespace pio
 		m_passQueue.push_back(CreateRef<MainLightShadowCasterPass>("MainLightShadowCasterPass", RenderPassEvent::RenderingShadows));
 		m_passQueue.push_back(CreateRef<GBufferPass>("GBufferPass", RenderPassEvent::RenderingOpaques));
 		m_passQueue.push_back(CreateRef<DefferedPass>("DefferedPass", RenderPassEvent::AfterRenderingOpaques));
+		m_passQueue.push_back(CreateRef<ColorCorrectPass>("ColorCorrectPass", RenderPassEvent::BeforeRenderingPostProcessing));
 	}
 
 	void DefferedRenderer::onAttach(Ref<RenderContext>& context)

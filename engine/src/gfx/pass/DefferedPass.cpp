@@ -6,17 +6,9 @@
 #include "asset/AssetMgr.h"
 
 #include "gfx/renderer/RenderContext.h"
-
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/UniformBuffer.h"
-
-#include "gfx/resource/MeshRenderBuffer.h"
-#include "gfx/resource/RenderTarget.h"
-#include "gfx/resource/Mesh.h"
-
-#include "scene/Factory.h"
-#include "scene/node/CameraNode.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -33,29 +25,49 @@ namespace pio
             .setCull(CullFace::Common())
             .setStencil(StencilTest::Disable());
 
-        m_screenMesh = CreateRef<Mesh>();
-        m_screenBuff = CreateRef<MeshRenderBuffer>();
+        auto colorSize = GlobalSettings::ColorResolution();
+        auto depthSize = GlobalSettings::ShadowResolution();
 
-        m_screenMesh->setTriangleMesh(Factory::MakeScreenQuad());
-        m_screenBuff->update(context, m_screenMesh);
+        FrameBufferSpecific fboSpec;
+        fboSpec.Name = "DefferedPass";
+        fboSpec.Width = colorSize.x;
+        fboSpec.Height = colorSize.y;
+        PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Color);
+
+		TextureSpecificBuilder colorBufferSpec;
+		colorBufferSpec.name(GpuAttr::UNI_COLOR_BUFFER)
+			.type(TextureType::TwoDimen)
+			.format(TextureFormat::RGBA_HALF)
+			.width(colorSize.x).height(colorSize.y)
+			.texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
+			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
+
+        TextureSpecificBuilder depthBuilder;
+        depthBuilder.name("DefferedPass Depth Buffer")
+            .type(TextureType::RenderBuffer)
+            .format(TextureFormat::DEPTH_24_STENCIL_8)
+            .width(depthSize.x).height(depthSize.y);
+
+        fboSpec.ColorSpec.push_back(colorBufferSpec.build());
+        fboSpec.DepthSpec = depthBuilder.build();
+
+        m_frameBuff = FrameBuffer::Create(context, fboSpec);
+        context->uploadData(m_frameBuff);
     }
 
     void DefferedPass::onDetach(Ref<RenderContext>& context)
     {
-        m_screenMesh.reset();
-        m_screenBuff.reset();
+        m_frameBuff.reset();
     }
 
 	void DefferedPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
     {
         auto& renderingData = context->renderingData();
-        PIO_CHECK_RETURN(lastPass && lastPass->is<GBufferPass>(), "err! invalid last pass");
-        auto& target = camNode->renderTarget();
-        PIO_CHECK_RETURN(target, "err! render target has not been set!");
+        PIO_CHECK_RETURN(lastPass && lastPass->is<GBufferPass>(), "err! last pass must be GBufferPass");
 
         auto& lastFbo = lastPass->frameBuffer();
+        auto& fbo = m_frameBuff;
         auto& shader = context->shader(ShaderType::Deferred);
-        auto& screenBuff = m_screenBuff;
         const auto& attr = m_attrs;
 
         auto it = renderingData.UnimBuffSet.find(UBBinding_Camera);
@@ -66,7 +78,7 @@ namespace pio
         PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light buff id");
         UUID32 lightFilter = it->second;
 
-        context->submitRC([camFilter, lightFilter, &context, &target, &lastFbo, &shader, &screenBuff, &attr]()
+        context->submitRC([camFilter, lightFilter, &context, &fbo, &lastFbo, &shader, &attr]()
         {
             auto camBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(camFilter);
             PIO_CHECK_RETURN(camBuff, "err! invalid camera uniform buffer");
@@ -74,8 +86,8 @@ namespace pio
             PIO_CHECK_RETURN(lightBuff, "err! invalid directional light uniform buffer");
 
             const auto& colorBuffers = lastFbo->colorBuffers();
-
-            context->onBeginRenderTarget(target, attr);
+           
+            context->onBeginFrameBuffer(fbo, attr);
 
             shader->bind();
 
@@ -106,7 +118,7 @@ namespace pio
                 }
             }
 
-            context->drawTriangles(screenBuff);
+            context->drawTriangles(context->getScreenMeshBuffer());
 
             lightBuff->unbind();
 
@@ -114,7 +126,7 @@ namespace pio
 
             shader->unbind();
 
-            context->onEndRenderTarget(target);
+            context->onEndFrameBuffer(fbo);
         });
     }
 

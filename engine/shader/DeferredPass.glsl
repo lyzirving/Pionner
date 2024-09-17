@@ -31,6 +31,8 @@ uniform sampler2D u_GEmission;   // vec3
 in vec2 v_texcoord; 
 out vec4 o_color;
 
+vec4 LightContribution();
+
 void main() {
 	vec4 baseColor = texture(u_GAlbedoAlpha, v_texcoord);	
 	vec3 surface = texture(u_GMaterial, v_texcoord).rgb;
@@ -43,5 +45,17 @@ void main() {
     m_PBRParams.Metalness = surface.g;
     m_PBRParams.Emission = texture(u_GEmission, v_texcoord).rgb;
 
-	o_color = vec4(m_PBRParams.Albedo, m_PBRParams.Alpha);
+	m_PBRParams.V = normalize(u_camera.Position - m_PBRParams.FragPos);
+    m_PBRParams.R = reflect(-m_PBRParams.V, m_PBRParams.N);
+    m_PBRParams.NdotV = max(dot(m_PBRParams.N, m_PBRParams.V), 0.f);
+    m_PBRParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);
+
+	o_color = LightContribution();
+}
+
+vec4 LightContribution()
+{
+    vec3 lightContribution = vec3(0.f);
+    lightContribution += CalculateDirLightsEffect();
+    return vec4(lightContribution, m_PBRParams.Alpha);
 }

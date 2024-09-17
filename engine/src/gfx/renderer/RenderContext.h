@@ -138,6 +138,8 @@ namespace pio
 
 		Ref<Material> createMaterial(const std::string& name, ShaderSpecifier spec, RenderingMode mode = RenderingMode_Opaque);
 		Ref<Material> getMaterial(const std::string& name);
+
+		Ref<MeshRenderBuffer>& getScreenMeshBuffer() { return m_screenMeshBuffer; }
 		// ------------------------------------------------------------------------------------
 
 	private:
@@ -176,6 +178,8 @@ namespace pio
 		Ref<Shader> m_shaders[PIO_UINT8(ShaderType::Num)];
 		Ref<TextureMgr> m_textureMgr;
 		Ref<MaterialMgr> m_materialMgr;
+
+		Ref<MeshRenderBuffer> m_screenMeshBuffer;
 
 		RenderingNodes m_renderingNodes;
 		RenderingData m_renderingData;

@@ -26,6 +26,8 @@ namespace pio
 		static const char* UNI_GBUFFER_ALBEDO   = "u_GAlbedoAlpha";
 		static const char* UNI_GBUFFER_MATERIAL = "u_GMaterial";
 		static const char* UNI_GBUFFER_EMISSION = "u_GEmission";
+
+		static const char* UNI_COLOR_BUFFER = "u_colorBuffer";
 	}
 
 	enum RenderingMode : uint8_t
@@ -114,7 +116,10 @@ namespace pio
 
 	enum class ShaderType : uint8_t
 	{
-		GBuffer, Deferred, Num
+		GBuffer, 
+		Deferred,
+		ColorCorrect,
+		Num
 	};
 
 	enum class RenderResourceType : uint8_t

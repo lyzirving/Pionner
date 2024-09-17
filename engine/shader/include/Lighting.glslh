@@ -15,3 +15,27 @@ layout (std140) uniform DirectionalLightBlock
     bool CastShadow;
     float ShadowIntensity;
 } u_directionalLight;
+
+vec3 CalculateDirLightsEffect()
+{
+    // Negate the direction to expect a direction from the fragment towards the light source
+    vec3 Li = normalize(-u_directionalLight.Direction);
+    vec3 Lh = normalize(Li + m_PBRParams.V);
+	vec3 Lradiance = u_directionalLight.Color * u_directionalLight.Intensity;
+
+    // Calculate angles between surface normal and light vector.
+	float NdotL = max(0.f, dot(m_PBRParams.N, Li));
+	float NdotH = max(0.f, dot(m_PBRParams.N, Lh));
+
+    vec3  F = FresnelSchlickRoughness(max(0.f, dot(Lh, m_PBRParams.V)), m_PBRParams.F0, m_PBRParams.Roughness);
+    float D = NdfGGX(NdotH, m_PBRParams.Roughness);
+    float G = GaSchlickGGX(NdotL, m_PBRParams.NdotV, m_PBRParams.Roughness);
+
+    vec3 kd = (vec3(1.0) - F) * (1.0 - m_PBRParams.Metalness);
+	vec3 diffuseBRDF = kd * m_PBRParams.Albedo;
+
+    // Cook-Torrance
+	vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * NdotL * m_PBRParams.NdotV);
+	specularBRDF = clamp(specularBRDF, vec3(0.0f), vec3(10.0f));
+    return (diffuseBRDF + specularBRDF) * NdotL * Lradiance;
+}

@@ -40,7 +40,11 @@ namespace pio
 
 	enum class RenderPassType : uint8_t
 	{
-		MainLightShadowCaster, GBuffer, Deferred, Num
+		MainLightShadowCaster,
+		GBuffer,
+		Deferred,
+		ColorCorrect,
+		Num
 	};
 
 	class RenderContext;
@@ -102,7 +106,7 @@ namespace pio
 			RenderPassEvent r = passes[passes.size() - 1]->event();
 			RenderPassEvent lMax = Left > l ? Left : l;
 			RenderPassEvent rMin = Right > r ? r : Right;
-			return lMax < rMin;
+			return lMax <= rMin;
 		}
 	};
 

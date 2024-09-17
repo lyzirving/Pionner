@@ -93,6 +93,8 @@ namespace pio
 					return "shader/GBufferPass.glsl";
 				case ShaderType::Deferred:
 					return "shader/DeferredPass.glsl";
+				case ShaderType::ColorCorrect:
+					return "shader/ColorCorrect.glsl";
 				default:
 					#ifdef LOCAL_TAG
 					#undef LOCAL_TAG

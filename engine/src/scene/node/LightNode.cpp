@@ -28,7 +28,10 @@ namespace pio
 		addComponent<DirectionalLightComponent, TransformComponent>();
 
 		auto* lightComp = getComponent<DirectionalLightComponent>();
+		auto* transComp = getComponent<TransformComponent>();
+
 		lightComp->BuffId = m_UBuffer->assetHnd();
+		transComp->Rotation = glm::vec3(-30.f, 0.f, 0.f);
 	}
 
 	DirectionalLightNode::~DirectionalLightNode() = default;

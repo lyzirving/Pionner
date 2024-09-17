@@ -1,12 +1,15 @@
 #include "RenderContext.h"
 
 #include "window/Window.h"
+#include "asset/AssetMgr.h"
+#include "scene/Factory.h"
 
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/UniformBuffer.h"
 #include "gfx/rhi/ShaderCompiler.h"
 
+#include "gfx/resource/Mesh.h"
 #include "gfx/resource/TextureMgr.h"
 #include "gfx/resource/MaterialMgr.h"
 #include "gfx/resource/MeshRenderBuffer.h"
@@ -149,6 +152,12 @@ namespace pio
 
 		m_textureMgr->init(context);
 		m_materialMgr->init(context);
+
+		auto screenMesh = CreateRef<Mesh>();
+		m_screenMeshBuffer = CreateRef<MeshRenderBuffer>();
+
+		screenMesh->setTriangleMesh(Factory::MakeScreenQuad());
+		m_screenMeshBuffer->update(context, screenMesh);
 	}
 
 	void RenderContext::releaseResource()
@@ -159,6 +168,7 @@ namespace pio
 		}
 		m_textureMgr->release();
 		m_materialMgr->release();
+		m_screenMeshBuffer.reset();
 	}
 
 	void RenderContext::waitAndRender()
