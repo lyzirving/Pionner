@@ -9,6 +9,7 @@ namespace pio
 	{
 		UBBinding_Camera = 0,
 		UBBinding_DirectionalLight,
+		UBBinding_DirectionalLightShadow,
 		UBBinding_Num
 	};
 
@@ -246,6 +247,7 @@ namespace pio
 	private:
 		friend struct CameraUD;
 		friend struct DirectionalLightUD;
+		friend struct DirectionalLightShadowDataUD;
 	};
 
 	template<>

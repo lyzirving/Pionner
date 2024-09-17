@@ -1,5 +1,10 @@
 #include "MainLightShadowCasterPass.h"
 
+#include "GlobalSettings.h"
+
+#include "gfx/renderer/RenderContext.h"
+#include "gfx/rhi/FrameBuffer.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -7,6 +12,55 @@
 
 namespace pio
 {
+	void MainLightShadowCasterPass::onAttach(Ref<RenderContext>& context)
+	{
+		auto shadowSize = GlobalSettings::ShadowResolution();
+
+		FrameBufferSpecific fboSpec;
+		fboSpec.Name = "MainLightShadowCasterPass";
+		fboSpec.Width = shadowSize.x;
+		fboSpec.Height = shadowSize.y;
+		PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Depth);
+
+		TextureSpecificBuilder depthBuilder;
+		depthBuilder.name("MainLightDepthBuffer")
+			.type(TextureType::TwoDimen)
+			.format(TextureFormat::DEPTH_32F)
+			.width(shadowSize.x).height(shadowSize.y)
+			.texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
+			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
+
+		fboSpec.DepthSpec = depthBuilder.build();
+		m_frameBuff = FrameBuffer::Create(context, fboSpec);
+		context->uploadData(m_frameBuff);
+
+		m_attrs.setClear(Clear::Common())
+			.setBlend(Blend::Disable())
+			.setDepth(DepthTest::Common())
+			.setCull(CullFace::Common())
+			.setStencil(StencilTest::Disable());
+	}
+
+	void MainLightShadowCasterPass::onDetach(Ref<RenderContext>& context)
+	{
+		m_frameBuff.reset();
+	}
+
+	void MainLightShadowCasterPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
+	{
+		auto& renderingData = context->renderingData();
+		std::vector<MeshRenderingItem> opaqueMeshItems = renderingData.OpaqueMeshItems;
+		if (opaqueMeshItems.empty())  { return; }
+
+		auto& fbo = m_frameBuff;
+		auto& shader = context->shader(ShaderType::MainLightShadowCaster);
+		const auto& attr = m_attrs;
+
+		context->submitRC([opaqueMeshItems, &context, &fbo, &shader, &attr]()
+		{
+		});
+	}
+
 	template<>
 	bool RenderPass::is<MainLightShadowCasterPass>() const { return type() == RenderPassType::MainLightShadowCaster; }
 }

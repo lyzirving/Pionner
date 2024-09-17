@@ -83,12 +83,22 @@ namespace pio
 				}
 			}
 			else if (PIO_FBO_IS_DEPTH_STENCIL(m_spec.Usage) && m_depthBuff)
-			{
-
+			{				
 			}
 			else if (PIO_FBO_IS_DEPTH_BUF(m_spec.Usage) && m_depthBuff)
 			{
-
+				m_depthBuff->bind();
+				if (m_depthBuff->is<Texture2D>())
+				{
+					glFramebufferTexture2D(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_spec.DepthSpec.Format),
+										   GL_TEXTURE_2D, m_depthBuff->id(), 0);
+				}
+				else
+				{
+					LOGE("err! invalid depth buffer type");
+				}
+				glDrawBuffer(GL_NONE);
+				glReadBuffer(GL_NONE);
 			}
 
 			if (GLHelper::CheckFrameBufferStatus("fail to generate frame buffer[%s]", m_spec.Name.c_str()))

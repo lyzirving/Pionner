@@ -82,6 +82,7 @@ namespace pio
 		const glm::mat4& orthoMat() const { return m_orthoFrustum.mat(); }
 
 		const glm::vec3& position() const { return m_transform.position(); }
+		const glm::vec3& euler() const { return m_transform.euler(); }
 		CameraClearFlags clearFlag() const { return m_clearFlag; }
 
 	private:

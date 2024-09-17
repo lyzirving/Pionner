@@ -116,6 +116,7 @@ namespace pio
 
 	enum class ShaderType : uint8_t
 	{
+		MainLightShadowCaster,
 		GBuffer, 
 		Deferred,
 		ColorCorrect,

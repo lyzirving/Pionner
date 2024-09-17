@@ -101,7 +101,7 @@ namespace pio
 	void GBufferPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
 	{
         auto &renderingData = context->renderingData();
-        std::vector<MeshRenderingItem> opaqueMeshItems = std::move(renderingData.OpaqueMeshItems);
+        std::vector<MeshRenderingItem> opaqueMeshItems = renderingData.OpaqueMeshItems;
         if (opaqueMeshItems.empty()) { return; }
 
         auto it = renderingData.UnimBuffSet.find(UBBinding_Camera);

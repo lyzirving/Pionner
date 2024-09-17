@@ -10,8 +10,11 @@ namespace pio
 									         static LightType StaticLightType() { return TypeName; }\
 									         virtual LightType lightType() const override { return StaticLightType(); }
 	
+	class Camera;
+	class CameraNode;
 	class UniformBuffer;
 	struct DirectionalLightUD;
+	struct DirectionalLightShadowDataUD;
 
 	class LightNode : public Node
 	{
@@ -31,13 +34,16 @@ namespace pio
 		~DirectionalLightNode();
 
 		virtual void update(Ref<RenderContext>& context) override;
+		void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
 
 	private:
 		friend class Node;
 
 	private:
 		Ref<DirectionalLightUD> m_UData;
-		Ref<UniformBuffer> m_UBuffer;
+		Ref<DirectionalLightShadowDataUD> m_UDataShadow;
+		Ref<UniformBuffer> m_UBuffer, m_UBufferShadow;
+		Ref<Camera> m_shadowCam;
 	};
 
 	template<>

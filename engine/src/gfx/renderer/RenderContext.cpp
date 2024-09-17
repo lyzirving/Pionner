@@ -1,8 +1,11 @@
 #include "RenderContext.h"
+#include "GlobalSettings.h"
 
 #include "window/Window.h"
 #include "asset/AssetMgr.h"
 #include "scene/Factory.h"
+
+#include "gfx/renderer/Renderer.h"
 
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/FrameBuffer.h"
@@ -142,7 +145,8 @@ namespace pio
 
 	void RenderContext::initResource()
 	{
-		auto context = self();
+		auto context = self();	
+
 		for (uint8_t i = 0; i < PIO_UINT8(ShaderType::Num); i++)
 		{
 			m_shaders[i] = ShaderCompiler::Compile(context, ShaderUtils::GetShaderPath(ShaderType(i)));
@@ -158,17 +162,23 @@ namespace pio
 
 		screenMesh->setTriangleMesh(Factory::MakeScreenQuad());
 		m_screenMeshBuffer->update(context, screenMesh);
+
+		m_renderer = Renderer::Create(GlobalSettings::RenderConfig);
+		m_renderer->onAttach(context);
 	}
 
 	void RenderContext::releaseResource()
 	{
+		auto context = self();
+
+		m_renderer->onDetach(context);
+		m_screenMeshBuffer.reset();
+		m_textureMgr->release();
+		m_materialMgr->release();
 		for (uint8_t i = 0; i < PIO_UINT8(ShaderType::Num); i++)
 		{
 			m_shaders[i].reset();//Real release will be executed at garbage queue
-		}
-		m_textureMgr->release();
-		m_materialMgr->release();
-		m_screenMeshBuffer.reset();
+		}			
 	}
 
 	void RenderContext::waitAndRender()

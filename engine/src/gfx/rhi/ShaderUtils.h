@@ -89,6 +89,8 @@ namespace pio
 		{
 			switch(type)
 			{
+				case ShaderType::MainLightShadowCaster:
+					return "shader/MainLightShadowCaster.glsl";
 				case ShaderType::GBuffer:
 					return "shader/GBufferPass.glsl";
 				case ShaderType::Deferred:

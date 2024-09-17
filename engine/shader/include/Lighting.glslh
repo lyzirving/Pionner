@@ -4,6 +4,14 @@
 #include <Buffers.glslh>
 #include <PBR.glslh>
 
+layout (std140) uniform MainLightCasterBlock
+{
+	mat4 ViewMat;
+	mat4 PrjMat;
+    vec2 ShadowMapSize;
+    float FrustumSize;
+} u_mainLightCaster;
+
 layout (std140) uniform DirectionalLightBlock
 {
 	vec3 Direction;

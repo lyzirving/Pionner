@@ -24,6 +24,7 @@ namespace pio
 	class Texture;
 	class MaterialMgr;
 	class Material;
+	class Renderer;
 	struct TextureSpecific;
 
 	class RenderContext : public std::enable_shared_from_this<RenderContext>
@@ -43,6 +44,7 @@ namespace pio
 		Ref<RenderContext> self() { return shared_from_this(); }
 		RenderThread& thread() { return m_thread; }
 		Ref<Window>& window() { return m_window; }
+		Ref<Renderer>& getRenderer() { return m_renderer; }
 		Ref<RenderState>& state() { return m_state; }
 		
 		Ref<Shader> &shader(ShaderType type) { return m_shaders[PIO_UINT8(type)]; }
@@ -139,7 +141,7 @@ namespace pio
 		Ref<Material> createMaterial(const std::string& name, ShaderSpecifier spec, RenderingMode mode = RenderingMode_Opaque);
 		Ref<Material> getMaterial(const std::string& name);
 
-		Ref<MeshRenderBuffer>& getScreenMeshBuffer() { return m_screenMeshBuffer; }
+		Ref<MeshRenderBuffer>& getScreenMeshBuffer() { return m_screenMeshBuffer; }		
 		// ------------------------------------------------------------------------------------
 
 	private:
@@ -162,6 +164,7 @@ namespace pio
 	private:
 		Ref<RenderAPI> m_api;
 		Ref<RenderState> m_state;
+		Ref<Renderer> m_renderer;
 
 		Ref<Window> m_window;
 		Viewport m_vp;

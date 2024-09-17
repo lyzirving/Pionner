@@ -25,13 +25,10 @@ namespace pio
 
 	void RenderPipeline::onAttach(Ref<RenderContext>& context)
 	{
-		m_renderer = Renderer::Create(GlobalSettings::RenderConfig);
-		m_renderer->onAttach(context);
 	}
 
 	void RenderPipeline::onDetach(Ref<RenderContext>& context)
 	{
-		m_renderer->onDetach(context);
 	}
 
 	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<CameraNode>>& camNodes)
@@ -64,11 +61,13 @@ namespace pio
 
 	void RenderPipeline::onRenderSingleCamera(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
+		auto renderer = context->getRenderer();
+
 		onInitializeRenderingData(context, camNode);
 
-		m_renderer->onSetUp();
+		renderer->onSetUp();
 
-		m_renderer->onExecute(context, camNode);
+		renderer->onExecute(context, camNode);
 	}
 
 	void RenderPipeline::onEndCameraRendering(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
@@ -86,22 +85,22 @@ namespace pio
 		auto uBuffer = camNode->getRenderingData<CameraNode, Ref<UniformBuffer>>();
 		renderingData.UnimBuffSet.insert({ uBuffer->binding(), uBuffer->assetHnd() });
 
-		onSetUpLight(context, renderingNodes, renderingData);
+		onSetUpLight(context, camNode, renderingNodes, renderingData);
 
-		onSetUpObject(context, renderingNodes, renderingData);
+		onSetUpObject(context, camNode, renderingNodes, renderingData);
 
 		context->setRenderingData(std::move(renderingData));
 	}
 
-	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData& renderingData)
+	void RenderPipeline::onSetUpLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData& renderingData)
 	{
 		auto& mainLightNode = renderingNodes.MainLight;
-		mainLightNode->update(context);
+		mainLightNode->update(context, camNode);
 		auto uBuffer = mainLightNode->getRenderingData<DirectionalLightNode, Ref<UniformBuffer>>();
 		renderingData.UnimBuffSet.insert({ uBuffer->binding(), uBuffer->assetHnd() });
 	}
 
-	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData)
+	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData &renderingData)
 	{
 		auto &meshNodes = renderingNodes.Mesh;
 		for (auto &mesh : meshNodes)

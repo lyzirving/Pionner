@@ -55,4 +55,37 @@ namespace pio
 		auto sdIntensityUD = Block.m_blockItems.get("ShadowIntensity");
 		Block.m_buffer->writeAt(&ShadowIntensity, sizeof(float), sdIntensityUD->getAlignOffset());
 	}
+
+	UniformBlock DirectionalLightShadowDataUD::CreateBlock()
+	{
+		UniformBlock block;
+		block.pushBack("ViewMat", UniformBlock::CreateData(UniformDataType::Mat4, "ViewMat"));
+		block.pushBack("PrjMat", UniformBlock::CreateData(UniformDataType::Mat4, "PrjMat"));
+		block.pushBack("ShadowMapSize", UniformBlock::CreateData(UniformDataType::Vec2, "ShadowMapSize"));
+		block.pushBack("FrustumSize", UniformBlock::CreateData(UniformDataType::Float, "FrustumSize"));
+		block.calculate();
+		//LOGD("block DirectionalLightShadowDataUD byte used[%u]", block.getByteUsed());
+		return block;
+	}
+
+	void DirectionalLightShadowDataUD::serialize()
+	{
+		if (!Block.m_buffer || Block.m_buffer->getCapacity() == 0)
+		{
+			LOGE("DirectionalLightShadowData: UD buffer is invalid");
+			return;
+		}
+
+		auto viewMatUD = Block.m_blockItems.get("ViewMat");
+		Block.m_buffer->writeAt(glm::value_ptr(ViewMat), sizeof(glm::mat4), viewMatUD->getAlignOffset());
+
+		auto prjMatUD = Block.m_blockItems.get("PrjMat");
+		Block.m_buffer->writeAt(glm::value_ptr(PrjMat), sizeof(glm::mat4), prjMatUD->getAlignOffset());
+
+		auto sdMapUD = Block.m_blockItems.get("ShadowMapSize");
+		Block.m_buffer->writeAt(glm::value_ptr(ShadowMapSize), sizeof(glm::vec2), sdMapUD->getAlignOffset());
+
+		auto frustumSizeUD = Block.m_blockItems.get("FrustumSize");
+		Block.m_buffer->writeAt(&FrustumSize, sizeof(float), frustumSizeUD->getAlignOffset());
+	}
 }

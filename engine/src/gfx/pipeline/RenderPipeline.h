@@ -6,7 +6,6 @@
 namespace pio
 {
 	class CameraNode;
-	class Renderer;
 	class RenderContext;
 	struct RenderingNodes;
 	struct RenderingData;
@@ -31,11 +30,8 @@ namespace pio
 
 		// Methods where make data  which is about to be uploaded
 		void onInitializeRenderingData(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
-		void onSetUpLight(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData);
-		void onSetUpObject(Ref<RenderContext>& context, RenderingNodes& renderingNodes, RenderingData &renderingData);
-
-	protected:
-		Ref<Renderer> m_renderer;
+		void onSetUpLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData &renderingData);
+		void onSetUpObject(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData &renderingData);
 	};
 }
 

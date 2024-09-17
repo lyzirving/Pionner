@@ -18,6 +18,16 @@ namespace pio
 		bool CastShadow{ true };
 		float ShadowIntensity{ 1.f };
 	};
+
+	struct DirectionalLightShadowDataUD
+	{
+		PIO_UNIFORM_STRUCT_DECLARE(DirectionalLightShadowDataUD)
+
+		glm::mat4 ViewMat{ 1.f };
+		glm::mat4 PrjMat{ 1.f };
+		glm::vec2 ShadowMapSize{ 0.f };
+		float FrustumSize{ 0.f };
+	};
 }
 
 #endif

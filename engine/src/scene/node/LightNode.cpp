@@ -1,6 +1,10 @@
 #include "LightNode.h"
 
+#include "GlobalSettings.h"
+
 #include "scene/Components.h"
+#include "scene/3d/Camera.h"
+#include "scene/node/CameraNode.h"
 
 #include "gfx/resource/Light.h"
 #include "gfx/rhi/UniformBuffer.h"
@@ -23,8 +27,14 @@ namespace pio
 	DirectionalLightNode::DirectionalLightNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name)
 		: LightNode(context, key, regi, name)
 	{
+		m_shadowCam = CreateRef<Camera>();
+
 		m_UData = CreateRef<DirectionalLightUD>();
+		m_UDataShadow = CreateRef<DirectionalLightShadowDataUD>();
+
 		m_UBuffer = UniformBuffer::Create(context, m_UData->Block.getByteUsed(), UBBinding_DirectionalLight, BufferUsage::Dynamic);
+		m_UBufferShadow = UniformBuffer::Create(context, m_UDataShadow->Block.getByteUsed(), UBBinding_DirectionalLightShadow, BufferUsage::Dynamic);
+
 		addComponent<DirectionalLightComponent, TransformComponent>();
 
 		auto* lightComp = getComponent<DirectionalLightComponent>();
@@ -53,9 +63,32 @@ namespace pio
 		transform.setEuler(transComp->Rotation);
 		m_UData->Direction = transform.rotMat() * glm::vec4(-World::Forward, 0.f);
 		m_UData->Direction = glm::normalize(m_UData->Direction);
-
 		m_UData->serialize();
+
 		context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
+	}
+
+	void DirectionalLightNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	{
+		update(context);
+
+		//Update shadow data
+		auto& camera = camNode->camera();
+		m_shadowCam->setPrjType(ProjectionType_Orthographic);
+		m_shadowCam->setPosition(camera->position());
+		m_shadowCam->setEuler(camera->euler());
+		m_shadowCam->setNear(camera->frustNear());
+		m_shadowCam->setFar(camera->frustFar());
+		m_shadowCam->setSize(5.f);
+		m_shadowCam->setAspect(1.f);
+		m_shadowCam->flush();
+
+		m_UDataShadow->ViewMat = m_shadowCam->viewMat();
+		m_UDataShadow->PrjMat = m_shadowCam->prjMat();
+		m_UDataShadow->ShadowMapSize = GlobalSettings::ShadowResolution();
+		m_UDataShadow->FrustumSize = m_shadowCam->size();
+		m_UDataShadow->serialize();
+		context->uploadData(m_UDataShadow->Block.getBuffer()->as<void*>(), m_UDataShadow->Block.getByteUsed(), m_UBufferShadow);
 	}
 
 	template<>
