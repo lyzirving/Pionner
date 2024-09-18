@@ -41,12 +41,19 @@ namespace pio
 		auto* transComp = getComponent<TransformComponent>();
 
 		lightComp->BuffId = m_UBuffer->assetHnd();
-		transComp->Rotation = glm::vec3(-30.f, 0.f, 0.f);
+		transComp->Position = glm::vec3(-4.f, 4.f, 4.f);
+		transComp->Rotation = glm::vec3(-30.f, -45.f, 0.f);
 	}
 
 	DirectionalLightNode::~DirectionalLightNode() = default;
 
-	void DirectionalLightNode::update(Ref<RenderContext>& context)
+	void DirectionalLightNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	{
+		updateLight(context, camNode);
+		updateShadow(context, camNode);
+	}
+
+	void DirectionalLightNode::updateLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
 		auto* lightComp = getComponent<DirectionalLightComponent>();
 		auto* transComp = getComponent<TransformComponent>();
@@ -56,7 +63,7 @@ namespace pio
 		m_UData->Bias = lightComp->Bias;
 		m_UData->NormalBias = lightComp->NormalBias;
 		m_UData->ShadowMode = lightComp->ShadowMode;
-		m_UData->CastShadow = lightComp->CastShadow;
+		m_UData->CastShadow = lightComp->ShadowMode != ShadowMode_None;
 		m_UData->ShadowIntensity = lightComp->ShadowIntensity;
 
 		Transform3D transform;
@@ -68,24 +75,28 @@ namespace pio
 		context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
 	}
 
-	void DirectionalLightNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	void DirectionalLightNode::updateShadow(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
-		update(context);
-
 		//Update shadow data
-		auto& camera = camNode->camera();
-		m_shadowCam->setPrjType(ProjectionType_Orthographic);
-		m_shadowCam->setPosition(camera->position());
-		m_shadowCam->setEuler(camera->euler());
+		auto camera = camNode->camera();
+		auto* lightComp = getComponent<DirectionalLightComponent>();
+		auto* transComp = getComponent<TransformComponent>();
+
+		Transform3D transform;
+		transform.setEuler(transComp->Rotation);
+
+		m_shadowCam->setPosition(transComp->Position);
+		m_shadowCam->setEuler(transComp->Rotation);
 		m_shadowCam->setNear(camera->frustNear());
 		m_shadowCam->setFar(camera->frustFar());
 		m_shadowCam->setSize(5.f);
 		m_shadowCam->setAspect(1.f);
 		m_shadowCam->flush();
 
+		auto shadowSize = GlobalSettings::ShadowResolution().x;
 		m_UDataShadow->ViewMat = m_shadowCam->viewMat();
-		m_UDataShadow->PrjMat = m_shadowCam->prjMat();
-		m_UDataShadow->ShadowMapSize = GlobalSettings::ShadowResolution();
+		m_UDataShadow->PrjMat = m_shadowCam->orthoMat();
+		m_UDataShadow->ShadowMapSize = glm::vec2(shadowSize);
 		m_UDataShadow->FrustumSize = m_shadowCam->size();
 		m_UDataShadow->serialize();
 		context->uploadData(m_UDataShadow->Block.getBuffer()->as<void*>(), m_UDataShadow->Block.getByteUsed(), m_UBufferShadow);

@@ -23,10 +23,18 @@ namespace pio
 		CameraClearFlag_Num
 	};
 
+	enum CameraMotionMode : uint8_t
+	{
+		CameraMotionMode_Free = 0,
+		CameraMotionMode_FixTarget
+	};
+
 	enum CameraAttrBits : uint8_t
 	{
 		CameraAttrBits_Pos = 0,
 		CameraAttrBits_Rot,
+		CameraAttrBits_LookAt,
+		CameraAttrBits_MotionMode,
 		CameraAttrBits_PrjType,
 		CameraAttrBits_Num
 	};
@@ -45,6 +53,8 @@ namespace pio
 
 		void setPosition(const glm::vec3& position);
 		void setEuler(const glm::vec3& euler);
+		void setLookAt(const glm::vec3& lookAt);
+		void setMotionMode(CameraMotionMode mode);
 
 		void addTranslation(const glm::vec3& delta);
 		void addEuler(const glm::vec3& delta);
@@ -99,7 +109,9 @@ namespace pio
 		// camera's +x/+y/+z axis
 		glm::vec3 m_right{ 1.f, 0.f, 0.f }, m_up{ 0.f, 1.f, 0.f }, m_front{ 0.f, 0.f, 1.f };
 		glm::vec3 m_viewDir{ -World::Forward };
+		glm::vec3 m_lookAt{ 0.f };
 		glm::mat4 m_viewMat{ 1.f };
+		CameraMotionMode m_motionMode{ CameraMotionMode_Free };
 		CameraAttrs m_attrBits{};
 
 		ProjectionType m_prjType{ ProjectionType_Perspective };

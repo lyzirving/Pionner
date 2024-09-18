@@ -5,7 +5,9 @@
 
 #include "asset/AssetMgr.h"
 
+#include "gfx/renderer/Renderer.h"
 #include "gfx/renderer/RenderContext.h"
+
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/UniformBuffer.h"
@@ -71,21 +73,28 @@ namespace pio
         const auto& attr = m_attrs;
 
         auto it = renderingData.UnimBuffSet.find(UBBinding_Camera);
-        PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find camera buff id");
+        PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find camera buff");
         UUID32 camFilter = it->second;
 
         it = renderingData.UnimBuffSet.find(UBBinding_DirectionalLight);
-        PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light buff id");
+        PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light buff");
         UUID32 lightFilter = it->second;
 
-        context->submitRC([camFilter, lightFilter, &context, &fbo, &lastFbo, &shader, &attr]()
+        it = renderingData.UnimBuffSet.find(UBBinding_DirectionalLightShadow);
+        PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light shadow buff");
+        UUID32 shadowFilter = it->second;
+
+        context->submitRC([camFilter, lightFilter, shadowFilter, &context, &fbo, &lastFbo, &shader, &attr]()
         {
             auto camBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(camFilter);
             PIO_CHECK_RETURN(camBuff, "err! invalid camera uniform buffer");
             auto lightBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(lightFilter);
             PIO_CHECK_RETURN(lightBuff, "err! invalid directional light uniform buffer");
-
+            auto shadowData = AssetMgr::GetRuntimeAsset<UniformBuffer>(shadowFilter);
+            PIO_CHECK_RETURN(shadowData, "err! invalid directional light shadow data");
+                                  
             const auto& colorBuffers = lastFbo->colorBuffers();
+            Ref<Texture> depthBuff = context->getRenderer()->getPass((uint32_t)RenderPassType::MainLightShadowCaster)->frameBuffer()->depthBuffer();
            
             context->onBeginFrameBuffer(fbo, attr);
 
@@ -97,6 +106,9 @@ namespace pio
             context->bindUnimBlock(shader, lightBuff, GpuAttr::BINDING_DIRECTIONAL_LIGHT_BLOCK);
             lightBuff->bind();
 
+            context->bindUnimBlock(shader, shadowData, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK);
+            shadowData->bind();
+
             TextureSampler slot;
             for (size_t i = 0; i < colorBuffers.size(); i++)
             {
@@ -105,7 +117,7 @@ namespace pio
                 {
                     auto* p = t->as<Texture2D>();
                     if (shader->getSampler(slot))
-                    {
+                    {                        
                         p->active(slot);
                         p->bind();
                         shader->setTextureSampler(p->name(), slot);
@@ -118,7 +130,21 @@ namespace pio
                 }
             }
 
+            if(depthBuff && depthBuff->is<Texture2D>() && shader->getSampler(slot))
+            {
+                auto* d = depthBuff->as<Texture2D>();                
+                d->active(slot);
+                d->bind();
+                shader->setTextureSampler(GpuAttr::UNI_SHADOW_MAP, slot);
+            }
+            else
+            {
+                LOGE("err! fail to get available sampler for shadow map[%s]", depthBuff->name().c_str());
+            }
+
             context->drawTriangles(context->getScreenMeshBuffer());
+
+            shadowData->unbind();
 
             lightBuff->unbind();
 

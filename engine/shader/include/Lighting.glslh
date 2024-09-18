@@ -4,6 +4,11 @@
 #include <Buffers.glslh>
 #include <PBR.glslh>
 
+const int ShadowMode_Hard = 1;
+const int ShadowMode_Soft = 2;
+const int ShadowMode_Soft_2X = 3;
+const int ShadowMode_Soft_4X = 4;
+
 layout (std140) uniform MainLightCasterBlock
 {
 	mat4 ViewMat;
@@ -46,4 +51,88 @@ vec3 CalculateDirLightsEffect()
 	vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * NdotL * m_PBRParams.NdotV);
 	specularBRDF = clamp(specularBRDF, vec3(0.0f), vec3(10.0f));
     return (diffuseBRDF + specularBRDF) * NdotL * Lradiance;
+}
+
+float CalcShadowBias(vec3 lightDir, vec3 N, float shadowMapSize, float frustumSize, float radius, float bias)
+{
+    float A = (1.0 + ceil(abs(radius))) * frustumSize * 0.5f / (shadowMapSize + 0.0001);
+    float B = 1.0 - dot(N, lightDir);
+    return bias * A * B; 
+}
+
+float CalcDirLightHardShadow(sampler2D shadowMap)
+{
+    vec3 lightDir = normalize(-u_directionalLight.Direction);
+
+    //Normal Bias
+    float nOffset = CalcShadowBias(lightDir, m_PBRParams.N, u_mainLightCaster.ShadowMapSize.x, u_mainLightCaster.FrustumSize, 0.f, u_directionalLight.NormalBias);
+    vec4 biasPos = u_mainLightCaster.PrjMat * u_mainLightCaster.ViewMat * vec4(m_PBRParams.FragPos + m_PBRParams.N * nOffset, 1.f);
+    //Perspective divide, and transform to [0, 1]
+    vec3 prjCoords = vec3(biasPos.xyz / biasPos.w) * 0.5 + 0.5;
+    float currentDepth = prjCoords.z;
+    float closestDepth = texture(shadowMap, prjCoords.xy).r; 
+  
+    //Depth Bias
+    float depthBias = CalcShadowBias(lightDir, m_PBRParams.N, u_mainLightCaster.ShadowMapSize.x, u_mainLightCaster.FrustumSize, 0.f, u_directionalLight.Bias);
+
+    return (currentDepth - depthBias) > closestDepth  ? 1.0 : 0.0;
+}
+
+float CalcDirLightPCFShadow(int radius, sampler2D shadowMap)
+{   
+    vec3 lightDir = normalize(-u_directionalLight.Direction);
+
+    //Normal Bias
+    float nOffset = CalcShadowBias(lightDir, m_PBRParams.N, u_mainLightCaster.ShadowMapSize.x, u_mainLightCaster.FrustumSize, 0.f, u_directionalLight.NormalBias);
+    vec4 biasPos = u_mainLightCaster.PrjMat * u_mainLightCaster.ViewMat * vec4(m_PBRParams.FragPos + m_PBRParams.N * nOffset, 1.f);
+    //Perspective divide and transform to [0, 1]
+    vec3 prjCoords = vec3(biasPos.xyz / biasPos.w) * 0.5 + 0.5;
+    float currentDepth = prjCoords.z;    
+
+    int itor = 0;
+    float shadow = 0.0;
+    float depthBias = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+
+    //PCF
+    for(int x = -radius; x <= radius; ++x)
+    {
+        for(int y = -radius; y <= radius; ++y)
+        {
+            float pcfDepth = texture(shadowMap, prjCoords.xy + vec2(x, y) * texelSize).r;
+            //Depth Bias
+            depthBias = CalcShadowBias(lightDir, m_PBRParams.N, u_mainLightCaster.ShadowMapSize.x, u_mainLightCaster.FrustumSize, radius, u_directionalLight.Bias);          
+            shadow += (currentDepth - depthBias > pcfDepth) ? 1.f : 0.f;  
+            itor++;
+        }    
+    }
+    shadow /= float(itor);
+
+    // keep the shadow at 0.0 when outside the far plane region of the light's frustum.
+    if(prjCoords.z > 1.0)
+        shadow = 0.0;
+
+    return shadow;
+}
+
+float CalcDirLightShadow(int mode, sampler2D shadowMap)
+{
+    float shadow = 0.f;
+    if(mode == ShadowMode_Hard)
+    {
+        shadow = CalcDirLightHardShadow(shadowMap);
+    }
+    else if(mode == ShadowMode_Soft_2X)
+    {
+        shadow = CalcDirLightPCFShadow(2, shadowMap);
+    }
+    else if(mode == ShadowMode_Soft_4X)
+    {
+        shadow = CalcDirLightPCFShadow(4, shadowMap);
+    }
+    else
+    {
+        shadow = CalcDirLightPCFShadow(1, shadowMap);
+    }
+    return shadow * u_directionalLight.ShadowIntensity;
 }

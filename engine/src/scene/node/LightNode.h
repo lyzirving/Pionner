@@ -24,6 +24,8 @@ namespace pio
 		virtual ~LightNode();
 
 		virtual LightType lightType() const = 0;
+		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) {}
+		virtual void update(Ref<RenderContext>& context) override {}
 	};
 
 	class DirectionalLightNode : public LightNode
@@ -33,8 +35,13 @@ namespace pio
 		DirectionalLightNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name);
 		~DirectionalLightNode();
 
-		virtual void update(Ref<RenderContext>& context) override;
-		void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
+		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) override;
+
+		Ref<UniformBuffer> getShadowData() const { return m_UBufferShadow; }
+
+	private:
+		void updateLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
+		void updateShadow(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
 
 	private:
 		friend class Node;

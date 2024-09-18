@@ -36,6 +36,24 @@ namespace pio
 		}
 	}
 
+	void Camera::setLookAt(const glm::vec3& lookAt)
+	{
+		if(m_lookAt != lookAt)
+		{
+			m_lookAt = lookAt;
+			m_attrBits.set(CameraAttrBits_LookAt);
+		}
+	}
+
+	void Camera::setMotionMode(CameraMotionMode mode)
+	{
+		if(m_motionMode != mode)
+		{
+			m_motionMode = mode;
+			m_attrBits.set(CameraAttrBits_MotionMode);
+		}
+	}
+
 	void Camera::addTranslation(const glm::vec3& delta)
 	{
 		m_transform.addTranslation(delta);
@@ -77,8 +95,19 @@ namespace pio
 
 	void Camera::calcCameraPose()
 	{
-		m_viewDir = -World::Forward;
-		m_viewDir = m_transform.rotMat() * glm::vec4(m_viewDir, 0.f);
+		if(m_motionMode == CameraMotionMode_Free)
+		{
+			m_viewDir = -World::Forward;
+			m_viewDir = m_transform.rotMat() * glm::vec4(m_viewDir, 0.f);			
+		}
+		else if(m_motionMode == CameraMotionMode_FixTarget)
+		{
+			m_viewDir = glm::normalize(m_lookAt - m_transform.position());
+		}
+		else
+		{
+			LOGE("err! invalid camera motion mode[%u]", m_motionMode);
+		}
 
 		// compute the right and up vector by view direction and world up
 		m_right = glm::normalize(glm::cross(m_viewDir, glm::vec3(0.f, 1.f, 0.f)));

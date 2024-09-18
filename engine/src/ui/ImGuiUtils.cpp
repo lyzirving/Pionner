@@ -206,7 +206,43 @@ namespace pio
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("Intensity  ");
 				ImGui::SameLine();
-				ImGui::DragFloat("##Light_Intensity", &lightComp->Intensity, 0.02f, 0.1f, 50.f, "%.2f", 0);				
+				ImGui::DragFloat("##Light_Intensity", &lightComp->Intensity, 0.02f, 0.1f, 50.f, "%.2f", 0);
+
+				const char* shadowModeNames[ShadowMode_Num] = { "No Shadows", "Hard", "Soft", "Soft_2X", "Soft_4X" };
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Shadow Type");
+				ImGui::SameLine();
+				ImGui::Combo("##Shadow_Type", &lightComp->ShadowMode, shadowModeNames, ShadowMode_Num);
+				lightComp->CastShadow = lightComp->ShadowMode != ShadowMode_None;
+				if(lightComp->CastShadow)
+				{
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("  Realtime Shadows");
+
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("  Strength   ");
+					ImGui::SameLine();
+					auto remain = ImGui::GetContentRegionAvail();
+					ImGui::PushItemWidth(remain.x);
+					ImGui::DragFloat("##Sd_Intensity", &lightComp->ShadowIntensity, 0.02f, 0.f, 1.f, "%.2f");
+					ImGui::PopItemWidth();
+
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("  Bias       ");
+					ImGui::SameLine();
+					remain = ImGui::GetContentRegionAvail();
+					ImGui::PushItemWidth(remain.x);
+					ImGui::DragFloat("##Sd_Bias", &lightComp->Bias, 0.01f, 0.f, 2.f, "%.2f");
+					ImGui::PopItemWidth();
+
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("  Normal Bias");
+					ImGui::SameLine();
+					remain = ImGui::GetContentRegionAvail();
+					ImGui::PushItemWidth(remain.x);
+					ImGui::DragFloat("##Normal_Bias", &lightComp->NormalBias, 0.01f, 0.f, 3.f, "%.2f");
+					ImGui::PopItemWidth();
+				}
 			}
 		}
 	}

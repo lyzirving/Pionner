@@ -96,8 +96,12 @@ namespace pio
 	{
 		auto& mainLightNode = renderingNodes.MainLight;
 		mainLightNode->update(context, camNode);
-		auto uBuffer = mainLightNode->getRenderingData<DirectionalLightNode, Ref<UniformBuffer>>();
-		renderingData.UnimBuffSet.insert({ uBuffer->binding(), uBuffer->assetHnd() });
+
+		auto uLightBuff = mainLightNode->getRenderingData<DirectionalLightNode, Ref<UniformBuffer>>();
+		auto uShadowBuff = mainLightNode->getShadowData();
+
+		renderingData.UnimBuffSet.insert({ uLightBuff->binding(), uLightBuff->assetHnd() });
+		renderingData.UnimBuffSet.insert({ uShadowBuff->binding(), uShadowBuff->assetHnd() });
 	}
 
 	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData &renderingData)

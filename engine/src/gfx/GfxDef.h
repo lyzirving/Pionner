@@ -19,6 +19,7 @@ namespace pio
 		//Uniform block
 		static const char* BINDING_CAM_BLOCK = "CameraBlock";
 		static const char* BINDING_DIRECTIONAL_LIGHT_BLOCK = "DirectionalLightBlock";
+		static const char* BINDING_MAIN_LIGHT_CASTER_BLOCK = "MainLightCasterBlock";
 
 		//GBuffer in Deferred pass
 		static const char* UNI_GBUFFER_POS      = "u_GPosition";
@@ -28,6 +29,7 @@ namespace pio
 		static const char* UNI_GBUFFER_EMISSION = "u_GEmission";
 
 		static const char* UNI_COLOR_BUFFER = "u_colorBuffer";
+		static const char* UNI_SHADOW_MAP = "u_shadowMap";
 	}
 
 	enum RenderingMode : uint8_t
