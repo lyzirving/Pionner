@@ -59,6 +59,8 @@ namespace pio
 	{
 		auto material = CreateRef<PbrMaterial>(m_name, m_renderingMode);
 		*(material.get()) = *this;
+		//Make a shallow copy except asset handle
+		material->m_hnd = UUID32();
 		return material;
 	}
 

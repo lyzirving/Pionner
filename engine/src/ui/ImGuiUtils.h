@@ -7,6 +7,7 @@
 namespace pio
 {
 	class Node;
+	class Material;
 	struct TransformComponent;
 
 	class ImGuiUtils
@@ -36,6 +37,8 @@ namespace pio
 		static void ShowRelation(const std::vector<Ref<Node>>& node, uint32_t& curSelect, uint32_t& clickItem);
 		static void DrawCameraPanel(const Ref<Node>& node);
 		static void DrawLightPanel(const Ref<Node>& node);
+		static void DrawMeshPanel(const Ref<Node>& node);
+		static void DrawStandardMaterial(Ref<Material>& material);
 		static void DrawTransformPanel(TransformComponent* comp);
 	private:
 		ImGuiUtils() {}

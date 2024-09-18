@@ -30,6 +30,10 @@ namespace pio
 		void setHeightMap(const Ref<Texture>& texture) { m_heightMap = texture; }
 		void setOcclusion(const Ref<Texture>& texture) { m_occlusion = texture; }
 
+		const glm::vec3& getAlbedo() const { return m_albedo; }
+		float getMetallic() const { return m_metallic; }
+		float getSmoothness() const { return 1.f - m_roughness; }
+
 		virtual Ref<Asset> clone() const override;
 
 	public:	

@@ -13,6 +13,7 @@
 #include "gfx/rhi/ShaderCompiler.h"
 
 #include "gfx/resource/Mesh.h"
+#include "gfx/resource/Material.h"
 #include "gfx/resource/TextureMgr.h"
 #include "gfx/resource/MaterialMgr.h"
 #include "gfx/resource/MeshRenderBuffer.h"
@@ -138,9 +139,16 @@ namespace pio
 		return m_materialMgr->create(name, spec, mode);
 	}
 
-	Ref<Material> RenderContext::getMaterial(const std::string& name)
+	Ref<Material> RenderContext::getMaterial(const std::string& name, bool copy)
 	{
-		return m_materialMgr->get(name);
+		auto material = m_materialMgr->get(name);
+		if (material && copy)
+		{
+			auto copyItem = RefCast<Asset, Material>(material->clone());
+			AssetMgr::SaveRuntimeAsset(copyItem);
+			return copyItem;
+		}
+		return material;
 	}
 
 	void RenderContext::initResource()

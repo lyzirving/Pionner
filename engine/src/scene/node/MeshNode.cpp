@@ -52,7 +52,7 @@ namespace pio
 		meshFilter->Type = MeshType::Plane;
 		meshFilter->Uid = mesh->assetHnd();
 
-		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL)->assetHnd();
+		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL, true)->assetHnd();
 		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
 	}
 
@@ -71,7 +71,7 @@ namespace pio
 		meshFilter->Type = MeshType::Cube;
 		meshFilter->Uid = mesh->assetHnd();
 
-		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL)->assetHnd();
+		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL, true)->assetHnd();
 		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
 
 		transform->Position = glm::vec3(0.f, 1.f, 0.f);

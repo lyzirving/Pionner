@@ -53,6 +53,12 @@ namespace pio
 			return asset;
 		}
 
+		static void SaveRuntimeAsset(Ref<Asset> asset)
+		{
+			std::lock_guard<std::mutex> lk{ k_RuntimeMutex };
+			k_RuntimeAssets[asset->assetHnd()] = asset;
+		}
+
 	private:
 		AssetMgr() {}
 		~AssetMgr() = default;

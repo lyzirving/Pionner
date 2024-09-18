@@ -61,7 +61,7 @@ namespace pio
 		//Default value
 		camComp->Aspect = float(colorSize.x) / float(colorSize.y);
 		camComp->Uid = m_camera->assetHnd();
-		transComp->Position = glm::vec3(0.f, 3.f, 4.5f);
+		transComp->Position = glm::vec3(0.f, 7.f, 10.f);
 		transComp->Rotation = glm::vec3(-35.f, 0.f, 0.f);
 	}
 

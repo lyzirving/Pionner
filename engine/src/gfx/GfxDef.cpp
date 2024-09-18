@@ -7,6 +7,49 @@
 
 namespace pio
 {
+	const char* GetMeshTypeStr(MeshType type)
+	{
+		switch (type)
+		{
+			case MeshType::Plane:
+				return "Plane";
+			case MeshType::Cube:
+				return "Cube";
+			default:
+				LOGE("err! invalid mesh type[%u]", type);
+				std::abort();
+				return "unknown type";
+		}
+	}
+
+	const char* GetShaderSpecStr(ShaderSpecifier spec)
+	{
+		switch (spec)
+		{
+			case ShaderSpec_Standard:
+				return "Standard";
+			default:
+				LOGE("err! invalid shader spec[%u]", spec);
+				std::abort();
+				return "unknown shader spec";
+		}
+	}
+
+	const char* GetRenderingModeStr(RenderingMode mode)
+	{
+		switch (mode)
+		{
+			case RenderingMode_Opaque:
+				return "Opaque";
+			case RenderingMode_Transparent:
+				return "Transparent";
+			default:
+				LOGE("err! invalid rendering mode", mode);
+				std::abort();
+				return "unknown rendering mode";
+		}
+	}
+
 	namespace Rhi
 	{
 		uint32_t GetShaderDataTypeByteSize(ShaderDataType type)

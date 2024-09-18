@@ -34,7 +34,7 @@ namespace pio
 	{
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-		if(show_demo_window)
+		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
 
 		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
@@ -51,7 +51,7 @@ namespace pio
 			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 			ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
-			if(ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
 				counter++;
 			ImGui::SameLine();
 			ImGui::Text("counter = %d", counter);
@@ -61,11 +61,11 @@ namespace pio
 		}
 
 		// 3. Show another simple window.
-		if(show_another_window)
+		if (show_another_window)
 		{
 			ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
 			ImGui::Text("Hello from another window!");
-			if(ImGui::Button("Close Me"))
+			if (ImGui::Button("Close Me"))
 				show_another_window = false;
 			ImGui::End();
 		}
@@ -160,20 +160,20 @@ namespace pio
 
 	bool GLRenderAPI::bindUnimBlock(uint32_t program, uint32_t bindingPt, const std::string& blockName)
 	{
-		if(program == 0)
+		if (program == 0)
 		{
 			LOGE("err! invalid shader program");
 			return false;
 		}
 
-		if(blockName.empty())
+		if (blockName.empty())
 		{
 			LOGE("err! empty block name");
 			return false;
-		}		
+		}
 
 		uint32_t index = glGetUniformBlockIndex(program, blockName.c_str());
-		if(index == GL_INVALID_INDEX)
+		if (index == GL_INVALID_INDEX)
 		{
 			LOGE("err! fail to get block[%s]'s index in program[%u]", blockName.c_str(), program);
 			GLHelper::CheckError("fail to get uniform block's index in program");
@@ -196,7 +196,7 @@ namespace pio
 	}
 
 	void GLRenderAPI::onBeginFrame(RenderContext& context)
-	{		
+	{
 		const auto& vp = context.vp();
 		const auto& color = GlobalSettings::RenderConfig.ClearColor;
 
@@ -236,47 +236,47 @@ namespace pio
 		}
 		switch (resource.Type)
 		{
-		case RenderResourceType::UBO:
-		case RenderResourceType::VBO:
-		case RenderResourceType::EBO:
-		{
-			LOGD("delete buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
-			glDeleteBuffers(1, &resource.Id);
-			break;
-		}
-		case RenderResourceType::VAO:
-		{
-			LOGD("delete vertex array[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
-			glDeleteVertexArrays(1, &resource.Id);
-			break;
-		}
-		case RenderResourceType::FBO:
-		{
-			LOGD("delete fame buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
-			glDeleteFramebuffers(1, &resource.Id);
-			break;
-		}
-		case RenderResourceType::Texture:
-		{
-			LOGD("delete texture[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
-			glDeleteTextures(1, &resource.Id);
-			break;
-		}
-		case RenderResourceType::RenderBuffer:
-		{
-			LOGD("delete render buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
-			glDeleteBuffers(1, &resource.Id);
-			break;
-		}
-		case RenderResourceType::Shader:
-		{
-			LOGD("delete shader[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
-			glDeleteProgram(resource.Id);
-			break;
-		}
-		default:
-			LOGE("err! invalid resource [%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
-			break;
+			case RenderResourceType::UBO:
+			case RenderResourceType::VBO:
+			case RenderResourceType::EBO:
+			{
+				LOGD("delete buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+				glDeleteBuffers(1, &resource.Id);
+				break;
+			}
+			case RenderResourceType::VAO:
+			{
+				LOGD("delete vertex array[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+				glDeleteVertexArrays(1, &resource.Id);
+				break;
+			}
+			case RenderResourceType::FBO:
+			{
+				LOGD("delete fame buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+				glDeleteFramebuffers(1, &resource.Id);
+				break;
+			}
+			case RenderResourceType::Texture:
+			{
+				LOGD("delete texture[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+				glDeleteTextures(1, &resource.Id);
+				break;
+			}
+			case RenderResourceType::RenderBuffer:
+			{
+				LOGD("delete render buffer[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+				glDeleteBuffers(1, &resource.Id);
+				break;
+			}
+			case RenderResourceType::Shader:
+			{
+				LOGD("delete shader[%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+				glDeleteProgram(resource.Id);
+				break;
+			}
+			default:
+				LOGE("err! invalid resource [%s][%u][%s]", resource.Name.c_str(), resource.Id, Rhi::RenderResourceTypeStr(resource.Type));
+				break;
 		}
 	}
 }

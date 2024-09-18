@@ -139,7 +139,7 @@ namespace pio
 		Ref<Texture> getTexture(const std::string& name);
 
 		Ref<Material> createMaterial(const std::string& name, ShaderSpecifier spec, RenderingMode mode = RenderingMode_Opaque);
-		Ref<Material> getMaterial(const std::string& name);
+		Ref<Material> getMaterial(const std::string& name, bool copy = false);
 
 		Ref<MeshRenderBuffer>& getScreenMeshBuffer() { return m_screenMeshBuffer; }		
 		// ------------------------------------------------------------------------------------

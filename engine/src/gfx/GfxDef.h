@@ -98,6 +98,10 @@ namespace pio
 		Num
 	};
 
+	const char* GetMeshTypeStr(MeshType type);
+	const char* GetShaderSpecStr(ShaderSpecifier spec);
+	const char* GetRenderingModeStr(RenderingMode mode);
+
 	enum class LightType : uint8_t
 	{
 		DirectionLight,

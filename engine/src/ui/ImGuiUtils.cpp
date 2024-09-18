@@ -1,8 +1,13 @@
 #include "ImGuiUtils.h"
 
+#include "asset/AssetMgr.h"
+
 #include "scene/Components.h"
 #include "scene/node/Node.h"
 #include "scene/node/LightNode.h"
+#include "scene/node/MeshNode.h"
+
+#include "gfx/resource/PbrMaterial.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -101,6 +106,9 @@ namespace pio
 			case NodeType::Light:
 				DrawLightPanel(node);
 				break;
+			case NodeType::Mesh:
+				DrawMeshPanel(node);
+				break;
 			default:
 				break;
 		}
@@ -148,19 +156,19 @@ namespace pio
 		if(ImGui::CollapsingHeader("Camera", ImGuiUtils::k_FlagCollapseHeader))
 		{
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Near      ");
+			ImGui::Text(" Near      ");
 			ImGui::SameLine();
 			ImGui::DragFloat("##Near", &cameraComp->Near, 1.f, 0.1, 100.f, "%.1f");
 
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Far       ");
+			ImGui::Text(" Far       ");
 			ImGui::SameLine();
 			ImGui::DragFloat("##Far", &cameraComp->Far, 1.f, 0.1, 1000.f, "%.1f");
 
 			int prjType{ cameraComp->PrjType };
 			const char* items[2]{ "Perspective", "Orthographic" };
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Projection");
+			ImGui::Text(" Projection");
 			ImGui::SameLine();
 			ImGui::Combo("##Prj_type", &prjType, items, ProjectionType_Num);
 			cameraComp->PrjType = ProjectionType(prjType);
@@ -168,14 +176,14 @@ namespace pio
 			if(prjType == ProjectionType_Perspective)
 			{				
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Fov       ");
+				ImGui::Text(" Fov       ");
 				ImGui::SameLine();
 				ImGui::DragFloat("##FOV", &cameraComp->Fov, 1.f, 0.1, 179.f, "%.1f");				
 			}
 			else
 			{				
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Size      ");
+				ImGui::Text(" Size      ");
 				ImGui::SameLine();
 				ImGui::DragFloat("##Size", &cameraComp->Size, 0.1f, 0.1, 100.f, "%.1f");
 			}
@@ -199,18 +207,18 @@ namespace pio
 				auto* lightComp = node->getComponent<DirectionalLightComponent>();
 
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Color      ");
+				ImGui::Text(" Color      ");
 				ImGui::SameLine();
 				ImGui::ColorEdit3("##Light_Color", &lightComp->Color.r);
 
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Intensity  ");
+				ImGui::Text(" Intensity  ");
 				ImGui::SameLine();
 				ImGui::DragFloat("##Light_Intensity", &lightComp->Intensity, 0.02f, 0.1f, 50.f, "%.2f", 0);
 
 				const char* shadowModeNames[ShadowMode_Num] = { "No Shadows", "Hard", "Soft", "Soft_2X", "Soft_4X" };
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text("Shadow Type");
+				ImGui::Text(" Shadow Type");
 				ImGui::SameLine();
 				ImGui::Combo("##Shadow_Type", &lightComp->ShadowMode, shadowModeNames, ShadowMode_Num);
 				lightComp->CastShadow = lightComp->ShadowMode != ShadowMode_None;
@@ -247,23 +255,115 @@ namespace pio
 		}
 	}
 
+	void ImGuiUtils::DrawMeshPanel(const Ref<Node>& node)
+	{
+		auto* meshNode = node->as<MeshNode>();
+		if (!meshNode)
+			return;
+
+		auto* transComp = meshNode->getComponent<TransformComponent>();
+		DrawTransformPanel(transComp);
+
+		if (ImGui::CollapsingHeader("MeshFilter", ImGuiUtils::k_FlagCollapseHeader))
+		{
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text(" Mesh   ");
+			ImGui::SameLine();
+			auto remain = ImGui::GetContentRegionAvail();
+			ImGui::PushItemWidth(remain.x);
+			std::string name = GetMeshTypeStr(meshNode->meshType());
+			ImGui::InputText("##MeshType Name", const_cast<char*>(name.c_str()), name.size(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::PopItemWidth();
+		}
+
+		if (ImGui::CollapsingHeader("MeshRenderer", ImGuiUtils::k_FlagCollapseHeader))
+		{
+			if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick))
+			{
+				auto* meshRender = meshNode->getComponent<MeshRenderer>();
+				auto material = AssetMgr::GetRuntimeAsset<Material>(meshRender->MatUid);
+				auto shaderSpec = material->spec();
+				auto renderingMode = material->renderingMode();
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Shader        ");
+				ImGui::SameLine();
+				auto remain = ImGui::GetContentRegionAvail();
+				ImGui::PushItemWidth(remain.x);
+				std::string name = GetShaderSpecStr(shaderSpec);
+				ImGui::InputText("##Material_Shader", const_cast<char*>(name.c_str()), name.size(), ImGuiInputTextFlags_ReadOnly);
+				ImGui::PopItemWidth();
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Rendering Mode");
+				ImGui::SameLine();
+				remain = ImGui::GetContentRegionAvail();
+				ImGui::PushItemWidth(remain.x);
+				name = GetRenderingModeStr(renderingMode);
+				ImGui::InputText("##Material_RenderingMode", const_cast<char*>(name.c_str()), name.size(), ImGuiInputTextFlags_ReadOnly);
+				ImGui::PopItemWidth();
+
+				switch (shaderSpec)
+				{
+					case ShaderSpec_Standard:
+						DrawStandardMaterial(material);
+						break;
+					default:
+						break;
+				}
+
+				ImGui::TreePop();
+				ImGui::Spacing();
+			}
+		}
+	}
+
+	void ImGuiUtils::DrawStandardMaterial(Ref<Material>& material)
+	{
+		auto* pbrMaterial = material->as<PbrMaterial>();
+		if (!pbrMaterial)
+		{
+			return;
+		}
+		glm::vec3 albedo = pbrMaterial->getAlbedo();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Albedo        ");
+		ImGui::SameLine();
+		ImGui::ColorEdit3("##Albedo", &albedo.r);
+		pbrMaterial->setAlbedo(albedo);
+
+		float metallic = pbrMaterial->getMetallic();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Metallic      ");
+		ImGui::SameLine();
+		ImGui::DragFloat("##Metallic", &metallic, 0.001f, 0.f, 1.f, "%.3f");
+		pbrMaterial->setMetallic(metallic);
+
+		float smoothness = pbrMaterial->getSmoothness();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Smoothness    ");
+		ImGui::SameLine();
+		ImGui::DragFloat("##Smoothness", &smoothness, 0.001f, 0.f, 1.f, "%.3f");
+		pbrMaterial->setSmoothness(smoothness);
+	}
+
 	void ImGuiUtils::DrawTransformPanel(TransformComponent* comp)
 	{
 		if(ImGui::CollapsingHeader("Transform", ImGuiUtils::k_FlagCollapseHeader))
 		{
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Position");
+			ImGui::Text(" Position");
 			ImGui::SameLine();
 			ImGui::DragFloat3("##Position", glm::value_ptr(comp->Position), 0.05f, -100.f, 100.f, "%.1f");
 
 			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Rotation");
+			ImGui::Text(" Rotation");
 			ImGui::SameLine();
 			ImGui::DragFloat3("##Rotation", glm::value_ptr(comp->Rotation), 0.1f, -360.f, 360.f, "%.1f");
 
 			ImGui::AlignTextToFramePadding();
 			//Enough text padding for text alignment
-			ImGui::Text("Scale   ");
+			ImGui::Text(" Scale   ");
 			ImGui::SameLine();
 			ImGui::DragFloat3("##Scale", glm::value_ptr(comp->Scale), 0.1f, 0.f, 10.f, "%.1f");
 		}
