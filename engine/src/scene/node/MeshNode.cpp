@@ -31,9 +31,9 @@ namespace pio
 		MeshRenderer* render = getComponent<MeshRenderer>();
 		TransformComponent* transComp = getComponent<TransformComponent>();
 
-		Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->Uid);
-		Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(render->MatUid);
-		Ref<MeshRenderBuffer> buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(render->BuffUid);
+		Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->MeshHnd);
+		Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd);
+		Ref<MeshRenderBuffer> buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(render->BuffHnd);
 
 		mesh->update(context, *transComp);
 		material->update(context);
@@ -50,10 +50,10 @@ namespace pio
 		mesh->m_triangles = Factory::MakePlane();
 
 		meshFilter->Type = MeshType::Plane;
-		meshFilter->Uid = mesh->assetHnd();
+		meshFilter->MeshHnd = mesh->assetHnd();
 
-		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL, true)->assetHnd();
-		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
+		meshRender->MatHnd = context->getMaterial(GpuAttr::STANDARD_MATERIAL, true)->assetHnd();
+		meshRender->BuffHnd = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
 	}
 
 	PlaneNode::~PlaneNode() = default;
@@ -69,10 +69,10 @@ namespace pio
 		mesh->m_triangles = Factory::MakeCube();
 
 		meshFilter->Type = MeshType::Cube;
-		meshFilter->Uid = mesh->assetHnd();
+		meshFilter->MeshHnd = mesh->assetHnd();
 
-		meshRender->MatUid = context->getMaterial(GpuAttr::STANDARD_MATERIAL, true)->assetHnd();
-		meshRender->BuffUid = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
+		meshRender->MatHnd = context->getMaterial(GpuAttr::STANDARD_MATERIAL, true)->assetHnd();
+		meshRender->BuffHnd = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
 
 		transform->Position = glm::vec3(0.f, 1.f, 0.f);
 	}
@@ -109,9 +109,9 @@ namespace pio
 		{
 			MeshRenderingItem item;
 			auto* render = getComponent<MeshRenderer>();
-			item.Mode = AssetMgr::GetRuntimeAsset<Material>(render->MatUid)->renderingMode();
-			item.RenderBuffFilter = render->BuffUid;
-			item.MaterialFilter = render->MatUid;
+			item.Mode = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd)->renderingMode();
+			item.RenderBuffFilter = render->BuffHnd;
+			item.MaterialFilter = render->MatHnd;
 			return item;
 		}
 		return MeshRenderingItem();

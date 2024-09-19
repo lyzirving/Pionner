@@ -3,6 +3,8 @@
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/rhi/Texture.h"
 
+#include "asset/AssetMgr.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -41,6 +43,13 @@ namespace pio
 		Buffer blackBuff;
 		blackBuff.allocate(0, 1 * 1 * 3);
 		m_textures[GpuAttr::BLACK_TEXTURE] = Texture::Create(ctx, blackBuilder.build(), blackBuff);
+
+		TextureSpecificBuilder distLitBuilder;
+		distLitBuilder.name(GpuAttr::SPR_DIST_LIGHT)
+			.type(TextureType::TwoDimen)
+			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear)
+			.flipV(true);
+		m_textures[GpuAttr::SPR_DIST_LIGHT] = Texture::Create(ctx, AssetMgr::SpritePath(GpuAttr::SPR_DIST_LIGHT, ImageType::PNG), distLitBuilder.build());
 	}
 
 	void TextureMgr::release()

@@ -59,6 +59,8 @@ namespace pio
 			k_RuntimeAssets[asset->assetHnd()] = asset;
 		}
 
+		static std::string SpritePath(const std::string& name, ImageType type);
+
 	private:
 		AssetMgr() {}
 		~AssetMgr() = default;

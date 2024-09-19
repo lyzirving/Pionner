@@ -281,7 +281,7 @@ namespace pio
 			if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick))
 			{
 				auto* meshRender = meshNode->getComponent<MeshRenderer>();
-				auto material = AssetMgr::GetRuntimeAsset<Material>(meshRender->MatUid);
+				auto material = AssetMgr::GetRuntimeAsset<Material>(meshRender->MatHnd);
 				auto shaderSpec = material->spec();
 				auto renderingMode = material->renderingMode();
 

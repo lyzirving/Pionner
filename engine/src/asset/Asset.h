@@ -20,6 +20,12 @@ namespace pio
 		Texture
 	};
 
+	enum class ImageType : uint8_t
+	{
+		PNG,
+		JPG
+	};
+
 	#define PIO_DEFINE_ASSET_TYPE(TypeName)  public:\
 									         static  AssetType StaticType() { return TypeName; }\
 									         virtual AssetType assetType() const override { return StaticType(); }

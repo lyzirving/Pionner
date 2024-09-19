@@ -143,6 +143,28 @@ namespace pio
 		return triangles;
 	}
 
+	TriangleMesh3d Factory::MakeSquare(float w, float h)
+	{
+		TriangleMesh3d triangles;
+		glm::vec3 origin(-w / 2.f, h / 2.f, 0.f);
+		Vertex3d v0, v1, v2, v3;
+		v0.Pos = origin;
+		v1.Pos = v0.Pos - World::Up * h;
+		v2.Pos = v1.Pos + World::Right * w;
+		v3.Pos = v2.Pos + World::Up * h;
+
+		v0.TexCoord = glm::vec2(0.f, 1.f);
+		v1.TexCoord = glm::vec2(0.f);
+		v2.TexCoord = glm::vec2(1.f, 0.f);
+		v3.TexCoord = glm::vec2(1.f, 1.f);
+
+		v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Forward;
+
+		MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+
+		return triangles;
+	}
+
 	TriangleMesh3d Factory::MakeScreenQuad()
 	{
 		TriangleMesh3d triangles;

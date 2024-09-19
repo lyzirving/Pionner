@@ -15,6 +15,7 @@
 #include "scene/node/CameraNode.h"
 #include "scene/node/MeshNode.h"
 #include "scene/node/LightNode.h"
+#include "scene/node/SpriteNode.h"
 
 #include "ui/LayerMgr.h"
 #include "ui/RuntimeLayer.h"

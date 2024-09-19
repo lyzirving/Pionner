@@ -10,6 +10,8 @@ namespace pio
 	std::unordered_map<uint32_t, Ref<Asset>> AssetMgr::k_RuntimeAssets{};
 	std::mutex AssetMgr::k_RuntimeMutex{};
 
+	static const std::string ASSETS_ROOT = "assets";
+
 	void AssetMgr::Init()
 	{		
 	}
@@ -23,5 +25,22 @@ namespace pio
 			it->second.reset();
 			it = k_RuntimeAssets.erase(it);
 		}
+	}
+
+	std::string AssetMgr::SpritePath(const std::string& name, ImageType type)
+	{
+		std::string path = ASSETS_ROOT + "/pic/sprite/" + name;
+		switch (type)
+		{
+			case ImageType::PNG:
+				path += ".png";
+				break;
+			case ImageType::JPG:
+				path += ".jpg";
+				break;
+			default:
+				break;
+		}
+		return path;
 	}
 }

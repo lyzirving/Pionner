@@ -11,6 +11,7 @@ namespace pio
 		Camera,
 		Mesh,
 		Light,
+		Sprite,
 		Num
 	};
 

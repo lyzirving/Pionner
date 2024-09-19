@@ -26,19 +26,29 @@ namespace pio
 		float Fov{ 60.f };
 		float Aspect{ 1.f };
 		float Size{ 5.f };
-		UUID32 Uid{ InvalidId };
+		UUID32 Hnd{ InvalidId };
 	};
 
 	struct MeshFilter : public Component
 	{
 		MeshType Type{ MeshType::Num };
-		UUID32 Uid{ InvalidId };
+		UUID32 MeshHnd{ InvalidId };
 	};
 
 	struct MeshRenderer : public Component
 	{
-		UUID32 MatUid{ InvalidId }; //Uid for material asset
-		UUID32 BuffUid{ InvalidId };//Uid for MeshRenderBuffer
+		UUID32 MatHnd{ InvalidId }; //Uid for material asset
+		UUID32 BuffHnd{ InvalidId };//Uid for MeshRenderBuffer
+	};
+
+	struct SpriteRenderer : public Component
+	{
+		glm::vec3 Color{ 1.f };
+		bool FlipX{ false };
+		bool FlipY{ false };
+		UUID32 SpriteTexHnd{ InvalidId }; 
+		UUID32 SpriteMeshHnd{ InvalidId };
+		UUID32 SpriteBuffHnd{ InvalidId };
 	};
 
 	struct DirectionalLightComponent : public Component

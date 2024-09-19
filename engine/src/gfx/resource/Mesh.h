@@ -36,6 +36,7 @@ namespace pio
 		friend class Factory;
 		friend class PlaneNode;
 		friend class CubeNode;
+		friend class DirectionalLightNode;
 	};
 
 	template<>

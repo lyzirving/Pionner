@@ -10,6 +10,7 @@ namespace pio
 		//Default texture
 		static const char* WHITE_TEXTURE = "WhiteTexture";
 		static const char* BLACK_TEXTURE = "BlackTexture";
+		static const char* SPR_DIST_LIGHT = "distant_light";
 
 		//Default material
 		static const char* STANDARD_MATERIAL = "StandardMaterial";		
