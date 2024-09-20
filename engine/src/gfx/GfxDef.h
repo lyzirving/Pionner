@@ -7,13 +7,20 @@ namespace pio
 {
 	namespace GpuAttr
 	{
-		//Default texture
-		static const char* WHITE_TEXTURE = "WhiteTexture";
-		static const char* BLACK_TEXTURE = "BlackTexture";
-		static const char* SPR_DIST_LIGHT = "distant_light";
+		namespace Mat
+		{
+			//Default material
+			static const char* STANDARD = "StandardMaterial";
+			static const char* SPRITE = "SpriteMaterial";
+		}
 
-		//Default material
-		static const char* STANDARD_MATERIAL = "StandardMaterial";		
+		namespace Tex
+		{
+			//Default texture
+			static const char* WHITE = "WhiteTexture";
+			static const char* BLACK = "BlackTexture";
+			static const char* DIST_LIGHT = "distant_light";
+		}
 
 		//Uniform data
 		static const char* UNI_MODEL_MAT = "u_modelMat";
@@ -37,6 +44,7 @@ namespace pio
 	{
 		RenderingMode_Opaque = 0,
 		RenderingMode_Transparent,
+		RenderingMode_Overlay,
 		RenderingMode_Num
 	};
 
@@ -83,7 +91,8 @@ namespace pio
 
 	enum ShaderSpecifier : uint8_t
 	{
-		ShaderSpec_Standard
+		ShaderSpec_Standard,
+		ShaderSpec_Sprite
 	};	
 
 	enum class RenderingStrategy : uint8_t

@@ -1,6 +1,7 @@
 #include "Material.h"
 
 #include "PbrMaterial.h"
+#include "SpriteMaterial.h"
 
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/Texture.h"
@@ -68,14 +69,16 @@ namespace pio
 
 	Ref<Material> Material::Create(const std::string& name, ShaderSpecifier spec, RenderingMode mode)
 	{
-		switch (spec)
+		switch(spec)
 		{
 			case ShaderSpec_Standard:
-				return AssetMgr::MakeRuntimeAsset<PbrMaterial>(name, mode);				
+				return AssetMgr::MakeRuntimeAsset<PbrMaterial>(name, mode);
+			case ShaderSpec_Sprite:
+				return AssetMgr::MakeRuntimeAsset<SpriteMaterial>(name, mode);
 			default:
 				LOGE("err! shader spec[%u] has not been implemented", spec);
 				return Ref<Material>();
-		}		
+		}
 	}	
 
 	template<>

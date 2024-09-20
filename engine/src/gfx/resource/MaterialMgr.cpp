@@ -19,7 +19,8 @@ namespace pio
 	void MaterialMgr::init(Ref<RenderContext>& context)
 	{
 		m_context = context;
-		m_materials.insert({ GpuAttr::STANDARD_MATERIAL, Material::Create(GpuAttr::STANDARD_MATERIAL, ShaderSpec_Standard)});
+		m_materials.insert({ GpuAttr::Mat::STANDARD, Material::Create(GpuAttr::Mat::STANDARD, ShaderSpec_Standard)});
+		m_materials.insert({ GpuAttr::Mat::SPRITE, Material::Create(GpuAttr::Mat::SPRITE, ShaderSpec_Sprite, RenderingMode_Overlay) });
 	}
 
 	void MaterialMgr::release()
@@ -34,7 +35,7 @@ namespace pio
 	}
 
 	Ref<Material> MaterialMgr::create(const std::string& name, ShaderSpecifier spec, RenderingMode mode)
-	{
+	{		
 		return Material::Create(name, spec, mode);
 	}
 }

@@ -49,17 +49,16 @@ namespace pio
 		updateUnimData(GpuAttr::Alpha, m_alpha);
 		updateUnimData(GpuAttr::UseNormalMap, m_normalMap.use_count() != 0);
 
-		updateTexture(GpuAttr::AlbedoTexture, m_albedoTexture.use_count() != 0 ? m_albedoTexture : context->getTexture(pio::GpuAttr::WHITE_TEXTURE));
-		updateTexture(GpuAttr::EmissionTexture, m_emissionTexture.use_count() != 0 ? m_emissionTexture : context->getTexture(pio::GpuAttr::BLACK_TEXTURE));
-		updateTexture(GpuAttr::MetallicRoughnssTexture, m_metallicRoughnessTexture.use_count() != 0 ? m_metallicRoughnessTexture : context->getTexture(pio::GpuAttr::WHITE_TEXTURE));
-		updateTexture(GpuAttr::NormalMap, m_normalMap.use_count() != 0 ? m_normalMap : context->getTexture(pio::GpuAttr::BLACK_TEXTURE));
+		updateTexture(GpuAttr::AlbedoTexture, m_albedoTexture.use_count() != 0 ? m_albedoTexture : context->getTexture(pio::GpuAttr::Tex::WHITE));
+		updateTexture(GpuAttr::EmissionTexture, m_emissionTexture.use_count() != 0 ? m_emissionTexture : context->getTexture(pio::GpuAttr::Tex::BLACK));
+		updateTexture(GpuAttr::MetallicRoughnssTexture, m_metallicRoughnessTexture.use_count() != 0 ? m_metallicRoughnessTexture : context->getTexture(pio::GpuAttr::Tex::WHITE));
+		updateTexture(GpuAttr::NormalMap, m_normalMap.use_count() != 0 ? m_normalMap : context->getTexture(pio::GpuAttr::Tex::BLACK));
 	}
 
 	Ref<Asset> PbrMaterial::clone() const
 	{
 		auto material = CreateRef<PbrMaterial>(m_name, m_renderingMode);
-		*(material.get()) = *this;
-		//Make a shallow copy except asset handle
+		*(material.get()) = *this;		
 		material->m_hnd = UUID32();
 		return material;
 	}

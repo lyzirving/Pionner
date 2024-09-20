@@ -46,9 +46,9 @@ namespace pio
 		glm::vec3 Color{ 1.f };
 		bool FlipX{ false };
 		bool FlipY{ false };
-		UUID32 SpriteTexHnd{ InvalidId }; 
-		UUID32 SpriteMeshHnd{ InvalidId };
-		UUID32 SpriteBuffHnd{ InvalidId };
+		UUID32 MatHnd{ InvalidId }; 
+		UUID32 MeshHnd{ InvalidId };
+		UUID32 BuffHnd{ InvalidId };
 	};
 
 	struct DirectionalLightComponent : public Component

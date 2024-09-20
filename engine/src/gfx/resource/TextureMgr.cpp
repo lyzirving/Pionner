@@ -25,31 +25,31 @@ namespace pio
 		PIO_CHECK_RETURN(ctx, "RenderContext is invalid");
 
 		TextureSpecificBuilder whiteBuilder;
-		whiteBuilder.name(GpuAttr::WHITE_TEXTURE)
+		whiteBuilder.name(GpuAttr::Tex::WHITE)
 			.type(TextureType::TwoDimen)
 			.format(TextureFormat::RGB_24)
 			.width(1).height(1)
 			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 		Buffer whiteBuff;
 		whiteBuff.allocate(255, 1 * 1 * 3);		
-		m_textures[GpuAttr::WHITE_TEXTURE] = Texture::Create(ctx, whiteBuilder.build(), whiteBuff);
+		m_textures[GpuAttr::Tex::WHITE] = Texture::Create(ctx, whiteBuilder.build(), whiteBuff);
 
 		TextureSpecificBuilder blackBuilder;
-		blackBuilder.name(GpuAttr::BLACK_TEXTURE)
+		blackBuilder.name(GpuAttr::Tex::BLACK)
 			.type(TextureType::TwoDimen)
 			.format(TextureFormat::RGB_24)
 			.width(1).height(1)
 			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 		Buffer blackBuff;
 		blackBuff.allocate(0, 1 * 1 * 3);
-		m_textures[GpuAttr::BLACK_TEXTURE] = Texture::Create(ctx, blackBuilder.build(), blackBuff);
+		m_textures[GpuAttr::Tex::BLACK] = Texture::Create(ctx, blackBuilder.build(), blackBuff);
 
 		TextureSpecificBuilder distLitBuilder;
-		distLitBuilder.name(GpuAttr::SPR_DIST_LIGHT)
+		distLitBuilder.name(GpuAttr::Tex::DIST_LIGHT)
 			.type(TextureType::TwoDimen)
 			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear)
 			.flipV(true);
-		m_textures[GpuAttr::SPR_DIST_LIGHT] = Texture::Create(ctx, AssetMgr::SpritePath(GpuAttr::SPR_DIST_LIGHT, ImageType::PNG), distLitBuilder.build());
+		m_textures[GpuAttr::Tex::DIST_LIGHT] = Texture::Create(ctx, AssetMgr::SpritePath(GpuAttr::Tex::DIST_LIGHT, ImageType::PNG), distLitBuilder.build());
 	}
 
 	void TextureMgr::release()

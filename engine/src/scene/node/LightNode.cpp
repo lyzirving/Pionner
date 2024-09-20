@@ -14,6 +14,7 @@
 #include "gfx/resource/Light.h"
 #include "gfx/resource/Mesh.h"
 #include "gfx/resource/MeshRenderBuffer.h"
+#include "gfx/resource/SpriteMaterial.h"
 
 #include "gfx/rhi/Texture.h"
 #include "gfx/rhi/UniformBuffer.h"
@@ -56,10 +57,12 @@ namespace pio
 
 		transComp->Position = glm::vec3(-4.f, 4.f, 4.f);
 		transComp->Rotation = glm::vec3(-30.f, -45.f, 0.f);
-
-		spriteRender->SpriteTexHnd = context->getTexture(GpuAttr::SPR_DIST_LIGHT)->assetHnd();
-		spriteRender->SpriteMeshHnd = mesh->assetHnd();
-		spriteRender->SpriteBuffHnd = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
+		
+		auto spriteMat = context->getMaterial(GpuAttr::Mat::SPRITE, true);
+		spriteMat->as<SpriteMaterial>()->setSpriteTexture(context->getTexture(GpuAttr::Tex::DIST_LIGHT));
+		spriteRender->MatHnd = spriteMat->assetHnd();
+		spriteRender->MeshHnd = mesh->assetHnd();
+		spriteRender->BuffHnd = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
 	}
 
 	DirectionalLightNode::~DirectionalLightNode() = default;
@@ -92,10 +95,18 @@ namespace pio
 
 		context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
 
-		auto mesh = AssetMgr::GetRuntimeAsset<Mesh>(spriteRender->SpriteMeshHnd);
-		auto buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(spriteRender->SpriteBuffHnd);
-		mesh->update(context, *transComp);
-		buff->update(context, mesh);
+		auto mesh = AssetMgr::GetRuntimeAsset<Mesh>(spriteRender->MeshHnd);
+		auto buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(spriteRender->BuffHnd);
+		auto spriteMat = AssetMgr::GetRuntimeAsset<SpriteMaterial>(spriteRender->MatHnd);
+		spriteMat->setColor(spriteRender->Color);
+		spriteMat->setFlipX(spriteRender->FlipX);
+		spriteMat->setFlipY(spriteRender->FlipY);
+		spriteMat->update(context);
+		if(spriteMat->renderingMode() == RenderingMode_Overlay)
+		{
+			mesh->update(context, *transComp);
+			buff->update(context, mesh);
+		}		
 	}
 
 	void DirectionalLightNode::updateShadow(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
