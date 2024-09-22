@@ -27,7 +27,8 @@ namespace pio
 
 		bool valid() const { return Vao.use_count() != 0 && Vbo.use_count() != 0 && Ebo.use_count() != 0; }
 
-		void update(Ref<RenderContext>& context, Ref<Mesh>& mesh);
+		void setUp(Ref<RenderContext>& context, Ref<Mesh>& mesh);
+		void update(Ref<RenderContext>& context);
 
 	public:
 		template<typename VertexType, typename IndiceType>
@@ -47,12 +48,10 @@ namespace pio
 			buff.Vao = VertexArray::Create(context);
 			buff.Vao->addVertexBuffer(buff.Vbo);
 			return true;	
-		}
-
-	private:
-		void setUp(Ref<RenderContext>& context, Ref<Mesh>& mesh);
+		}		
 
 	public:
+		Transform3D Transform;
 		Ref<VertexArray> Vao;
 		Ref<VertexBuffer> Vbo;
 		Ref<IndexBuffer> Ebo;

@@ -14,6 +14,11 @@ namespace pio
 		*/
 		static TriangleMesh3d MakePlane(float n = 5.f);
 		static TriangleMesh3d MakeCube(float n = 2.f);
+		/*
+		* @brief	Make a square in XY plane and plane's center is (0, 0).
+		* @param w	width of plane
+		* @param h	height of plane
+		*/
 		static TriangleMesh3d MakeSquare(float w, float h);
 		static TriangleMesh3d MakeScreenQuad();
 

@@ -12,12 +12,12 @@ namespace pio
 
 	class CameraNode : public Node
 	{
-		PIO_DEFINE_NODE_TYPE(NodeType::Camera)
+		PIO_NODE_DECLARE(CameraNode, NodeType::Camera)
 	public:
-		CameraNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name);
 		~CameraNode();
 
 		virtual void update(Ref<RenderContext>& context) override;
+		virtual void onInit() override;
 
 		void setDepth(int32_t depth) { m_depth = depth; }
 		void setRenderTarget(const Ref<RenderTarget>& target) { m_target = target; }

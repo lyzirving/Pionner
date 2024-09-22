@@ -1,4 +1,5 @@
 #include "LightNode.h"
+#include "SpriteNode.h"
 
 #include "GlobalSettings.h"
 
@@ -7,14 +8,12 @@
 #include "scene/Factory.h"
 #include "scene/Components.h"
 #include "scene/3d/Camera.h"
+
 #include "scene/node/CameraNode.h"
+#include "scene/node/SpriteNode.h"
 
 #include "gfx/renderer/RenderContext.h"
-
 #include "gfx/resource/Light.h"
-#include "gfx/resource/Mesh.h"
-#include "gfx/resource/MeshRenderBuffer.h"
-#include "gfx/resource/SpriteMaterial.h"
 
 #include "gfx/rhi/Texture.h"
 #include "gfx/rhi/UniformBuffer.h"
@@ -26,16 +25,24 @@
 
 namespace pio
 {
-	LightNode::LightNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name) 
-		: Node(context, key, regi, name)
-	{
-	}
+	PIO_NODE_IMPL_CONSTRUCOR(LightNode, Node)
 
 	LightNode::~LightNode() = default;
 
-	DirectionalLightNode::DirectionalLightNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name)
-		: LightNode(context, key, regi, name)
+	PIO_NODE_IMPL_CONSTRUCOR(DirectionalLightNode, LightNode)
+
+	DirectionalLightNode::~DirectionalLightNode() = default;
+
+	void DirectionalLightNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
+		updateLight(context, camNode);
+		updateShadow(context, camNode);
+	}
+
+	void DirectionalLightNode::onInit()
+	{
+		auto context = m_context.lock();
+
 		m_shadowCam = CreateRef<Camera>();
 
 		m_UData = CreateRef<DirectionalLightUD>();
@@ -44,33 +51,20 @@ namespace pio
 		m_UBuffer = UniformBuffer::Create(context, m_UData->Block.getByteUsed(), UBBinding_DirectionalLight, BufferUsage::Dynamic);
 		m_UBufferShadow = UniformBuffer::Create(context, m_UDataShadow->Block.getByteUsed(), UBBinding_DirectionalLightShadow, BufferUsage::Dynamic);
 
-		addComponent<DirectionalLightComponent, TransformComponent, SpriteRenderer>();
+		addComponent<DirectionalLightComponent, TransformComponent>();
 
 		auto* lightComp = getComponent<DirectionalLightComponent>();
 		auto* transComp = getComponent<TransformComponent>();
-		auto* spriteRender = getComponent<SpriteRenderer>();
-
-		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
-		mesh->m_triangles = Factory::MakeSquare(1.5f, 1.5f);
 
 		lightComp->BuffId = m_UBuffer->assetHnd();
 
 		transComp->Position = glm::vec3(-4.f, 4.f, 4.f);
 		transComp->Rotation = glm::vec3(-30.f, -45.f, 0.f);
-		
-		auto spriteMat = context->getMaterial(GpuAttr::Mat::SPRITE, true);
-		spriteMat->as<SpriteMaterial>()->setSpriteTexture(context->getTexture(GpuAttr::Tex::DIST_LIGHT));
-		spriteRender->MatHnd = spriteMat->assetHnd();
-		spriteRender->MeshHnd = mesh->assetHnd();
-		spriteRender->BuffHnd = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
 	}
 
-	DirectionalLightNode::~DirectionalLightNode() = default;
-
-	void DirectionalLightNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	void DirectionalLightNode::onAttach(Ref<Scene>& scene)
 	{
-		updateLight(context, camNode);
-		updateShadow(context, camNode);
+		addChild<SpriteNode>("LitSprite");
 	}
 
 	void DirectionalLightNode::updateLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
@@ -94,19 +88,6 @@ namespace pio
 		m_UData->serialize();
 
 		context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
-
-		auto mesh = AssetMgr::GetRuntimeAsset<Mesh>(spriteRender->MeshHnd);
-		auto buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(spriteRender->BuffHnd);
-		auto spriteMat = AssetMgr::GetRuntimeAsset<SpriteMaterial>(spriteRender->MatHnd);
-		spriteMat->setColor(spriteRender->Color);
-		spriteMat->setFlipX(spriteRender->FlipX);
-		spriteMat->setFlipY(spriteRender->FlipY);
-		spriteMat->update(context);
-		if(spriteMat->renderingMode() == RenderingMode_Overlay)
-		{
-			mesh->update(context, *transComp);
-			buff->update(context, mesh);
-		}		
 	}
 
 	void DirectionalLightNode::updateShadow(Ref<RenderContext>& context, Ref<CameraNode>& camNode)

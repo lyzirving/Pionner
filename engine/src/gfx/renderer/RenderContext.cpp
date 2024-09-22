@@ -166,10 +166,10 @@ namespace pio
 		m_materialMgr->init(context);
 
 		auto screenMesh = CreateRef<Mesh>();
-		m_screenMeshBuffer = CreateRef<MeshRenderBuffer>();
-
 		screenMesh->setTriangleMesh(Factory::MakeScreenQuad());
-		m_screenMeshBuffer->update(context, screenMesh);
+
+		m_screenMeshBuffer = CreateRef<MeshRenderBuffer>();
+		m_screenMeshBuffer->setUp(context, screenMesh);
 
 		m_renderer = Renderer::Create(GlobalSettings::RenderConfig);
 		m_renderer->onAttach(context);

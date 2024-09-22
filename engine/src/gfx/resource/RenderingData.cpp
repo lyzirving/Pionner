@@ -9,6 +9,7 @@ namespace pio
 		MainLight = rhs.MainLight;
 		Mesh = rhs.Mesh;
 		SkinnedMesh = rhs.SkinnedMesh;
+		Sprite = rhs.Sprite;
 	}
 
 	RenderingNodes::RenderingNodes(RenderingNodes &&rhs) noexcept
@@ -16,6 +17,7 @@ namespace pio
 		MainLight = std::move(rhs.MainLight);
 		Mesh = std::move(rhs.Mesh);
 		SkinnedMesh = std::move(rhs.SkinnedMesh);
+		Sprite = std::move(rhs.Sprite);
 	}
 
 	RenderingNodes &RenderingNodes::operator=(const RenderingNodes &rhs)
@@ -41,6 +43,7 @@ namespace pio
 		UnimBuffSet = rhs.UnimBuffSet;
 		OpaqueMeshItems = rhs.OpaqueMeshItems;
 		TransparentMeshItems = rhs.TransparentMeshItems;
+		SpriteItems = rhs.SpriteItems;
 	}
 
 	RenderingData::RenderingData(RenderingData &&rhs) noexcept
@@ -48,6 +51,7 @@ namespace pio
 		UnimBuffSet = std::move(rhs.UnimBuffSet);
 		OpaqueMeshItems = std::move(rhs.OpaqueMeshItems);
 		TransparentMeshItems = std::move(rhs.TransparentMeshItems);
+		SpriteItems = std::move(rhs.SpriteItems);
 	}
 
 	RenderingData &RenderingData::operator=(const RenderingData &rhs)

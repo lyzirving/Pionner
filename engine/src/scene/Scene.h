@@ -26,8 +26,26 @@ namespace pio
 		template<typename T>
 		Ref<Node> addNode(Ref<RenderContext>& context, const std::string& name = "")
 		{
-			auto node = m_registry.create<T>(context, name);
+			auto scene = self<Scene>();
+			auto node = m_registry.create<T>(context, scene, name);
 			m_nodes.push_back(node);
+			NotifyAttachScene(scene, node);
+			return node;
+		}
+
+		//Note function should not be called in Node's constructor
+		template<typename T>
+		Ref<Node> addChildNode(Ref<RenderContext>& context, Ref<Node>& parent, const std::string& name = "")
+		{
+			if (!parent)
+				return;
+
+			auto scene = parent->m_scene.lock();
+			if (!scene || scene.get() != this)
+				return;
+
+			auto node = parent->addChild<T>(name);
+			NotifyAttachScene(scene, node);
 			return node;
 		}
 
@@ -49,10 +67,16 @@ namespace pio
 		const Ref<CameraNode>& cameraNode() const { return m_cameraNode; }
 
 	private:
+		static void NotifyAttachScene(Ref<Scene>& scene, Ref<Node>& node);
+
+	private:
 		Registry m_registry{};
 
 		Ref<CameraNode> m_cameraNode;
 		std::vector<Ref<Node>> m_nodes;
+
+	private:
+		friend class Node;
 	};
 
 	template<>

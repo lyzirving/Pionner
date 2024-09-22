@@ -8,6 +8,7 @@
 #include "scene/node/CameraNode.h"
 #include "scene/node/MeshNode.h"
 #include "scene/node/LightNode.h"
+#include "scene/node/SpriteNode.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/renderer/Renderer.h"
@@ -86,7 +87,7 @@ namespace pio
 		renderingData.UnimBuffSet.insert({ uBuffer->binding(), uBuffer->assetHnd() });
 
 		onSetUpLight(context, camNode, renderingNodes, renderingData);
-
+		//Object should be the last type that is about to set up data
 		onSetUpObject(context, camNode, renderingNodes, renderingData);
 
 		context->setRenderingData(std::move(renderingData));
@@ -126,6 +127,12 @@ namespace pio
 				default:
 					break;
 			}
+		}
+
+		auto& sprites = renderingNodes.Sprite;
+		for (auto& item : sprites)
+		{
+			item->update(context);
 		}
 	}
 }

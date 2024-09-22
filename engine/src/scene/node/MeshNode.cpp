@@ -17,32 +17,39 @@
 
 namespace pio
 {
-	MeshNode::MeshNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name)
-		: Node(context, key, regi, name)
-	{
-		addComponent<MeshFilter, MeshRenderer, TransformComponent>();
-	}
+	PIO_NODE_IMPL_CONSTRUCOR(MeshNode, Node)
 
 	MeshNode::~MeshNode() = default;
 
 	void MeshNode::update(Ref<RenderContext>& context)
 	{
-		MeshFilter* filter = getComponent<MeshFilter>(); 
 		MeshRenderer* render = getComponent<MeshRenderer>();
 		TransformComponent* transComp = getComponent<TransformComponent>();
 
-		Ref<Mesh> mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->MeshHnd);
 		Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd);
 		Ref<MeshRenderBuffer> buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(render->BuffHnd);
+		
+		buff->Transform.setPosition(transComp->Position);
+		buff->Transform.setEuler(transComp->Rotation);
+		buff->Transform.setScale(transComp->Scale);
 
-		mesh->update(context, *transComp);
 		material->update(context);
-		buff->update(context, mesh);
+		buff->update(context);
 	}
 
-	PlaneNode::PlaneNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name)
-		: MeshNode(context, key, regi, name)
+	void MeshNode::onInit()
 	{
+		addComponent<MeshFilter, MeshRenderer, TransformComponent>();
+	}
+
+	PIO_NODE_IMPL_CONSTRUCOR(PlaneNode, MeshNode)
+
+	PlaneNode::~PlaneNode() = default;
+
+	void PlaneNode::onInit()
+	{
+		auto context = m_context.lock();
+
 		auto* meshFilter = getComponent<MeshFilter>();
 		auto* meshRender = getComponent<MeshRenderer>();
 
@@ -51,16 +58,22 @@ namespace pio
 
 		meshFilter->Type = MeshType::Plane;
 		meshFilter->MeshHnd = mesh->assetHnd();
-
+		
 		meshRender->MatHnd = context->getMaterial(GpuAttr::Mat::STANDARD, true)->assetHnd();
-		meshRender->BuffHnd = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
+
+		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
+		renderBuff->setUp(context, mesh);
+		meshRender->BuffHnd = renderBuff->assetHnd();
 	}
 
-	PlaneNode::~PlaneNode() = default;
+	PIO_NODE_IMPL_CONSTRUCOR(CubeNode, MeshNode)
 
-	CubeNode::CubeNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name)
-		: MeshNode(context, key, regi, name)
+	CubeNode::~CubeNode() = default;
+
+	void CubeNode::onInit()
 	{
+		auto context = m_context.lock();
+
 		auto* meshFilter = getComponent<MeshFilter>();
 		auto* meshRender = getComponent<MeshRenderer>();
 		auto* transform = getComponent<TransformComponent>();
@@ -72,12 +85,13 @@ namespace pio
 		meshFilter->MeshHnd = mesh->assetHnd();
 
 		meshRender->MatHnd = context->getMaterial(GpuAttr::Mat::STANDARD, true)->assetHnd();
-		meshRender->BuffHnd = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>()->assetHnd();
+
+		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
+		renderBuff->setUp(context, mesh);
+		meshRender->BuffHnd = renderBuff->assetHnd();	
 
 		transform->Position = glm::vec3(0.f, 1.f, 0.f);
 	}
-
-	CubeNode::~CubeNode() = default;
 
 	template<>
 	bool Node::is<MeshNode>() const { return nodeType() == NodeType::Mesh; }

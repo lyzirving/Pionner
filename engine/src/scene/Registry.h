@@ -12,9 +12,9 @@ namespace pio
 		~Registry() { shutdown(); }
 
 		template <typename T>
-		Ref<Node> create(Ref<RenderContext>& context, const std::string& name = "")
+		Ref<Node> create(Ref<RenderContext>& context, Ref<Scene> scene, const std::string& name = "")
 		{
-			Ref<Node> node = CreateRef<T>(context, m_registry.create(), m_registry, name.empty() ? PIO_NODE_MAKE_NAME : name);
+			Ref<Node> node = CreateRef<T>(context, scene, m_registry.create(), name.empty() ? PIO_NODE_MAKE_NAME : name);
 			m_nodes[node->idx()] = node;
 			return node;
 		}
@@ -30,13 +30,10 @@ namespace pio
 			for (auto n : v)
 			{
 				auto it = m_nodes.find((uint32_t)n);
-				if (it != m_nodes.end())
+				if (it != m_nodes.end() && it->second->is<T>())
 				{
 					auto real = it->second->self<T>();
-					if (real)
-					{
-						nodes.push_back(real);
-					}
+					nodes.push_back(real);
 				}
 			}
 			return nodes;
@@ -72,6 +69,9 @@ namespace pio
 				it = m_nodes.erase(it);
 			}
 		}
+
+	private:
+		friend class Node;
 
 	private:
 		entt::registry m_registry;

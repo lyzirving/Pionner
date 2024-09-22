@@ -63,7 +63,7 @@ namespace pio
 
 	bool Transform3D::addScale(const glm::vec3& delta)
 	{
-		return setScale(m_scale + delta);
+		return setScale(m_scale * delta);
 	}
 
 	bool Transform3D::addEuler(const glm::vec3& delta)

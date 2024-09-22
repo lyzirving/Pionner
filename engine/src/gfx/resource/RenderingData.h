@@ -8,6 +8,7 @@ namespace pio
 	class Node;
 	class MeshNode;
 	class DirectionalLightNode;
+	class SpriteNode;
 
 	//Node collection that is about to be uploaded
 	struct RenderingNodes
@@ -24,6 +25,7 @@ namespace pio
 		Ref<DirectionalLightNode> MainLight;
 		std::vector<Ref<MeshNode>> Mesh;
 		std::vector<Ref<Node>> SkinnedMesh;
+		std::vector<Ref<SpriteNode>> Sprite;
 	};
 
 	struct MeshRenderingItem
@@ -50,6 +52,7 @@ namespace pio
 		std::map<uint8_t, UUID32> UnimBuffSet{};
 		std::vector<MeshRenderingItem> OpaqueMeshItems{};
 		std::vector<MeshRenderingItem> TransparentMeshItems{};
+		std::vector<MeshRenderingItem> SpriteItems{};
 	};
 }
 

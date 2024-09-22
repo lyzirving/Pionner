@@ -51,11 +51,9 @@ namespace pio
 		return *this;
 	}
 
-	void MeshRenderBuffer::update(Ref<RenderContext>& context, Ref<Mesh>& mesh)
+	void MeshRenderBuffer::update(Ref<RenderContext>& context)
 	{
-		setUp(context, mesh);
-
-		Uniforms[GpuAttr::UNI_MODEL_MAT]->write(&(mesh->transform().transformMat()));
+		Uniforms[GpuAttr::UNI_MODEL_MAT]->write(&(Transform.transformMat()));
 	}
 
 	void MeshRenderBuffer::setUp(Ref<RenderContext>& context, Ref<Mesh>& mesh)

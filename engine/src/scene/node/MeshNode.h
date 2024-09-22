@@ -12,29 +12,33 @@ namespace pio
 
 	class MeshNode : public Node
 	{
-		PIO_DEFINE_NODE_TYPE(NodeType::Mesh)
+		PIO_NODE_DECLARE(MeshNode, NodeType::Mesh)
 	public:
-		MeshNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name);
 		virtual ~MeshNode();
 
 		virtual MeshType meshType() const = 0;
 		virtual void update(Ref<RenderContext>& context) override;
+		virtual void onInit() override;
 	};
 
 	class PlaneNode : public MeshNode
 	{
+		PIO_NODE_DECLARE_CONSTRUCTOR(PlaneNode)
 		PIO_DEFINE_MESH_TYPE(MeshType::Plane)
 	public:
-		PlaneNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name);
-		~PlaneNode();		
+		~PlaneNode();
+
+		virtual void onInit() override;
 	};
 
 	class CubeNode : public MeshNode
 	{
+		PIO_NODE_DECLARE_CONSTRUCTOR(CubeNode)
 		PIO_DEFINE_MESH_TYPE(MeshType::Cube)
 	public:
-		CubeNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name);
 		~CubeNode();
+
+		virtual void onInit() override;
 	};
 
 	template<>

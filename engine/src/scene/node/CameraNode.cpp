@@ -18,8 +18,43 @@
 
 namespace pio
 {
-	CameraNode::CameraNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name) : Node(context, key, regi, name)
+	PIO_NODE_IMPL_CONSTRUCOR(CameraNode, Node)
+
+	CameraNode::~CameraNode() = default;
+
+	void CameraNode::update(Ref<RenderContext>& context)
 	{
+		auto* camComp = getComponent<CameraComponent>();
+		auto* tranComp = getComponent<TransformComponent>();
+
+		m_camera->setPrjType(camComp->PrjType);
+		m_camera->setFov(camComp->Fov);
+		m_camera->setSize(camComp->Size);
+		m_camera->setAspect(camComp->Aspect);
+		m_camera->setNear(camComp->Near);
+		m_camera->setFar(camComp->Far);
+		m_camera->setPosition(tranComp->Position);
+		m_camera->setEuler(tranComp->Rotation);
+
+		if (m_camera->anyChange())
+		{
+			m_camera->flush();
+			m_UData->ViewMat = m_camera->viewMat();
+			m_UData->PrjMat = m_camera->prjMat();
+			m_UData->OrthoMat = m_camera->orthoMat();
+			m_UData->CameraPosition = m_camera->position();
+			m_UData->FrustumFar = m_camera->frustFar();
+			m_UData->PrjType = m_camera->prjType();
+			m_UData->serialize();
+
+			context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
+		}
+	}
+
+	void CameraNode::onInit()
+	{
+		auto context = m_context.lock();
+
 		m_camera = AssetMgr::MakeRuntimeAsset<Camera>();
 		m_UData = CreateRef<CameraUD>();
 		m_UBuffer = UniformBuffer::Create(context, m_UData->Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);
@@ -29,7 +64,7 @@ namespace pio
 		{
 			//Render target			
 			FrameBufferSpecific fboSpec;
-			fboSpec.Name = name + "-target";
+			fboSpec.Name = m_name + "-target";
 			fboSpec.Width = colorSize.x;
 			fboSpec.Height = colorSize.y;
 			PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Color);
@@ -63,37 +98,6 @@ namespace pio
 		camComp->Hnd = m_camera->assetHnd();
 		transComp->Position = glm::vec3(0.f, 7.f, 10.f);
 		transComp->Rotation = glm::vec3(-35.f, 0.f, 0.f);
-	}
-
-	CameraNode::~CameraNode() = default;
-
-	void CameraNode::update(Ref<RenderContext>& context)
-	{
-		auto* camComp = getComponent<CameraComponent>();
-		auto* tranComp = getComponent<TransformComponent>();
-
-		m_camera->setPrjType(camComp->PrjType);
-		m_camera->setFov(camComp->Fov);
-		m_camera->setSize(camComp->Size);
-		m_camera->setAspect(camComp->Aspect);
-		m_camera->setNear(camComp->Near);
-		m_camera->setFar(camComp->Far);
-		m_camera->setPosition(tranComp->Position);
-		m_camera->setEuler(tranComp->Rotation);
-
-		if (m_camera->anyChange())
-		{
-			m_camera->flush();
-			m_UData->ViewMat = m_camera->viewMat();
-			m_UData->PrjMat = m_camera->prjMat();
-			m_UData->OrthoMat = m_camera->orthoMat();
-			m_UData->CameraPosition = m_camera->position();
-			m_UData->FrustumFar = m_camera->frustFar();
-			m_UData->PrjType = m_camera->prjType();
-			m_UData->serialize();
-
-			context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
-		}
 	}
 
 	template<>

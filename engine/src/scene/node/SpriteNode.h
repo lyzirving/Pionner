@@ -7,12 +7,11 @@ namespace pio
 {
 	class SpriteNode : public Node
 	{
-		PIO_DEFINE_NODE_TYPE(NodeType::Sprite)
+		PIO_NODE_DECLARE(SpriteNode, NodeType::Sprite)
 	public:
-		SpriteNode(Ref<RenderContext>& context, const entt::entity& key, entt::registry& regi, const std::string& name);
 		~SpriteNode();
-
 		virtual void update(Ref<RenderContext>& context) override;
+		virtual void onInit() override;
 	};
 
 	template<>
