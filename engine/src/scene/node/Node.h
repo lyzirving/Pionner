@@ -111,18 +111,10 @@ namespace pio
 			return getRegistry()->any_of<T>(m_key);
 		}
 
+		Ref<Node> getParent() const { return m_parent.lock(); }
 		entt::entity key() const { return m_key; }
 		uint32_t idx() const { return (uint32_t)m_key; }		
 		uint32_t uuid() const { return m_uuid; }
-		Ref<Node> parent()const 
-		{
-			auto p = m_parent.lock();
-			if (p)
-			{
-				return p;
-			}
-			return Ref<Node>();
-		}
 		const std::string& name() const { return m_name; }
 		const std::vector<Ref<Node>>& children() const { return m_children; }
 

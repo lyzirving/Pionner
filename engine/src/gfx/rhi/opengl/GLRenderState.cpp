@@ -156,6 +156,8 @@ namespace pio
 
 		glClearColor(clear.Color.r, clear.Color.g, clear.Color.b, clear.Color.a);
 		glClear(bits);
+
+		m_clear = clear;
 	}
 
 	void GLRenderState::setCullFace(const CullFace& cull)
@@ -170,6 +172,8 @@ namespace pio
 		{
 			glDisable(GL_CULL_FACE);
 		}
+
+		m_cull = cull;
 	}
 
 	void GLRenderState::setBlendMode(const Blend& blend)
@@ -185,6 +189,8 @@ namespace pio
 		{
 			glDisable(GL_BLEND);
 		}
+
+		m_blend = blend;
 	}
 
 	void GLRenderState::setDepthTest(const DepthTest& depth)
@@ -199,6 +205,8 @@ namespace pio
 		{
 			glDisable(GL_DEPTH_TEST);
 		}
+
+		m_depthTest = depth;
 	}
 
 	void GLRenderState::setStencilTest(const StencilTest& stencil)
@@ -238,6 +246,36 @@ namespace pio
 		else
 		{
 			glStencilOp(GetFuncAttr(stencil.Op(FaceMode_FrontAndBack).sFail), GetFuncAttr(stencil.Op(FaceMode_FrontAndBack).dpFail), GetFuncAttr(stencil.Op(FaceMode_FrontAndBack).dpPass));
+		}
+
+		m_stencil = stencil;
+	}
+
+	void GLRenderState::applyStateChange(const RenderStateAttrs& attrs)
+	{
+		if (attrs.AttrClear != m_clear)
+		{
+			setClear(attrs.AttrClear);
+		}
+
+		if (attrs.AttrCull != m_cull)
+		{
+			setCullFace(attrs.AttrCull);
+		}
+
+		if (attrs.AttrBlend != m_blend)
+		{
+			setBlendMode(attrs.AttrBlend);
+		}
+
+		if (attrs.AttrDepth != m_depthTest)
+		{
+			setDepthTest(attrs.AttrDepth);
+		}
+
+		if (attrs.AttrStencil != m_stencil)
+		{
+			setStencilTest(attrs.AttrStencil);
 		}
 	}
 

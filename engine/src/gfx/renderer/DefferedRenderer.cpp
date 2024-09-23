@@ -4,6 +4,7 @@
 #include "gfx/pass/DefferedPass.h"
 #include "gfx/pass/GBufferPass.h"
 #include "gfx/pass/ColorCorrectPass.h"
+#include "gfx/pass/UiPass.h"
 
 #include "gfx/renderer/RenderContext.h"
 
@@ -21,11 +22,13 @@ namespace pio
 		auto GPass = CreateRef<GBufferPass>("GBufferPass", RenderPassEvent::RenderingOpaques);
 		auto deferredPass = CreateRef<DefferedPass>("DefferedPass", RenderPassEvent::AfterRenderingOpaques);
 		auto colorCorrectPass = CreateRef<ColorCorrectPass>("ColorCorrectPass", RenderPassEvent::BeforeRenderingPostProcessing);
+		auto uiPass = CreateRef<UiPass>("UiPass", RenderPassEvent::AfterRenderingPostProcessing);
 
 		m_passMap.insert({ (uint32_t)mainShadowCasterPass->type(), mainShadowCasterPass });
 		m_passMap.insert({ (uint32_t)GPass->type(), GPass });
 		m_passMap.insert({ (uint32_t)deferredPass->type(), deferredPass }); 
 		m_passMap.insert({ (uint32_t)colorCorrectPass->type(), colorCorrectPass });
+		m_passMap.insert({ (uint32_t)uiPass->type(), uiPass });
 	}
 
 	void DefferedRenderer::onAttach(Ref<RenderContext>& context)

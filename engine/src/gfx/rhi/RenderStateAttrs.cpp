@@ -2,6 +2,11 @@
 
 namespace pio
 {
+	bool Clear::operator==(const Clear& rhs) const
+	{
+		return Color == rhs.Color && Bits == rhs.Bits;
+	}
+
 	Clear Clear::Common(const glm::vec4& color)
 	{
 		Clear clear;
@@ -23,17 +28,6 @@ namespace pio
 			clear.Bits.set(ClearBits_Stencil);
 
 		return clear;
-	}
-
-	bool Blend::operator==(const Blend& rhs)
-	{
-		if (this == &rhs)
-			return true;
-
-		if (this->Enable != rhs.Enable)
-			return false;
-
-		return this->Enable && this->Src == rhs.Src && this->Dst == rhs.Dst && this->Equation == rhs.Equation;
 	}
 
 	bool Blend::operator==(const Blend& rhs) const
@@ -62,17 +56,6 @@ namespace pio
 		Blend blend;
 		blend.Enable = false;
 		return blend;
-	}
-
-	bool DepthTest::operator==(const DepthTest& rhs)
-	{
-		if (this == &rhs)
-			return true;
-
-		if (this->Enable != rhs.Enable)
-			return false;
-
-		return this->Enable && this->Func == rhs.Func && this->Mark == rhs.Mark;
 	}
 
 	bool DepthTest::operator==(const DepthTest& rhs) const
@@ -111,17 +94,6 @@ namespace pio
 		return depthTest;
 	}
 
-	bool CullFace::operator==(const CullFace& rhs)
-	{
-		if (this == &rhs)
-			return true;
-
-		if (this->Enable != rhs.Enable)
-			return false;
-
-		return this->Enable && this->Direction == rhs.Direction && this->Mode == rhs.Mode;
-	}
-
 	bool CullFace::operator==(const CullFace& rhs) const
 	{
 		if (this == &rhs)
@@ -158,28 +130,12 @@ namespace pio
 		return cull;
 	}
 
-	bool StencilFunc::operator==(const StencilFunc& rhs)
-	{
-		if (this == &rhs)
-			return true;
-
-		return this->Val == rhs.Val && this->Ref == rhs.Ref && this->Mask == rhs.Mask;
-	}
-
 	bool StencilFunc::operator==(const StencilFunc& rhs) const
 	{
 		if (this == &rhs)
 			return true;
 
 		return this->Val == rhs.Val && this->Ref == rhs.Ref && this->Mask == rhs.Mask;
-	}
-
-	bool StencilOp::operator==(const StencilOp& rhs)
-	{
-		if (this == &rhs)
-			return true;
-
-		return this->dpFail == rhs.dpFail && this->dpPass == rhs.dpPass && this->sFail == rhs.sFail;
 	}
 
 	bool StencilOp::operator==(const StencilOp& rhs) const
@@ -190,7 +146,7 @@ namespace pio
 		return this->dpFail == rhs.dpFail && this->dpPass == rhs.dpPass && this->sFail == rhs.sFail;
 	}
 
-	bool StencilTest::operator==(const StencilTest& rhs)
+	bool StencilTest::operator==(const StencilTest& rhs) const
 	{
 		if (this == &rhs)
 			return true;

@@ -34,10 +34,10 @@ namespace pio
 
 	void RenderPipeline::onRender(Ref<RenderContext>& context, std::vector<Ref<CameraNode>>& camNodes)
 	{
-		onBeginFrameRendering(context);		
+		onBeginFrameRendering(context);
 
 		for (int32_t i = 0; i < camNodes.size(); i++)
-		{					
+		{
 			camNodes[i]->update(context);
 			onBeginCameraRendering(context, camNodes[i]);
 			onRenderSingleCamera(context, camNodes[i]);
@@ -77,9 +77,9 @@ namespace pio
 	}
 
 	void RenderPipeline::onInitializeRenderingData(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
-	{		
+	{
 		RenderingData renderingData;//Data to be committed
-		auto& renderingNodes = context->renderingNodes();		
+		auto& renderingNodes = context->renderingNodes();
 		auto camera = camNode->camera();
 
 		camera->culling(renderingNodes);
@@ -105,10 +105,10 @@ namespace pio
 		renderingData.UnimBuffSet.insert({ uShadowBuff->binding(), uShadowBuff->assetHnd() });
 	}
 
-	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData &renderingData)
+	void RenderPipeline::onSetUpObject(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData& renderingData)
 	{
-		auto &meshNodes = renderingNodes.Mesh;
-		for (auto &mesh : meshNodes)
+		auto& meshNodes = renderingNodes.Mesh;
+		for (auto& mesh : meshNodes)
 		{
 			mesh->update(context);
 			auto data = mesh->getRenderingData<MeshNode, MeshRenderingItem>();
@@ -125,7 +125,10 @@ namespace pio
 					break;
 				}
 				default:
+				{
+					LOGW("warning! invalid rendering mode[%u] for mesh", data.Mode);
 					break;
+				}
 			}
 		}
 
@@ -133,6 +136,20 @@ namespace pio
 		for (auto& item : sprites)
 		{
 			item->update(context);
+			auto data = item->getRenderingData<SpriteNode, MeshRenderingItem>();
+			switch (data.Mode)
+			{
+				case RenderingMode_Overlay:
+				{
+					renderingData.UiSprites.push_back(std::move(data));
+					break;
+				}
+				default:
+				{
+					LOGW("warning! invalid rendering mode[%u] for sprite", data.Mode);
+					break;
+				}
+			}
 		}
 	}
 }

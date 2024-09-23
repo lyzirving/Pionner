@@ -122,13 +122,24 @@ namespace pio
 		void onEndFrameRendering();
 
 		void onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs);
-		void onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer);
+		void onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer);		
 
 		void onBeginRenderTarget(Ref<RenderTarget>& target, const RenderStateAttrs& attrs);
 		void onEndRenderTarget(Ref<RenderTarget>& target);
 
+		bool bSameAsBoundFrameBuffer(Ref<FrameBuffer>& frameBuffer);
+		bool bSameAsBoundTarget(Ref<RenderTarget>& target);
+
 		bool bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName);		
 		void drawTriangles(Ref<MeshRenderBuffer>& meshBuff);
+
+		// ------------------------------ Render state api ------------------------------------		
+		void setClear(const Clear& clear) { m_state->setClear(clear); }
+		void setCullFace(const CullFace& cull) { m_state->setCullFace(cull); }
+		void setBlendMode(const Blend& blend) { m_state->setBlendMode(blend); }
+		void setDepthTest(const DepthTest& depth) { m_state->setDepthTest(depth); }
+		void setStencilTest(const StencilTest& stencil) { m_state->setStencilTest(stencil); }
+		// ------------------------------------------------------------------------------------
 
 		// ----------------------------- Create resource api ----------------------------------		
 		Ref<Texture> createTexture(const TextureSpecific& spec);
@@ -170,6 +181,7 @@ namespace pio
 		Viewport m_vp;
 		RenderThread m_thread;
 		uint64_t m_threadId{ 0 };
+		uint32_t m_bindFbo{ 0 };
 
 		std::atomic<uint32_t> m_submitIdx{ 0 };
 		CommandQueue m_cmdQueue[k_queueNum];

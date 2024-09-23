@@ -97,6 +97,8 @@ namespace pio
 					return "shader/DeferredPass.glsl";
 				case ShaderType::ColorCorrect:
 					return "shader/ColorCorrect.glsl";
+				case ShaderType::Sprite:
+					return "shader/Sprite.glsl";
 				default:
 					#ifdef LOCAL_TAG
 					#undef LOCAL_TAG

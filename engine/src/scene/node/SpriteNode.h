@@ -2,6 +2,7 @@
 #define __PIONNER_SCENE_NODE_SPRITE_NODE_H__
 
 #include "Node.h"
+#include "gfx/resource/RenderingData.h"
 
 namespace pio
 {
@@ -16,6 +17,9 @@ namespace pio
 
 	template<>
 	bool Node::is<SpriteNode>() const;
+
+	template<>
+	MeshRenderingItem Node::getRenderingData<SpriteNode>() const;
 }
 
 #endif

@@ -52,7 +52,7 @@ namespace pio
 		std::map<uint8_t, UUID32> UnimBuffSet{};
 		std::vector<MeshRenderingItem> OpaqueMeshItems{};
 		std::vector<MeshRenderingItem> TransparentMeshItems{};
-		std::vector<MeshRenderingItem> SpriteItems{};
+		std::vector<MeshRenderingItem> UiSprites{};
 	};
 }
 

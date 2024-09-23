@@ -15,4 +15,15 @@ struct PBRMaterial
     sampler2D NormalMap;
 };
 
-uniform PBRMaterial u_pbrMaterial;
+struct SpriteMaterial 
+{
+    vec3 Color;
+    bool FlipX;
+    bool FlipY;
+    bool Overlay;
+
+    sampler2D SpriteTexture;
+};
+
+uniform PBRMaterial    u_pbrMaterial;
+uniform SpriteMaterial u_spriteMaterial;

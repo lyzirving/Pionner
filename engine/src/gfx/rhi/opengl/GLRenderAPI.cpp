@@ -189,6 +189,11 @@ namespace pio
 									program, blockName.c_str(), index, bindingPt);
 	}
 
+	void GLRenderAPI::bindScreenFrameBuffer()
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
 	void GLRenderAPI::drawElements(DrawMode mode, uint32_t indexNum, IndexInternalFmt fmt)
 	{
 		glDrawElements(GLHelper::GetDrawMode(mode), indexNum, GLHelper::GetIndexInternalFormat(fmt), nullptr);

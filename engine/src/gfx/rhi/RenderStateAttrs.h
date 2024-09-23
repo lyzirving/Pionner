@@ -53,6 +53,9 @@ namespace pio
 		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
 		std::bitset<ClearBits_Count> Bits{};
 
+		bool operator==(const Clear& rhs) const;
+		bool operator!=(const Clear& rhs) const { return !((*this) == rhs); }
+
 		static Clear Common(const glm::vec4& color = glm::vec4(0.f, 0.f, 0.f, 1.f));
 		static Clear Create(uint8_t flags);
 	};
@@ -66,9 +69,6 @@ namespace pio
 
 		Blend() {}
 		Blend(BlendFactor IN_Src, BlendFactor IN_Dst, BlendEquation In_Equation) : Enable(true), Src(IN_Src), Dst(IN_Dst), Equation(In_Equation) {}
-
-		bool operator==(const Blend& rhs);
-		bool operator!=(const Blend& rhs) { return !((*this) == rhs); }
 
 		bool operator==(const Blend& rhs) const;
 		bool operator!=(const Blend& rhs) const { return !((*this) == rhs); }
@@ -88,9 +88,6 @@ namespace pio
 		DepthTest() {}
 		DepthTest(FuncAttr func, DepthTest::Mask mark) : Enable(true), Func(func), Mark(mark) {}
 
-		bool operator==(const DepthTest& rhs);
-		bool operator!=(const DepthTest& rhs) { return !((*this) == rhs); }
-
 		bool operator==(const DepthTest& rhs) const;
 		bool operator!=(const DepthTest& rhs) const { return !((*this) == rhs); }
 
@@ -104,9 +101,6 @@ namespace pio
 		bool Enable{ false };
 		FaceDirection Direction{ FaceDirection::CouterClockwise };
 		FaceMode Mode{ FaceMode_Back };
-
-		bool operator==(const CullFace& rhs);
-		bool operator!=(const CullFace& rhs) { return !((*this) == rhs); }
 
 		bool operator==(const CullFace& rhs) const;
 		bool operator!=(const CullFace& rhs) const { return !((*this) == rhs); }
@@ -136,9 +130,6 @@ namespace pio
 		StencilFunc() {}
 		StencilFunc(FuncAttr val, int32_t ref, uint32_t mask) : Val(val), Ref(ref), Mask(mask) {}
 
-		bool operator==(const StencilFunc& rhs);
-		bool operator!=(const StencilFunc& rhs) { return !((*this) == rhs); }
-
 		bool operator==(const StencilFunc& rhs) const;
 		bool operator!=(const StencilFunc& rhs) const { return !((*this) == rhs); }
 
@@ -160,9 +151,6 @@ namespace pio
 		StencilOp() {}
 		StencilOp(FuncAttr attr) : sFail(attr), dpFail(attr), dpPass(attr) {}
 		StencilOp(FuncAttr in_sFail, FuncAttr in_dpFail, FuncAttr in_dpPass) : sFail(in_sFail), dpFail(in_dpFail), dpPass(in_dpPass) {}
-
-		bool operator==(const StencilOp& rhs);
-		bool operator!=(const StencilOp& rhs) { return !((*this) == rhs); }
 
 		bool operator==(const StencilOp& rhs) const;
 		bool operator!=(const StencilOp& rhs) const { return !((*this) == rhs); }
@@ -229,8 +217,8 @@ namespace pio
 			m_separateFlag.reset();
 		}
 
-		bool operator==(const StencilTest& rhs);
-		bool operator!=(const StencilTest& rhs) { return !((*this) == rhs); }
+		bool operator==(const StencilTest& rhs) const;
+		bool operator!=(const StencilTest& rhs) const { return !((*this) == rhs); }
 
 	public:
 		static StencilTest Common() { return StencilTest(true); }

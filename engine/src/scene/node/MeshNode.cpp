@@ -119,15 +119,14 @@ namespace pio
 	template<>
 	MeshRenderingItem Node::getRenderingData<MeshNode>() const
 	{
+		MeshRenderingItem item;
 		if (is<MeshNode>())
-		{
-			MeshRenderingItem item;
+		{			
 			auto* render = getComponent<MeshRenderer>();
 			item.Mode = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd)->renderingMode();
 			item.RenderBuffFilter = render->BuffHnd;
-			item.MaterialFilter = render->MatHnd;
-			return item;
+			item.MaterialFilter = render->MatHnd;			
 		}
-		return MeshRenderingItem();
+		return item;
 	}
 }

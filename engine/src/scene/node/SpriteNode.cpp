@@ -27,23 +27,28 @@ namespace pio
 		auto* spriteRender = getComponent<SpriteRenderer>();
 		auto* transComp = getComponent<TransformComponent>();
 
-		auto p = parent();
+		auto p = getParent();
 		TransformComponent* parentTrans{ nullptr }; 		
 
 		auto spriteMat = AssetMgr::GetRuntimeAsset<SpriteMaterial>(spriteRender->MatHnd);
+		auto buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(spriteRender->BuffHnd);
+		if (!spriteMat || !buff || !buff->valid())
+		{
+			LOGW("node has not been initialized");
+			return;
+		}
 		spriteMat->setColor(spriteRender->Color);
 		spriteMat->setFlipX(spriteRender->FlipX);
 		spriteMat->setFlipY(spriteRender->FlipY);
 		spriteMat->update(context);
 
-		auto buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(spriteRender->BuffHnd);
 		buff->Transform.setPosition(transComp->Position);
-		buff->Transform.setEuler(transComp->Rotation);
+		buff->Transform.setEuler(spriteMat->renderingMode() == RenderingMode_Overlay ? glm::vec3(0.f) : transComp->Rotation);
 		buff->Transform.setScale(transComp->Scale);
 		if (p && (parentTrans = p->getComponent<TransformComponent>()))
 		{
 			buff->Transform.addTranslation(parentTrans->Position);
-			buff->Transform.addEuler(parentTrans->Rotation);
+			buff->Transform.addEuler(spriteMat->renderingMode() == RenderingMode_Overlay ? glm::vec3(0.f) : parentTrans->Rotation);
 			buff->Transform.addScale(parentTrans->Scale);
 		}
 		buff->update(context);
@@ -51,26 +56,27 @@ namespace pio
 
 	void SpriteNode::onInit()
 	{
-		auto context = m_context.lock();
-
-		addComponent<SpriteRenderer, TransformComponent>();
-
-		auto* transComp = getComponent<TransformComponent>();
-		auto* spriteRender = getComponent<SpriteRenderer>();
-
-		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
-		mesh->m_triangles = Factory::MakeSquare(2.f, 2.f);
-
-		auto spriteMat = context->getMaterial(GpuAttr::Mat::SPRITE, true);
-		spriteMat->as<SpriteMaterial>()->setSpriteTexture(context->getTexture(GpuAttr::Tex::DIST_LIGHT));
-		spriteRender->MatHnd = spriteMat->assetHnd();
-		spriteRender->MeshHnd = mesh->assetHnd();
-
-		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
-		renderBuff->setUp(context, mesh);
-		spriteRender->BuffHnd = renderBuff->assetHnd();
+		addComponent<SpriteRenderer, TransformComponent>();		
 	}
 
 	template<>
 	bool Node::is<SpriteNode>() const { return nodeType() == NodeType::Sprite; }
+
+	template<>
+	MeshRenderingItem Node::getRenderingData<SpriteNode>() const
+	{
+		MeshRenderingItem item;
+		if (is<SpriteNode>())
+		{			
+			auto* render = getComponent<SpriteRenderer>();
+			auto material = AssetMgr::GetRuntimeAsset<SpriteMaterial>(render->MatHnd);
+			if (material)
+			{
+				item.Mode = material->renderingMode();
+				item.RenderBuffFilter = render->BuffHnd;
+				item.MaterialFilter = render->MatHnd;
+			}			
+		}
+		return item;
+	}
 }

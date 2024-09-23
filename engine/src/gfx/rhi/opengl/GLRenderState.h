@@ -16,6 +16,8 @@ namespace pio
 		virtual void setBlendMode(const Blend& blend) override;
 		virtual void setDepthTest(const DepthTest& depth) override;
 		virtual void setStencilTest(const StencilTest& stencil) override;
+
+		virtual void applyStateChange(const RenderStateAttrs& attrs) override;
 		virtual void setStateMachine(const RenderStateAttrs &attrs) override;
 	};
 }

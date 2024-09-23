@@ -78,10 +78,22 @@ namespace pio
 	{
 		std::swap(m_renderingNodes, RenderingNodes());
 		std::swap(m_renderingData, RenderingData());
+
+		auto& api = m_api;
+		submitRC([&api]()
+		{
+			api->bindScreenFrameBuffer();
+		});
 	}
 
 	void RenderContext::onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer,const RenderStateAttrs& attrs)
 	{		
+		if (m_bindFbo == frameBuffer->id())
+		{
+			m_state->applyStateChange(attrs);
+			return;
+		}
+		m_bindFbo = frameBuffer->id();
 		m_api->setViewport(0, 0, frameBuffer->width(), frameBuffer->height());
 		frameBuffer->bind();
 		m_state->setStateMachine(attrs);
@@ -89,7 +101,9 @@ namespace pio
 
 	void RenderContext::onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer)
 	{
-		frameBuffer->unbind();		
+		if (frameBuffer)
+			frameBuffer->unbind();
+		m_bindFbo = 0;
 		m_api->setViewport(m_vp.offsetX(), m_vp.offsetY(), m_vp.ratioW(), m_vp.ratioH());// restore viewport
 	}
 
@@ -101,6 +115,16 @@ namespace pio
 	void RenderContext::onEndRenderTarget(Ref<RenderTarget>& target)
 	{
 		onEndFrameBuffer(target->frameBuffer());
+	}
+
+	bool RenderContext::bSameAsBoundFrameBuffer(Ref<FrameBuffer>& frameBuffer)
+	{
+		return m_bindFbo == frameBuffer->id();
+	}
+
+	bool RenderContext::bSameAsBoundTarget(Ref<RenderTarget>& target)
+	{
+		return bSameAsBoundFrameBuffer(target->frameBuffer());
 	}
 
 	bool RenderContext::bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName)

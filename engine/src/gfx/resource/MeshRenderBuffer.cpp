@@ -1,6 +1,7 @@
 #include "MeshRenderBuffer.h"
 
 #include "gfx/rhi/UniformData.h"
+#include "gfx/rhi/Shader.h"
 #include "gfx/resource/Mesh.h"
 
 #include "scene/Components.h"
@@ -54,6 +55,14 @@ namespace pio
 	void MeshRenderBuffer::update(Ref<RenderContext>& context)
 	{
 		Uniforms[GpuAttr::UNI_MODEL_MAT]->write(&(Transform.transformMat()));
+	}
+
+	void MeshRenderBuffer::bind(Ref<Shader>& shader)
+	{
+		for (auto it : Uniforms)
+		{
+			shader->setUniformData(it.second);
+		}
 	}
 
 	void MeshRenderBuffer::setUp(Ref<RenderContext>& context, Ref<Mesh>& mesh)

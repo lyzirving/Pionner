@@ -135,19 +135,14 @@ namespace pio
                     continue;
                 }
                
-                for (auto it : meshBuff->Uniforms)
-                { 
-                    shader->setUniformData(it.second); 
-                }
+                meshBuff->bind(shader);
                 material->bind(shader);
                 context->drawTriangles(meshBuff);
             }
 
             camBuff->unbind();
 
-            shader->unbind();
-
-            context->onEndFrameBuffer(fbo);                      
+            shader->unbind();                     
         });
 	}
 

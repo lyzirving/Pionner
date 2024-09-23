@@ -11,7 +11,7 @@ namespace pio
 	class RenderContext;
 	class UniformData;
 	class Mesh;
-	class MeshRenderBuffer;
+	class Shader;
 
 	class MeshRenderBuffer : public Asset
 	{
@@ -27,6 +27,7 @@ namespace pio
 
 		bool valid() const { return Vao.use_count() != 0 && Vbo.use_count() != 0 && Ebo.use_count() != 0; }
 
+		void bind(Ref<Shader>& shader);
 		void setUp(Ref<RenderContext>& context, Ref<Mesh>& mesh);
 		void update(Ref<RenderContext>& context);
 

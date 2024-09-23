@@ -136,6 +136,7 @@ namespace pio
 		GBuffer, 
 		Deferred,
 		ColorCorrect,
+		Sprite,
 		Num
 	};
 

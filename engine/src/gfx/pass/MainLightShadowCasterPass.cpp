@@ -88,18 +88,13 @@ namespace pio
 					LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
 					continue;
 				}
-				for(auto it : meshBuff->Uniforms)
-				{
-					shader->setUniformData(it.second);
-				}
+				meshBuff->bind(shader);
 				context->drawTriangles(meshBuff);
 			}
 
 			shadowData->unbind();
 
 			shader->unbind();
-
-			context->onEndFrameBuffer(fbo);
 		});
 	}
 

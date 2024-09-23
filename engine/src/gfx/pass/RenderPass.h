@@ -44,6 +44,7 @@ namespace pio
 		GBuffer,
 		Deferred,
 		ColorCorrect,
+		UI,
 		Num
 	};
 

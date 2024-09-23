@@ -29,6 +29,7 @@ namespace pio
 			static constexpr char* SpriteColor = "u_spriteMaterial.Color";
 			static constexpr char* SpriteFlipX = "u_spriteMaterial.FlipX";
 			static constexpr char* SpriteFlipY = "u_spriteMaterial.FlipY";
+			static constexpr char* SpriteOverlay = "u_spriteMaterial.Overlay";
 			static constexpr char* SpriteTexture = "u_spriteMaterial.SpriteTexture";
 		};
 

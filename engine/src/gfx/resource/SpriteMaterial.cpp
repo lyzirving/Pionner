@@ -31,6 +31,7 @@ namespace pio
 		updateUnimData(GpuAttr::SpriteColor, m_color);
 		updateUnimData(GpuAttr::SpriteFlipX, m_flipX);
 		updateUnimData(GpuAttr::SpriteFlipY, m_flipY);
+		updateUnimData(GpuAttr::SpriteOverlay, m_renderingMode == RenderingMode_Overlay);
 
 		updateTexture(GpuAttr::SpriteTexture, m_spriteTexture.use_count() != 0 ? m_spriteTexture : context->getTexture(pio::GpuAttr::Tex::WHITE));
 	}

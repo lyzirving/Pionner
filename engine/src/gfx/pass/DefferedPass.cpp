@@ -151,8 +151,6 @@ namespace pio
             camBuff->unbind();
 
             shader->unbind();
-
-            context->onEndFrameBuffer(fbo);
         });
     }
 

@@ -64,8 +64,6 @@ namespace pio
 			context->drawTriangles(context->getScreenMeshBuffer());
 
 			shader->unbind();
-
-			context->onEndRenderTarget(target);
 		});
 	}
 

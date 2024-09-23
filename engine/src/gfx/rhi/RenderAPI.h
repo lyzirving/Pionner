@@ -20,10 +20,11 @@ namespace pio
 
 		virtual void setViewport(int32_t x, int32_t y, int32_t w, int32_t h) = 0;
 		virtual bool bindUnimBlock(uint32_t program, uint32_t bindingPt, const std::string& blockName) = 0;
+		virtual void bindScreenFrameBuffer() = 0;
 		virtual void drawElements(DrawMode mode, uint32_t indexNum, IndexInternalFmt fmt) = 0;
 
 		virtual void onBeginFrame(RenderContext& ctx) = 0;
-		virtual void onEndFrame(RenderContext& ctx) = 0;
+		virtual void onEndFrame(RenderContext& ctx) = 0;		
 
 		virtual void releaseResource(ResourceGCDelegate &&resource) = 0;
 

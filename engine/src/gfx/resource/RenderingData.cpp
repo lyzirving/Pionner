@@ -43,7 +43,7 @@ namespace pio
 		UnimBuffSet = rhs.UnimBuffSet;
 		OpaqueMeshItems = rhs.OpaqueMeshItems;
 		TransparentMeshItems = rhs.TransparentMeshItems;
-		SpriteItems = rhs.SpriteItems;
+		UiSprites = rhs.UiSprites;
 	}
 
 	RenderingData::RenderingData(RenderingData &&rhs) noexcept
@@ -51,7 +51,7 @@ namespace pio
 		UnimBuffSet = std::move(rhs.UnimBuffSet);
 		OpaqueMeshItems = std::move(rhs.OpaqueMeshItems);
 		TransparentMeshItems = std::move(rhs.TransparentMeshItems);
-		SpriteItems = std::move(rhs.SpriteItems);
+		UiSprites = std::move(rhs.UiSprites);
 	}
 
 	RenderingData &RenderingData::operator=(const RenderingData &rhs)
