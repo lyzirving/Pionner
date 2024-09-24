@@ -30,35 +30,23 @@ namespace pio
 		inline bool LessEqual(float lhs, float rhs) { return Equal(lhs, rhs) || lhs < rhs; }
 		inline bool LessEqual(double lhs, double rhs) { return Equal(lhs, rhs) || lhs < rhs; }
 		inline bool LessEqual(const glm::vec3& lhs, const glm::vec3& rhs) { return lhs.x <= rhs.x && lhs.y <= rhs.y && lhs.z <= rhs.z; }
-		inline bool GreatEqual(const glm::vec3& lhs, const glm::vec3& rhs) { return lhs.x >= rhs.x && lhs.y >= rhs.y && lhs.z >= rhs.z; }
-
-		inline glm::vec3 Reminder(const glm::vec3& input, float reminder)
-		{
-			if (reminder < 0.f) { reminder = -reminder; }
-
-			glm::vec3 result = input;
-			glm::vec3 sign = glm::sign(result);
-
-			auto calcReminder = [](float input, float sign, float reminder)
-			{
-				float val = input * sign;// val is >= 0.f
-				if (val > reminder)
-					val = val - reminder * int(val / reminder);
-				return val * sign;
-			};
-
-			result.x = calcReminder(result.x, sign.x, reminder);
-			result.y = calcReminder(result.y, sign.y, reminder);
-			result.z = calcReminder(result.z, sign.z, reminder);
-
-			return result;
-		}
+		inline bool GreatEqual(const glm::vec3& lhs, const glm::vec3& rhs) { return lhs.x >= rhs.x && lhs.y >= rhs.y && lhs.z >= rhs.z; }		
 
 		template<typename T>
 		T Clamp(T val, T min, T max) { return (val < min) ? min : ((val > max) ? max : val); }
 
 		template<typename T>
 		T Length(T lhs, T rhs) { return std::sqrt(lhs * lhs + rhs * rhs); }
+
+		glm::vec3 Reminder(const glm::vec3& input, float reminder);
+		/*
+		* @brief		Calculate angle from start direction to end direction.
+		*				Rotation in counter clock-wise is marked as positive.
+		* @param start	Start direction
+		* @param end	End direction
+		* @return		Angle in degree oriented by ccw.
+		*/
+		float AngleCCW(const glm::vec3& start, const glm::vec3& end);
 	}
 
 	/*

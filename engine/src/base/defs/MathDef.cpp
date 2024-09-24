@@ -4,6 +4,40 @@ namespace pio
 {
 	namespace Math
 	{
+		glm::vec3 Reminder(const glm::vec3& input, float reminder)
+		{
+			if(reminder < 0.f)
+			{
+				reminder = -reminder;
+			}
+
+			glm::vec3 result = input;
+			glm::vec3 sign = glm::sign(result);
+
+			auto calcReminder = [](float input, float sign, float reminder)
+			{
+				float val = input * sign;// val is >= 0.f
+				if(val > reminder)
+					val = val - reminder * int(val / reminder);
+				return val * sign;
+			};
+
+			result.x = calcReminder(result.x, sign.x, reminder);
+			result.y = calcReminder(result.y, sign.y, reminder);
+			result.z = calcReminder(result.z, sign.z, reminder);
+
+			return result;
+		}
+
+		float AngleCCW(const glm::vec3& start, const glm::vec3& end)
+		{
+			float dot = glm::dot(start, end);
+			if(Equal(std::abs(dot), 1.f))
+			{
+				return dot > 0.f ? 0.f : 180.f;
+			}			
+			return glm::sign(glm::cross(start, end).z) * glm::degrees(std::acos(dot));
+		}
 	}
 
 	namespace quaternion
