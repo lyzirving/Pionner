@@ -33,5 +33,6 @@ in vec2 v_texcoord;
 out vec4 o_color;
 
 void main() {
-	o_color = texture(u_spriteMaterial.SpriteTexture, v_texcoord);
+	vec2 uv = vec2(u_spriteMaterial.FlipX ? (1.f - v_texcoord.x) : v_texcoord.x, u_spriteMaterial.FlipY ? (1.f - v_texcoord.y) : v_texcoord.y);
+	o_color = texture(u_spriteMaterial.SpriteTexture, uv) * vec4(u_spriteMaterial.Color, 1.f);
 }

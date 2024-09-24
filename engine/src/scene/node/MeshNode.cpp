@@ -21,7 +21,7 @@ namespace pio
 
 	MeshNode::~MeshNode() = default;
 
-	void MeshNode::update(Ref<RenderContext>& context)
+	void MeshNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
 		MeshRenderer* render = getComponent<MeshRenderer>();
 		TransformComponent* transComp = getComponent<TransformComponent>();

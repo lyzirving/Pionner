@@ -17,7 +17,7 @@ namespace pio
 		virtual ~MeshNode();
 
 		virtual MeshType meshType() const = 0;
-		virtual void update(Ref<RenderContext>& context) override;
+		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) override;
 		virtual void onInit() override;
 	};
 

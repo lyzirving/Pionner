@@ -4,6 +4,8 @@
 
 #include "scene/Factory.h"
 #include "scene/Components.h"
+#include "scene/node/CameraNode.h"
+#include "scene/3d/Camera.h"
 
 #include "gfx/renderer/RenderContext.h"
 
@@ -22,7 +24,7 @@ namespace pio
 
 	SpriteNode::~SpriteNode() = default;
 
-	void SpriteNode::update(Ref<RenderContext>& context)
+	void SpriteNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
 		auto* spriteRender = getComponent<SpriteRenderer>();
 		auto* transComp = getComponent<TransformComponent>();
@@ -43,12 +45,12 @@ namespace pio
 		spriteMat->update(context);
 
 		buff->Transform.setPosition(transComp->Position);
-		buff->Transform.setEuler(spriteMat->renderingMode() == RenderingMode_Overlay ? glm::vec3(0.f) : transComp->Rotation);
+		buff->Transform.setEuler(spriteRender->BillBoard ? Camera::BillBoardRotate(camNode) : transComp->Rotation);
 		buff->Transform.setScale(transComp->Scale);
 		if (p && (parentTrans = p->getComponent<TransformComponent>()))
 		{
 			buff->Transform.addTranslation(parentTrans->Position);
-			buff->Transform.addEuler(spriteMat->renderingMode() == RenderingMode_Overlay ? glm::vec3(0.f) : parentTrans->Rotation);
+			buff->Transform.addEuler(spriteRender->BillBoard ? glm::vec3(0.f) : parentTrans->Rotation);
 			buff->Transform.addScale(parentTrans->Scale);
 		}
 		buff->update(context);

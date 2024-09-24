@@ -72,6 +72,7 @@ namespace pio
 		auto sprite = addChild<SpriteNode>("LitSprite");
 		auto* transComp = sprite->getComponent<TransformComponent>();
 		auto* spriteRender = sprite->getComponent<SpriteRenderer>();
+		spriteRender->BillBoard = true;
 
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
 		mesh->m_triangles = Factory::MakeSquare(1.f, 1.f);

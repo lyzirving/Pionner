@@ -103,6 +103,11 @@ namespace pio
 		static glm::mat4 ViewportMat(const Viewport& vp);
 		static glm::vec3 GetViewDir(const Ref<CameraNode> &node);
 		static glm::vec3 GetMotionDir(const Ref<CameraNode>& node, uint16_t key);
+		/*
+		* @brief	Support BillBoard technology
+		* @return	Euler angle applied to the object that needs the billboard
+		*/
+		static glm::vec3 BillBoardRotate(const Ref<CameraNode>& node);
 
 	private:	
 		Transform3D m_transform{};

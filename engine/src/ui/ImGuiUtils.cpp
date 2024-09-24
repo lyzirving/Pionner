@@ -6,8 +6,10 @@
 #include "scene/node/Node.h"
 #include "scene/node/LightNode.h"
 #include "scene/node/MeshNode.h"
+#include "scene/node/SpriteNode.h"
 
 #include "gfx/resource/PbrMaterial.h"
+#include "gfx/resource/SpriteMaterial.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -108,6 +110,9 @@ namespace pio
 				break;
 			case NodeType::Mesh:
 				DrawMeshPanel(node);
+				break;
+			case NodeType::Sprite:
+				DrawSpritePanel(node);
 				break;
 			default:
 				break;
@@ -318,6 +323,51 @@ namespace pio
 		}
 	}
 
+	void ImGuiUtils::DrawSpritePanel(const Ref<Node>& node)
+	{
+		auto spriteNode = node->as<SpriteNode>();
+		if (!spriteNode)
+			return;
+
+		auto* transComp = spriteNode->getComponent<TransformComponent>();
+		DrawTransformPanel(transComp);
+
+		auto* spriteRender = spriteNode->getComponent<SpriteRenderer>();
+		if (ImGui::CollapsingHeader("Sprite Renderer", ImGuiUtils::k_FlagCollapseHeader))
+		{
+			auto material = AssetMgr::GetRuntimeAsset<SpriteMaterial>(spriteRender->MatHnd);
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text(" Sprite   ");
+			ImGui::SameLine();
+			auto remain = ImGui::GetContentRegionAvail();
+			ImGui::PushItemWidth(remain.x);
+			std::string name = "Square";
+			ImGui::InputText("##Sprite Type", const_cast<char*>(name.c_str()), name.size(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::PopItemWidth();
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text(" Color    ");
+			ImGui::SameLine();
+			ImGui::ColorEdit3("##Color", &spriteRender->Color.r);
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text(" Flip     ");
+			ImGui::SameLine();
+			ImGui::Checkbox("X", &spriteRender->FlipX);
+			ImGui::SameLine();
+			ImGui::Checkbox("Y", &spriteRender->FlipY);
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text(" Material ");
+			ImGui::SameLine();
+			remain = ImGui::GetContentRegionAvail();
+			ImGui::PushItemWidth(remain.x);
+			std::string matName = material->name();
+			ImGui::InputText("##Sprite Material", const_cast<char*>(matName.c_str()), matName.size(), ImGuiInputTextFlags_ReadOnly);
+			ImGui::PopItemWidth();
+		}
+	}
+
 	void ImGuiUtils::DrawStandardMaterial(Ref<Material>& material)
 	{
 		auto* pbrMaterial = material->as<PbrMaterial>();
@@ -349,6 +399,9 @@ namespace pio
 
 	void ImGuiUtils::DrawTransformPanel(TransformComponent* comp)
 	{
+		if (!comp)
+			return;
+
 		if(ImGui::CollapsingHeader("Transform", ImGuiUtils::k_FlagCollapseHeader))
 		{
 			ImGui::AlignTextToFramePadding();

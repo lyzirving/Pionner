@@ -42,6 +42,7 @@ namespace pio
 											}
 
 	class Scene;
+	class CameraNode;
 	class RenderContext;
 
 	class Node : public std::enable_shared_from_this<Node>
@@ -52,8 +53,9 @@ namespace pio
 		Node(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<Node>& parent, const entt::entity& key, const std::string& name);
 
 		virtual ~Node() = default;
-		virtual NodeType nodeType() const = 0;		
-		virtual void update(Ref<RenderContext>& context) = 0;
+		virtual NodeType nodeType() const = 0;
+		virtual void update(Ref<RenderContext>& context) {};
+		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) {};
 		virtual void onInit() {};
 		virtual void onAttach(Ref<Scene>& scene) {}
 		virtual void onDetach(Ref<Scene>& scene) {}
@@ -112,6 +114,7 @@ namespace pio
 		}
 
 		Ref<Node> getParent() const { return m_parent.lock(); }
+		bool isChild() const { return getParent().use_count() != 0; }
 		entt::entity key() const { return m_key; }
 		uint32_t idx() const { return (uint32_t)m_key; }		
 		uint32_t uuid() const { return m_uuid; }

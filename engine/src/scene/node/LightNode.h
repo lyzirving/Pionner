@@ -22,8 +22,6 @@ namespace pio
 	public:
 		virtual ~LightNode();
 		virtual LightType lightType() const = 0;
-		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) {}
-		virtual void update(Ref<RenderContext>& context) override {}
 	};
 
 	class DirectionalLightNode : public LightNode

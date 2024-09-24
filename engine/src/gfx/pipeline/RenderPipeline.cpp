@@ -110,7 +110,7 @@ namespace pio
 		auto& meshNodes = renderingNodes.Mesh;
 		for (auto& mesh : meshNodes)
 		{
-			mesh->update(context);
+			mesh->update(context, camNode);
 			auto data = mesh->getRenderingData<MeshNode, MeshRenderingItem>();
 			switch (data.Mode)
 			{
@@ -135,7 +135,7 @@ namespace pio
 		auto& sprites = renderingNodes.Sprite;
 		for (auto& item : sprites)
 		{
-			item->update(context);
+			item->update(context, camNode);
 			auto data = item->getRenderingData<SpriteNode, MeshRenderingItem>();
 			switch (data.Mode)
 			{

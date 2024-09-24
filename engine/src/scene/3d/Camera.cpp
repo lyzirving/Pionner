@@ -162,6 +162,12 @@ namespace pio
 		return dir;
 	}
 
+	glm::vec3 Camera::BillBoardRotate(const Ref<CameraNode>& node)
+	{
+		auto rotMat = glm::mat3(glm::inverse(node->camera()->viewMat()));
+		return glm::degrees(glm::eulerAngles(glm::quat_cast(rotMat)));
+	}
+
 	template<>
 	bool Asset::is<Camera>() const { return assetType() == AssetType::Camera; }
 }

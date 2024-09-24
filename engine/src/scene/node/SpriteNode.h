@@ -11,7 +11,7 @@ namespace pio
 		PIO_NODE_DECLARE(SpriteNode, NodeType::Sprite)
 	public:
 		~SpriteNode();
-		virtual void update(Ref<RenderContext>& context) override;
+		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) override;
 		virtual void onInit() override;
 	};
 
