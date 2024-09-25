@@ -104,7 +104,8 @@ namespace pio
 	enum class MeshType : uint8_t
 	{
 		Plane, 
-		Cube, 
+		Cube,
+		Outline,
 		Num
 	};
 

@@ -12,6 +12,7 @@ namespace pio
 		Mesh,
 		Light,
 		Sprite,
+		Gizmo,
 		Num
 	};
 
