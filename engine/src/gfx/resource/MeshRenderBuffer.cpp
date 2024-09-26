@@ -71,7 +71,7 @@ namespace pio
 			return;
 
 		const auto& tris = mesh->triangles();
-		MeshRenderBuffer::Create(context, *this, tris.Vertices, tris.Indices);
+		MeshRenderBuffer::Create(context, *this, tris.getVertice(), tris.getIndice());
 
 		auto transUnim = CreateRef<UniformMat4>(GpuAttr::UNI_MODEL_MAT);
 		Uniforms.insert({ transUnim->name(), transUnim });

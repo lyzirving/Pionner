@@ -7,9 +7,9 @@
 
 namespace pio
 {
-	TriangleMesh3d Factory::MakePlane(float n)
+	TriangleMesh Factory::MakePlane(float n)
 	{
-		TriangleMesh3d triangles;
+		TriangleMesh triangles;
 		glm::vec3 origin(-n / 2.f, 0.f, -n / 2.f);
 		uint32_t count = n;
 		for(uint32_t row = 0; row < count; row++)
@@ -29,15 +29,15 @@ namespace pio
 
 				v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Up;				
 
-				MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+				MakeTriangleMesh(v0, v1, v2, v3, triangles);
 			}
 		}
 		return triangles;
 	}
 
-	TriangleMesh3d Factory::MakeCube(float n)
+	TriangleMesh Factory::MakeCube(float n)
 	{
-		TriangleMesh3d triangles;
+		TriangleMesh triangles;
 		float half = n * 0.5f;
 		//front face
 		{
@@ -53,7 +53,7 @@ namespace pio
 			v3.TexCoord = glm::vec2(1.f, 1.f);
 
 			v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Forward;
-			MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+			MakeTriangleMesh(v0, v1, v2, v3, triangles);
 		}
 
 		//right face
@@ -70,7 +70,7 @@ namespace pio
 			v3.TexCoord = glm::vec2(1.f, 1.f);
 
 			v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Right;
-			MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+			MakeTriangleMesh(v0, v1, v2, v3, triangles);
 		}
 
 		//Left face
@@ -87,7 +87,7 @@ namespace pio
 			v3.TexCoord = glm::vec2(1.f, 1.f);
 
 			v0.Normal = v1.Normal = v2.Normal = v3.Normal = -World::Right;
-			MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+			MakeTriangleMesh(v0, v1, v2, v3, triangles);
 		}
 
 		//Back face
@@ -104,7 +104,7 @@ namespace pio
 			v3.TexCoord = glm::vec2(1.f, 1.f);
 
 			v0.Normal = v1.Normal = v2.Normal = v3.Normal = -World::Forward;
-			MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+			MakeTriangleMesh(v0, v1, v2, v3, triangles);
 		}
 
 		//Top face
@@ -121,7 +121,7 @@ namespace pio
 			v3.TexCoord = glm::vec2(1.f, 1.f);
 
 			v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Up;
-			MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+			MakeTriangleMesh(v0, v1, v2, v3, triangles);
 		}
 
 		//Bottom face
@@ -138,14 +138,14 @@ namespace pio
 			v3.TexCoord = glm::vec2(1.f, 1.f);
 
 			v0.Normal = v1.Normal = v2.Normal = v3.Normal = -World::Up;
-			MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+			MakeTriangleMesh(v0, v1, v2, v3, triangles);
 		}
 		return triangles;
 	}
 
-	TriangleMesh3d Factory::MakeSquare(float w, float h)
+	TriangleMesh Factory::MakeSquare(float w, float h)
 	{
-		TriangleMesh3d triangles;
+		TriangleMesh triangles;
 		glm::vec3 origin(-w / 2.f, h / 2.f, 0.f);
 		Vertex3d v0, v1, v2, v3;
 		v0.Pos = origin;
@@ -160,14 +160,14 @@ namespace pio
 
 		v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Forward;
 
-		MakeTriangleMesh3d(v0, v1, v2, v3, triangles);
+		MakeTriangleMesh(v0, v1, v2, v3, triangles);
 
 		return triangles;
 	}
 
-	TriangleMesh3d Factory::MakeScreenQuad()
+	TriangleMesh Factory::MakeScreenQuad()
 	{
-		TriangleMesh3d triangles;
+		TriangleMesh triangles;
 		Vertex3d v0, v1, v2, v3;
 		v0.Pos = glm::vec3(-1.f, 1.f, 0.f);
 		v1.Pos = glm::vec3(-1.f, -1.f, 0.f);
@@ -181,45 +181,27 @@ namespace pio
 
 		v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Forward;
 
-		uint16_t idx = triangles.Vertices.size();
-		triangles.Vertices.push_back(v0);
-		triangles.Vertices.push_back(v1);
-		triangles.Vertices.push_back(v2);
-		triangles.Vertices.push_back(v3);
-
-		triangles.Indices.push_back(idx);
-		triangles.Indices.push_back(idx + 1);
-		triangles.Indices.push_back(idx + 2);
-		triangles.Indices.push_back(idx + 2);
-		triangles.Indices.push_back(idx + 3);
-		triangles.Indices.push_back(idx);
-
-		triangles.Triangles.push_back(Triangle((v0.Normal + v1.Normal + v2.Normal) / 3.f,
-									  { idx, (uint16_t)(idx + 1), (uint16_t)(idx + 2) }));
-		triangles.Triangles.push_back(Triangle((v2.Normal + v3.Normal + v0.Normal) / 3.f,
-									  { (uint16_t)(idx + 2), (uint16_t)(idx + 3), idx }));
+		MakeTriangleMesh(v0, v1, v2, v3, triangles);
 
 		return triangles;
 	}
 
-	void Factory::MakeTriangleMesh3d(const Vertex3d& v0, const Vertex3d& v1, const Vertex3d& v2, const Vertex3d& v3, TriangleMesh3d& triangles)
+	void Factory::MakeTriangleMesh(const Vertex3d& v0, const Vertex3d& v1, const Vertex3d& v2, const Vertex3d& v3, TriangleMesh& triangles)
 	{
-		uint16_t idx = triangles.Vertices.size();
-		triangles.Vertices.push_back(v0);
-		triangles.Vertices.push_back(v1);
-		triangles.Vertices.push_back(v2);
-		triangles.Vertices.push_back(v3);
+		auto& vertice = triangles.getVertice();
+		auto& indice = triangles.getIndice();
+		uint16_t idx = vertice.size();
 
-		triangles.Indices.push_back(idx);
-		triangles.Indices.push_back(idx + 1);
-		triangles.Indices.push_back(idx + 2);
-		triangles.Indices.push_back(idx + 2);
-		triangles.Indices.push_back(idx + 3);
-		triangles.Indices.push_back(idx);
+		vertice.push_back(v0);
+		vertice.push_back(v1);
+		vertice.push_back(v2);
+		vertice.push_back(v3);
 
-		triangles.Triangles.push_back(Triangle((v0.Normal + v1.Normal + v2.Normal) / 3.f,
-									  { idx, (uint16_t)(idx + 1), (uint16_t)(idx + 2) }));
-		triangles.Triangles.push_back(Triangle((v2.Normal + v3.Normal + v0.Normal) / 3.f,
-									  { (uint16_t)(idx + 2), (uint16_t)(idx + 3), idx }));
+		indice.push_back(idx);
+		indice.push_back(idx + 1);
+		indice.push_back(idx + 2);
+		indice.push_back(idx + 2);
+		indice.push_back(idx + 3);
+		indice.push_back(idx);
 	}
 }

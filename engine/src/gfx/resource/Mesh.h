@@ -3,7 +3,7 @@
 
 #include "asset/Asset.h"
 
-#include "TriangleMesh.h"
+#include "MeshData.h"
 
 namespace pio
 {
@@ -17,14 +17,14 @@ namespace pio
 		Mesh() : Asset() {}
 		virtual ~Mesh() = default;
 
-		void setTriangleMesh(const TriangleMesh3d& mesh) { m_triangles = mesh; }
-		void setTriangleMesh(TriangleMesh3d&& mesh) { m_triangles = std::forward<TriangleMesh3d>(mesh); }
+		void setTriangleMesh(const TriangleMesh& mesh) { m_triangles = mesh; }
+		void setTriangleMesh(TriangleMesh&& mesh) { m_triangles = std::forward<TriangleMesh>(mesh); }
 
-		TriangleMesh3d& triangles() { return m_triangles; }
-		const TriangleMesh3d& triangles() const { return m_triangles; }
+		TriangleMesh& triangles() { return m_triangles; }
+		const TriangleMesh& triangles() const { return m_triangles; }
 
 	private:
-		TriangleMesh3d m_triangles;
+		TriangleMesh m_triangles;
 
 	private:
 		friend class Factory;

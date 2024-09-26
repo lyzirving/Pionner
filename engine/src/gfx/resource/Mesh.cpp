@@ -1,7 +1,5 @@
 #include "Mesh.h"
 
-#include "scene/Components.h"
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
