@@ -13,11 +13,12 @@
 #include "gfx/rhi/ShaderCompiler.h"
 
 #include "gfx/resource/Mesh.h"
-#include "gfx/resource/Material.h"
 #include "gfx/resource/TextureMgr.h"
-#include "gfx/resource/MaterialMgr.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 #include "gfx/resource/RenderTarget.h"
+
+#include "gfx/resource/material/Material.h"
+#include "gfx/resource/material/MaterialMgr.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
@@ -189,11 +190,12 @@ namespace pio
 		m_textureMgr->init(context);
 		m_materialMgr->init(context);
 
+		auto meshData = Factory::MakeScreenQuad();
 		auto screenMesh = CreateRef<Mesh>();
-		screenMesh->setTriangleMesh(Factory::MakeScreenQuad());
+		screenMesh->setData(meshData);
 
 		m_screenMeshBuffer = CreateRef<MeshRenderBuffer>();
-		m_screenMeshBuffer->setUp(context, screenMesh);
+		m_screenMeshBuffer->setUp(context, meshData->getVertice(), meshData->getIndice());
 
 		m_renderer = Renderer::Create(GlobalSettings::RenderConfig);
 		m_renderer->onAttach(context);

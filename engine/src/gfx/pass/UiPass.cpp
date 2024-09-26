@@ -7,7 +7,7 @@
 
 #include "gfx/resource/RenderTarget.h"
 #include "gfx/renderer/RenderContext.h"
-#include "gfx/resource/Material.h"
+#include "gfx/resource/material/Material.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 
 #include "scene/node/CameraNode.h"

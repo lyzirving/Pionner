@@ -7,9 +7,9 @@
 
 namespace pio
 {
-	TriangleMesh Factory::MakePlane(float n)
+	Ref<TriangleMesh> Factory::MakePlane(float n)
 	{
-		TriangleMesh triangles;
+		auto triangles = CreateRef<TriangleMesh>();
 		glm::vec3 origin(-n / 2.f, 0.f, -n / 2.f);
 		uint32_t count = n;
 		for(uint32_t row = 0; row < count; row++)
@@ -35,9 +35,9 @@ namespace pio
 		return triangles;
 	}
 
-	TriangleMesh Factory::MakeCube(float n)
+	Ref<TriangleMesh> Factory::MakeCube(float n)
 	{
-		TriangleMesh triangles;
+		auto triangles = CreateRef<TriangleMesh>();
 		float half = n * 0.5f;
 		//front face
 		{
@@ -143,9 +143,9 @@ namespace pio
 		return triangles;
 	}
 
-	TriangleMesh Factory::MakeSquare(float w, float h)
+	Ref<TriangleMesh> Factory::MakeSquare(float w, float h)
 	{
-		TriangleMesh triangles;
+		auto triangles = CreateRef<TriangleMesh>();
 		glm::vec3 origin(-w / 2.f, h / 2.f, 0.f);
 		Vertex3d v0, v1, v2, v3;
 		v0.Pos = origin;
@@ -165,9 +165,55 @@ namespace pio
 		return triangles;
 	}
 
-	TriangleMesh Factory::MakeScreenQuad()
+	Ref<LineSeqMesh> Factory::MakeDirLightGizmo(float r, float len)
 	{
-		TriangleMesh triangles;
+		auto lineSeqs = CreateRef<LineSeqMesh>();
+
+		const size_t itr = 8;
+		const float span = 360.f / float(itr);
+		float angle{ 0.f };
+
+		auto& vertice = lineSeqs->getVertice();
+		auto& indice = lineSeqs->getIndice();
+
+		vertice.reserve(17);
+		vertice.emplace_back(glm::vec3(0.f));
+
+		for (size_t i = 0; i < itr; i++)
+		{
+			angle = glm::radians(i * span);
+			vertice.emplace_back(glm::vec3(r * std::cos(angle), r * std::sin(angle), 0.f));
+			vertice.emplace_back(glm::vec3(r * std::cos(angle), r * std::sin(angle), len));
+		}
+
+		for (size_t i = 0; i < itr; i++)
+		{
+			// radial edge
+			indice.push_back(0);
+			indice.push_back(2 * i + 1);
+
+			// subtense
+			if (i == itr - 1)
+			{
+				indice.push_back(2 * i + 1);
+				indice.push_back(1);
+			}
+			else
+			{
+				indice.push_back(2 * i + 1);
+				indice.push_back(2 * i + 3);
+			}
+
+			// light edge
+			indice.push_back(2 * i + 1);
+			indice.push_back(2 * i + 2);
+		}
+		return lineSeqs;
+	}
+
+	Ref<TriangleMesh> Factory::MakeScreenQuad()
+	{
+		auto triangles = CreateRef<TriangleMesh>();
 		Vertex3d v0, v1, v2, v3;
 		v0.Pos = glm::vec3(-1.f, 1.f, 0.f);
 		v1.Pos = glm::vec3(-1.f, -1.f, 0.f);
@@ -186,10 +232,10 @@ namespace pio
 		return triangles;
 	}
 
-	void Factory::MakeTriangleMesh(const Vertex3d& v0, const Vertex3d& v1, const Vertex3d& v2, const Vertex3d& v3, TriangleMesh& triangles)
+	void Factory::MakeTriangleMesh(const Vertex3d& v0, const Vertex3d& v1, const Vertex3d& v2, const Vertex3d& v3, Ref<TriangleMesh>& triangles)
 	{
-		auto& vertice = triangles.getVertice();
-		auto& indice = triangles.getIndice();
+		auto& vertice = triangles->getVertice();
+		auto& indice = triangles->getIndice();
 		uint16_t idx = vertice.size();
 
 		vertice.push_back(v0);

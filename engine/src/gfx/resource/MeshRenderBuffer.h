@@ -5,13 +5,13 @@
 #include "gfx/rhi/VertexArray.h"
 #include "gfx/rhi/VertexBuffer.h"
 #include "gfx/rhi/IndexBuffer.h"
+#include "gfx/rhi/UniformData.h"
 
 namespace pio
-{
-	class RenderContext;
-	class UniformData;
+{	
 	class Mesh;
 	class Shader;
+	class RenderContext;
 
 	class MeshRenderBuffer : public Asset
 	{
@@ -27,9 +27,20 @@ namespace pio
 
 		bool valid() const { return Vao.use_count() != 0 && Vbo.use_count() != 0 && Ebo.use_count() != 0; }
 
-		void bind(Ref<Shader>& shader);
-		void setUp(Ref<RenderContext>& context, Ref<Mesh>& mesh);
+		void bind(Ref<Shader>& shader);		
 		void update(Ref<RenderContext>& context);
+
+		template<typename VertexType, typename IndiceType>
+		void setUp(Ref<RenderContext>& context, const std::vector<VertexType>& vertice, const std::vector<IndiceType>& indice)
+		{
+			if (valid())
+				return;
+
+			MeshRenderBuffer::Create(context, *this, vertice, indice);
+
+			auto transUnim = CreateRef<UniformMat4>(GpuAttr::UNI_MODEL_MAT);
+			Uniforms.insert({ transUnim->name(), transUnim });
+		}
 
 	public:
 		template<typename VertexType, typename IndiceType>

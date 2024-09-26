@@ -8,8 +8,8 @@
 #include "scene/node/MeshNode.h"
 #include "scene/node/SpriteNode.h"
 
-#include "gfx/resource/PbrMaterial.h"
-#include "gfx/resource/SpriteMaterial.h"
+#include "gfx/resource/material/PbrMaterial.h"
+#include "gfx/resource/material/SpriteMaterial.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

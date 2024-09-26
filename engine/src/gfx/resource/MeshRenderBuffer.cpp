@@ -1,6 +1,5 @@
 #include "MeshRenderBuffer.h"
 
-#include "gfx/rhi/UniformData.h"
 #include "gfx/rhi/Shader.h"
 #include "gfx/resource/Mesh.h"
 
@@ -63,18 +62,6 @@ namespace pio
 		{
 			shader->setUniformData(it.second);
 		}
-	}
-
-	void MeshRenderBuffer::setUp(Ref<RenderContext>& context, Ref<Mesh>& mesh)
-	{
-		if (valid())
-			return;
-
-		const auto& tris = mesh->triangles();
-		MeshRenderBuffer::Create(context, *this, tris.getVertice(), tris.getIndice());
-
-		auto transUnim = CreateRef<UniformMat4>(GpuAttr::UNI_MODEL_MAT);
-		Uniforms.insert({ transUnim->name(), transUnim });
 	}
 
 	template<>

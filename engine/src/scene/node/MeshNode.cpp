@@ -6,7 +6,7 @@
 #include "scene/Factory.h"
 
 #include "gfx/resource/Mesh.h"
-#include "gfx/resource/Material.h"
+#include "gfx/resource/material/Material.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 #include "gfx/renderer/RenderContext.h"
 
@@ -53,8 +53,9 @@ namespace pio
 		auto* meshFilter = getComponent<MeshFilter>();
 		auto* meshRender = getComponent<MeshRenderer>();
 
+		auto meshData = Factory::MakePlane();
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
-		mesh->m_triangles = Factory::MakePlane();
+		mesh->setData(meshData);
 
 		meshFilter->Type = MeshType::Plane;
 		meshFilter->MeshHnd = mesh->assetHnd();
@@ -62,7 +63,7 @@ namespace pio
 		meshRender->MatHnd = context->getMaterial(GpuAttr::Mat::STANDARD, true)->assetHnd();
 
 		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
-		renderBuff->setUp(context, mesh);
+		renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice());
 		meshRender->BuffHnd = renderBuff->assetHnd();
 	}
 
@@ -78,8 +79,9 @@ namespace pio
 		auto* meshRender = getComponent<MeshRenderer>();
 		auto* transform = getComponent<TransformComponent>();
 
+		auto meshData = Factory::MakeCube();
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
-		mesh->m_triangles = Factory::MakeCube();
+		mesh->setData(meshData);
 
 		meshFilter->Type = MeshType::Cube;
 		meshFilter->MeshHnd = mesh->assetHnd();
@@ -87,8 +89,8 @@ namespace pio
 		meshRender->MatHnd = context->getMaterial(GpuAttr::Mat::STANDARD, true)->assetHnd();
 
 		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
-		renderBuff->setUp(context, mesh);
-		meshRender->BuffHnd = renderBuff->assetHnd();	
+		renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice());
+		meshRender->BuffHnd = renderBuff->assetHnd();
 
 		transform->Position = glm::vec3(0.f, 1.f, 0.f);
 	}

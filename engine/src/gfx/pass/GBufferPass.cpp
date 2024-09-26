@@ -10,7 +10,7 @@
 #include "gfx/renderer/RenderContext.h"
 
 #include "gfx/resource/Mesh.h"
-#include "gfx/resource/Material.h"
+#include "gfx/resource/material/Material.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 
 #ifdef LOCAL_TAG

@@ -11,7 +11,7 @@
 
 #include "gfx/resource/Mesh.h"
 #include "gfx/resource/MeshRenderBuffer.h"
-#include "gfx/resource/SpriteMaterial.h"
+#include "gfx/resource/material/SpriteMaterial.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG

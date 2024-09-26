@@ -7,9 +7,6 @@
 
 namespace pio
 {
-	class RenderContext;
-	struct TransformComponent;
-
 	class Mesh : public Asset
 	{
 		PIO_DEFINE_ASSET_TYPE(AssetType::Mesh)
@@ -17,21 +14,20 @@ namespace pio
 		Mesh() : Asset() {}
 		virtual ~Mesh() = default;
 
-		void setTriangleMesh(const TriangleMesh& mesh) { m_triangles = mesh; }
-		void setTriangleMesh(TriangleMesh&& mesh) { m_triangles = std::forward<TriangleMesh>(mesh); }
+		void setData(const Ref<MeshDataBase>& data) { m_data = data; }
 
-		TriangleMesh& triangles() { return m_triangles; }
-		const TriangleMesh& triangles() const { return m_triangles; }
+		Ref<MeshDataBase>& data() { return m_data; }
+		const Ref<MeshDataBase>& data() const { return m_data; }
 
 	private:
-		TriangleMesh m_triangles;
+		Ref<MeshDataBase> m_data;
 
 	private:
 		friend class Factory;
 		friend class PlaneNode;
-		friend class CubeNode;
-		friend class DirectionalLightNode;
+		friend class CubeNode;		
 		friend class SpriteNode;
+		friend class DirectionalLightNode;
 	};
 
 	template<>

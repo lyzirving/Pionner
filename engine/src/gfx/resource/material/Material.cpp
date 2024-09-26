@@ -2,6 +2,7 @@
 
 #include "PbrMaterial.h"
 #include "SpriteMaterial.h"
+#include "ColorMaterial.h"
 
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/Texture.h"
@@ -75,6 +76,8 @@ namespace pio
 				return AssetMgr::MakeRuntimeAsset<PbrMaterial>(name, mode);
 			case ShaderSpec_Sprite:
 				return AssetMgr::MakeRuntimeAsset<SpriteMaterial>(name, mode);
+			case ShaderSpec_Color:
+				return AssetMgr::MakeRuntimeAsset<ColorMaterial>(name, mode);
 			default:
 				LOGE("err! shader spec[%u] has not been implemented", spec);
 				return Ref<Material>();

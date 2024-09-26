@@ -16,7 +16,7 @@
 #include "gfx/resource/Light.h"
 #include "gfx/resource/Mesh.h"
 #include "gfx/resource/MeshRenderBuffer.h"
-#include "gfx/resource/SpriteMaterial.h"
+#include "gfx/resource/material/SpriteMaterial.h"
 
 #include "gfx/rhi/Texture.h"
 #include "gfx/rhi/UniformBuffer.h"
@@ -69,22 +69,25 @@ namespace pio
 	{
 		auto context = m_context.lock();
 
-		auto sprite = addChild<SpriteNode>("LitSprite");
-		auto* transComp = sprite->getComponent<TransformComponent>();
-		auto* spriteRender = sprite->getComponent<SpriteRenderer>();
-		spriteRender->BillBoard = true;
+		{
+			auto sprite = addChild<SpriteNode>("LitSprite");
+			auto* transComp = sprite->getComponent<TransformComponent>();
+			auto* spriteRender = sprite->getComponent<SpriteRenderer>();
+			spriteRender->BillBoard = true;
 
-		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
-		mesh->m_triangles = Factory::MakeSquare(1.f, 1.f);
+			auto meshData = Factory::MakeSquare(1.f, 1.f);
+			auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
+			mesh->setData(meshData);
 
-		auto spriteMat = context->getMaterial(GpuAttr::Mat::SPRITE, true);
-		spriteMat->as<SpriteMaterial>()->setSpriteTexture(context->getTexture(GpuAttr::Tex::DIST_LIGHT));
-		spriteRender->MatHnd = spriteMat->assetHnd();
-		spriteRender->MeshHnd = mesh->assetHnd();
+			auto spriteMat = context->getMaterial(GpuAttr::Mat::SPRITE, true);
+			spriteMat->as<SpriteMaterial>()->setSpriteTexture(context->getTexture(GpuAttr::Tex::DIST_LIGHT));
+			spriteRender->MatHnd = spriteMat->assetHnd();
+			spriteRender->MeshHnd = mesh->assetHnd();
 
-		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
-		renderBuff->setUp(context, mesh);
-		spriteRender->BuffHnd = renderBuff->assetHnd();
+			auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
+			renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice());
+			spriteRender->BuffHnd = renderBuff->assetHnd();
+		}
 	}
 
 	void DirectionalLightNode::updateLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode)

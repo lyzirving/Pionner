@@ -12,6 +12,7 @@ namespace pio
 			//Default material
 			static const char* STANDARD = "StandardMaterial";
 			static const char* SPRITE = "SpriteMaterial";
+			static const char* COLOR = "ColorMaterial";
 		}
 
 		namespace Tex
@@ -92,7 +93,8 @@ namespace pio
 	enum ShaderSpecifier : uint8_t
 	{
 		ShaderSpec_Standard,
-		ShaderSpec_Sprite
+		ShaderSpec_Sprite,
+		ShaderSpec_Color
 	};	
 
 	enum class RenderingStrategy : uint8_t

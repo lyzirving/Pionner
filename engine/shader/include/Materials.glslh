@@ -25,5 +25,11 @@ struct SpriteMaterial
     sampler2D SpriteTexture;
 };
 
+struct ColorMaterial 
+{
+    vec3 Color;
+};
+
 uniform PBRMaterial    u_pbrMaterial;
 uniform SpriteMaterial u_spriteMaterial;
+uniform ColorMaterial  u_colorMaterial;

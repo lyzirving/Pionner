@@ -20,7 +20,6 @@ namespace pio
 
 		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) override;
 		virtual void onInit() override;
-		virtual void onAttach(Ref<Scene>& scene) override;
 	};
 }
 
