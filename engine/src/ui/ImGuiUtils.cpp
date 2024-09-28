@@ -253,11 +253,13 @@ namespace pio
 					ImGui::SameLine();
 					remain = ImGui::GetContentRegionAvail();
 					ImGui::PushItemWidth(remain.x);
-					ImGui::DragFloat("##Sd_Bias", &lightComp->Bias, 0.01f, 0.f, 2.f, "%.2f");
+					ImGui::DragFloat("##Sd_Bias", &lightComp->Bias, 0.00001f, 0.00001f, 2.f, "%.5f");
 					ImGui::PopItemWidth();
 
 					ImGui::AlignTextToFramePadding();
 					ImGui::Text("  Normal Bias");
+					ImGui::SameLine();
+					HelpMaker("Normal Bias has not been implemented");
 					ImGui::SameLine();
 					remain = ImGui::GetContentRegionAvail();
 					ImGui::PushItemWidth(remain.x);

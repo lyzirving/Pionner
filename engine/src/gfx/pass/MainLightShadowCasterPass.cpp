@@ -43,9 +43,8 @@ namespace pio
 
 		m_attrs.setClear(Clear::Common())
 			.setBlend(Blend::Disable())
-			.setDepth(DepthTest::Common())
-			.setCull(CullFace::Common())
-			//.setCull(CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front))// Fix Peter Panning			
+			.setDepth(DepthTest::Common())	
+			.setCull(CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front))// Fix Peter Panning			
 			.setStencil(StencilTest::Disable());
 	}
 

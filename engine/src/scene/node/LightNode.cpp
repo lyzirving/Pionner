@@ -35,7 +35,7 @@ namespace pio
 
 	PIO_NODE_IMPL_CONSTRUCOR(DirectionalLightNode, LightNode)
 
-	DirectionalLightNode::~DirectionalLightNode() = default;	
+	DirectionalLightNode::~DirectionalLightNode() = default;
 
 	void DirectionalLightNode::onInit()
 	{

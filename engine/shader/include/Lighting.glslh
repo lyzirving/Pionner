@@ -53,60 +53,48 @@ vec3 CalculateDirLightsEffect()
     return (diffuseBRDF + specularBRDF) * NdotL * Lradiance;
 }
 
-float CalcShadowBias(vec3 lightDir, vec3 N, float shadowMapSize, float frustumSize, float radius, float bias)
+float SimpleShadowBias(vec3 lightDir, vec3 N, float bias)
 {
-    float A = (1.0 + ceil(abs(radius))) * frustumSize * 0.5f / (shadowMapSize + 0.0001);
-    float B = 1.0 - dot(N, lightDir);
-    return bias * A * B; 
+    return max(bias * (1.0 - dot(N, lightDir)), bias * 0.1f); 
 }
 
 float CalcDirLightHardShadow(sampler2D shadowMap)
 {
+    vec4 lightSpacePos = u_mainLightCaster.PrjMat * u_mainLightCaster.ViewMat * vec4(m_PBRParams.FragPos, 1.f);    
+    vec3 prjCoords = lightSpacePos.xyz / lightSpacePos.w;      // perform perspective divide    
+    prjCoords = prjCoords * 0.5 + 0.5;                         // transform to [0,1] range    
+    float currentDepth = prjCoords.z;                          // get depth of current fragment from light's perspective    
+    float closestDepth = texture(shadowMap, prjCoords.xy).r;   // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+
     vec3 lightDir = normalize(-u_directionalLight.Direction);
-
-    //Normal Bias
-    float nOffset = CalcShadowBias(lightDir, m_PBRParams.N, u_mainLightCaster.ShadowMapSize.x, u_mainLightCaster.FrustumSize, 0.f, u_directionalLight.NormalBias);
-    vec4 biasPos = u_mainLightCaster.PrjMat * u_mainLightCaster.ViewMat * vec4(m_PBRParams.FragPos + m_PBRParams.N * nOffset, 1.f);
-    //Perspective divide, and transform to [0, 1]
-    vec3 prjCoords = vec3(biasPos.xyz / biasPos.w) * 0.5 + 0.5;
-    float currentDepth = prjCoords.z;
-    float closestDepth = texture(shadowMap, prjCoords.xy).r; 
-  
-    //Depth Bias
-    float depthBias = CalcShadowBias(lightDir, m_PBRParams.N, u_mainLightCaster.ShadowMapSize.x, u_mainLightCaster.FrustumSize, 0.f, u_directionalLight.Bias);
-
-    return (currentDepth - depthBias) > closestDepth  ? 1.0 : 0.0;
+    float bias = SimpleShadowBias(lightDir, m_PBRParams.N, u_directionalLight.Bias); 
+    return (currentDepth - bias) > closestDepth  ? 1.0 : 0.0;
 }
 
 float CalcDirLightPCFShadow(int radius, sampler2D shadowMap)
 {   
-    vec3 lightDir = normalize(-u_directionalLight.Direction);
-
-    //Normal Bias
-    float nOffset = CalcShadowBias(lightDir, m_PBRParams.N, u_mainLightCaster.ShadowMapSize.x, u_mainLightCaster.FrustumSize, 0.f, u_directionalLight.NormalBias);
-    vec4 biasPos = u_mainLightCaster.PrjMat * u_mainLightCaster.ViewMat * vec4(m_PBRParams.FragPos + m_PBRParams.N * nOffset, 1.f);
-    //Perspective divide and transform to [0, 1]
-    vec3 prjCoords = vec3(biasPos.xyz / biasPos.w) * 0.5 + 0.5;
-    float currentDepth = prjCoords.z;    
-
-    int itor = 0;
-    float shadow = 0.0;
-    float depthBias = 0.0;
+    vec4 lightSpacePos = u_mainLightCaster.PrjMat * u_mainLightCaster.ViewMat * vec4(m_PBRParams.FragPos, 1.f);    
+    vec3 prjCoords = lightSpacePos.xyz / lightSpacePos.w;      // perform perspective divide    
+    prjCoords = prjCoords * 0.5 + 0.5;                         // transform to [0,1] range    
+    float currentDepth = prjCoords.z;                          // get depth of current fragment from light's perspective        
+    
+    vec3 lightDir = normalize(-u_directionalLight.Direction);        
+    float bias = SimpleShadowBias(lightDir, m_PBRParams.N, u_directionalLight.Bias); 
+    
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-
+    int itrCnt = 0;
+    float shadow = 0.f;
     //PCF
     for(int x = -radius; x <= radius; ++x)
     {
         for(int y = -radius; y <= radius; ++y)
         {
-            float pcfDepth = texture(shadowMap, prjCoords.xy + vec2(x, y) * texelSize).r;
-            //Depth Bias
-            depthBias = CalcShadowBias(lightDir, m_PBRParams.N, u_mainLightCaster.ShadowMapSize.x, u_mainLightCaster.FrustumSize, radius, u_directionalLight.Bias);          
-            shadow += (currentDepth - depthBias > pcfDepth) ? 1.f : 0.f;  
-            itor++;
+            float pcfDepth = texture(shadowMap, prjCoords.xy + vec2(x, y) * texelSize).r; 
+            shadow += (currentDepth - bias > pcfDepth) ? 1.f : 0.f;  
+            itrCnt++;
         }    
     }
-    shadow /= float(itor);
+    shadow /= float(itrCnt);
 
     // keep the shadow at 0.0 when outside the far plane region of the light's frustum.
     if(prjCoords.z > 1.0)
