@@ -9,6 +9,7 @@ namespace pio
 	class MeshNode;
 	class DirectionalLightNode;
 	class SpriteNode;
+	class GizmoNode;
 
 	//Node collection that is about to be uploaded
 	struct RenderingNodes
@@ -26,13 +27,21 @@ namespace pio
 		std::vector<Ref<MeshNode>> Mesh;
 		std::vector<Ref<Node>> SkinnedMesh;
 		std::vector<Ref<SpriteNode>> Sprite;
+		std::vector<Ref<GizmoNode>> Gizmo;
 	};
 
 	struct MeshRenderingItem
 	{
-		RenderingMode Mode{ RenderingMode_Opaque };
+		RenderingMode Mode{ RenderingMode_Num };
 		UUID32 RenderBuffFilter{ InvalidId };
 		UUID32 MaterialFilter{ InvalidId };
+
+		MeshRenderingItem() {}
+		MeshRenderingItem(const MeshRenderingItem& rhs);
+		MeshRenderingItem(MeshRenderingItem&& rhs) noexcept;
+
+		MeshRenderingItem& operator=(const MeshRenderingItem& rhs);
+		MeshRenderingItem& operator=(MeshRenderingItem&& rhs) noexcept;
 	};
 
 	/*
@@ -49,10 +58,15 @@ namespace pio
 		RenderingData &operator=(const RenderingData &rhs);
 		RenderingData &operator=(RenderingData &&rhs) noexcept;
 
+		void submitMesh(MeshRenderingItem&& item);
+		void submitSprite(MeshRenderingItem&& item);
+		void submitOutline(MeshRenderingItem&& item);
+
 		std::map<uint8_t, UUID32> UnimBuffSet{};
 		std::vector<MeshRenderingItem> OpaqueMeshItems{};
 		std::vector<MeshRenderingItem> TransparentMeshItems{};
 		std::vector<MeshRenderingItem> UiSprites{};
+		std::vector<MeshRenderingItem> Outlines{};
 	};
 }
 

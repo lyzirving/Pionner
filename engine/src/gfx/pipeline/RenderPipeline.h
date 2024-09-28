@@ -30,8 +30,7 @@ namespace pio
 
 		// Methods where make data  which is about to be uploaded
 		void onInitializeRenderingData(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
-		void onSetUpLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData &renderingData);
-		void onSetUpObject(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData &renderingData);
+		void onSetupRenderingData(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingNodes& renderingNodes, RenderingData& renderingData);		
 	};
 }
 

@@ -12,15 +12,14 @@ layout (location = 1) in vec2 a_texcoord;
 layout (location = 2) in vec3 a_normal;
 
 uniform mat4 u_modelMat;
-uniform bool u_bOverlay;
 
 out vec2 v_texcoord;
 
 void main() {
 	v_texcoord = a_texcoord;
-
-	mat4 prjMat = (u_bOverlay) ? u_camera.Ortho : u_camera.PrjMat;
-	gl_Position = prjMat * u_camera.ViewMat * u_modelMat * vec4(a_pos, 1.f);
+	
+	//TODO: deal with Orthographic projection
+	gl_Position = u_camera.PrjMat * u_camera.ViewMat * u_modelMat * vec4(a_pos, 1.f);
 }
 
 #version 430 core 

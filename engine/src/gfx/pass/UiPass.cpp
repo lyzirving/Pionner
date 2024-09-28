@@ -26,8 +26,9 @@ namespace pio
 	void UiPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
 	{
 		auto& renderingData = context->renderingData();
-		std::vector<MeshRenderingItem> uiSprites = renderingData.UiSprites;
-		if (uiSprites.empty()) { return; }
+		auto uiSprites = renderingData.UiSprites;
+		auto outlines = renderingData.Outlines;
+		if (uiSprites.empty() || outlines.empty()) { return; }
 
 		auto it = renderingData.UnimBuffSet.find(UBBinding_Camera);
 		PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find camera buff id");
@@ -36,46 +37,75 @@ namespace pio
 		auto& target = camNode->renderTarget();
 		PIO_CHECK_RETURN(target, "err! render target has not been set!");
 
-		auto& shader = context->shader(ShaderType::Sprite);
 		const auto& attr = m_attrs;
 
-		context->submitRC([&context, &target, &shader, &attr, camFilter, uiSprites]()
+		context->submitRC([&context, &target, &attr, camFilter, uiSprites, outlines]()
 		{
 			auto camBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(camFilter);
-			PIO_CHECK_RETURN(camBuff, "err! invalid camera uniform buffer");
+			PIO_CHECK_RETURN(camBuff, "err! invalid camera uniform buffer");			
 
-			context->onBeginRenderTarget(target, attr);
+			context->onBeginRenderTarget(target, attr);	
 
-			shader->bind();
-
-			shader->setBool("u_bOverlay", true);
-
-			context->bindUnimBlock(shader, camBuff, GpuAttr::BINDING_CAM_BLOCK);
-			camBuff->bind();			
-
-			for (auto& item : uiSprites)
+			if (!uiSprites.empty())
 			{
-				if (item.Mode != RenderingMode_Overlay)
-				{
-					LOGW("warning! rendering mode is not overlay");
-					continue;
-				}
-				Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
-				Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(item.MaterialFilter);
-				if (!meshBuff || !material)
-				{
-					LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
-					continue;
-				}
+				auto spriteShader = context->shader(ShaderType::Sprite);				
+				spriteShader->bind();
 
-				meshBuff->bind(shader);
-				material->bind(shader);
-				context->drawTriangles(meshBuff);
+				context->bindUnimBlock(spriteShader, camBuff, GpuAttr::BINDING_CAM_BLOCK);
+				camBuff->bind();
+
+				for (auto& item : uiSprites)
+				{
+					if (item.Mode != RenderingMode_Overlay)
+					{
+						LOGW("warning! ui sprite's rendering mode is not overlay");
+						continue;
+					}
+					Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
+					Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(item.MaterialFilter);
+					if (!meshBuff || !material)
+					{
+						LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
+						continue;
+					}
+
+					meshBuff->bind(spriteShader);
+					material->bind(spriteShader);
+					context->drawTriangles(meshBuff);
+				}
+				camBuff->unbind();
+				spriteShader->unbind();
 			}
 
-			camBuff->unbind();
+			if (!outlines.empty())
+			{
+				auto outlineShader = context->shader(ShaderType::Outline);
+				outlineShader->bind();
 
-			shader->unbind();
+				context->bindUnimBlock(outlineShader, camBuff, GpuAttr::BINDING_CAM_BLOCK);
+				camBuff->bind();
+
+				for (auto& item : outlines)
+				{
+					if (item.Mode != RenderingMode_Overlay)
+					{
+						LOGW("warning! ui mesh's rendering mode is not overlay");
+						continue;
+					}
+					Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
+					Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(item.MaterialFilter);
+					if (!meshBuff || !material)
+					{
+						LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
+						continue;
+					}
+					meshBuff->bind(outlineShader);
+					material->bind(outlineShader);
+					context->drawLines(meshBuff);
+				}
+				camBuff->unbind();
+				outlineShader->unbind();
+			}
 		});
 	}
 

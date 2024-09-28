@@ -6,8 +6,9 @@
 
 namespace pio
 {
-	#define PIO_DEFINE_MESH_TYPE(TypeName)  public:\
+	#define PIO_DEFINE_MESH_TYPE(TypeName)  private:\
 									        static  MeshType StaticMeshType() { return TypeName; }\
+											public:\
 									        virtual MeshType meshType() const override { return StaticMeshType(); }
 
 	class MeshNode : public Node
@@ -16,9 +17,12 @@ namespace pio
 	public:
 		virtual ~MeshNode();
 
-		virtual MeshType meshType() const = 0;
-		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) override;
+		virtual MeshType meshType() const = 0;		
 		virtual void onInit() override;
+		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
+
+	protected:
+		MeshRenderingItem onUpdateInner(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
 	};
 
 	class PlaneNode : public MeshNode
@@ -49,9 +53,6 @@ namespace pio
 
 	template<>
 	bool Node::is<CubeNode>() const;
-
-	template<>
-	MeshRenderingItem Node::getRenderingData<MeshNode>() const;
 }
 
 #endif

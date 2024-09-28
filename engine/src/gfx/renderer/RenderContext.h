@@ -132,6 +132,7 @@ namespace pio
 
 		bool bindUnimBlock(Ref<Shader>& shader, Ref<UniformBuffer>& unimBuff, const std::string& blockName);		
 		void drawTriangles(Ref<MeshRenderBuffer>& meshBuff);
+		void drawLines(Ref<MeshRenderBuffer>& meshBuff);
 
 		// ------------------------------ Render state api ------------------------------------		
 		void setClear(const Clear& clear) { m_state->setClear(clear); }

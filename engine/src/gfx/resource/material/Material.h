@@ -21,10 +21,9 @@ namespace pio
 		Material& operator=(const Material& rhs);
 
 		virtual ~Material() = default;
-		virtual void update(Ref<RenderContext>& context) = 0;
+		virtual void onUpdate(Ref<RenderContext>& context) = 0;
 
 		void bind(Ref<Shader>& shader);
-
 		void setSpec(ShaderSpecifier spec) { m_spec = spec; }
 		void setRenderingMode(RenderingMode mode) { m_renderingMode = mode; }
 

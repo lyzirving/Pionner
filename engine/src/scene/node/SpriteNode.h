@@ -10,16 +10,16 @@ namespace pio
 	{
 		PIO_NODE_DECLARE(SpriteNode, NodeType::Sprite)
 	public:
-		~SpriteNode();
-		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) override;
+		~SpriteNode();		
 		virtual void onInit() override;
+		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
+
+	protected:
+		MeshRenderingItem onUpdateInner(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
 	};
 
 	template<>
 	bool Node::is<SpriteNode>() const;
-
-	template<>
-	MeshRenderingItem Node::getRenderingData<SpriteNode>() const;
 }
 
 #endif

@@ -21,25 +21,36 @@ namespace pio
 
 	MeshNode::~MeshNode() = default;
 
-	void MeshNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	void MeshNode::onInit()
+	{
+		addComponent<MeshFilter, MeshRenderer, TransformComponent>();
+	}
+
+	void MeshNode::onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData)
+	{
+		auto item = onUpdateInner(context, camNode);
+		renderingData.submitMesh(std::move(item));
+	}
+
+	MeshRenderingItem MeshNode::onUpdateInner(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
 		MeshRenderer* render = getComponent<MeshRenderer>();
 		TransformComponent* transComp = getComponent<TransformComponent>();
 
+		Ref<MeshRenderBuffer> renderBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(render->BuffHnd);
+		renderBuff->Transform.setPosition(transComp->Position);
+		renderBuff->Transform.setEuler(transComp->Rotation);
+		renderBuff->Transform.setScale(transComp->Scale);
+		renderBuff->onUpdate(context);
+
 		Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd);
-		Ref<MeshRenderBuffer> buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(render->BuffHnd);
-		
-		buff->Transform.setPosition(transComp->Position);
-		buff->Transform.setEuler(transComp->Rotation);
-		buff->Transform.setScale(transComp->Scale);
+		material->onUpdate(context);
 
-		material->update(context);
-		buff->update(context);
-	}
-
-	void MeshNode::onInit()
-	{
-		addComponent<MeshFilter, MeshRenderer, TransformComponent>();
+		MeshRenderingItem item;		
+		item.Mode = material->renderingMode();
+		item.RenderBuffFilter = render->BuffHnd;
+		item.MaterialFilter = render->MatHnd;
+		return item;
 	}
 
 	PIO_NODE_IMPL_CONSTRUCOR(PlaneNode, MeshNode)
@@ -116,19 +127,5 @@ namespace pio
 			as<MeshNode>()->meshType() == MeshType::Cube;
 		}
 		return false;
-	}
-
-	template<>
-	MeshRenderingItem Node::getRenderingData<MeshNode>() const
-	{
-		MeshRenderingItem item;
-		if (is<MeshNode>())
-		{			
-			auto* render = getComponent<MeshRenderer>();
-			item.Mode = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd)->renderingMode();
-			item.RenderBuffFilter = render->BuffHnd;
-			item.MaterialFilter = render->MatHnd;			
-		}
-		return item;
 	}
 }

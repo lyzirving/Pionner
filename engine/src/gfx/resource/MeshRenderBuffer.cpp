@@ -51,11 +51,6 @@ namespace pio
 		return *this;
 	}
 
-	void MeshRenderBuffer::update(Ref<RenderContext>& context)
-	{
-		Uniforms[GpuAttr::UNI_MODEL_MAT]->write(&(Transform.transformMat()));
-	}
-
 	void MeshRenderBuffer::bind(Ref<Shader>& shader)
 	{
 		for (auto it : Uniforms)
@@ -63,6 +58,11 @@ namespace pio
 			shader->setUniformData(it.second);
 		}
 	}
+
+	void MeshRenderBuffer::onUpdate(Ref<RenderContext>& context)
+	{
+		Uniforms[GpuAttr::UNI_MODEL_MAT]->write(&(Transform.transformMat()));
+	}	
 
 	template<>
 	bool Asset::is<MeshRenderBuffer>() const { return assetType() == AssetType::MeshRenderBuffer; }

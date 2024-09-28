@@ -99,6 +99,8 @@ namespace pio
 					return "shader/ColorCorrect.glsl";
 				case ShaderType::Sprite:
 					return "shader/Sprite.glsl";
+				case ShaderType::Outline:
+					return "shader/Outline.glsl";
 				default:
 					#ifdef LOCAL_TAG
 					#undef LOCAL_TAG

@@ -14,7 +14,7 @@ namespace pio
 		SpriteMaterial(const SpriteMaterial& rhs);
 		SpriteMaterial& operator=(const SpriteMaterial& rhs);
 		~SpriteMaterial() = default;
-		virtual void update(Ref<RenderContext>& context) override;
+		virtual void onUpdate(Ref<RenderContext>& context) override;
 
 		void setColor(const glm::vec3& color) { m_color = color; }
 		void setFlipX(bool flip) { m_flipX = flip; }

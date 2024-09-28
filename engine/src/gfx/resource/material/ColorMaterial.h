@@ -13,7 +13,7 @@ namespace pio
 		ColorMaterial& operator=(const ColorMaterial& rhs);
 		~ColorMaterial() = default;
 
-		virtual void update(Ref<RenderContext>& context) override;
+		virtual void onUpdate(Ref<RenderContext>& context) override;
 		virtual Ref<Asset> clone() const override;
 
 		void setColor(const glm::vec3& color) { m_color = color; }		

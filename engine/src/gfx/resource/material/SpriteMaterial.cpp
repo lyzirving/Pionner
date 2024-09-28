@@ -26,7 +26,7 @@ namespace pio
 		return *this;
 	}
 
-	void SpriteMaterial::update(Ref<RenderContext>& context)
+	void SpriteMaterial::onUpdate(Ref<RenderContext>& context)
 	{
 		updateUnimData(GpuAttr::SpriteColor, m_color);
 		updateUnimData(GpuAttr::SpriteFlipX, m_flipX);

@@ -40,7 +40,7 @@ namespace pio
 		return *this;
 	}
 
-	void PbrMaterial::update(Ref<RenderContext>& context)
+	void PbrMaterial::onUpdate(Ref<RenderContext>& context)
 	{
 		updateUnimData(GpuAttr::AlbedoColor, m_albedo);
 		updateUnimData(GpuAttr::Emission, m_emission);

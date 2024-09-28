@@ -6,8 +6,9 @@
 
 namespace pio
 {
-	#define PIO_LIGHT_DEFINE_TYPE(TypeName)  public:\
+	#define PIO_LIGHT_DEFINE_TYPE(TypeName)  private:\
 									         static LightType StaticLightType() { return TypeName; }\
+											 public:\
 									         virtual LightType lightType() const override { return StaticLightType(); }
 	
 	class Camera;
@@ -29,10 +30,10 @@ namespace pio
 		PIO_NODE_DECLARE_CONSTRUCTOR(DirectionalLightNode)
 		PIO_LIGHT_DEFINE_TYPE(LightType::DirectionLight)
 	public:
-		~DirectionalLightNode();
-		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) override;
+		~DirectionalLightNode();		
 		virtual void onInit() override;
 		virtual void onAttach(Ref<Scene>& scene) override;
+		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
 
 		Ref<UniformBuffer> getShadowData() const { return m_UBufferShadow; }
 
@@ -55,9 +56,6 @@ namespace pio
 
 	template<>
 	bool Node::is<DirectionalLightNode>() const;
-
-	template<>
-	Ref<UniformBuffer> Node::getRenderingData<DirectionalLightNode>() const;
 }
 
 #endif

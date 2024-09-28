@@ -133,6 +133,11 @@ namespace pio
 		Num
 	};
 
+	enum class GizmoType : uint8_t
+	{
+		DirLight
+	};
+
 	enum class ShaderType : uint8_t
 	{
 		MainLightShadowCaster,
@@ -140,6 +145,7 @@ namespace pio
 		Deferred,
 		ColorCorrect,
 		Sprite,
+		Outline,
 		Num
 	};
 

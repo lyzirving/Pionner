@@ -144,6 +144,17 @@ namespace pio
 		meshBuff->Vao->unbind();
 	}
 
+	void RenderContext::drawLines(Ref<MeshRenderBuffer>& meshBuff)
+	{
+		meshBuff->Vao->bind();
+		meshBuff->Ebo->bind();
+
+		m_api->drawElements(DrawMode_Line, meshBuff->Ebo->indexCount(), meshBuff->Ebo->internalFmt());
+
+		meshBuff->Ebo->unbind();
+		meshBuff->Vao->unbind();
+	}
+
 	Ref<Texture> RenderContext::createTexture(const TextureSpecific& spec)
 	{
 		return m_textureMgr->create(spec);

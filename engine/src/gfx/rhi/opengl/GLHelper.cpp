@@ -588,6 +588,12 @@ namespace pio
 				return GL_TRIANGLE_STRIP;
 			case DrawMode_Triangle_Fan:
 				return GL_TRIANGLE_FAN;
+			case DrawMode_Line:
+				return GL_LINES;
+			case DrawMode_Line_Strip:
+				return GL_LINE_STRIP;
+			case DrawMode_Line_Loop:
+				return GL_LINE_LOOP;
 			default:
 				LOGE("err! draw mode[%u] has not been implemented", mode);
 				std::abort();

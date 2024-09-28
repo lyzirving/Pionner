@@ -11,12 +11,13 @@
 
 #include "scene/node/CameraNode.h"
 #include "scene/node/SpriteNode.h"
+#include "scene/node/GizmoNode.h"
 
-#include "gfx/renderer/RenderContext.h"
 #include "gfx/resource/Light.h"
 #include "gfx/resource/Mesh.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 #include "gfx/resource/material/SpriteMaterial.h"
+#include "gfx/renderer/RenderContext.h"
 
 #include "gfx/rhi/Texture.h"
 #include "gfx/rhi/UniformBuffer.h"
@@ -34,13 +35,7 @@ namespace pio
 
 	PIO_NODE_IMPL_CONSTRUCOR(DirectionalLightNode, LightNode)
 
-	DirectionalLightNode::~DirectionalLightNode() = default;
-
-	void DirectionalLightNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
-	{
-		updateLight(context, camNode);
-		updateShadow(context, camNode);
-	}
+	DirectionalLightNode::~DirectionalLightNode() = default;	
 
 	void DirectionalLightNode::onInit()
 	{
@@ -71,7 +66,6 @@ namespace pio
 
 		{
 			auto sprite = addChild<SpriteNode>("LitSprite");
-			auto* transComp = sprite->getComponent<TransformComponent>();
 			auto* spriteRender = sprite->getComponent<SpriteRenderer>();
 			spriteRender->BillBoard = true;
 
@@ -88,6 +82,19 @@ namespace pio
 			renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice());
 			spriteRender->BuffHnd = renderBuff->assetHnd();
 		}
+
+		{
+			addChild<DirLightGizmo>("DirLightGizmo");
+		}
+	}
+
+	void DirectionalLightNode::onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData)
+	{
+		updateLight(context, camNode);
+		updateShadow(context, camNode);
+
+		renderingData.UnimBuffSet.insert({ m_UBuffer->binding(), m_UBuffer->assetHnd() });
+		renderingData.UnimBuffSet.insert({ m_UBufferShadow->binding(), m_UBufferShadow->assetHnd() });
 	}
 
 	void DirectionalLightNode::updateLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
@@ -151,15 +158,5 @@ namespace pio
 			return as<LightNode>()->lightType() == LightType::DirectionLight;
 		}
 		return false;
-	}
-
-	template<>
-	Ref<UniformBuffer> Node::getRenderingData<DirectionalLightNode>() const
-	{
-		if (is<DirectionalLightNode>())
-		{
-			return as<DirectionalLightNode>()->m_UBuffer;
-		}
-		return Ref<UniformBuffer>();
 	}
 }

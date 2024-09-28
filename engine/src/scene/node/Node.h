@@ -18,8 +18,9 @@ namespace pio
 
 	#define PIO_NODE_MAKE_NAME (std::string("Node") + std::to_string(Node::k_NodeNum))
 
-	#define PIO_NODE_IMPL_TYPE(TypeName)  public:\
+	#define PIO_NODE_IMPL_TYPE(TypeName)  private:\
 									      static  NodeType StaticNodeType() { return TypeName; }\
+										  public:\
 									      virtual NodeType nodeType() const override { return StaticNodeType(); }
 
 	#define PIO_NODE_DECLARE_CONSTRUCTOR(Clazz) public:\
@@ -45,6 +46,7 @@ namespace pio
 	class Scene;
 	class CameraNode;
 	class RenderContext;
+	struct RenderingData;
 
 	class Node : public std::enable_shared_from_this<Node>
 	{
@@ -54,20 +56,17 @@ namespace pio
 		Node(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<Node>& parent, const entt::entity& key, const std::string& name);
 
 		virtual ~Node() = default;
-		virtual NodeType nodeType() const = 0;
-		virtual void update(Ref<RenderContext>& context) {};
-		virtual void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode) {};
+		virtual NodeType nodeType() const = 0;		
 		virtual void onInit() {};
 		virtual void onAttach(Ref<Scene>& scene) {}
 		virtual void onDetach(Ref<Scene>& scene) {}
+		virtual void onUpdate(Ref<RenderContext>& context, RenderingData& renderingData) {};
+		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) {};
 
 		bool operator==(const Node& rhs) { return this->m_key == rhs.m_key && this->m_uuid == rhs.m_uuid; }
 
 		template<typename T>
 		Ref<T> self() { return RefCast<Node, T>(shared_from_this()); }
-
-		template<typename T, typename U>
-		U getRenderingData() const { return U(); }
 
 		//Note function should not be called in Node's constructor
 		template<typename T>
@@ -121,6 +120,7 @@ namespace pio
 		uint32_t uuid() const { return m_uuid; }
 		const std::string& name() const { return m_name; }
 		const std::vector<Ref<Node>>& children() const { return m_children; }
+		bool bShowInInspector() const { return m_showInInspector; }
 
 	private:
 		friend class Scene;
@@ -140,7 +140,9 @@ namespace pio
 		std::vector<Ref<Node>> m_children;
 
 		WeakRef<Scene> m_scene;
-		WeakRef<RenderContext> m_context;		
+		WeakRef<RenderContext> m_context;
+
+		bool m_showInInspector{ true };
 	};
 }
 #endif 

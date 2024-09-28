@@ -15,9 +15,9 @@ namespace pio
 		PIO_NODE_DECLARE(CameraNode, NodeType::Camera)
 	public:
 		~CameraNode();
-
-		virtual void update(Ref<RenderContext>& context) override;
+		
 		virtual void onInit() override;
+		virtual void onUpdate(Ref<RenderContext>& context, RenderingData& renderingData) override;
 
 		void setDepth(int32_t depth) { m_depth = depth; }
 		void setRenderTarget(const Ref<RenderTarget>& target) { m_target = target; }
@@ -28,6 +28,9 @@ namespace pio
 		int32_t depth() const { return m_depth; }
 		const Ref<Camera>& camera() const { return m_camera; }
 		const Ref<RenderTarget>& renderTarget() const { return m_target; }
+
+	protected:
+		void onUpdateInner(Ref<RenderContext>& context);
 
 	private:
 		int32_t m_depth{ 0 };
@@ -43,9 +46,6 @@ namespace pio
 
 	template<>
 	bool Node::is<CameraNode>() const;
-
-	template<>
-	Ref<UniformBuffer> Node::getRenderingData<CameraNode>() const;
 }
 
 #endif

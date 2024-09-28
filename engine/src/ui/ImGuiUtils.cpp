@@ -90,7 +90,7 @@ namespace pio
 			return;
 
 		uint32_t clickIdx = InvalidId;
-		if(selectIdx == InvalidId)
+		if(selectIdx == InvalidId && nodes[0]->bShowInInspector())
 		{
 			selectIdx = nodes[0]->idx();
 		}
@@ -98,7 +98,7 @@ namespace pio
 	}
 
 	void ImGuiUtils::ShowNode(const Ref<Node>& node)
-	{
+	{	
 		auto type = node->nodeType();
 		switch (type)
 		{
@@ -123,6 +123,14 @@ namespace pio
 	{
 		for(size_t i = 0; i < nodes.size(); i++)
 		{
+			if (!nodes[i]->bShowInInspector())
+			{
+				continue;
+			}
+			if (selectIdx == InvalidId)
+			{
+				selectIdx = nodes[i]->idx();
+			}
 			ImGuiTreeNodeFlags tnFlags = ImGuiUtils::k_FlagSelectedTreeNode;
 			tnFlags |= (selectIdx == nodes[i]->idx()) ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None;
 			bool hasChild = !nodes[i]->children().empty();

@@ -14,7 +14,7 @@ namespace pio
 		PbrMaterial(const PbrMaterial& rhs);
 		PbrMaterial& operator=(const PbrMaterial& rhs);
 		~PbrMaterial() = default;
-		virtual void update(Ref<RenderContext>& context) override;
+		virtual void onUpdate(Ref<RenderContext>& context) override;
 
 		void setAlbedo(const glm::vec3& albedo) { m_albedo = albedo; }
 		void setEmission(const glm::vec3& emission) { m_emission = emission; }

@@ -24,25 +24,38 @@ namespace pio
 
 	SpriteNode::~SpriteNode() = default;
 
-	void SpriteNode::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	void SpriteNode::onInit()
 	{
+		addComponent<SpriteRenderer, TransformComponent>();
+	}
+
+	void SpriteNode::onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData)
+	{
+		auto item = onUpdateInner(context, camNode);
+		renderingData.submitSprite(std::move(item));
+	}
+
+	MeshRenderingItem SpriteNode::onUpdateInner(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	{
+		MeshRenderingItem item;
+
 		auto* spriteRender = getComponent<SpriteRenderer>();
 		auto* transComp = getComponent<TransformComponent>();
 
 		auto p = getParent();
-		TransformComponent* parentTrans{ nullptr }; 		
+		TransformComponent* parentTrans{ nullptr };
 
 		auto spriteMat = AssetMgr::GetRuntimeAsset<SpriteMaterial>(spriteRender->MatHnd);
 		auto buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(spriteRender->BuffHnd);
 		if (!spriteMat || !buff || !buff->valid())
 		{
 			LOGW("node has not been initialized");
-			return;
+			return item;
 		}
 		spriteMat->setColor(spriteRender->Color);
 		spriteMat->setFlipX(spriteRender->FlipX);
 		spriteMat->setFlipY(spriteRender->FlipY);
-		spriteMat->update(context);
+		spriteMat->onUpdate(context);
 
 		buff->Transform.setPosition(transComp->Position);
 		buff->Transform.setEuler(spriteRender->BillBoard ? Camera::BillBoardRotate(camNode) : transComp->Rotation);
@@ -53,32 +66,14 @@ namespace pio
 			buff->Transform.addEuler(spriteRender->BillBoard ? glm::vec3(0.f) : parentTrans->Rotation);
 			buff->Transform.addScale(parentTrans->Scale);
 		}
-		buff->update(context);
-	}
+		buff->onUpdate(context);
 
-	void SpriteNode::onInit()
-	{
-		addComponent<SpriteRenderer, TransformComponent>();		
+		item.Mode = spriteMat->renderingMode();
+		item.RenderBuffFilter = spriteRender->BuffHnd;
+		item.MaterialFilter = spriteRender->MatHnd;
+		return item;
 	}
 
 	template<>
 	bool Node::is<SpriteNode>() const { return nodeType() == NodeType::Sprite; }
-
-	template<>
-	MeshRenderingItem Node::getRenderingData<SpriteNode>() const
-	{
-		MeshRenderingItem item;
-		if (is<SpriteNode>())
-		{			
-			auto* render = getComponent<SpriteRenderer>();
-			auto material = AssetMgr::GetRuntimeAsset<SpriteMaterial>(render->MatHnd);
-			if (material)
-			{
-				item.Mode = material->renderingMode();
-				item.RenderBuffFilter = render->BuffHnd;
-				item.MaterialFilter = render->MatHnd;
-			}			
-		}
-		return item;
-	}
 }

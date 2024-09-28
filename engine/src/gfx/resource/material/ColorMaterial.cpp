@@ -23,7 +23,7 @@ namespace pio
 		return *this;
 	}
 
-	void ColorMaterial::update(Ref<RenderContext>& context)
+	void ColorMaterial::onUpdate(Ref<RenderContext>& context)
 	{
 		updateUnimData(GpuAttr::Color, m_color);
 	}

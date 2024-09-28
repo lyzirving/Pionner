@@ -26,9 +26,9 @@ namespace pio
 		MeshRenderBuffer& operator=(MeshRenderBuffer&& rhs) noexcept;
 
 		bool valid() const { return Vao.use_count() != 0 && Vbo.use_count() != 0 && Ebo.use_count() != 0; }
+		void bind(Ref<Shader>& shader);	
 
-		void bind(Ref<Shader>& shader);		
-		void update(Ref<RenderContext>& context);
+		void onUpdate(Ref<RenderContext>& context);
 
 		template<typename VertexType, typename IndiceType>
 		void setUp(Ref<RenderContext>& context, const std::vector<VertexType>& vertice, const std::vector<IndiceType>& indice)

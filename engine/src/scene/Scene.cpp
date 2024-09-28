@@ -4,6 +4,7 @@
 #include "scene/node/MeshNode.h"
 #include "scene/node/LightNode.h"
 #include "scene/node/SpriteNode.h"
+#include "scene/node/GizmoNode.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/pipeline/RenderPipeline.h"
@@ -28,12 +29,11 @@ namespace pio
 	{
 		RenderingNodes data;
 		auto lights = m_registry.view<DirectionalLightNode, DirectionalLightComponent>();
-		auto sprites = m_registry.view<SpriteNode, SpriteRenderer>();
 
 		data.Mesh = m_registry.view<MeshNode, MeshFilter, MeshRenderer>();
+		data.Gizmo = m_registry.view<GizmoNode, MeshFilter, MeshRenderer>();
+		data.Sprite = m_registry.view<SpriteNode, SpriteRenderer>();
 		data.MainLight = lights.empty() ? Ref<DirectionalLightNode>() : lights[0];
-		if (!sprites.empty())
-			data.Sprite.insert(data.Sprite.end(), sprites.begin(), sprites.end());
 
 		context->setRenderingNodes(std::move(data));
 		pipeline->onRender(context, camNodes);
