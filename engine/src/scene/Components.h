@@ -59,7 +59,7 @@ namespace pio
 		glm::vec3 Color{ 0.6f, 0.6f, 0.6f };//Each component of color should be clamped into [0, 1]
 		float Intensity{ 1.0f };
 		// ----- Shadow related -------
-		float Bias{ 0.00002f };
+		float Bias{ 0.003f };
 		float NormalBias{ 0.4f };
 		bool CastShadow{ true };
 		int ShadowMode{ ShadowMode_Soft };		

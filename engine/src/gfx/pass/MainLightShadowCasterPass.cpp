@@ -34,8 +34,9 @@ namespace pio
 			.type(TextureType::TwoDimen)
 			.format(TextureFormat::DEPTH_32F)
 			.width(shadowSize).height(shadowSize)
-			.texWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
+			.texWrap(TextureWrap::ClampBorder, TextureWrap::ClampBorder)
+			.border(glm::vec4(1.f))
+			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 
 		fboSpec.DepthSpec = depthBuilder.build();
 		m_frameBuff = FrameBuffer::Create(context, fboSpec);
@@ -43,8 +44,8 @@ namespace pio
 
 		m_attrs.setClear(Clear::Common())
 			.setBlend(Blend::Disable())
-			.setDepth(DepthTest::Common())	
-			.setCull(CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front))// Fix Peter Panning			
+			.setDepth(DepthTest::Common())				
+			.setCull(CullFace::Common())
 			.setStencil(StencilTest::Disable());
 	}
 

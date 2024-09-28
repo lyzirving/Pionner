@@ -405,7 +405,7 @@ namespace pio
 		switch (wrap)
 		{
 			case TextureWrap::ClampEdge:
-				return GL_CLAMP_TO_EDGE;
+				return GL_CLAMP_TO_EDGE;				
 			case TextureWrap::ClampBorder:
 				return GL_CLAMP_TO_BORDER;
 			case TextureWrap::Repeat:
