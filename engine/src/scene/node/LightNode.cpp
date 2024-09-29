@@ -7,14 +7,16 @@
 
 #include "scene/Factory.h"
 #include "scene/Components.h"
+
 #include "scene/3d/Camera.h"
+#include "scene/3d/LightingTech.h"
 
 #include "scene/node/CameraNode.h"
 #include "scene/node/SpriteNode.h"
 #include "scene/node/GizmoNode.h"
 
-#include "gfx/resource/Light.h"
 #include "gfx/resource/Mesh.h"
+#include "gfx/resource/LightData.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 #include "gfx/resource/material/SpriteMaterial.h"
 #include "gfx/renderer/RenderContext.h"
@@ -97,6 +99,11 @@ namespace pio
 		renderingData.UnimBuffSet.insert({ m_UBufferShadow->binding(), m_UBufferShadow->assetHnd() });
 	}
 
+	const glm::vec3& DirectionalLightNode::direction() const
+	{
+		return m_UData->Direction;
+	}
+
 	void DirectionalLightNode::updateLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
 	{
 		auto* lightComp = getComponent<DirectionalLightComponent>();
@@ -118,6 +125,9 @@ namespace pio
 		m_UData->serialize();
 
 		context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
+
+		/*CascadeShadowMapping cascade(self<DirectionalLightNode>());
+		cascade.calcCascades(camNode);*/
 	}
 
 	void DirectionalLightNode::updateShadow(Ref<RenderContext>& context, Ref<CameraNode>& camNode)

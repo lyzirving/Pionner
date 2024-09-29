@@ -1,5 +1,5 @@
-#ifndef __PIONNER_GFX_RESOURCE_LIGHT_H__
-#define __PIONNER_GFX_RESOURCE_LIGHT_H__
+#ifndef __PIONNER_GFX_RESOURCE_LIGHT_DATA_H__
+#define __PIONNER_GFX_RESOURCE_LIGHT_DATA_H__
 
 #include "gfx/rhi/UniformBuffer.h"
 

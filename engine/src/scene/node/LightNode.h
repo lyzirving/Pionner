@@ -35,6 +35,8 @@ namespace pio
 		virtual void onAttach(Ref<Scene>& scene) override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
 
+		const glm::vec3& direction() const;
+
 		Ref<UniformBuffer> getShadowData() const { return m_UBufferShadow; }
 
 	private:

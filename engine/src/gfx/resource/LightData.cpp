@@ -1,9 +1,9 @@
-#include "Light.h"
+#include "LightData.h"
 
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
-#define LOCAL_TAG "Light"
+#define LOCAL_TAG "LightData"
 
 namespace pio
 {
