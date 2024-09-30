@@ -78,7 +78,7 @@ namespace pio
 		virtual void calcMat() override;
 
 	private:
-		float m_fov{ 60.f };
+		float m_fov{ 60.f };//Vertical fov
 	};
 
 	class OrthographicFrustum : public Frustum

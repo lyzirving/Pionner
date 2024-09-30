@@ -1,13 +1,13 @@
 #ifndef __PIONNER_SCENE_3D_LIGHTING_TECH_H__
 #define __PIONNER_SCENE_3D_LIGHTING_TECH_H__
 
-#include "Common.h"
+#include "AABB.h"
 
 namespace pio
-{
-	class Frustum;
+{		
 	class CameraNode;
 	class DirectionalLightNode;
+	class FrameBuffer;
 
 	class CascadeShadowMapping
 	{
@@ -22,8 +22,11 @@ namespace pio
 	private:
 		Ref<DirectionalLightNode> m_light;
 
-		Ref<Frustum> m_lightFrustums[CascadeNum];
+		//AABB marked as frustum in lighting space
+		AABB m_lightFrustums[CascadeNum];
 		float m_cascadeEnds[CascadeNum + 1];
+
+		Ref<FrameBuffer> m_frameBuff;
 	};
 }
 

@@ -74,6 +74,7 @@ namespace pio
 		ProjectionType prjType() const { return m_prjType; }
 		float fov() const { return m_persFrustum.fov(); }
 		float size() const { return m_orthoFrustum.size(); }
+		float aspect() const { return m_prjType == ProjectionType_Perspective ? m_persFrustum.aspect() : m_orthoFrustum.aspect(); }
 
 		const glm::vec3& right() const { return m_right; }
 		const glm::vec3& up()    const { return m_up; }

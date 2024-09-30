@@ -15,6 +15,9 @@ namespace pio
 		const glm::vec3& min() const { return m_min; }
 		const glm::vec3& max() const { return m_max; }
 
+		void setMax(const glm::vec3 val) { m_max = val; }
+		void setMin(const glm::vec3 val) { m_min = val; }
+
 	private:
 		glm::vec3 m_min{ 0.f }, m_max{ 1.f };
 	};
