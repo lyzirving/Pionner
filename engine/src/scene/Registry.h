@@ -30,7 +30,7 @@ namespace pio
 			for (auto n : v)
 			{
 				auto it = m_nodes.find((uint32_t)n);
-				if (it != m_nodes.end() && it->second->is<T>())
+				if (it != m_nodes.end() && it->second->is<T>() && it->second->bVisible())
 				{
 					auto real = it->second->self<T>();
 					nodes.push_back(real);

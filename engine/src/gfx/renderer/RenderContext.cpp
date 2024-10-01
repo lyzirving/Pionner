@@ -20,6 +20,8 @@
 #include "gfx/resource/material/Material.h"
 #include "gfx/resource/material/MaterialMgr.h"
 
+#include "scene/3d/LightTechBase.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -153,6 +155,16 @@ namespace pio
 
 		meshBuff->Ebo->unbind();
 		meshBuff->Vao->unbind();
+	}
+
+	Ref<LightTechBase> RenderContext::getLightTech(LightTech type)
+	{
+		uint8_t idx = PIO_UINT8(type);
+		if (!m_lightTech[idx])
+		{
+			m_lightTech[idx] = LightTechBase::Create(type);
+		}
+		return m_lightTech[idx];
 	}
 
 	Ref<Texture> RenderContext::createTexture(const TextureSpecific& spec)

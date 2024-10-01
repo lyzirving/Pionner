@@ -13,6 +13,7 @@ namespace pio
 		Camera,
 		Mesh, 
 		Material,
+		LightTech,
 		// Asset that has Gpu resource
 		RenderResource, 
 		MeshRenderBuffer,
@@ -26,8 +27,9 @@ namespace pio
 		JPG
 	};
 
-	#define PIO_DEFINE_ASSET_TYPE(TypeName)  public:\
+	#define PIO_DEFINE_ASSET_TYPE(TypeName)  private:\
 									         static  AssetType StaticType() { return TypeName; }\
+                                             public:\
 									         virtual AssetType assetType() const override { return StaticType(); }
 
 	class Asset : public std::enable_shared_from_this<Asset>

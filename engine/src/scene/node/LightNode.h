@@ -14,6 +14,7 @@ namespace pio
 	class Camera;
 	class CameraNode;
 	class UniformBuffer;
+	class GizmoNode;
 	struct DirectionalLightUD;
 	struct DirectionalLightShadowDataUD;
 
@@ -51,6 +52,8 @@ namespace pio
 		Ref<DirectionalLightShadowDataUD> m_UDataShadow;
 		Ref<UniformBuffer> m_UBuffer, m_UBufferShadow;
 		Ref<Camera> m_shadowCam;
+
+		Ref<GizmoNode> m_gizmo;
 	};
 
 	template<>

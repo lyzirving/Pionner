@@ -122,6 +122,13 @@ namespace pio
 		Num
 	};
 
+	enum class LightTech : uint8_t
+	{
+		ShadowMap,
+		CascadeShadowMap,
+		Num
+	};
+
 	enum class TextureType : uint8_t
 	{
 		TwoDimen, 
@@ -257,6 +264,7 @@ namespace pio
 	struct RenderConfig
 	{
 		RenderingStrategy Strategy{ RenderingStrategy::Deffered };
+		LightTech LightingTech{ LightTech::CascadeShadowMap };
 		glm::vec4 ClearColor{ 0.f, 0.f, 0.f, 1.f };
 	};
 

@@ -9,7 +9,7 @@
 #include "scene/Components.h"
 
 #include "scene/3d/Camera.h"
-#include "scene/3d/LightingTech.h"
+#include "scene/3d/CascadeShadowMap.h"
 
 #include "scene/node/CameraNode.h"
 #include "scene/node/SpriteNode.h"
@@ -33,11 +33,11 @@ namespace pio
 {
 	PIO_NODE_IMPL_CONSTRUCOR(LightNode, Node)
 
-	LightNode::~LightNode() = default;
+		LightNode::~LightNode() = default;
 
 	PIO_NODE_IMPL_CONSTRUCOR(DirectionalLightNode, LightNode)
 
-	DirectionalLightNode::~DirectionalLightNode() = default;
+		DirectionalLightNode::~DirectionalLightNode() = default;
 
 	void DirectionalLightNode::onInit()
 	{
@@ -86,7 +86,7 @@ namespace pio
 		}
 
 		{
-			addChild<DirLightGizmo>("DirLightGizmo");
+			m_gizmo = RefCast<Node, GizmoNode>(addChild<DirLightGizmo>("DirLightGizmo"));
 		}
 	}
 
@@ -125,9 +125,6 @@ namespace pio
 		m_UData->serialize();
 
 		context->uploadData(m_UData->Block.getBuffer()->as<void*>(), m_UData->Block.getByteUsed(), m_UBuffer);
-
-		/*CascadeShadowMapping cascade(self<DirectionalLightNode>());
-		cascade.calcCascades(camNode);*/
 	}
 
 	void DirectionalLightNode::updateShadow(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
@@ -155,6 +152,18 @@ namespace pio
 		m_UDataShadow->FrustumSize = m_shadowCam->size();
 		m_UDataShadow->serialize();
 		context->uploadData(m_UDataShadow->Block.getBuffer()->as<void*>(), m_UDataShadow->Block.getByteUsed(), m_UBufferShadow);
+
+		switch (GlobalSettings::RenderConfig.LightingTech)
+		{
+			case LightTech::CascadeShadowMap:
+			{
+				auto* cascadeSdMap = context->getLightTech(LightTech::CascadeShadowMap)->as<CascadeShadowMap>();
+				cascadeSdMap->update(context, camNode, self<DirectionalLightNode>());
+				break;
+			}
+			default:
+				break;
+		}
 	}
 
 	template<>

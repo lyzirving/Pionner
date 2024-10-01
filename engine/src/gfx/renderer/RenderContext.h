@@ -25,6 +25,7 @@ namespace pio
 	class MaterialMgr;
 	class Material;
 	class Renderer;
+	class LightTechBase;
 	struct TextureSpecific;
 
 	class RenderContext : public std::enable_shared_from_this<RenderContext>
@@ -142,7 +143,8 @@ namespace pio
 		void setStencilTest(const StencilTest& stencil) { m_state->setStencilTest(stencil); }
 		// ------------------------------------------------------------------------------------
 
-		// ----------------------------- Create resource api ----------------------------------		
+		// ----------------------------- Create resource api ----------------------------------
+		Ref<LightTechBase> getLightTech(LightTech type);
 		Ref<Texture> createTexture(const TextureSpecific& spec);
 		/*
 		* @param buffer Buffer is not marked as const, data inside the buffer will be moved into texture.
@@ -192,8 +194,9 @@ namespace pio
 		uint64_t m_frameNum{ 0 };
 
 		Ref<Shader> m_shaders[PIO_UINT8(ShaderType::Num)];
+		Ref<LightTechBase> m_lightTech[PIO_UINT8(LightTech::Num)];
 		Ref<TextureMgr> m_textureMgr;
-		Ref<MaterialMgr> m_materialMgr;
+		Ref<MaterialMgr> m_materialMgr;		
 
 		Ref<MeshRenderBuffer> m_screenMeshBuffer;
 

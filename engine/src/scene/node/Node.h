@@ -65,6 +65,8 @@ namespace pio
 
 		bool operator==(const Node& rhs) { return this->m_key == rhs.m_key && this->m_uuid == rhs.m_uuid; }
 
+		void setVisible(bool visible) { m_visible = visible; }
+
 		template<typename T>
 		Ref<T> self() { return RefCast<Node, T>(shared_from_this()); }
 
@@ -121,6 +123,7 @@ namespace pio
 		const std::string& name() const { return m_name; }
 		const std::vector<Ref<Node>>& children() const { return m_children; }
 		bool bShowInInspector() const { return m_showInInspector; }
+		bool bVisible() const { return m_visible; }
 
 	private:
 		friend class Scene;
@@ -142,6 +145,7 @@ namespace pio
 		WeakRef<Scene> m_scene;
 		WeakRef<RenderContext> m_context;
 
+		bool m_visible{ true };
 		bool m_showInInspector{ true };
 	};
 }
