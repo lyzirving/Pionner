@@ -123,6 +123,7 @@ namespace pio
 		void onEndFrameRendering();
 
 		void onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs);
+		void onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs, uint8_t depthSlot);
 		void onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer);		
 
 		void onBeginRenderTarget(Ref<RenderTarget>& target, const RenderStateAttrs& attrs);

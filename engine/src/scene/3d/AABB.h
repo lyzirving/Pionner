@@ -19,7 +19,7 @@ namespace pio
 		void setMin(const glm::vec3 val) { m_min = val; }
 
 	private:
-		glm::vec3 m_min{ 0.f }, m_max{ 1.f };
+		glm::vec3 m_min{ 0.f }, m_max{ 1.f };		
 	};
 }
 

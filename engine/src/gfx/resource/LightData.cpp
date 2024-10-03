@@ -88,4 +88,37 @@ namespace pio
 		auto frustumSizeUD = Block.m_blockItems.get("FrustumSize");
 		Block.m_buffer->writeAt(&FrustumSize, sizeof(float), frustumSizeUD->getAlignOffset());
 	}
+
+	UniformBlock CascadeShadowMapUD::CreateBlock()
+	{
+		UniformBlock block;
+		block.pushBack("CascadeNum", UniformBlock::CreateData(UniformDataType::Int, "CascadeNum"));
+		block.pushBack("ViewMat", UniformBlock::CreateData(UniformDataType::Mat4, "ViewMat"));
+		block.pushBack("PrjMats", UniformBlock::CreateData(UniformDataType::Mat4Array, "PrjMats", CASCADE_NUM));
+		block.calculate();
+		//LOGD("block CascadeShadowMapUD byte used[%u]", block.getByteUsed());
+		return block;
+	}
+
+	void CascadeShadowMapUD::serialize()
+	{
+		if (!Block.m_buffer || Block.m_buffer->getCapacity() == 0)
+		{
+			LOGE("DirectionalLightShadowData: UD buffer is invalid");
+			return;
+		}
+
+		auto numUD = Block.m_blockItems.get("CascadeNum");
+		Block.m_buffer->writeAt(&CascadeNum, sizeof(int32_t), numUD->getAlignOffset());
+
+		auto viewMatUD = Block.m_blockItems.get("ViewMat");
+		Block.m_buffer->writeAt(glm::value_ptr(ViewMat), sizeof(glm::mat4), viewMatUD->getAlignOffset());
+
+		auto* prjMatArray = Block.m_blockItems.get("PrjMats")->as<UnimPackMatArray>();
+		for (uint32_t i = 0; i < prjMatArray->getArrayNum(); i++)
+		{
+			UnimPackMat& m = (*prjMatArray)[i];
+			Block.m_buffer->writeAt(glm::value_ptr(PrjMats[i]), sizeof(glm::mat4), m.getAlignOffset());
+		}
+	}
 }

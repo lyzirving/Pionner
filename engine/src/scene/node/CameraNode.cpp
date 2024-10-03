@@ -55,7 +55,7 @@ namespace pio
 				.width(depthSize.x).height(depthSize.y);
 
 			fboSpec.ColorSpec.push_back(texBuilder.build());
-			fboSpec.DepthSpec = depthBuilder.build();
+			fboSpec.DepthSpec.push_back(depthBuilder.build());
 
 			m_target = RenderTarget::Create(context, fboSpec);
 		}

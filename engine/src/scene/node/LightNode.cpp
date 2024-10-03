@@ -33,11 +33,11 @@ namespace pio
 {
 	PIO_NODE_IMPL_CONSTRUCOR(LightNode, Node)
 
-		LightNode::~LightNode() = default;
+	LightNode::~LightNode() = default;
 
 	PIO_NODE_IMPL_CONSTRUCOR(DirectionalLightNode, LightNode)
 
-		DirectionalLightNode::~DirectionalLightNode() = default;
+	DirectionalLightNode::~DirectionalLightNode() = default;
 
 	void DirectionalLightNode::onInit()
 	{
@@ -133,9 +133,6 @@ namespace pio
 		auto camera = camNode->camera();
 		auto* lightComp = getComponent<DirectionalLightComponent>();
 		auto* transComp = getComponent<TransformComponent>();
-
-		Transform3D transform;
-		transform.setEuler(transComp->Rotation);
 
 		m_shadowCam->setPosition(transComp->Position);
 		m_shadowCam->setEuler(transComp->Rotation);

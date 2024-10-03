@@ -16,10 +16,10 @@ namespace pio
 	GLFrameBuffer::GLFrameBuffer(Ref<RenderContext>& context, const FrameBufferSpecific& spec)
 		: FrameBuffer(context, spec)
 	{
-		uint32_t num = std::min(PIO_UINT(FrameBufferAttach::ColorAttachNum), PIO_UINT(m_spec.ColorSpec.size()));
-		m_colorBuffs.reserve(num);
+		uint32_t colorNum = std::min(PIO_UINT(FrameBufferAttach::ColorAttachNum), PIO_UINT(m_spec.ColorSpec.size()));
+		m_colorBuffs.reserve(colorNum);
 
-		for (uint32_t i = 0; i < num; i++)
+		for (uint32_t i = 0; i < colorNum; i++)
 		{
 			const TextureSpecific& texSpec = m_spec.ColorSpec[i];
 			if (texSpec.Type == TextureType::Num)
@@ -28,17 +28,23 @@ namespace pio
 		}
 		m_colorBuffs.shrink_to_fit();
 
-		if (m_spec.DepthSpec.Type == TextureType::TwoDimen  ||
-			m_spec.DepthSpec.Type == TextureType::CubeMap   ||
-			m_spec.DepthSpec.Type == TextureType::CubeArray ||
-			m_spec.DepthSpec.Type == TextureType::RenderBuffer)
+		uint32_t depthNum = m_spec.DepthSpec.size();
+		m_depthBuffs.reserve(depthNum);
+		for (size_t i = 0; i < depthNum; i++)
 		{
-			m_depthBuff = context->createTexture(m_spec.DepthSpec);
+			if (m_spec.DepthSpec[i].Type == TextureType::TwoDimen ||
+				m_spec.DepthSpec[i].Type == TextureType::CubeMap ||
+				m_spec.DepthSpec[i].Type == TextureType::CubeArray ||
+				m_spec.DepthSpec[i].Type == TextureType::RenderBuffer)
+			{
+				m_depthBuffs.push_back(context->createTexture(m_spec.DepthSpec[i]));
+			}
+			else
+			{
+				LOGW("warning! depth attachment is not defined or type is invalid");
+			}
 		}
-		else
-		{
-			LOGW("warning! depth attachment is not defined or type is invalid");
-		}
+		m_depthBuffs.shrink_to_fit();
 	}
 
 	bool GLFrameBuffer::init()
@@ -48,7 +54,8 @@ namespace pio
 			for (auto& colorAttach : m_colorBuffs)
 				colorAttach->init();
 
-			if (m_depthBuff) m_depthBuff->init();
+			for (auto& depth : m_depthBuffs)
+				depth->init();
 
 			glGenFramebuffers(1, &m_id);
 			glBindFramebuffer(GL_FRAMEBUFFER, m_id);
@@ -67,31 +74,27 @@ namespace pio
 				}
 				glDrawBuffers(colorAttachments.size(), colorAttachments.data());
 
-				if (m_depthBuff)
-				{
-					if (m_depthBuff->is<RenderBuffer>())
+				if (!m_depthBuffs.empty())
+				{					
+					if (!m_depthBuffs[m_depSel]->is<RenderBuffer>())//Ignore the other depth buffers
 					{
-						m_depthBuff->bind();
-						glFramebufferRenderbuffer(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_spec.DepthSpec.Format),
-												  GL_RENDERBUFFER, m_depthBuff->id());
-					}
-					else
-					{
-						LOGE("err! color frame buffer's depth buffer must be render buffer");
+						LOGE("err! depth buffer should be RenderBuffer for Color Buffer Usage");
 						std::abort();
 					}
-				}
+					m_depthBuffs[m_depSel]->bind();
+					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_spec.DepthSpec[m_depSel].Format), GL_RENDERBUFFER, m_depthBuffs[m_depSel]->id());
+				}				
 			}
-			else if (PIO_FBO_IS_DEPTH_STENCIL(m_spec.Usage) && m_depthBuff)
+			else if (PIO_FBO_IS_DEPTH_STENCIL(m_spec.Usage) && !m_depthBuffs.empty())
 			{				
 			}
-			else if (PIO_FBO_IS_DEPTH_BUF(m_spec.Usage) && m_depthBuff)
+			else if (PIO_FBO_IS_DEPTH_BUF(m_spec.Usage) && !m_depthBuffs.empty())
 			{
-				m_depthBuff->bind();
-				if (m_depthBuff->is<Texture2D>())
+				m_depthBuffs[m_depSel]->bind();
+				if (m_depthBuffs[m_depSel]->is<Texture2D>())
 				{
-					glFramebufferTexture2D(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_spec.DepthSpec.Format),
-										   GL_TEXTURE_2D, m_depthBuff->id(), 0);
+					glFramebufferTexture2D(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_spec.DepthSpec[m_depSel].Format),
+										   GL_TEXTURE_2D, m_depthBuffs[m_depSel]->id(), 0);
 				}
 				else
 				{
@@ -119,7 +122,7 @@ namespace pio
 				colorAttach.reset();
 			}
 			m_colorBuffs.clear();
-			m_depthBuff.reset();
+			m_depthBuffs.clear();
 			glDeleteFramebuffers(1, &m_id);
 			m_id = 0;
 		}
@@ -139,5 +142,34 @@ namespace pio
 	void GLFrameBuffer::unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void GLFrameBuffer::bindWritingDepth(uint8_t sel)
+	{
+		if (!PIO_FBO_IS_DEPTH_BUF(m_spec.Usage))
+		{
+			LOGE("err! only available for depth buffer");
+			return;
+		}
+		init();
+		if (isInit())
+		{
+			setDepBinding(sel);
+			glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_spec.DepthSpec[m_depSel].Format),
+								   GL_TEXTURE_2D, m_depthBuffs[m_depSel]->id(), 0);
+			GLHelper::CheckError("fail to bind fbo[%u][%s]", m_id, m_spec.Name.c_str());
+		}
+	}
+
+	bool GLFrameBuffer::setDepBinding(uint8_t sel)
+	{
+		if (sel >= m_depthBuffs.size())
+		{
+			LOGE("err! depth selection[%u] out of range[%u]", sel, m_depthBuffs.size());
+			return false;
+		}
+		m_depSel = sel;
+		return true;
 	}
 }

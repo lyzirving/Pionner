@@ -12,6 +12,9 @@
 #include "gfx/resource/Mesh.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 
+#include "scene/3d/CascadeShadowMap.h"
+#include "scene/3d/ShadowMapFrameBuffer.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -38,7 +41,7 @@ namespace pio
 			.border(glm::vec4(1.f))
 			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 
-		fboSpec.DepthSpec = depthBuilder.build();
+		fboSpec.DepthSpec.push_back(depthBuilder.build());
 		m_frameBuff = FrameBuffer::Create(context, fboSpec);
 		context->uploadData(m_frameBuff);
 
@@ -64,18 +67,53 @@ namespace pio
 		PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light shadow data");
 		UUID32 shadowFilter = it->second;
 
-		auto& fbo = m_frameBuff;
-		auto& shader = context->shader(ShaderType::MainLightShadowCaster);
+		auto& fbo = m_frameBuff;		
 		const auto& attr = m_attrs;
 
-		context->submitRC([shadowFilter, opaqueMeshItems, &context, &fbo, &shader, &attr]()
+		context->submitRC([shadowFilter, opaqueMeshItems, &context, &fbo, &attr]()
 		{
+			auto& shader = context->shader(ShaderType::MainLightShadowCaster);
+			//TODO
+			/*{
+				auto* csm = context->getLightTech(LightTech::CascadeShadowMap)->as<CascadeShadowMap>();
+				auto& fbo = csm->frameBuff();
+				auto& uBuff = csm->UBuff();
+				for (size_t i = 0; i < CASCADE_NUM; i++)
+				{
+					context->onBeginFrameBuffer(fbo, attr, i);
+					shader->bind();
+					shader->setInt("u_lightTech", (int32_t)LightTech::CascadeShadowMap);
+					shader->setInt("u_cascadeIdx", i);
+
+					context->bindUnimBlock(shader, uBuff, GpuAttr::BINDING_CASCADE_SHADOW_MAP);
+					uBuff->bind();
+
+					for (const auto& item : opaqueMeshItems)
+					{
+						Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
+						if (!meshBuff)
+						{
+							LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
+							continue;
+						}
+						meshBuff->bind(shader);
+						context->drawTriangles(meshBuff);
+					}
+
+					uBuff->unbind();
+					shader->unbind();
+					context->onEndFrameBuffer(fbo);
+				}
+			}*/
+
 			auto shadowData = AssetMgr::GetRuntimeAsset<UniformBuffer>(shadowFilter);
 			PIO_CHECK_RETURN(shadowData, "err! invalid shadow data uniform data");
 
 			context->onBeginFrameBuffer(fbo, attr);
 
 			shader->bind();
+
+			shader->setInt("u_lightTech", (int32_t)LightTech::ShadowMap);
 
 			context->bindUnimBlock(shader, shadowData, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK);
 			shadowData->bind();

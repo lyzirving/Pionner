@@ -4,10 +4,15 @@
 #include <Buffers.glslh>
 #include <PBR.glslh>
 
+const int LIGHT_TECH_SHADOW_MAP = 0;
+const int LIGHT_TECH_CASCADE_SHADOW_MAP = 1;
+
 const int ShadowMode_Hard = 1;
 const int ShadowMode_Soft = 2;
 const int ShadowMode_Soft_2X = 3;
 const int ShadowMode_Soft_4X = 4;
+
+const int CASCADE_NUM = 3;
 
 layout (std140) uniform MainLightCasterBlock
 {
@@ -28,6 +33,13 @@ layout (std140) uniform DirectionalLightBlock
     bool CastShadow;
     float ShadowIntensity;
 } u_directionalLight;
+
+layout (std140) uniform CascadeShadowMap
+{
+	int CascadeNum;
+    mat4 ViewMat;
+	mat4 PrjMats[CASCADE_NUM];
+} u_CSM;
 
 vec3 CalculateDirLightsEffect()
 {

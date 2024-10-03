@@ -248,6 +248,7 @@ namespace pio
 		friend struct CameraUD;
 		friend struct DirectionalLightUD;
 		friend struct DirectionalLightShadowDataUD;
+		friend struct CascadeShadowMapUD;
 	};
 
 	template<>

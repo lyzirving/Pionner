@@ -12,7 +12,7 @@ namespace pio
 		uint32_t Width{ 0 }, Height{ 0 };
 
 		std::vector<TextureSpecific> ColorSpec;
-		TextureSpecific DepthSpec;
+		std::vector<TextureSpecific> DepthSpec;		
 	};
 
 	#define PIO_FBO_ADD_USAGE(flags, usage)  (flags = (flags | (usage)))
@@ -29,11 +29,16 @@ namespace pio
 	class FrameBuffer : public RenderResource
 	{
 	public:
-		FrameBuffer(Ref<RenderContext>& context, const FrameBufferSpecific& spec) : RenderResource(context, RenderResourceType::FBO, spec.Name), m_spec(spec) {}
+		FrameBuffer(Ref<RenderContext>& context, const FrameBufferSpecific& spec);
+		FrameBuffer(Ref<RenderContext>& context, const std::string& name);
 		virtual ~FrameBuffer() = default;
 
 		virtual const std::vector<Ref<Texture>>& colorBuffers() const = 0;
 		virtual const Ref<Texture>& depthBuffer() const = 0;
+		virtual void bindWritingDepth(uint8_t sel = 0) = 0;
+
+		virtual uint32_t size() const override { return 0; }
+		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
 
 		const FrameBufferSpecific& spec() const { return m_spec; }
 
@@ -41,7 +46,7 @@ namespace pio
 		uint32_t height() const { return spec().Height; }
 
 	protected:
-		const FrameBufferSpecific m_spec;
+		FrameBufferSpecific m_spec;
 
 	public:
 		static Ref<FrameBuffer> Create(Ref<RenderContext>& context, const FrameBufferSpecific& spec);

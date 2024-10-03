@@ -51,7 +51,7 @@ namespace pio
             .width(depthSize.x).height(depthSize.y);
 
         fboSpec.ColorSpec.push_back(colorBufferSpec.build());
-        fboSpec.DepthSpec = depthBuilder.build();
+        fboSpec.DepthSpec.push_back(depthBuilder.build());
 
         m_frameBuff = FrameBuffer::Create(context, fboSpec);
         context->uploadData(m_frameBuff);

@@ -10,6 +10,17 @@
 
 namespace pio
 {
+	FrameBuffer::FrameBuffer(Ref<RenderContext>& context, const FrameBufferSpecific& spec)
+		: RenderResource(context, RenderResourceType::FBO, spec.Name), m_spec(spec)
+	{
+	}
+
+	FrameBuffer::FrameBuffer(Ref<RenderContext>& context, const std::string& name) 
+		: RenderResource(context, RenderResourceType::Proxy, name)
+	{
+		m_spec.Name = name;
+	}
+
 	Ref<FrameBuffer> FrameBuffer::Create(Ref<RenderContext>& context, const FrameBufferSpecific& spec)
 	{
 		switch (context->renderBackend())

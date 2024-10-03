@@ -27,3 +27,7 @@ vec3 GammaCorrect(vec3 color)
 {
 	return pow(color, vec3(1.0 / 2.2)); 
 }
+
+float when_eqi(int x, int y) {
+  return 1.f - abs(float(sign(x - y)));
+}

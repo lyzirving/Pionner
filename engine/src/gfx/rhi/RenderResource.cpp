@@ -18,12 +18,15 @@ namespace pio
 
 	RenderResource::~RenderResource()
 	{
-		auto ctx = m_context.lock();
-		if(ctx)
+		if (m_type != RenderResourceType::Proxy)
 		{
-			ResourceGCDelegate resource(m_type, m_id, m_name);
-			ctx->recyleResource(std::move(resource));
-		}
+			auto ctx = m_context.lock();
+			if (ctx)
+			{
+				ResourceGCDelegate resource(m_type, m_id, m_name);
+				ctx->recyleResource(std::move(resource));
+			}
+		}		
 	}
 
 	std::string RenderResource::CreateResourceName(RenderResourceType type)

@@ -102,6 +102,14 @@ namespace pio
 		m_state->setStateMachine(attrs);
 	}
 
+	void RenderContext::onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs, uint8_t depthSlot)
+	{
+		m_bindFbo = frameBuffer->id();
+		m_api->setViewport(0, 0, frameBuffer->width(), frameBuffer->height());
+		frameBuffer->bindWritingDepth(depthSlot);
+		m_state->setStateMachine(attrs);
+	}
+
 	void RenderContext::onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer)
 	{
 		if (frameBuffer)
@@ -162,7 +170,7 @@ namespace pio
 		uint8_t idx = PIO_UINT8(type);
 		if (!m_lightTech[idx])
 		{
-			m_lightTech[idx] = LightTechBase::Create(type);
+			m_lightTech[idx] = LightTechBase::Create(self(), type);
 		}
 		return m_lightTech[idx];
 	}
@@ -232,10 +240,14 @@ namespace pio
 		m_screenMeshBuffer.reset();
 		m_textureMgr->release();
 		m_materialMgr->release();
+		for (uint8_t i = 0; i < PIO_UINT8(LightTech::Num); i++)
+		{
+			m_lightTech[i].reset();
+		}
 		for (uint8_t i = 0; i < PIO_UINT8(ShaderType::Num); i++)
 		{
 			m_shaders[i].reset();//Real release will be executed at garbage queue
-		}			
+		}		
 	}
 
 	void RenderContext::waitAndRender()

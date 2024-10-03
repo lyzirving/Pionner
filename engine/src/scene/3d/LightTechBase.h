@@ -24,7 +24,7 @@ namespace pio
 		virtual LightTech lightTech() const { return LightTech::Num; }
 
 	public:
-		static Ref<LightTechBase> Create(LightTech type);
+		static Ref<LightTechBase> Create(Ref<RenderContext>& context, LightTech type);
 	};
 
 	template<>

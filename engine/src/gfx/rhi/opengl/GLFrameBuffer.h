@@ -18,15 +18,18 @@ namespace pio
 		virtual void bind() override;
 		virtual void unbind() override;
 
-		virtual uint32_t size() const override { return 0; }
-		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
-
 		virtual const std::vector<Ref<Texture>>& colorBuffers() const override { return m_colorBuffs; }
-		virtual const Ref<Texture>& depthBuffer() const override { return m_depthBuff; };
+		virtual const Ref<Texture>& depthBuffer() const override { return m_depthBuffs[m_depSel]; };
+
+		virtual void bindWritingDepth(uint8_t sel = 0) override;
+
+	protected:
+		bool setDepBinding(uint8_t sel);
 
 	private:
 		std::vector<Ref<Texture>> m_colorBuffs;
-		Ref<Texture> m_depthBuff;
+		std::vector<Ref<Texture>> m_depthBuffs;
+		uint8_t m_depSel{ 0 };
 	};
 }
 

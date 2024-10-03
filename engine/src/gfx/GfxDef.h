@@ -29,6 +29,7 @@ namespace pio
 		static const char* BINDING_CAM_BLOCK = "CameraBlock";
 		static const char* BINDING_DIRECTIONAL_LIGHT_BLOCK = "DirectionalLightBlock";
 		static const char* BINDING_MAIN_LIGHT_CASTER_BLOCK = "MainLightCasterBlock";
+		static const char* BINDING_CASCADE_SHADOW_MAP = "CascadeShadowMap";
 
 		//GBuffer in Deferred pass
 		static const char* UNI_GBUFFER_POS      = "u_GPosition";
@@ -122,6 +123,8 @@ namespace pio
 		Num
 	};
 
+	static constexpr uint8_t CASCADE_NUM = 3;
+
 	enum class LightTech : uint8_t
 	{
 		ShadowMap,
@@ -158,7 +161,7 @@ namespace pio
 
 	enum class RenderResourceType : uint8_t
 	{
-		UBO, VBO, EBO, VAO, FBO, Texture, RenderBuffer, Shader, Num
+		UBO, VBO, EBO, VAO, FBO, Texture, RenderBuffer, Shader, Proxy, Num
 	};
 
 	enum class TextureSampler : uint8_t

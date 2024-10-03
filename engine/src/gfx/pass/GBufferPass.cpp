@@ -82,7 +82,7 @@ namespace pio
         fboSpec.ColorSpec.push_back(albeoBuffBuilder.build());
         fboSpec.ColorSpec.push_back(matBuffBuilder.build());
         fboSpec.ColorSpec.push_back(emissionBuffBuilder.build());
-        fboSpec.DepthSpec = depthBuilder.build();
+        fboSpec.DepthSpec.push_back(depthBuilder.build());
 
         m_frameBuff = FrameBuffer::Create(context, fboSpec);
         context->uploadData(m_frameBuff);

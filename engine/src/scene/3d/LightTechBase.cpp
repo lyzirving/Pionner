@@ -16,12 +16,12 @@ namespace pio
 
 	LightTechBase::~LightTechBase() = default;
 
-	Ref<LightTechBase> LightTechBase::Create(LightTech type)
+	Ref<LightTechBase> LightTechBase::Create(Ref<RenderContext>& context, LightTech type)
 	{
 		switch (type)
 		{
 			case LightTech::CascadeShadowMap:
-				return AssetMgr::MakeRuntimeAsset<CascadeShadowMap>();
+				return AssetMgr::MakeRuntimeAsset<CascadeShadowMap>(context);
 			default:
 				LOGE("err! light tech[%u] hasn't been implemented", type);
 				std::abort();

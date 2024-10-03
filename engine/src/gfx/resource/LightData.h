@@ -28,6 +28,15 @@ namespace pio
 		glm::vec2 ShadowMapSize{ 0.f };
 		float FrustumSize{ 0.f };
 	};
+
+	struct CascadeShadowMapUD
+	{
+		PIO_UNIFORM_STRUCT_DECLARE(CascadeShadowMapUD)
+
+		int32_t CascadeNum{ CASCADE_NUM };
+		glm::mat4 ViewMat{ 1.f };
+		glm::mat4 PrjMats[CASCADE_NUM];
+	};
 }
 
 #endif
