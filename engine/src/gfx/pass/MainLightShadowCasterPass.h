@@ -13,7 +13,6 @@ namespace pio
 		~MainLightShadowCasterPass() = default;
 
 		virtual void onAttach(Ref<RenderContext>& context) override;
-		virtual void onDetach(Ref<RenderContext>& context) override;
 		virtual void onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass) override;
 	};
 

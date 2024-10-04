@@ -12,6 +12,9 @@
 #include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/UniformBuffer.h"
 
+#include "scene/3d/ShadowMap.h"
+#include "scene/3d/CascadeShadowMap.h"
+
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -80,34 +83,31 @@ namespace pio
         PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light buff");
         UUID32 lightFilter = it->second;
 
-        it = renderingData.UnimBuffSet.find(UBBinding_DirectionalLightShadow);
-        PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light shadow buff");
-        UUID32 shadowFilter = it->second;
-
-        context->submitRC([camFilter, lightFilter, shadowFilter, &context, &fbo, &lastFbo, &shader, &attr]()
+        context->submitRC([camFilter, lightFilter, &context, &fbo, &lastFbo, &shader, &attr]()
         {
-            auto camBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(camFilter);
-            PIO_CHECK_RETURN(camBuff, "err! invalid camera uniform buffer");
-            auto lightBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(lightFilter);
-            PIO_CHECK_RETURN(lightBuff, "err! invalid directional light uniform buffer");
-            auto shadowData = AssetMgr::GetRuntimeAsset<UniformBuffer>(shadowFilter);
-            PIO_CHECK_RETURN(shadowData, "err! invalid directional light shadow data");
+            auto camUBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(camFilter);
+            PIO_CHECK_RETURN(camUBuff, "err! invalid camera uniform buffer");
+            auto lightUBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(lightFilter);
+            PIO_CHECK_RETURN(lightUBuff, "err! invalid directional light uniform buffer");
+
+            auto* sdMap = context->getLightTech(LightTech::ShadowMap)->as<ShadowMap>();
+            auto& sdMapDep = sdMap->frameBuff()->depthBuffer();
+            auto& sdMapUBuff = sdMap->UBuff();
                                   
-            const auto& colorBuffers = lastFbo->colorBuffers();
-            Ref<Texture> depthBuff = context->getRenderer()->getPass((uint32_t)RenderPassType::MainLightShadowCaster)->frameBuffer()->depthBuffer();
+            const auto& colorBuffers = lastFbo->colorBuffers();      
            
             context->onBeginFrameBuffer(fbo, attr);
 
             shader->bind();
 
-            context->bindUnimBlock(shader, camBuff, GpuAttr::BINDING_CAM_BLOCK);
-            camBuff->bind();
+            context->bindUnimBlock(shader, camUBuff, GpuAttr::BINDING_CAM_BLOCK);
+            camUBuff->bind();
 
-            context->bindUnimBlock(shader, lightBuff, GpuAttr::BINDING_DIRECTIONAL_LIGHT_BLOCK);
-            lightBuff->bind();
+            context->bindUnimBlock(shader, lightUBuff, GpuAttr::BINDING_DIRECTIONAL_LIGHT_BLOCK);
+            lightUBuff->bind();
 
-            context->bindUnimBlock(shader, shadowData, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK);
-            shadowData->bind();
+            context->bindUnimBlock(shader, sdMapUBuff, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK);
+            sdMapUBuff->bind();
 
             TextureSampler slot;
             for (size_t i = 0; i < colorBuffers.size(); i++)
@@ -130,25 +130,25 @@ namespace pio
                 }
             }
 
-            if(depthBuff && depthBuff->is<Texture2D>() && shader->getSampler(slot))
+            if (sdMapDep && sdMapDep->is<Texture2D>() && shader->getSampler(slot))
             {
-                auto* d = depthBuff->as<Texture2D>();                
+                auto* d = sdMapDep->as<Texture2D>();
                 d->active(slot);
                 d->bind();
                 shader->setTextureSampler(GpuAttr::UNI_SHADOW_MAP, slot);
             }
             else
             {
-                LOGE("err! fail to get available sampler for shadow map[%s]", depthBuff->name().c_str());
+                LOGE("err! fail to get available sampler for shadow map[%s]", sdMapDep->name().c_str());
             }
 
             context->drawTriangles(context->getScreenMeshBuffer());
 
-            shadowData->unbind();
+            sdMapUBuff->unbind();
 
-            lightBuff->unbind();
+            lightUBuff->unbind();
 
-            camBuff->unbind();
+            camUBuff->unbind();
 
             shader->unbind();
         });

@@ -10,7 +10,6 @@
 #include "scene/Components.h"
 #include "scene/node/LightNode.h"
 #include "scene/node/CameraNode.h"
-#include "scene/node/GizmoNode.h"
 
 #include <limits>
 
@@ -39,14 +38,13 @@ namespace pio
 		viewMatInv = glm::inverse(viewMatInv);
 
 		float aspect = cam->aspect();// width / height
-		float fov = cam->fov();		
+		float fov = cam->fov();	
+		float tanHalfFov = std::tan(glm::radians(fov * 0.5f));
 		float interval = (cam->frustFar() - cam->frustNear()) / float(CASCADE_NUM);
 		m_cascadeEnds[0] = cam->frustNear();
 		m_cascadeEnds[1] = m_cascadeEnds[0] + interval;
 		m_cascadeEnds[2] = m_cascadeEnds[1] + interval;
-		m_cascadeEnds[3] = cam->frustFar();
-
-		float tanHalfFov = std::tan(glm::radians(fov * 0.5f));		
+		m_cascadeEnds[3] = cam->frustFar();			
 
 		// Calculate each frustum's 8 corners to get AABB
 		// Firstly, transform the frustum in View space to World space
@@ -88,7 +86,7 @@ namespace pio
 			}
 			m_lightFrustums[i].setMax(maxVal);
 			m_lightFrustums[i].setMin(minVal);
-			m_UData->PrjMats[i] = Frustum::OrthoMat(minVal.x, maxVal.x, minVal.y, maxVal.y, maxVal.z, minVal.z);
+			m_UData->PrjMats[i] = Frustum::OrthoMat(minVal.x, maxVal.x, minVal.y, maxVal.y, minVal.z, maxVal.z);
 		}
 
 		m_UData->ViewMat = lightMat;

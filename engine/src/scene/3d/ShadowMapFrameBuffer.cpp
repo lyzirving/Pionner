@@ -9,15 +9,49 @@
 
 namespace pio
 {
-	CascadeShadowFrameBuffer::CascadeShadowFrameBuffer(Ref<RenderContext>& context) : 
-		FrameBuffer(context, "CascadeShadowMap")
+	ShadowMapFrameBuffer::ShadowMapFrameBuffer(Ref<RenderContext>& context) 
+		: FrameBufferProxy(context, "ShadowMap")
 	{
 		auto shadowReso = GlobalSettings::ShadowResolution();
 		initInner(context, shadowReso.x, shadowReso.y);
 	}
 
-	CascadeShadowFrameBuffer::CascadeShadowFrameBuffer(Ref<RenderContext>& context, uint32_t width, uint32_t height) :
-		FrameBuffer(context, "CascadeShadowMap")
+	ShadowMapFrameBuffer::ShadowMapFrameBuffer(Ref<RenderContext>& context, uint32_t width, uint32_t height) 
+		: FrameBufferProxy(context, "ShadowMap")
+	{
+		initInner(context, width, height);
+	}
+
+	void ShadowMapFrameBuffer::initInner(Ref<RenderContext>& context, uint32_t width, uint32_t height)
+	{
+		FrameBufferSpecific fboSpec;
+		fboSpec.Name = "ShadowMap";
+		fboSpec.Width = width;
+		fboSpec.Height = height;
+		PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Depth);
+
+		TextureSpecificBuilder depth;
+		depth.name("ShadowMapDepthBuffer")
+			.type(TextureType::TwoDimen)
+			.format(TextureFormat::DEPTH_32F)
+			.width(width).height(height)
+			.texWrap(TextureWrap::ClampBorder, TextureWrap::ClampBorder)
+			.border(glm::vec4(1.f))
+			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
+		fboSpec.DepthSpec.push_back(depth.build());
+
+		m_frameBuff = FrameBuffer::Create(context, fboSpec);
+	}
+
+	CascadeShadowFrameBuffer::CascadeShadowFrameBuffer(Ref<RenderContext>& context) 
+		: FrameBufferProxy(context, "CascadeShadowMap")
+	{
+		auto shadowReso = GlobalSettings::ShadowResolution();
+		initInner(context, shadowReso.x, shadowReso.y);
+	}
+
+	CascadeShadowFrameBuffer::CascadeShadowFrameBuffer(Ref<RenderContext>& context, uint32_t width, uint32_t height) 
+		: FrameBufferProxy(context, "CascadeShadowMap")
 	{
 		initInner(context, width, height);
 	}
@@ -61,5 +95,5 @@ namespace pio
 		fboSpec.DepthSpec.push_back(lev2.build());
 
 		m_frameBuff = FrameBuffer::Create(context, fboSpec);
-	}
+	}	
 }

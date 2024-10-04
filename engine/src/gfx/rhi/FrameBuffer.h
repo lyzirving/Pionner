@@ -40,7 +40,7 @@ namespace pio
 		virtual uint32_t size() const override { return 0; }
 		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
 
-		const FrameBufferSpecific& spec() const { return m_spec; }
+		virtual const FrameBufferSpecific& spec() const { return m_spec; }
 
 		uint32_t width() const { return spec().Width; }
 		uint32_t height() const { return spec().Height; }

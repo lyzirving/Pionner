@@ -12,6 +12,7 @@
 #include "gfx/resource/Mesh.h"
 #include "gfx/resource/MeshRenderBuffer.h"
 
+#include "scene/3d/ShadowMap.h"
 #include "scene/3d/CascadeShadowMap.h"
 #include "scene/3d/ShadowMapFrameBuffer.h"
 
@@ -24,27 +25,6 @@ namespace pio
 {
 	void MainLightShadowCasterPass::onAttach(Ref<RenderContext>& context)
 	{
-		auto shadowSize = GlobalSettings::ShadowResolution().x;
-
-		FrameBufferSpecific fboSpec;
-		fboSpec.Name = "MainLightShadowCasterPass";
-		fboSpec.Width = shadowSize;
-		fboSpec.Height = shadowSize;
-		PIO_FBO_ADD_USAGE(fboSpec.Usage, FrameBufferUsage_Depth);
-
-		TextureSpecificBuilder depthBuilder;
-		depthBuilder.name("MainLightDepthBuffer")
-			.type(TextureType::TwoDimen)
-			.format(TextureFormat::DEPTH_32F)
-			.width(shadowSize).height(shadowSize)
-			.texWrap(TextureWrap::ClampBorder, TextureWrap::ClampBorder)
-			.border(glm::vec4(1.f))
-			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
-
-		fboSpec.DepthSpec.push_back(depthBuilder.build());
-		m_frameBuff = FrameBuffer::Create(context, fboSpec);
-		context->uploadData(m_frameBuff);
-
 		m_attrs.setClear(Clear::Common())
 			.setBlend(Blend::Disable())
 			.setDepth(DepthTest::Common())				
@@ -52,25 +32,15 @@ namespace pio
 			.setStencil(StencilTest::Disable());
 	}
 
-	void MainLightShadowCasterPass::onDetach(Ref<RenderContext>& context)
-	{
-		m_frameBuff.reset();
-	}
-
 	void MainLightShadowCasterPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
 	{
 		auto& renderingData = context->renderingData();
 		std::vector<MeshRenderingItem> opaqueMeshItems = renderingData.OpaqueMeshItems;
 		if (opaqueMeshItems.empty())  { return; }
-
-		auto it = renderingData.UnimBuffSet.find(UBBinding_DirectionalLightShadow);
-		PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light shadow data");
-		UUID32 shadowFilter = it->second;
-
-		auto& fbo = m_frameBuff;		
+		
 		const auto& attr = m_attrs;
 
-		context->submitRC([shadowFilter, opaqueMeshItems, &context, &fbo, &attr]()
+		context->submitRC([opaqueMeshItems, &context, &attr]()
 		{
 			auto& shader = context->shader(ShaderType::MainLightShadowCaster);
 			//TODO
@@ -106,22 +76,21 @@ namespace pio
 				}
 			}*/
 
-			auto shadowData = AssetMgr::GetRuntimeAsset<UniformBuffer>(shadowFilter);
-			PIO_CHECK_RETURN(shadowData, "err! invalid shadow data uniform data");
+			auto* sdMap = context->getLightTech(LightTech::ShadowMap)->as<ShadowMap>();
+			auto& sdMapFbo = sdMap->frameBuff();
+			auto& sdMapBuff = sdMap->UBuff();
 
-			context->onBeginFrameBuffer(fbo, attr);
-
+			context->onBeginFrameBuffer(sdMapFbo, attr);
 			shader->bind();
-
 			shader->setInt("u_lightTech", (int32_t)LightTech::ShadowMap);
 
-			context->bindUnimBlock(shader, shadowData, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK);
-			shadowData->bind();
+			context->bindUnimBlock(shader, sdMapBuff, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK);
+			sdMapBuff->bind();
 
-			for(const auto& item : opaqueMeshItems)
+			for (const auto& item : opaqueMeshItems)
 			{
 				Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
-				if(!meshBuff)
+				if (!meshBuff)
 				{
 					LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
 					continue;
@@ -130,9 +99,8 @@ namespace pio
 				context->drawTriangles(meshBuff);
 			}
 
-			shadowData->unbind();
-
-			shader->unbind();
+			sdMapBuff->unbind();
+			shader->unbind();		
 		});
 	}
 

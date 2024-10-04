@@ -11,12 +11,10 @@ namespace pio
 											 public:\
 									         virtual LightType lightType() const override { return StaticLightType(); }
 	
-	class Camera;
 	class CameraNode;
 	class UniformBuffer;
 	class GizmoNode;
 	struct DirectionalLightUD;
-	struct DirectionalLightShadowDataUD;
 
 	class LightNode : public Node
 	{
@@ -36,9 +34,7 @@ namespace pio
 		virtual void onAttach(Ref<Scene>& scene) override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
 
-		const glm::vec3& direction() const;
-
-		Ref<UniformBuffer> getShadowData() const { return m_UBufferShadow; }
+		const glm::vec3& direction() const;		
 
 	private:
 		void updateLight(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
@@ -49,9 +45,7 @@ namespace pio
 
 	private:
 		Ref<DirectionalLightUD> m_UData;
-		Ref<DirectionalLightShadowDataUD> m_UDataShadow;
-		Ref<UniformBuffer> m_UBuffer, m_UBufferShadow;
-		Ref<Camera> m_shadowCam;
+		Ref<UniformBuffer> m_UBuffer;
 
 		Ref<GizmoNode> m_gizmo;
 	};

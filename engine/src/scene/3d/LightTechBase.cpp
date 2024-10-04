@@ -1,4 +1,6 @@
 #include "LightTechBase.h"
+
+#include "ShadowMap.h"
 #include "CascadeShadowMap.h"
 
 #include "asset/AssetMgr.h"
@@ -20,6 +22,8 @@ namespace pio
 	{
 		switch (type)
 		{
+			case LightTech::ShadowMap:
+				return AssetMgr::MakeRuntimeAsset<ShadowMap>(context);
 			case LightTech::CascadeShadowMap:
 				return AssetMgr::MakeRuntimeAsset<CascadeShadowMap>(context);
 			default:

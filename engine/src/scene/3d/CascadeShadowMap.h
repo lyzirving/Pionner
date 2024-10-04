@@ -6,8 +6,8 @@
 
 namespace pio
 {
-	class UniformBuffer;
 	class DirectionalLightNode;
+	class UniformBuffer;	
 	class FrameBuffer;
 	struct CascadeShadowMapUD;
 
