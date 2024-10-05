@@ -589,6 +589,17 @@ namespace pio
 	}
 
 	template<>
+	bool UniformPack::is<UnimPackArray>() const
+	{
+		return m_type == UniformDataType::FloatArray ||
+			   m_type == UniformDataType::IntArray ||
+			   m_type == UniformDataType::UIntArray ||
+			   m_type == UniformDataType::Vec2Array ||
+			   m_type == UniformDataType::Vec3Array ||
+			   m_type == UniformDataType::Vec4Array;
+	}
+
+	template<>
 	bool UniformPack::is<UnimPackMatArray>() const
 	{
 		return m_type == UniformDataType::Mat2Array ||

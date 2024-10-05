@@ -32,10 +32,11 @@ namespace pio
 	struct CascadeShadowMapUD
 	{
 		PIO_UNIFORM_STRUCT_DECLARE(CascadeShadowMapUD)
-
-		int32_t CascadeNum{ CASCADE_NUM };
-		glm::mat4 ViewMat{ 1.f };
+		
+		float ClipSpaceEnd[CASCADE_NUM];
 		glm::mat4 PrjMats[CASCADE_NUM];
+		glm::mat4 ViewMat{ 1.f };
+		int32_t CascadeNum{ CASCADE_NUM };
 	};
 }
 

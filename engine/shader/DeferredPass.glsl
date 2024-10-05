@@ -27,7 +27,8 @@ uniform sampler2D u_GNormal;     // vec4 noraml(3) + type(1)
 uniform sampler2D u_GAlbedoAlpha;// vec4 albedo(3) + alpha(1)
 uniform sampler2D u_GMaterial;   // vec3 roughness + metalness + ao
 uniform sampler2D u_GEmission;   // vec3
-uniform sampler2D u_shadowMap;
+
+uniform int u_lightTech;
 
 in vec2 v_texcoord; 
 out vec4 o_color;
@@ -57,7 +58,7 @@ void main() {
 vec4 LightContribution()
 {   
     vec3 lightContrib = vec3(0.f);
-    lightContrib += CalculateDirLightsEffect() * (u_directionalLight.CastShadow ? (1.f - CalcDirLightShadow(u_directionalLight.ShadowMode, u_shadowMap)) : 1.f);
+    lightContrib += CalculateDirLightsEffect() * (u_directionalLight.CastShadow ? (1.f - CalcDirLightShadow(u_lightTech)) : 1.f);
     lightContrib += (m_PBRParams.Albedo * m_PBRParams.Emission);
     return vec4(lightContrib, m_PBRParams.Alpha);
 }

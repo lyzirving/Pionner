@@ -92,9 +92,10 @@ namespace pio
 	UniformBlock CascadeShadowMapUD::CreateBlock()
 	{
 		UniformBlock block;
-		block.pushBack("CascadeNum", UniformBlock::CreateData(UniformDataType::Int, "CascadeNum"));
+		block.pushBack("ClipSpaceEnd", UniformBlock::CreateData(UniformDataType::FloatArray, "ClipSpaceEnd", CASCADE_NUM));
+		block.pushBack("PrjMats", UniformBlock::CreateData(UniformDataType::Mat4Array, "PrjMats", CASCADE_NUM));		
 		block.pushBack("ViewMat", UniformBlock::CreateData(UniformDataType::Mat4, "ViewMat"));
-		block.pushBack("PrjMats", UniformBlock::CreateData(UniformDataType::Mat4Array, "PrjMats", CASCADE_NUM));
+		block.pushBack("CascadeNum", UniformBlock::CreateData(UniformDataType::Int, "CascadeNum"));
 		block.calculate();
 		//LOGD("block CascadeShadowMapUD byte used[%u]", block.getByteUsed());
 		return block;
@@ -108,17 +109,24 @@ namespace pio
 			return;
 		}
 
-		auto numUD = Block.m_blockItems.get("CascadeNum");
-		Block.m_buffer->writeAt(&CascadeNum, sizeof(int32_t), numUD->getAlignOffset());
+		auto* clipSpaceEnd = Block.m_blockItems.get("ClipSpaceEnd")->as<UnimPackArray>();
+		for (size_t i = 0; i < clipSpaceEnd->getArrayNum(); i++)
+		{
+			UniformPack& pack = (*clipSpaceEnd)[i];
+			Block.m_buffer->writeAt(&ClipSpaceEnd[i], sizeof(float), pack.getAlignOffset());
+		}
+
+		auto* prjMatArray = Block.m_blockItems.get("PrjMats")->as<UnimPackMatArray>();
+		for (size_t i = 0; i < prjMatArray->getArrayNum(); i++)
+		{
+			UnimPackMat& m = (*prjMatArray)[i];
+			Block.m_buffer->writeAt(glm::value_ptr(PrjMats[i]), sizeof(glm::mat4), m.getAlignOffset());
+		}		
 
 		auto viewMatUD = Block.m_blockItems.get("ViewMat");
 		Block.m_buffer->writeAt(glm::value_ptr(ViewMat), sizeof(glm::mat4), viewMatUD->getAlignOffset());
 
-		auto* prjMatArray = Block.m_blockItems.get("PrjMats")->as<UnimPackMatArray>();
-		for (uint32_t i = 0; i < prjMatArray->getArrayNum(); i++)
-		{
-			UnimPackMat& m = (*prjMatArray)[i];
-			Block.m_buffer->writeAt(glm::value_ptr(PrjMats[i]), sizeof(glm::mat4), m.getAlignOffset());
-		}
+		auto numUD = Block.m_blockItems.get("CascadeNum");
+		Block.m_buffer->writeAt(&CascadeNum, sizeof(int32_t), numUD->getAlignOffset());
 	}
 }

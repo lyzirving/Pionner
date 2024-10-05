@@ -19,6 +19,7 @@ namespace pio
 		virtual void unbind() override;
 
 		virtual const std::vector<Ref<Texture>>& colorBuffers() const override { return m_colorBuffs; }
+		virtual const std::vector<Ref<Texture>>& depthBuffers() const override { return m_depthBuffs; }
 		virtual const Ref<Texture>& depthBuffer() const override { return m_depthBuffs[m_depSel]; };
 
 		virtual void bindWritingDepth(uint8_t sel = 0) override;

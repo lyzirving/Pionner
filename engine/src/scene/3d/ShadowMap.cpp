@@ -6,6 +6,8 @@
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/resource/LightData.h"
+#include "gfx/rhi/Texture.h"
+#include "gfx/rhi/Shader.h"
 
 #include "scene/Components.h"
 #include "scene/node/LightNode.h"
@@ -27,6 +29,44 @@ namespace pio
 
 		m_UData = CreateRef<DirectionalLightShadowDataUD>();
 		m_UBuffer = UniformBuffer::Create(context, m_UData->Block.getByteUsed(), UBBinding_DirectionalLightShadow, BufferUsage::Dynamic);
+
+		m_attrs.setClear(Clear::Common())
+			.setBlend(Blend::Disable())
+			.setDepth(DepthTest::Common())			
+			.setCull(CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front))
+			.setStencil(StencilTest::Disable());
+	}
+
+	bool ShadowMap::bind(Ref<Shader>& shader)
+	{
+		if (!shader)
+			return false;
+
+		auto& dep = m_frameBuff->depthBuffer();
+		TextureSampler slot;
+		if (!dep || !dep->is<Texture2D>() || !shader->getSampler(slot))
+			return false;		
+
+		auto* tex = dep->as<Texture2D>();
+		tex->active(slot);
+		tex->bind();
+		shader->setTextureSampler(GpuAttr::UNI_SHADOW_MAP, slot);
+		return true;
+	}
+
+	bool ShadowMap::bindUnimBlock(Ref<RenderContext>& context, Ref<Shader>& shader)
+	{
+		if (context->bindUnimBlock(shader, m_UBuffer, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK))
+		{
+			m_UBuffer->bind();
+			return true;
+		}
+		return false;
+	}
+
+	void ShadowMap::unbindUnimBlock()
+	{
+		m_UBuffer->unbind();
 	}
 
 	void ShadowMap::update(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<DirectionalLightNode>& lightNode)

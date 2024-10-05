@@ -20,8 +20,10 @@ namespace pio
 		virtual void unbind() override { m_frameBuff->unbind(); }
 
 		virtual const FrameBufferSpecific& spec() const override { return m_frameBuff->spec(); }
+		virtual uint32_t id() const override { return m_frameBuff->id(); }
 
 		virtual const std::vector<Ref<Texture>>& colorBuffers() const override { return m_frameBuff->colorBuffers(); }
+		virtual const std::vector<Ref<Texture>>& depthBuffers() const override { return m_frameBuff->depthBuffers(); }
 		virtual const Ref<Texture>& depthBuffer() const override { return m_frameBuff->depthBuffer(); };
 
 		virtual void bindWritingDepth(uint8_t sel = 0) override { m_frameBuff->bindWritingDepth(sel); };

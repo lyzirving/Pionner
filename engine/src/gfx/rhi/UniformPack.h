@@ -107,6 +107,8 @@ namespace pio
 		virtual uint32_t getArrayNum() override { return m_arrayNum; }
 		virtual std::string toString() override;
 
+		UniformPack& operator[](uint32_t i) { return m_array[i]; }
+
 	private:
 		static UniformDataType GetArrayDataType(UniformDataType type);
 
@@ -250,6 +252,9 @@ namespace pio
 		friend struct DirectionalLightShadowDataUD;
 		friend struct CascadeShadowMapUD;
 	};
+
+	template<>
+	bool UniformPack::is<UnimPackArray>() const;
 
 	template<>
 	bool UniformPack::is<UnimPackMatArray>() const;

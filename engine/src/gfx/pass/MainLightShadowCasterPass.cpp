@@ -23,40 +23,28 @@
 
 namespace pio
 {
-	void MainLightShadowCasterPass::onAttach(Ref<RenderContext>& context)
-	{
-		m_attrs.setClear(Clear::Common())
-			.setBlend(Blend::Disable())
-			.setDepth(DepthTest::Common())				
-			.setCull(CullFace::Common())
-			.setStencil(StencilTest::Disable());
-	}
-
 	void MainLightShadowCasterPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
 	{
 		auto& renderingData = context->renderingData();
 		std::vector<MeshRenderingItem> opaqueMeshItems = renderingData.OpaqueMeshItems;
-		if (opaqueMeshItems.empty())  { return; }
-		
-		const auto& attr = m_attrs;
+		if (opaqueMeshItems.empty())  { return; }	
 
-		context->submitRC([opaqueMeshItems, &context, &attr]()
+		context->submitRC([opaqueMeshItems, &context]()
 		{
 			auto& shader = context->shader(ShaderType::MainLightShadowCaster);
-			//TODO
-			/*{
-				auto* csm = context->getLightTech(LightTech::CascadeShadowMap)->as<CascadeShadowMap>();
-				auto& fbo = csm->frameBuff();
-				auto& uBuff = csm->UBuff();
-				for (size_t i = 0; i < CASCADE_NUM; i++)
-				{
-					context->onBeginFrameBuffer(fbo, attr, i);
-					shader->bind();
-					shader->setInt("u_lightTech", (int32_t)LightTech::CascadeShadowMap);
-					shader->setInt("u_cascadeIdx", i);
+			auto lightTechIdx = GlobalSettings::RenderConfig.LightingTech;
+			auto lightTech = context->getLightTech(lightTechIdx);
+			switch (lightTechIdx)
+			{
+				case LightTech::ShadowMap:
+				{					
+					auto& sdMapFbo = lightTech->frameBuff();					
 
-					context->bindUnimBlock(shader, uBuff, GpuAttr::BINDING_CASCADE_SHADOW_MAP);
-					uBuff->bind();
+					context->onBeginFrameBuffer(sdMapFbo, lightTech->renderState());
+					shader->bind();
+					shader->setInt("u_lightTech", (int32_t)LightTech::ShadowMap);
+
+					lightTech->bindUnimBlock(context, shader);
 
 					for (const auto& item : opaqueMeshItems)
 					{
@@ -69,38 +57,45 @@ namespace pio
 						meshBuff->bind(shader);
 						context->drawTriangles(meshBuff);
 					}
-
-					uBuff->unbind();
+					lightTech->unbindUnimBlock();
 					shader->unbind();
-					context->onEndFrameBuffer(fbo);
+					break;
 				}
-			}*/
+				case LightTech::CascadeShadowMap:
+				{					
+					auto& cmsFbo = lightTech->frameBuff();
 
-			auto* sdMap = context->getLightTech(LightTech::ShadowMap)->as<ShadowMap>();
-			auto& sdMapFbo = sdMap->frameBuff();
-			auto& sdMapBuff = sdMap->UBuff();
+					for (size_t i = 0; i < CASCADE_NUM; i++)
+					{
+						context->onBeginFrameBuffer(cmsFbo, lightTech->renderState(), i);
+						shader->bind();
+						shader->setInt("u_lightTech", (int32_t)LightTech::CascadeShadowMap);
+						shader->setInt("u_cascadeIdx", i);
 
-			context->onBeginFrameBuffer(sdMapFbo, attr);
-			shader->bind();
-			shader->setInt("u_lightTech", (int32_t)LightTech::ShadowMap);
+						lightTech->bindUnimBlock(context, shader);
 
-			context->bindUnimBlock(shader, sdMapBuff, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK);
-			sdMapBuff->bind();
-
-			for (const auto& item : opaqueMeshItems)
-			{
-				Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
-				if (!meshBuff)
+						for (const auto& item : opaqueMeshItems)
+						{
+							Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
+							if (!meshBuff)
+							{
+								LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
+								continue;
+							}
+							meshBuff->bind(shader);
+							context->drawTriangles(meshBuff);
+						}
+						lightTech->unbindUnimBlock();
+						shader->unbind();						
+					}
+					break;
+				}
+				default:
 				{
-					LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
-					continue;
+					LOGE("err! unimplemened light tech[%u]", lightTechIdx);
+					break;
 				}
-				meshBuff->bind(shader);
-				context->drawTriangles(meshBuff);
-			}
-
-			sdMapBuff->unbind();
-			shader->unbind();		
+			}				
 		});
 	}
 

@@ -5,8 +5,7 @@
 
 namespace pio
 {
-	class DirectionalLightNode;
-	class UniformBuffer;
+	class DirectionalLightNode;	
 	class FrameBuffer;
 	class Camera;
 	struct DirectionalLightShadowDataUD;
@@ -18,9 +17,13 @@ namespace pio
 		ShadowMap(Ref<RenderContext>& context);
 		~ShadowMap() = default;
 
-		void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<DirectionalLightNode>& lightNode);
-		Ref<FrameBuffer>& frameBuff() { return m_frameBuff; }
-		Ref<UniformBuffer>& UBuff() { return m_UBuffer; }
+		virtual bool bind(Ref<Shader>& shader) override;
+		virtual bool bindUnimBlock(Ref<RenderContext>& context, Ref<Shader>& shader) override;
+		virtual void unbindUnimBlock() override;
+		virtual Ref<UniformBuffer>& UBuff() override { return m_UBuffer; }
+		virtual Ref<FrameBuffer>& frameBuff() override { return m_frameBuff; }
+
+		void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<DirectionalLightNode>& lightNode);		
 
 	private:
 		Ref<Camera> m_lightCam;

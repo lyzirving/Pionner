@@ -7,8 +7,8 @@
 namespace pio
 {
 	class DirectionalLightNode;
-	class UniformBuffer;	
 	class FrameBuffer;
+	class Camera;
 	struct CascadeShadowMapUD;
 
 	class CascadeShadowMap : public LightTechBase
@@ -17,10 +17,14 @@ namespace pio
 	public:
 		CascadeShadowMap(Ref<RenderContext>& context);
 		~CascadeShadowMap() = default;
+
+		virtual bool bind(Ref<Shader>& shader) override;
+		virtual bool bindUnimBlock(Ref<RenderContext>& context, Ref<Shader>& shader) override;
+		virtual void unbindUnimBlock() override;
+		virtual Ref<UniformBuffer>& UBuff() override { return m_UBuffer; }
+		virtual Ref<FrameBuffer>& frameBuff() override { return m_frameBuff; }
 		
-		void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<DirectionalLightNode>& lightNode);
-		Ref<FrameBuffer>& frameBuff() { return m_frameBuff; }
-		Ref<UniformBuffer>& UBuff() { return m_UBuffer; }
+		void update(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<DirectionalLightNode>& lightNode);			
 
 	private:
 		struct Corners
@@ -42,6 +46,7 @@ namespace pio
 		Corners m_lightFrustCorners[CASCADE_NUM];
 		float m_cascadeEnds[CASCADE_NUM + 1];
 
+		Ref<Camera> m_lightCam;
 		Ref<FrameBuffer> m_frameBuff;	
 		Ref<CascadeShadowMapUD> m_UData;
 		Ref<UniformBuffer> m_UBuffer;

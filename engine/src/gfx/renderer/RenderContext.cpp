@@ -91,23 +91,23 @@ namespace pio
 
 	void RenderContext::onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer,const RenderStateAttrs& attrs)
 	{		
-		if (m_bindFbo == frameBuffer->id())
+		if (m_bindFbo == frameBuffer->id() && frameBuffer->id() != 0)
 		{
 			m_state->applyStateChange(attrs);
 			return;
-		}
-		m_bindFbo = frameBuffer->id();
+		}		
 		m_api->setViewport(0, 0, frameBuffer->width(), frameBuffer->height());
 		frameBuffer->bind();
 		m_state->setStateMachine(attrs);
+		m_bindFbo = frameBuffer->id();
 	}
 
 	void RenderContext::onBeginFrameBuffer(Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs, uint8_t depthSlot)
 	{
-		m_bindFbo = frameBuffer->id();
 		m_api->setViewport(0, 0, frameBuffer->width(), frameBuffer->height());
 		frameBuffer->bindWritingDepth(depthSlot);
 		m_state->setStateMachine(attrs);
+		m_bindFbo = frameBuffer->id();
 	}
 
 	void RenderContext::onEndFrameBuffer(Ref<FrameBuffer>& frameBuffer)

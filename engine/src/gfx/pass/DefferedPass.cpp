@@ -68,11 +68,9 @@ namespace pio
 	void DefferedPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
     {
         auto& renderingData = context->renderingData();
-        PIO_CHECK_RETURN(lastPass && lastPass->is<GBufferPass>(), "err! last pass must be GBufferPass");
-
-        auto& lastFbo = lastPass->frameBuffer();
-        auto& fbo = m_frameBuff;
-        auto& shader = context->shader(ShaderType::Deferred);
+        auto* gBuffPass = context->getRenderer()->getPass((uint32_t)RenderPassType::GBuffer)->as<GBufferPass>();        
+        auto& gBuffFbo = gBuffPass->frameBuffer();
+        auto& fbo = m_frameBuff;        
         const auto& attr = m_attrs;
 
         auto it = renderingData.UnimBuffSet.find(UBBinding_Camera);
@@ -83,22 +81,23 @@ namespace pio
         PIO_CHECK_RETURN(it != renderingData.UnimBuffSet.end(), "err! fail to find directional light buff");
         UUID32 lightFilter = it->second;
 
-        context->submitRC([camFilter, lightFilter, &context, &fbo, &lastFbo, &shader, &attr]()
+        context->submitRC([camFilter, lightFilter, &context, &fbo, &gBuffFbo, &attr]()
         {
             auto camUBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(camFilter);
             PIO_CHECK_RETURN(camUBuff, "err! invalid camera uniform buffer");
             auto lightUBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(lightFilter);
             PIO_CHECK_RETURN(lightUBuff, "err! invalid directional light uniform buffer");
+            auto& shader = context->shader(ShaderType::Deferred);
+            PIO_CHECK_RETURN(shader, "err! Defferred shader is invalid");
 
-            auto* sdMap = context->getLightTech(LightTech::ShadowMap)->as<ShadowMap>();
-            auto& sdMapDep = sdMap->frameBuff()->depthBuffer();
-            auto& sdMapUBuff = sdMap->UBuff();
-                                  
-            const auto& colorBuffers = lastFbo->colorBuffers();      
+            auto lightTech = context->getLightTech(GlobalSettings::RenderConfig.LightingTech);                                                          
+            const auto& colorBuffers = gBuffFbo->colorBuffers();      
            
             context->onBeginFrameBuffer(fbo, attr);
 
             shader->bind();
+
+            shader->setInt("u_lightTech", (int32_t)GlobalSettings::RenderConfig.LightingTech);
 
             context->bindUnimBlock(shader, camUBuff, GpuAttr::BINDING_CAM_BLOCK);
             camUBuff->bind();
@@ -106,8 +105,7 @@ namespace pio
             context->bindUnimBlock(shader, lightUBuff, GpuAttr::BINDING_DIRECTIONAL_LIGHT_BLOCK);
             lightUBuff->bind();
 
-            context->bindUnimBlock(shader, sdMapUBuff, GpuAttr::BINDING_MAIN_LIGHT_CASTER_BLOCK);
-            sdMapUBuff->bind();
+            lightTech->bindUnimBlock(context, shader);         
 
             TextureSampler slot;
             for (size_t i = 0; i < colorBuffers.size(); i++)
@@ -130,21 +128,14 @@ namespace pio
                 }
             }
 
-            if (sdMapDep && sdMapDep->is<Texture2D>() && shader->getSampler(slot))
+            if (!lightTech->bind(shader))
             {
-                auto* d = sdMapDep->as<Texture2D>();
-                d->active(slot);
-                d->bind();
-                shader->setTextureSampler(GpuAttr::UNI_SHADOW_MAP, slot);
-            }
-            else
-            {
-                LOGE("err! fail to get available sampler for shadow map[%s]", sdMapDep->name().c_str());
+                LOGE("err! fail to bind shader for shadow map");
             }
 
             context->drawTriangles(context->getScreenMeshBuffer());
 
-            sdMapUBuff->unbind();
+            lightTech->unbindUnimBlock();            
 
             lightUBuff->unbind();
 

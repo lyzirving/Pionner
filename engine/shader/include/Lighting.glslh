@@ -35,11 +35,15 @@ layout (std140) uniform DirectionalLightBlock
 } u_directionalLight;
 
 layout (std140) uniform CascadeShadowMap
-{
-	int CascadeNum;
+{	
+    float ClipSpaceEnd[CASCADE_NUM];
+    mat4 PrjMats[CASCADE_NUM];    
     mat4 ViewMat;
-	mat4 PrjMats[CASCADE_NUM];
+    int CascadeNum;
 } u_CSM;
+
+uniform sampler2D u_shadowMap;
+uniform sampler2D u_cascadeShadowMap[CASCADE_NUM];
 
 vec3 CalculateDirLightsEffect()
 {
@@ -115,24 +119,55 @@ float CalcDirLightPCFShadow(int radius, sampler2D shadowMap)
     return shadow;
 }
 
-float CalcDirLightShadow(int mode, sampler2D shadowMap)
+float CalcCSMShadow(int cascadeIndex, vec4 lightSpacePos)
 {
+    vec3 prjCoords = lightSpacePos.xyz / lightSpacePos.w;
+    prjCoords = prjCoords * 0.5 + 0.5;
+
+    if(prjCoords.z > 1.0)
+        return 0.f;
+
+    vec3 lightDir = normalize(-u_directionalLight.Direction);
+    float closestDepth = texture(u_cascadeShadowMap[cascadeIndex], prjCoords.xy).x;          
+    float bias = SimpleShadowBias(lightDir, m_PBRParams.N, u_directionalLight.Bias);
+
+    return (prjCoords.z - bias > closestDepth) ? 1.f : 0.f;
+}
+
+float CalcDirLightShadow(int lightTech)
+{    
     float shadow = 0.f;
-    if(mode == ShadowMode_Hard)
+    int sdMode = u_directionalLight.ShadowMode;
+    if(lightTech == LIGHT_TECH_SHADOW_MAP)
     {
-        shadow = CalcDirLightHardShadow(shadowMap);
+        if(sdMode == ShadowMode_Hard)
+        {
+            shadow = CalcDirLightHardShadow(u_shadowMap);
+        }
+        else if(sdMode == ShadowMode_Soft_2X)
+        {
+            shadow = CalcDirLightPCFShadow(2, u_shadowMap);
+        }
+        else if(sdMode == ShadowMode_Soft_4X)
+        {
+            shadow = CalcDirLightPCFShadow(4, u_shadowMap);
+        }
+        else
+        {
+            shadow = CalcDirLightPCFShadow(1, u_shadowMap);
+        }   
     }
-    else if(mode == ShadowMode_Soft_2X)
+    else if(lightTech == LIGHT_TECH_CASCADE_SHADOW_MAP)
     {
-        shadow = CalcDirLightPCFShadow(2, shadowMap);
-    }
-    else if(mode == ShadowMode_Soft_4X)
-    {
-        shadow = CalcDirLightPCFShadow(4, shadowMap);
-    }
-    else
-    {
-        shadow = CalcDirLightPCFShadow(1, shadowMap);
+        for (int i = 0 ; i < CASCADE_NUM ; i++) 
+        {            
+            if(m_PBRParams.FragPos.z <= u_CSM.ClipSpaceEnd[i])
+            {
+                vec4 lightSpacePos = u_CSM.PrjMats[i] * u_CSM.ViewMat * vec4(m_PBRParams.FragPos, 1.f);
+                shadow = CalcCSMShadow(i, lightSpacePos);
+                break;
+            }
+        }
     }
     return shadow * u_directionalLight.ShadowIntensity;
 }

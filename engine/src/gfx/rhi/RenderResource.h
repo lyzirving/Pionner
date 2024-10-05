@@ -35,9 +35,10 @@ namespace pio
 		virtual uint32_t size() const = 0;
 		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
 
+		virtual uint32_t id() const { return m_id; }
+
 		WeakRef<RenderContext>& context() { return m_context; }
-		RenderResourceType type() const { return m_type; }
-		uint32_t id() const { return m_id; }
+		RenderResourceType type() const { return m_type; }		
 		const std::string& name() const { return m_name; }
 
 	private:

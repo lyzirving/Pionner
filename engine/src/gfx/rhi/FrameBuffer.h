@@ -34,6 +34,7 @@ namespace pio
 		virtual ~FrameBuffer() = default;
 
 		virtual const std::vector<Ref<Texture>>& colorBuffers() const = 0;
+		virtual const std::vector<Ref<Texture>>& depthBuffers() const = 0;
 		virtual const Ref<Texture>& depthBuffer() const = 0;
 		virtual void bindWritingDepth(uint8_t sel = 0) = 0;
 
