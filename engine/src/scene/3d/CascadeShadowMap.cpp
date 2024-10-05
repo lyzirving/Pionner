@@ -32,7 +32,7 @@ namespace pio
 
 		m_attrs.setClear(Clear::Common())
 			.setBlend(Blend::Disable())
-			.setDepth(DepthTest::Common())			
+			.setDepth(DepthTest::Common())					
 			.setCull(CullFace::Create(FaceDirection::CouterClockwise, FaceMode_Front))
 			.setStencil(StencilTest::Disable());
 	}
@@ -141,7 +141,7 @@ namespace pio
 			m_lightFrustums[i].setMin(minVal);
 
 			m_UData->PrjMats[i] = Frustum::OrthoMat(minVal.x, maxVal.x, minVal.y, maxVal.y, minVal.z, maxVal.z);
-			m_UData->ClipSpaceEnd[i] = (viewMatInv * glm::vec4(0.f, 0.f, -m_cascadeEnds[i], 1.f)).z;
+			m_UData->ClipSpaceEnd[i] = (viewMatInv * glm::vec4(0.f, 0.f, -m_cascadeEnds[i + 1], 1.f)).z;
 		}		
 		m_UData->ViewMat = lightMat;
 		m_UData->CascadeNum = CASCADE_NUM;
