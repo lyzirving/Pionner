@@ -1,6 +1,8 @@
 #include "RuntimeLayer.h"
 #include "ImGuiUtils.h"
 
+#include "GlobalSettings.h"
+
 #include "window/Window.h"
 #include "asset/AssetMgr.h"
 
@@ -48,6 +50,7 @@ namespace pio
 		{
 			m_activeScene = scene;
 		}
+		onDrawMainMenuBar(context, scene);		
 		onDrawHierarchyView(context, scene);
 		onDrawInspectorView(context, scene);
 		onDrawSceneView(context, scene);
@@ -75,6 +78,112 @@ namespace pio
 		if (event->Handled) { return true; }
 		dispatcher.dispatch<MouseScrolledEvent>(PIO_BIND_FN_SELF(RuntimeLayer::onMouseScrolled, std::placeholders::_1));
 		return event->Handled;
+	}
+
+	void RuntimeLayer::onDrawMainMenuBar(Ref<RenderContext>& context, Ref<Scene>& scene)
+	{
+		context->submitRC([]()
+		{
+			if (ImGui::BeginMainMenuBar())
+			{
+				if (ImGui::BeginMenu("Edit"))
+				{					
+					if (ImGui::MenuItem("Project Settings##MenuItem"))
+					{
+						k_MenuAc = MenuAction_ProjectSettings;
+					}				
+					ImGui::EndMenu();
+				}
+				ImGui::EndMainMenuBar();
+			}
+		});
+
+		onDrawMenuAction(context, scene);
+	}
+
+	void RuntimeLayer::onDrawMenuAction(Ref<RenderContext>& context, Ref<Scene>& scene)
+	{		
+		switch (k_MenuAc)
+		{
+			case MenuAction_ProjectSettings:
+			{
+				onDrawProjectSettings(context, scene);				
+				break;
+			}
+			default:
+				break;
+		}
+	}
+
+	void RuntimeLayer::onDrawProjectSettings(Ref<RenderContext>& context, Ref<Scene>& scene)
+	{		
+		context->submitRC([&context]()
+		{
+			bool bOpen{ true };
+			const char* strId = "Project Settings##Popup";
+			float aspect = 1.14285f;
+			float size = 1.1f * float(std::min(context->window()->width(), context->window()->height()));
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+
+			ImGui::OpenPopup(strId);
+			ImGui::SetNextWindowSize(ImVec2(size, size / aspect));
+			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+			if (ImGui::BeginPopupModal(strId, &bOpen, ImGuiWindowFlags_AlwaysAutoResize))
+			{							
+				auto avail = ImGui::GetContentRegionAvail();				
+				ImGui::BeginChild("Project Settings Left", ImVec2(avail.x * 0.3f, avail.y), ImGuiChildFlags_None);				
+				for (int i = 0; i < ProjectSettingItem_Num; i++)
+				{		
+					if (ImGui::Selectable(k_ProjectSettingItemName[i], k_ProjectSettingSel == i))
+						k_ProjectSettingSel = i;
+				}
+				ImGui::EndChild();
+
+				ImGui::SameLine();	
+				//Vertical Separator
+				auto windowPos = ImGui::GetWindowPos();
+				auto windowSize = ImGui::GetWindowSize();
+				ImGui::GetWindowDrawList()->AddLine(ImVec2(windowPos.x + avail.x * 0.3f + 1, windowPos.y),
+													ImVec2(windowPos.x + avail.x * 0.3f + 1, windowPos.y + windowSize.y),
+													ImGui::GetColorU32(ImGuiCol_Separator),
+													/*ImGui::GetColorU32(ImVec4(1.f, 0.f, 0.f, 1.f))*/
+													2.f);				
+				ImGui::SameLine();
+
+				avail = ImGui::GetContentRegionAvail();
+				ImGui::BeginChild("Project Settings Right", ImVec2(avail.x, avail.y), ImGuiChildFlags_None);
+
+				switch (k_ProjectSettingSel)
+				{
+					case ProjectSettingItem_Graphics:
+					{
+						// -------------- LightMap Mode --------------						
+						ImGui::AlignTextToFramePadding();
+						ImGui::Text("LightMap Mode");
+						const char* shadowTechNames[PIO_UINT8(LightTech::Num)] = {"Shadow Map", "CSM"};
+						int32_t idx = (int32_t)GlobalSettings::RenderConfig.LightingTech;
+						ImGui::AlignTextToFramePadding();
+						ImGui::Text(" Shadow Tech");
+						ImGui::SameLine();
+						ImGui::Combo("##Shadow Tech", &idx, shadowTechNames, (int32_t)LightTech::Num);
+						GlobalSettings::RenderConfig.LightingTech = LightTech(idx);
+						// -------------------------------------------
+						break;
+					}
+					default:
+						break;
+				}
+
+				ImGui::EndChild();
+
+				ImGui::EndPopup();
+			}
+
+			if (!bOpen)
+			{
+				k_MenuAc = MenuAction_Num;
+			}		
+		});
 	}
 
 	void RuntimeLayer::onDrawSceneView(Ref<RenderContext>& context, Ref<Scene>& scene)

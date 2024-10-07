@@ -5,6 +5,28 @@
 
 namespace pio
 {
+	enum MenuAction : uint8_t
+	{
+		MenuAction_ProjectSettings,
+		MenuAction_Num
+	};
+
+	enum ProjectSettingItem : uint8_t
+	{
+		ProjectSettingItem_Graphics,
+		ProjectSettingItem_Physics,
+		ProjectSettingItem_Num
+	};
+
+	static const char* k_ProjectSettingItemName[ProjectSettingItem_Num] = 
+	{
+		"Graphics",
+		"Physics"
+	};
+
+	static MenuAction k_MenuAc = MenuAction_Num;
+	static int32_t k_ProjectSettingSel = -1;
+
 	/*
 	* @brief: Rectangle of a panel on window whose origin is left-top
 	*/

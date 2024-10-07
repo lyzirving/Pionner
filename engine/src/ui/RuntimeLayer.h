@@ -25,6 +25,10 @@ namespace pio
 		virtual bool onEvent(Ref<Event>& event) override;
 
 	private:
+		void onDrawMainMenuBar(Ref<RenderContext>& context, Ref<Scene>& scene);
+		void onDrawMenuAction(Ref<RenderContext>& context, Ref<Scene>& scene);
+		void onDrawProjectSettings(Ref<RenderContext>& context, Ref<Scene>& scene);
+
 		void onDrawSceneView(Ref<RenderContext>& context, Ref<Scene>& scene);
 		void onDrawHierarchyView(Ref<RenderContext>& context, Ref<Scene>& scene);
 		void onDrawInspectorView(Ref<RenderContext>& context, Ref<Scene>& scene);
@@ -43,7 +47,7 @@ namespace pio
 			bool InArea{ false }, bRotating{ false };
 			bool LeftAltPressed{ false }, RightMouseBtnPressed{ false };
 			glm::vec2 Cursor{ 0.f };
-		};
+		};		
 
 	private:
 		bool m_resetPosition{ true };
@@ -51,7 +55,7 @@ namespace pio
 		Ref<Scene> m_activeScene;
 
 		CameraController m_camController;
-		LayoutParams m_sceneParam, m_hierarchyParam, m_inspectorParam;
+		LayoutParams m_sceneParam, m_hierarchyParam, m_inspectorParam;		
 	};
 }
 
