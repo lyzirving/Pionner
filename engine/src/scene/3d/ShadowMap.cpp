@@ -113,7 +113,7 @@ namespace pio
 			minVal = glm::min(corners[j], minVal);
 			maxVal = glm::max(corners[j], maxVal);
 		}
-		m_UData->PrjMat = Frustum::OrthoMat(minVal.x, maxVal.x, minVal.y, maxVal.y, minVal.z, maxVal.z);
+		m_UData->PrjMat = Frustum::OrthoMat(minVal.x, maxVal.x, minVal.y, maxVal.y, minVal.z - SD_FRUST_EXT, maxVal.z + SD_FRUST_EXT);
 		m_UData->ViewMat = lightMat;
 		m_UData->ShadowMapSize.x = m_frameBuff->width();
 		m_UData->ShadowMapSize.y = m_frameBuff->height();

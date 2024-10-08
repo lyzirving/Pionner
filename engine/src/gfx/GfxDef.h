@@ -5,6 +5,9 @@
 
 namespace pio
 {
+	//Extension of frustum clip for shadow
+	#define SD_FRUST_EXT (100.f)
+
 	namespace GpuAttr
 	{
 		namespace Mat
