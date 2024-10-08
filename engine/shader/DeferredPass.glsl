@@ -52,7 +52,7 @@ void main() {
     m_PBRParams.NdotV = max(dot(m_PBRParams.N, m_PBRParams.V), 0.f);
     m_PBRParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);
 
-	o_color = LightContribution();
+	o_color = LightContribution() * LightingIndicateColor();
 }
 
 vec4 LightContribution()

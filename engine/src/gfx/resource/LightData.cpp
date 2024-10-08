@@ -93,6 +93,7 @@ namespace pio
 	{
 		UniformBlock block;
 		block.pushBack("ClipSpaceEnd", UniformBlock::CreateData(UniformDataType::FloatArray, "ClipSpaceEnd", CASCADE_NUM));
+		block.pushBack("IndicateColor", UniformBlock::CreateData(UniformDataType::Vec4Array, "IndicateColor", CASCADE_NUM));
 		block.pushBack("PrjMats", UniformBlock::CreateData(UniformDataType::Mat4Array, "PrjMats", CASCADE_NUM));		
 		block.pushBack("ViewMat", UniformBlock::CreateData(UniformDataType::Mat4, "ViewMat"));
 		block.pushBack("CascadeNum", UniformBlock::CreateData(UniformDataType::Int, "CascadeNum"));
@@ -114,6 +115,13 @@ namespace pio
 		{
 			UniformPack& pack = (*clipSpaceEnd)[i];
 			Block.m_buffer->writeAt(&ClipSpaceEnd[i], sizeof(float), pack.getAlignOffset());
+		}
+
+		auto* indicateColor = Block.m_blockItems.get("IndicateColor")->as<UnimPackArray>();
+		for (size_t i = 0; i < indicateColor->getArrayNum(); i++)
+		{
+			UniformPack& pack = (*indicateColor)[i];
+			Block.m_buffer->writeAt(glm::value_ptr(IndicateColor[i]), sizeof(glm::vec4), pack.getAlignOffset());
 		}
 
 		auto* prjMatArray = Block.m_blockItems.get("PrjMats")->as<UnimPackMatArray>();

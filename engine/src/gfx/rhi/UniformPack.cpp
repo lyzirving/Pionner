@@ -209,6 +209,9 @@ namespace pio
 	{
 		switch (type)
 		{
+			case UniformDataType::Vec2Array:
+			case UniformDataType::Vec3Array:
+			case UniformDataType::Vec4Array:
 			case UniformDataType::FloatArray:
 				return UniformDataType::Float;
 			case UniformDataType::IntArray:

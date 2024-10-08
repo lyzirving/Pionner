@@ -268,6 +268,7 @@ namespace pio
 	{
 		RenderingStrategy Strategy{ RenderingStrategy::Deffered };
 		LightTech LightingTech{ LightTech::ShadowMap };
+		bool IndicateCSM{ false };
 		glm::vec4 ClearColor{ 0.f, 0.f, 0.f, 1.f };
 	};
 

@@ -128,6 +128,11 @@ namespace pio
                 }
             }
 
+            if (!lightTech->is<CascadeShadowMap>())
+            {
+                shader->setBool("u_indicateCSM", false);
+            }
+
             if (!lightTech->bind(shader))
             {
                 LOGE("err! fail to bind shader for shadow map");

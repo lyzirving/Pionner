@@ -1,5 +1,7 @@
 #include "CascadeShadowMap.h"
 
+#include "GlobalSettings.h"
+
 #include "Camera.h"
 #include "Frustum.h"
 #include "ShadowMapFrameBuffer.h"
@@ -28,6 +30,9 @@ namespace pio
 		m_frameBuff = CreateRef<CascadeShadowFrameBuffer>(context);						
 
 		m_UData = CreateRef<CascadeShadowMapUD>();
+		m_UData->IndicateColor[0] = glm::vec4(1.f, 0.f, 0.f, 1.f);
+		m_UData->IndicateColor[1] = glm::vec4(0.f, 1.f, 0.f, 1.f);
+		m_UData->IndicateColor[2] = glm::vec4(0.f, 0.f, 1.f, 1.f);
 		m_UBuffer = UniformBuffer::Create(context, m_UData->Block.getByteUsed(), UBBinding_DirectionalLightShadow, BufferUsage::Dynamic);
 
 		m_attrs.setClear(Clear::Common())
@@ -41,6 +46,8 @@ namespace pio
 	{
 		if (!shader)
 			return false;
+
+		shader->setBool("u_indicateCSM", GlobalSettings::RenderConfig.IndicateCSM);
 
 		TextureSampler slot;
 		auto& deps = m_frameBuff->depthBuffers();

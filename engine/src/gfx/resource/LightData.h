@@ -34,6 +34,7 @@ namespace pio
 		PIO_UNIFORM_STRUCT_DECLARE(CascadeShadowMapUD)
 		
 		float ClipSpaceEnd[CASCADE_NUM];
+		glm::vec4 IndicateColor[CASCADE_NUM];//Colors for debug CSM
 		glm::mat4 PrjMats[CASCADE_NUM];
 		glm::mat4 ViewMat{ 1.f };
 		int32_t CascadeNum{ CASCADE_NUM };

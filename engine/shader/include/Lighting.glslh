@@ -37,6 +37,7 @@ layout (std140) uniform DirectionalLightBlock
 layout (std140) uniform CascadeShadowMap
 {	
     float ClipSpaceEnd[CASCADE_NUM];
+    vec4 IndicateColor[CASCADE_NUM];
     mat4 PrjMats[CASCADE_NUM];    
     mat4 ViewMat;
     int CascadeNum;
@@ -44,6 +45,7 @@ layout (std140) uniform CascadeShadowMap
 
 uniform sampler2D u_shadowMap;
 uniform sampler2D u_cascadeShadowMap[CASCADE_NUM];
+uniform bool u_indicateCSM;
 
 vec3 CalculateDirLightsEffect()
 {
@@ -134,6 +136,12 @@ float CalcCSMShadow(int cascadeIndex, vec4 lightSpacePos)
     return (prjCoords.z - bias > closestDepth) ? 1.f : 0.f;
 }
 
+//Right handed axis
+bool BelongFrustum(float posZ, float frustumClip)
+{
+   return posZ >= frustumClip;
+}
+
 float CalcDirLightShadow(int lightTech)
 {    
     float shadow = 0.f;
@@ -161,7 +169,7 @@ float CalcDirLightShadow(int lightTech)
     {
         for (int i = 0 ; i < CASCADE_NUM ; i++) 
         {            
-            if(m_PBRParams.FragPos.z <= u_CSM.ClipSpaceEnd[i])
+            if(BelongFrustum(m_PBRParams.FragPos.z, u_CSM.ClipSpaceEnd[i]))
             {
                 vec4 lightSpacePos = u_CSM.PrjMats[i] * u_CSM.ViewMat * vec4(m_PBRParams.FragPos, 1.f);
                 shadow = CalcCSMShadow(i, lightSpacePos);
@@ -170,4 +178,22 @@ float CalcDirLightShadow(int lightTech)
         }
     }
     return shadow * u_directionalLight.ShadowIntensity;
+}
+
+vec4 CSMIndicator()
+{
+    for (int i = 0 ; i < CASCADE_NUM ; i++) 
+    { 
+        if(BelongFrustum(m_PBRParams.FragPos.z, u_CSM.ClipSpaceEnd[i]))
+        {
+            return u_CSM.IndicateColor[i];
+        }
+    }
+    //Color stands for error
+    return vec4(1.f, 1.f, 0.f, 1.f);
+}
+
+vec4 LightingIndicateColor()
+{
+    return u_indicateCSM ? CSMIndicator() : vec4(1.f);
 }

@@ -253,7 +253,7 @@ namespace pio
 					ImGui::SameLine();
 					remain = ImGui::GetContentRegionAvail();
 					ImGui::PushItemWidth(remain.x);
-					ImGui::DragFloat("##Sd_Bias", &lightComp->Bias, 0.0001f, 0.0001f, 2.f, "%.4f");
+					ImGui::DragFloat("##Sd_Bias", &lightComp->Bias, 0.00001f, 0.00001f, 1.f, "%.5f");
 					ImGui::PopItemWidth();
 
 					ImGui::AlignTextToFramePadding();

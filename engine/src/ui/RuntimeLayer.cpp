@@ -50,7 +50,7 @@ namespace pio
 		{
 			m_activeScene = scene;
 		}
-		onDrawMainMenuBar(context, scene);		
+		onDrawMainMenuBar(context, scene);
 		onDrawHierarchyView(context, scene);
 		onDrawInspectorView(context, scene);
 		onDrawSceneView(context, scene);
@@ -87,11 +87,11 @@ namespace pio
 			if (ImGui::BeginMainMenuBar())
 			{
 				if (ImGui::BeginMenu("Edit"))
-				{					
+				{
 					if (ImGui::MenuItem("Project Settings##MenuItem"))
 					{
 						k_MenuAc = MenuAction_ProjectSettings;
-					}				
+					}
 					ImGui::EndMenu();
 				}
 				ImGui::EndMainMenuBar();
@@ -102,12 +102,12 @@ namespace pio
 	}
 
 	void RuntimeLayer::onDrawMenuAction(Ref<RenderContext>& context, Ref<Scene>& scene)
-	{		
+	{
 		switch (k_MenuAc)
 		{
 			case MenuAction_ProjectSettings:
 			{
-				onDrawProjectSettings(context, scene);				
+				onDrawProjectSettings(context, scene);
 				break;
 			}
 			default:
@@ -116,7 +116,7 @@ namespace pio
 	}
 
 	void RuntimeLayer::onDrawProjectSettings(Ref<RenderContext>& context, Ref<Scene>& scene)
-	{		
+	{
 		context->submitRC([&context]()
 		{
 			bool bOpen{ true };
@@ -129,17 +129,17 @@ namespace pio
 			ImGui::SetNextWindowSize(ImVec2(size, size / aspect));
 			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 			if (ImGui::BeginPopupModal(strId, &bOpen, ImGuiWindowFlags_AlwaysAutoResize))
-			{							
-				auto avail = ImGui::GetContentRegionAvail();				
-				ImGui::BeginChild("Project Settings Left", ImVec2(avail.x * 0.3f, avail.y), ImGuiChildFlags_None);				
+			{
+				auto avail = ImGui::GetContentRegionAvail();
+				ImGui::BeginChild("Project Settings Left", ImVec2(avail.x * 0.3f, avail.y), ImGuiChildFlags_None);
 				for (int i = 0; i < ProjectSettingItem_Num; i++)
-				{		
+				{
 					if (ImGui::Selectable(k_ProjectSettingItemName[i], k_ProjectSettingSel == i))
 						k_ProjectSettingSel = i;
 				}
 				ImGui::EndChild();
 
-				ImGui::SameLine();	
+				ImGui::SameLine();
 				//Vertical Separator
 				auto windowPos = ImGui::GetWindowPos();
 				auto windowSize = ImGui::GetWindowSize();
@@ -147,7 +147,7 @@ namespace pio
 													ImVec2(windowPos.x + avail.x * 0.3f + 1, windowPos.y + windowSize.y),
 													ImGui::GetColorU32(ImGuiCol_Separator),
 													/*ImGui::GetColorU32(ImVec4(1.f, 0.f, 0.f, 1.f))*/
-													2.f);				
+													2.f);
 				ImGui::SameLine();
 
 				avail = ImGui::GetContentRegionAvail();
@@ -160,13 +160,20 @@ namespace pio
 						// -------------- LightMap Mode --------------						
 						ImGui::AlignTextToFramePadding();
 						ImGui::Text("LightMap Mode");
-						const char* shadowTechNames[PIO_UINT8(LightTech::Num)] = {"Shadow Map", "CSM"};
+						const char* shadowTechNames[PIO_UINT8(LightTech::Num)] = { "Shadow Map", "CSM" };
 						int32_t idx = (int32_t)GlobalSettings::RenderConfig.LightingTech;
 						ImGui::AlignTextToFramePadding();
-						ImGui::Text(" Shadow Tech");
+						ImGui::Text(" Shadow Tech ");
 						ImGui::SameLine();
 						ImGui::Combo("##Shadow Tech", &idx, shadowTechNames, (int32_t)LightTech::Num);
 						GlobalSettings::RenderConfig.LightingTech = LightTech(idx);
+						if (GlobalSettings::RenderConfig.LightingTech == LightTech::CascadeShadowMap)
+						{
+							ImGui::AlignTextToFramePadding();
+							ImGui::Text(" Indicate CSM");
+							ImGui::SameLine();
+							ImGui::Checkbox("##Indicate CSM CB", &GlobalSettings::RenderConfig.IndicateCSM);
+						}
 						// -------------------------------------------
 						break;
 					}
@@ -182,7 +189,7 @@ namespace pio
 			if (!bOpen)
 			{
 				k_MenuAc = MenuAction_Num;
-			}		
+			}
 		});
 	}
 
@@ -191,7 +198,7 @@ namespace pio
 		auto& param = m_sceneParam;
 		bool resetPos = m_resetPosition;
 		context->submitRC([resetPos, &context, &scene, &param]()
-		{		
+		{
 			if (resetPos)
 			{
 				auto* mainVp = ImGui::GetMainViewport();
@@ -200,7 +207,7 @@ namespace pio
 				pos.y += param.Rect.Top;
 				ImGui::SetNextWindowPos(pos);
 				ImGui::SetNextWindowSize(ImVec2(param.Rect.width(), param.Rect.height()));
-			}		
+			}
 			auto camera = AssetMgr::GetRuntimeAsset<Camera>(scene->cameraNode()->camera()->assetHnd());
 			const auto& texture = scene->cameraNode()->renderTarget()->frameBuffer()->colorBuffers()[0];
 			ImGui::Begin("Scene", 0, ImGuiUtils::k_FlagCommonWindow);
@@ -209,7 +216,7 @@ namespace pio
 			float aspect1 = float(texture->width()) / float(texture->height());
 			glm::vec2 imgSize;
 			//Let image always fills the window size
-			if(aspect0 < aspect1)
+			if (aspect0 < aspect1)
 			{
 				imgSize.x = aspect1 * availSize.y;
 				imgSize.y = availSize.y;
@@ -266,7 +273,7 @@ namespace pio
 			}
 			ImGui::Begin("Inspector", 0, ImGuiUtils::k_FlagCommonWindow);
 			auto node = scene->getNode(selectIdx);
-			if(node)
+			if (node)
 			{
 				ImGuiUtils::ShowNode(node);
 			}
@@ -316,7 +323,7 @@ namespace pio
 		if (m_camController.bRotating)
 		{
 			auto delta = -glm::vec2(event->getCursorX() - m_camController.Cursor.x,
-								    event->getCursorY() - m_camController.Cursor.y);
+									event->getCursorY() - m_camController.Cursor.y);
 			float threshold = 20.f;
 			bool valid = std::abs(delta.x) < threshold && std::abs(delta.y) < threshold;
 			if (valid && m_activeScene)
@@ -334,7 +341,7 @@ namespace pio
 	}
 
 	bool RuntimeLayer::onMouseBtnPress(Ref<MouseButtonPressedEvent>& event)
-	{		
+	{
 		if (m_camController.InArea)
 		{
 			m_camController.RightMouseBtnPressed = event->getMouseButton() == Mouse::ButtonRight;
@@ -356,7 +363,7 @@ namespace pio
 	{
 		if (m_camController.InArea)
 		{
-			float delta = event->getYOffset() * 0.5f;			
+			float delta = event->getYOffset() * 0.5f;
 			auto* comp = m_activeScene->cameraNode()->getComponent<TransformComponent>();
 			auto viewDir = Camera::GetViewDir(m_activeScene->cameraNode());
 			comp->Position = comp->Position + viewDir * delta;
