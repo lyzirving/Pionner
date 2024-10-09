@@ -20,9 +20,8 @@ namespace pio
 		virtual void unbind() override;
 
 		virtual uint32_t size() const override { return m_size; }
-		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
 
-		virtual void setData(uint32_t indexCount, const void* data, uint32_t size, uint32_t offset = 0) override;
+		virtual void setIndice(const void* data, uint32_t size, uint32_t indiceNum, uint32_t offset = 0) override;		
 		virtual uint32_t indexCount() const override { return m_indexCount; }
 		virtual IndexInternalFmt internalFmt() const override { return m_format; }
 

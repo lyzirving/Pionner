@@ -32,8 +32,9 @@ namespace pio
 		virtual void bind() = 0;
 		virtual void unbind() = 0;
 
-		virtual uint32_t size() const = 0;
-		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
+		virtual uint32_t size() const { return 0; }
+		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) {}
+		virtual void setIndice(const void* data, uint32_t size, uint32_t indiceNum, uint32_t offset = 0) {}
 
 		virtual uint32_t id() const { return m_id; }
 

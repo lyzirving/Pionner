@@ -96,20 +96,27 @@ namespace pio
 		{
 			LOGE("data is invalid");
 			return;
-		}
-
-		if (m_size < (size + offset))
-		{
-			LOGE("invalid size, byte size[%u] < [%] + [%]", m_size, size, offset);
-			return;
-		}
+		}		
 
 		init();
 
 		if (isInit())
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, m_id);
-			glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+			bool bSizeChange = (m_size != size);
+			if (bSizeChange)
+			{
+				m_size = size;
+				glBufferData(GL_ARRAY_BUFFER, m_size, data, GLHelper::BufferUsageToGLUsage(m_usage));
+			}
+			else if (m_size >= (size + offset))
+			{
+				glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+			}
+			else
+			{
+				LOGE("err! invalid input, buffer size[%u] < data size[%u] + offset[%u]", m_size, size, offset);
+			}
 			GLHelper::CheckError("GLVertexBuffer: fail to update data");
 		}
 		else

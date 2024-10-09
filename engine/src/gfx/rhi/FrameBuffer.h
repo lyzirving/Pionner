@@ -36,10 +36,7 @@ namespace pio
 		virtual const std::vector<Ref<Texture>>& colorBuffers() const = 0;
 		virtual const std::vector<Ref<Texture>>& depthBuffers() const = 0;
 		virtual const Ref<Texture>& depthBuffer() const = 0;
-		virtual void bindWritingDepth(uint8_t sel = 0) = 0;
-
-		virtual uint32_t size() const override { return 0; }
-		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
+		virtual void bindWritingDepth(uint8_t sel = 0) = 0;		
 
 		virtual const FrameBufferSpecific& spec() const { return m_spec; }
 

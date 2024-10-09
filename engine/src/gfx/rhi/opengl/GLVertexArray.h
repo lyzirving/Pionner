@@ -18,9 +18,6 @@ namespace pio
 		virtual void bind() override;
 		virtual void unbind() override;
 
-		virtual uint32_t size() const override { return 0; }
-		virtual void setData(const void* data, uint32_t size, uint32_t offset = 0) override { /*do nothing*/ }
-
 		virtual void addVertexBuffer(const Ref<VertexBuffer> &vertexBuffer) override;
 		virtual const std::vector<Ref<VertexBuffer>> &getVertexBuffers() const override { return m_vertexBuffers; }
 		

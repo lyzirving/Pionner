@@ -37,10 +37,14 @@ namespace pio
 			renderingData.submitShadowCastMesh(std::move(sdItem));
 		}
 
-		if (render->SdCastMode == ShadowCastMode_ShadowOnly)
+		bool bSubmitMesh = render->SdCastMode != ShadowCastMode_ShadowOnly;
+
+		if (!bDirty() && !bSubmitMesh)
 		{
 			return;
 		}
+
+		onUpdateDerived(context, camNode);
 
 		TransformComponent* transComp = getComponent<TransformComponent>();
 		Ref<MeshRenderBuffer> renderBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(render->BuffHnd);
@@ -52,12 +56,14 @@ namespace pio
 		Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd);
 		material->onUpdate(context);
 
-		MeshRenderingItem item;
-		item.Mode = material->renderingMode();
-		item.RenderBuffFilter = render->BuffHnd;
-		item.MaterialFilter = render->MatHnd;
-
-		renderingData.submitMesh(std::move(item));		
+		if (bSubmitMesh)
+		{
+			MeshRenderingItem item;
+			item.Mode = material->renderingMode();
+			item.RenderBuffFilter = render->BuffHnd;
+			item.MaterialFilter = render->MatHnd;
+			renderingData.submitMesh(std::move(item));
+		}
 	}
 
 	PIO_NODE_IMPL_CONSTRUCOR(PlaneNode, MeshNode)
@@ -71,7 +77,7 @@ namespace pio
 		auto* meshFilter = getComponent<MeshFilter>();
 		auto* meshRender = getComponent<MeshRenderer>();
 
-		auto meshData = Factory::MakePlane();
+		auto meshData = Factory::MakePlane(m_w, m_h);
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
 		mesh->setData(meshData);
 
@@ -83,6 +89,43 @@ namespace pio
 		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
 		renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice());
 		meshRender->BuffHnd = renderBuff->assetHnd();
+	}
+
+	void PlaneNode::setWidth(float w)
+	{
+		if (Math::Equal(m_w, w))
+			return;
+
+		m_w = w;
+		invalidate();
+	}
+
+	void PlaneNode::setHeight(float h)
+	{
+		if (Math::Equal(m_h, h))
+			return;
+
+		m_h = h;
+		invalidate();
+	}
+
+	void PlaneNode::onUpdateDerived(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
+	{
+		if (bDirty())
+		{
+			invalidate(false);
+
+			auto* filter = getComponent<MeshFilter>();
+			auto* meshRender = getComponent<MeshRenderer>();
+
+			auto mesh = AssetMgr::GetRuntimeAsset<Mesh>(filter->MeshHnd);
+			auto meshData = Factory::MakePlane(m_w, m_h);
+			mesh->setData(meshData);
+
+			auto buff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(meshRender->BuffHnd);
+			context->uploadData(meshData->getVertice().data(), sizeof(Vertex3d) * meshData->getVertice().size(), buff->Vbo);
+			context->uploadIndice(meshData->getIndice().data(), sizeof(uint16_t) * meshData->getIndice().size(), meshData->getIndice().size(), buff->Ebo);
+		}
 	}
 
 	PIO_NODE_IMPL_CONSTRUCOR(CubeNode, MeshNode)
@@ -121,7 +164,7 @@ namespace pio
 	{
 		if (is<MeshNode>())
 		{
-			as<MeshNode>()->meshType() == MeshType::Plane;
+			return as<MeshNode>()->meshType() == MeshType::Plane;
 		}
 		return false;
 	}
@@ -131,7 +174,7 @@ namespace pio
 	{
 		if (is<MeshNode>())
 		{
-			as<MeshNode>()->meshType() == MeshType::Cube;
+			return as<MeshNode>()->meshType() == MeshType::Cube;
 		}
 		return false;
 	}

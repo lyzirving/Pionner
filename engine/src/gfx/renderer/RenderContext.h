@@ -114,6 +114,12 @@ namespace pio
 		}
 
 		template<typename Type>
+		void uploadIndice(void* data, uint32_t size, uint32_t indiceNum, Ref<Type>& resource)
+		{
+			submitTask([data, size, indiceNum, &resource]() mutable { resource->setIndice(data, size, indiceNum, 0); });
+		}
+
+		template<typename Type>
 		void uploadData(Ref<Type> &resource)
 		{
 			submitTask([&resource]() mutable { resource->init(); });

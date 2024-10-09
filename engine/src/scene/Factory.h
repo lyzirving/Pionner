@@ -9,10 +9,11 @@ namespace pio
 	{
 	public:
 		/*
-		* @brief	Make a plane whose length is n and laies on xz plane, the shape of the plane is square
-		* @param n	length of the square
+		* @brief	Make a plane that laies on xz plane, the shape of the plane is rectangle
+		* @param w	width of the plane, stands for column
+		* @param h  height of the plane, stands for row
 		*/
-		static Ref<TriangleMesh> MakePlane(float n = 5.f);
+		static Ref<TriangleMesh> MakePlane(float w = 10.f, float h = 7.f);
 		static Ref<TriangleMesh> MakeCube(float n = 2.f);
 		/*
 		* @brief	Make a square in XY plane and plane's center is (0, 0).

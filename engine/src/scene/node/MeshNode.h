@@ -17,9 +17,18 @@ namespace pio
 	public:
 		virtual ~MeshNode();
 
-		virtual MeshType meshType() const = 0;		
+		virtual MeshType meshType() const = 0;	
 		virtual void onInit() override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
+
+		bool bDirty() const { return m_invalidate; }
+		void invalidate(bool val = true) { m_invalidate = val; }
+
+	protected:
+		virtual void onUpdateDerived(Ref<RenderContext>& context, Ref<CameraNode>& camNode) {};
+
+	protected:
+		bool m_invalidate{ false };
 	};
 
 	class PlaneNode : public MeshNode
@@ -30,6 +39,18 @@ namespace pio
 		~PlaneNode();
 
 		virtual void onInit() override;
+
+		void setWidth(float w);
+		void setHeight(float h);
+
+		float getWidth() const { return m_w; }
+		float getHeight() const { return m_h; }
+
+	protected:
+		virtual void onUpdateDerived(Ref<RenderContext>& context, Ref<CameraNode>& camNode) override;
+
+	private:
+		float m_w{ 10.f }, m_h{ 8.f };
 	};
 
 	class CubeNode : public MeshNode

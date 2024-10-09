@@ -10,8 +10,7 @@ namespace pio
 	public:
 		IndexBuffer(Ref<RenderContext>& context) : RenderResource(context, RenderResourceType::EBO) {}
 		virtual ~IndexBuffer() = default;
-
-		virtual void setData(uint32_t indexCount, const void* data, uint32_t size, uint32_t offset = 0) = 0;
+		
 		virtual uint32_t indexCount() const = 0;
 		virtual IndexInternalFmt internalFmt() const = 0;
 

@@ -91,28 +91,36 @@ namespace pio
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	void GLIndexBuffer::setData(uint32_t indexCount, const void* data, uint32_t size, uint32_t offset)
+	void GLIndexBuffer::setIndice(const void* data, uint32_t size, uint32_t indiceNum, uint32_t offset)
 	{
-		if (!data || size == 0)
+		if (!data || size == 0 || indiceNum == 0)
 		{
 			LOGE("data is invalid");
 			return;
 		}
 
-		if (m_size < (size + offset))
-		{
-			LOGE("invalid size, byte size[%u] < [%] + [%]", m_size, size, offset);
-			return;
-		}
-
 		init();
 
-		m_indexCount = indexCount;
+		bool bSizeChange = (m_size != size);
 
 		if (isInit())
-		{
+		{			
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
+			if (bSizeChange)
+			{
+				m_size = size;
+				m_indexCount = indiceNum;
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_size, data, GLHelper::BufferUsageToGLUsage(m_usage));
+			}
+			else if (m_size >= (size + offset))
+			{
+				m_indexCount = indiceNum;
+				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, offset, size, data);
+			}
+			else
+			{
+				LOGE("err! invalid input, buffer size[%u] < data size[%u] + offset[%u]", m_size, size, offset);
+			}
 			GLHelper::CheckError("fail to update GLIndexBuffer data");
 		}
 		else

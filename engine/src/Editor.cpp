@@ -138,10 +138,14 @@ namespace pio
 		m_sceneMgr = CreateRef<SceneMgr>();
 
 		auto scene = CreateRef<Scene>();
-		scene->addNode<CameraNode>(m_context, "MainCamera");
-		scene->addNode<PlaneNode>(m_context, "Plane");
+		scene->addNode<CameraNode>(m_context, "MainCamera");		
 		scene->addNode<CubeNode>(m_context, "Cube");
 		scene->addNode<DirectionalLightNode>(m_context, "DirectionalLight");
+
+		auto* plane = scene->addNode<PlaneNode>(m_context, "Plane")->as<PlaneNode>();
+		plane->setWidth(9.f);
+		plane->setHeight(12.f);
+
 		m_sceneMgr->add(scene, true);
 
 		auto runtimeLayer = CreateRef<RuntimeLayer>(LayoutParams(m_window->width(), m_window->height(), 0.f, 0.f, 1.f, 1.f));

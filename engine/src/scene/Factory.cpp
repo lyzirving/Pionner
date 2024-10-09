@@ -7,14 +7,15 @@
 
 namespace pio
 {
-	Ref<TriangleMesh> Factory::MakePlane(float n)
+	Ref<TriangleMesh> Factory::MakePlane(float w, float h)
 	{
 		auto triangles = CreateRef<TriangleMesh>();
-		glm::vec3 origin(-n / 2.f, 0.f, -n / 2.f);
-		uint32_t count = n;
-		for(uint32_t row = 0; row < count; row++)
+		glm::vec3 origin(-w / 2.f, 0.f, -h / 2.f);
+		uint32_t rowNum = h;
+		uint32_t colNum = w;
+		for(uint32_t row = 0; row < rowNum; row++)
 		{
-			for(uint32_t col = 0; col < count; col++)
+			for(uint32_t col = 0; col < colNum; col++)
 			{
 				Vertex3d v0, v1, v2, v3;
 				v0.Pos = origin + World::Right * float(col) + World::Forward * float(row);
@@ -22,10 +23,10 @@ namespace pio
 				v2.Pos = v1.Pos + World::Right;
 				v3.Pos = v2.Pos - World::Forward;
 
-				v0.TexCoord = glm::vec2(float(col) / n, 1.f - float(row) / n);
-				v1.TexCoord = glm::vec2(float(col) / n, 1.f - float(row + 1) / n);
-				v2.TexCoord = glm::vec2(float(col + 1) / n, 1.f - float(row + 1) / n);
-				v3.TexCoord = glm::vec2(float(col + 1) / n, 1.f - float(row) / n);
+				v0.TexCoord = glm::vec2(float(col) / w, 1.f - float(row) / h);
+				v1.TexCoord = glm::vec2(float(col) / w, 1.f - float(row + 1) / h);
+				v2.TexCoord = glm::vec2(float(col + 1) / w, 1.f - float(row + 1) / h);
+				v3.TexCoord = glm::vec2(float(col + 1) / w, 1.f - float(row) / h);
 
 				v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Up;				
 
