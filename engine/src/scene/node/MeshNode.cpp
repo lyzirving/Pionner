@@ -28,15 +28,21 @@ namespace pio
 
 	void MeshNode::onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData)
 	{
-		auto item = onUpdateInner(context, camNode);
-		renderingData.submitMesh(std::move(item));
-	}
+		MeshRenderer* render = getComponent<MeshRenderer>();		
+		if (render->SdCastMode != ShadowCastMode_Off)
+		{
+			ShadowCastItem sdItem;
+			sdItem.Mode = render->SdCastMode;
+			sdItem.RenderBuffFilter = render->BuffHnd;
+			renderingData.submitShadowCastMesh(std::move(sdItem));
+		}
 
-	MeshRenderingItem MeshNode::onUpdateInner(Ref<RenderContext>& context, Ref<CameraNode>& camNode)
-	{
-		MeshRenderer* render = getComponent<MeshRenderer>();
+		if (render->SdCastMode == ShadowCastMode_ShadowOnly)
+		{
+			return;
+		}
+
 		TransformComponent* transComp = getComponent<TransformComponent>();
-
 		Ref<MeshRenderBuffer> renderBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(render->BuffHnd);
 		renderBuff->Transform.setPosition(transComp->Position);
 		renderBuff->Transform.setEuler(transComp->Rotation);
@@ -46,11 +52,12 @@ namespace pio
 		Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd);
 		material->onUpdate(context);
 
-		MeshRenderingItem item;		
+		MeshRenderingItem item;
 		item.Mode = material->renderingMode();
 		item.RenderBuffFilter = render->BuffHnd;
 		item.MaterialFilter = render->MatHnd;
-		return item;
+
+		renderingData.submitMesh(std::move(item));		
 	}
 
 	PIO_NODE_IMPL_CONSTRUCOR(PlaneNode, MeshNode)

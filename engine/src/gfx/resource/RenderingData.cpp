@@ -80,11 +80,45 @@ namespace pio
 		return *this;
 	}
 
+	ShadowCastItem::ShadowCastItem(const ShadowCastItem& rhs)
+	{
+		RenderBuffFilter = rhs.RenderBuffFilter;
+		Mode = rhs.Mode;
+	}
+
+	ShadowCastItem::ShadowCastItem(ShadowCastItem&& rhs) noexcept
+	{
+		RenderBuffFilter = rhs.RenderBuffFilter;
+		Mode = rhs.Mode;
+
+		rhs.Mode = ShadowCastMode_Off;
+		rhs.RenderBuffFilter = InvalidId;
+	}
+
+	ShadowCastItem& ShadowCastItem::operator=(const ShadowCastItem& rhs)
+	{
+		if (this != &rhs)
+		{
+			this->ShadowCastItem::ShadowCastItem(rhs);
+		}
+		return *this;
+	}
+
+	ShadowCastItem& ShadowCastItem::operator=(ShadowCastItem&& rhs) noexcept
+	{
+		if (this != &rhs)
+		{
+			this->ShadowCastItem::ShadowCastItem(std::forward<ShadowCastItem>(rhs));
+		}
+		return *this;
+	}
+
 	RenderingData::RenderingData(const RenderingData &rhs)
 	{
 		UnimBuffSet = rhs.UnimBuffSet;
 		OpaqueMeshItems = rhs.OpaqueMeshItems;
 		TransparentMeshItems = rhs.TransparentMeshItems;
+		ShadowCastItems = rhs.ShadowCastItems;
 		UiSprites = rhs.UiSprites;
 		Outlines = rhs.Outlines;
 	}
@@ -94,6 +128,7 @@ namespace pio
 		UnimBuffSet = std::move(rhs.UnimBuffSet);
 		OpaqueMeshItems = std::move(rhs.OpaqueMeshItems);
 		TransparentMeshItems = std::move(rhs.TransparentMeshItems);
+		ShadowCastItems = std::move(rhs.ShadowCastItems);
 		UiSprites = std::move(rhs.UiSprites);
 		Outlines = std::move(rhs.Outlines);
 	}
@@ -171,4 +206,9 @@ namespace pio
 			}
 		}
 	}
+
+	void RenderingData::submitShadowCastMesh(ShadowCastItem&& item)
+	{
+		ShadowCastItems.push_back(std::forward<ShadowCastItem>(item));
+	}	
 }

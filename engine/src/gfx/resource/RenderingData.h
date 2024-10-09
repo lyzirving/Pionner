@@ -44,6 +44,19 @@ namespace pio
 		MeshRenderingItem& operator=(MeshRenderingItem&& rhs) noexcept;
 	};
 
+	struct ShadowCastItem
+	{
+		UUID32 RenderBuffFilter{ InvalidId };
+		ShadowCastMode Mode{ ShadowCastMode_Off };
+
+		ShadowCastItem() {}
+		ShadowCastItem(const ShadowCastItem& rhs);
+		ShadowCastItem(ShadowCastItem&& rhs) noexcept;
+
+		ShadowCastItem& operator=(const ShadowCastItem& rhs);
+		ShadowCastItem& operator=(ShadowCastItem&& rhs) noexcept;
+	};
+
 	/*
 	* @brief: RenderingData is transient data in rendering pipeline, so you'd better use id to search for its member filed
 	*/
@@ -61,10 +74,12 @@ namespace pio
 		void submitMesh(MeshRenderingItem&& item);
 		void submitSprite(MeshRenderingItem&& item);
 		void submitOutline(MeshRenderingItem&& item);
+		void submitShadowCastMesh(ShadowCastItem&& item);
 
 		std::map<uint8_t, UUID32> UnimBuffSet{};
 		std::vector<MeshRenderingItem> OpaqueMeshItems{};
 		std::vector<MeshRenderingItem> TransparentMeshItems{};
+		std::vector<ShadowCastItem> ShadowCastItems{};
 		std::vector<MeshRenderingItem> UiSprites{};
 		std::vector<MeshRenderingItem> Outlines{};
 	};

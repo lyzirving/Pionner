@@ -99,7 +99,16 @@ namespace pio
 		ShaderSpec_Standard,
 		ShaderSpec_Sprite,
 		ShaderSpec_Color
-	};	
+	};
+
+	enum ShadowCastMode : uint8_t
+	{
+		ShadowCastMode_Off,
+		ShadowCastMode_On,
+		ShadowCastMode_TwoSided,
+		ShadowCastMode_ShadowOnly,
+		ShadowCastMode_Num
+	};
 
 	enum class RenderingStrategy : uint8_t
 	{

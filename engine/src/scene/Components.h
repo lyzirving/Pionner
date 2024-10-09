@@ -39,6 +39,7 @@ namespace pio
 	{
 		UUID32 MatHnd{ InvalidId }; //Uid for material asset
 		UUID32 BuffHnd{ InvalidId };//Uid for MeshRenderBuffer
+		ShadowCastMode SdCastMode{ ShadowCastMode_On };
 	};
 
 	struct SpriteRenderer : public Component

@@ -293,9 +293,9 @@ namespace pio
 
 		if (ImGui::CollapsingHeader("MeshRenderer", ImGuiUtils::k_FlagCollapseHeader))
 		{
+			auto* meshRender = meshNode->getComponent<MeshRenderer>();
 			if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick))
-			{
-				auto* meshRender = meshNode->getComponent<MeshRenderer>();
+			{				
 				auto material = AssetMgr::GetRuntimeAsset<Material>(meshRender->MatHnd);
 				auto shaderSpec = material->spec();
 				auto renderingMode = material->renderingMode();
@@ -326,6 +326,20 @@ namespace pio
 					default:
 						break;
 				}
+
+				ImGui::TreePop();
+				ImGui::Spacing();
+			}
+
+			if (ImGui::TreeNodeEx("Lighting", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick))
+			{
+				int32_t mode = meshRender->SdCastMode;
+				const char* sdCastMode[ShadowCastMode_Num] = { "Off", "On", "Two Sided", "Shadow Only" };				
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Cast Shadows  ");
+				ImGui::SameLine();				
+				ImGui::Combo("##ShadowCastMode", &mode, sdCastMode, ShadowCastMode_Num);
+				meshRender->SdCastMode = ShadowCastMode(mode);
 
 				ImGui::TreePop();
 				ImGui::Spacing();

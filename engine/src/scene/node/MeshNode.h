@@ -20,9 +20,6 @@ namespace pio
 		virtual MeshType meshType() const = 0;		
 		virtual void onInit() override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
-
-	protected:
-		MeshRenderingItem onUpdateInner(Ref<RenderContext>& context, Ref<CameraNode>& camNode);
 	};
 
 	class PlaneNode : public MeshNode

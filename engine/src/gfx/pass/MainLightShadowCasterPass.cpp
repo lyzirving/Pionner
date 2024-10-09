@@ -26,10 +26,10 @@ namespace pio
 	void MainLightShadowCasterPass::onExecute(Ref<RenderContext>& context, Ref<CameraNode>& camNode, Ref<RenderPass>& lastPass)
 	{
 		auto& renderingData = context->renderingData();
-		std::vector<MeshRenderingItem> opaqueMeshItems = renderingData.OpaqueMeshItems;
-		if (opaqueMeshItems.empty())  { return; }	
+		std::vector<ShadowCastItem> shadowCastItems = renderingData.ShadowCastItems;
+		if (shadowCastItems.empty())  { return; }	
 
-		context->submitRC([opaqueMeshItems, &context]()
+		context->submitRC([shadowCastItems, &context]()
 		{
 			auto& shader = context->shader(ShaderType::MainLightShadowCaster);
 			auto lightTechIdx = GlobalSettings::RenderConfig.LightingTech;
@@ -46,7 +46,7 @@ namespace pio
 
 					lightTech->bindUnimBlock(context, shader);
 
-					for (const auto& item : opaqueMeshItems)
+					for (const auto& item : shadowCastItems)
 					{
 						Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
 						if (!meshBuff)
@@ -54,6 +54,7 @@ namespace pio
 							LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
 							continue;
 						}
+						context->setCullFace(item.Mode == ShadowCastMode_TwoSided ? CullFace::Disable() : lightTech->renderState().AttrCull);
 						meshBuff->bind(shader);
 						context->drawTriangles(meshBuff);
 					}
@@ -74,7 +75,7 @@ namespace pio
 
 						lightTech->bindUnimBlock(context, shader);
 
-						for (const auto& item : opaqueMeshItems)
+						for (const auto& item : shadowCastItems)
 						{
 							Ref<MeshRenderBuffer> meshBuff = AssetMgr::GetRuntimeAsset<MeshRenderBuffer>(item.RenderBuffFilter);
 							if (!meshBuff)
@@ -82,6 +83,7 @@ namespace pio
 								LOGW("warning! fail to find mesh render buffer or material in asset, it might be deleted");
 								continue;
 							}
+							context->setCullFace(item.Mode == ShadowCastMode_TwoSided ? CullFace::Disable() : lightTech->renderState().AttrCull);
 							meshBuff->bind(shader);
 							context->drawTriangles(meshBuff);
 						}
