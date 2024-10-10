@@ -20,13 +20,13 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(SpriteNode, Node)
+	PIO_NODE_IMPL_CONSTRUCOR(SpriteNode, MovableNode)
 
 	SpriteNode::~SpriteNode() = default;
 
 	void SpriteNode::onInit()
 	{
-		addComponent<SpriteRenderer, TransformComponent>();
+		addComponent<SpriteRenderer>();
 	}
 
 	void SpriteNode::onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData)

@@ -138,13 +138,31 @@ namespace pio
 		m_sceneMgr = CreateRef<SceneMgr>();
 
 		auto scene = CreateRef<Scene>();
-		scene->addNode<CameraNode>(m_context, "MainCamera");		
-		scene->addNode<CubeNode>(m_context, "Cube");
-		scene->addNode<DirectionalLightNode>(m_context, "DirectionalLight");
+		auto* camNode = scene->addNode<CameraNode>(m_context, "MainCamera")->as<CameraNode>();
+		camNode->setPosition(glm::vec3(0.f, 7.f, 10.f));
+		camNode->setRotation(glm::vec3(-35.f, 0.f, 0.f));
+		
+		auto* dirLightNode = scene->addNode<DirectionalLightNode>(m_context, "DirectionalLight")->as<DirectionalLightNode>();
+		dirLightNode->setPosition(glm::vec3(-4.f, 4.f, 4.f));
+		dirLightNode->setRotation(glm::vec3(-30.f, -45.f, 0.f));
 
-		auto* plane = scene->addNode<PlaneNode>(m_context, "Plane")->as<PlaneNode>();
-		plane->setWidth(9.f);
-		plane->setHeight(12.f);
+		scene->addNode<CubeNode>(m_context, "Cube");
+
+		auto* bottomPlane = scene->addNode<PlaneNode>(m_context, "BottomPlane")->as<PlaneNode>();
+		bottomPlane->setWidth(9.f);
+		bottomPlane->setHeight(6.f);
+
+		auto* backPlane = scene->addNode<PlaneNode>(m_context, "BackPlane")->as<PlaneNode>();
+		backPlane->setWidth(9.f);
+		backPlane->setHeight(9.f);
+		backPlane->setRotation(glm::vec3(90.f, 0.f, 0.f));
+		backPlane->setPosition(glm::vec3(0.f, 0.f, -2.5f));
+
+		auto* rightPlane = scene->addNode<PlaneNode>(m_context, "RightPlane")->as<PlaneNode>();
+		rightPlane->setWidth(12.f);
+		rightPlane->setHeight(9.f);
+		rightPlane->setRotation(glm::vec3(90.f, -90.f, 0.f));
+		rightPlane->setPosition(glm::vec3(2.5f, 0.f, 0.f));
 
 		m_sceneMgr->add(scene, true);
 

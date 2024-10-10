@@ -31,7 +31,7 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(LightNode, Node)
+	PIO_NODE_IMPL_CONSTRUCOR(LightNode, MovableNode)
 
 	LightNode::~LightNode() = default;
 
@@ -46,15 +46,10 @@ namespace pio
 		m_UData = CreateRef<DirectionalLightUD>();		
 		m_UBuffer = UniformBuffer::Create(context, m_UData->Block.getByteUsed(), UBBinding_DirectionalLight, BufferUsage::Dynamic);
 
-		addComponent<DirectionalLightComponent, TransformComponent>();
+		addComponent<DirectionalLightComponent>();
 
-		auto* lightComp = getComponent<DirectionalLightComponent>();
-		auto* transComp = getComponent<TransformComponent>();
-
+		auto* lightComp = getComponent<DirectionalLightComponent>();		
 		lightComp->BuffId = m_UBuffer->assetHnd();
-
-		transComp->Position = glm::vec3(-4.f, 4.f, 4.f);
-		transComp->Rotation = glm::vec3(-30.f, -45.f, 0.f);
 	}
 
 	void DirectionalLightNode::onAttach(Ref<Scene>& scene)

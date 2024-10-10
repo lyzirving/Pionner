@@ -72,6 +72,7 @@ namespace pio
 					meshBuff->bind(spriteShader);
 					material->bind(spriteShader);
 					context->drawTriangles(meshBuff);
+					spriteShader->freeSamplerUnit();
 				}
 				camBuff->unbind();
 				spriteShader->unbind();
@@ -102,6 +103,7 @@ namespace pio
 					meshBuff->bind(outlineShader);
 					material->bind(outlineShader);
 					context->drawLines(meshBuff);
+					outlineShader->freeSamplerUnit();
 				}
 				camBuff->unbind();
 				outlineShader->unbind();

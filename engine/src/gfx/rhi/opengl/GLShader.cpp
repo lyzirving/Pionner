@@ -181,6 +181,11 @@ namespace pio
 		}
 	}
 
+	void GLShader::freeSamplerUnit()
+	{
+		m_occupiedSlots.reset();
+	}
+
 	bool GLShader::init()
 	{
 		if (isInit())

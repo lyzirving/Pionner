@@ -1,12 +1,12 @@
 #ifndef __PIONNER_SCENE_NODE_SPRITE_NODE_H__
 #define __PIONNER_SCENE_NODE_SPRITE_NODE_H__
 
-#include "Node.h"
+#include "MovableNode.h"
 #include "gfx/resource/RenderingData.h"
 
 namespace pio
 {
-	class SpriteNode : public Node
+	class SpriteNode : public MovableNode
 	{
 		PIO_NODE_DECLARE(SpriteNode, NodeType::Sprite)
 	public:

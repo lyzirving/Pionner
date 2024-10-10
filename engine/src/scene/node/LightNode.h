@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_NODE_LIGHT_NODE_H__
 #define __PIONNER_SCENE_NODE_LIGHT_NODE_H__
 
-#include "Node.h"
+#include "MovableNode.h"
 #include "gfx/GfxDef.h"
 
 namespace pio
@@ -16,11 +16,12 @@ namespace pio
 	class GizmoNode;
 	struct DirectionalLightUD;
 
-	class LightNode : public Node
+	class LightNode : public MovableNode
 	{
 		PIO_NODE_DECLARE(LightNode, NodeType::Light)
 	public:
 		virtual ~LightNode();
+		virtual void onInit() override {}
 		virtual LightType lightType() const = 0;
 	};
 

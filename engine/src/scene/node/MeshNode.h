@@ -2,6 +2,7 @@
 #define __PIONNER_SCENE_NODE_MESH_NODE_H__
 
 #include "Node.h"
+#include "MovableNode.h"
 #include "gfx/resource/RenderingData.h"
 
 namespace pio
@@ -11,7 +12,7 @@ namespace pio
 											public:\
 									        virtual MeshType meshType() const override { return StaticMeshType(); }
 
-	class MeshNode : public Node
+	class MeshNode : public MovableNode
 	{
 		PIO_NODE_DECLARE(MeshNode, NodeType::Mesh)
 	public:

@@ -18,7 +18,7 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(CameraNode, Node)
+	PIO_NODE_IMPL_CONSTRUCOR(CameraNode, MovableNode)
 
 	CameraNode::~CameraNode() = default;
 
@@ -60,15 +60,11 @@ namespace pio
 			m_target = RenderTarget::Create(context, fboSpec);
 		}
 
-		addComponent<CameraComponent, TransformComponent>();
+		addComponent<CameraComponent>();
 		auto* camComp = getComponent<CameraComponent>();
-		auto* transComp = getComponent<TransformComponent>();
-
 		//Default value
 		camComp->Aspect = float(colorSize.x) / float(colorSize.y);
 		camComp->Hnd = m_camera->assetHnd();
-		transComp->Position = glm::vec3(0.f, 7.f, 10.f);
-		transComp->Rotation = glm::vec3(-35.f, 0.f, 0.f);
 	}
 
 	void CameraNode::onUpdate(Ref<RenderContext>& context, RenderingData& renderingData)

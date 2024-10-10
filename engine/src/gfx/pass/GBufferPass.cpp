@@ -138,6 +138,7 @@ namespace pio
                 meshBuff->bind(shader);
                 material->bind(shader);
                 context->drawTriangles(meshBuff);
+                shader->freeSamplerUnit();
             }
 
             camBuff->unbind();

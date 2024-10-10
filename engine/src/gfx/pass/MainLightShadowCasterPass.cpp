@@ -57,6 +57,7 @@ namespace pio
 						context->setCullFace(item.Mode == ShadowCastMode_TwoSided ? CullFace::Disable() : lightTech->renderState().AttrCull);
 						meshBuff->bind(shader);
 						context->drawTriangles(meshBuff);
+						shader->freeSamplerUnit();
 					}
 					lightTech->unbindUnimBlock();
 					shader->unbind();
@@ -86,6 +87,7 @@ namespace pio
 							context->setCullFace(item.Mode == ShadowCastMode_TwoSided ? CullFace::Disable() : lightTech->renderState().AttrCull);
 							meshBuff->bind(shader);
 							context->drawTriangles(meshBuff);
+							shader->freeSamplerUnit();
 						}
 						lightTech->unbindUnimBlock();
 						shader->unbind();						

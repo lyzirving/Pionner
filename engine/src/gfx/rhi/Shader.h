@@ -33,6 +33,7 @@ namespace pio
 		virtual void setIVec4(const std::string& name, const glm::ivec4& vec4) = 0;
 
 		virtual void setTextureSampler(const std::string& name, TextureSampler slot) = 0;
+		virtual void freeSamplerUnit() = 0;
 
 	public:
 		void setUniformData(Ref<UniformData>& unimData);

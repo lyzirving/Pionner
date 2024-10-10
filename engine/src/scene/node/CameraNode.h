@@ -1,7 +1,7 @@
 #ifndef __PIONNER_SCENE_NODE_CAMERA_NODE_H__
 #define __PIONNER_SCENE_NODE_CAMERA_NODE_H__
 
-#include "Node.h"
+#include "MovableNode.h"
 
 namespace pio
 {
@@ -10,7 +10,7 @@ namespace pio
 	class RenderTarget;
 	struct CameraUD;
 
-	class CameraNode : public Node
+	class CameraNode : public MovableNode
 	{
 		PIO_NODE_DECLARE(CameraNode, NodeType::Camera)
 	public:

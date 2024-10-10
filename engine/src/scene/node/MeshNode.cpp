@@ -17,13 +17,13 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(MeshNode, Node)
+	PIO_NODE_IMPL_CONSTRUCOR(MeshNode, MovableNode)
 
 	MeshNode::~MeshNode() = default;
 
 	void MeshNode::onInit()
 	{
-		addComponent<MeshFilter, MeshRenderer, TransformComponent>();
+		addComponent<MeshFilter, MeshRenderer>();
 	}
 
 	void MeshNode::onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData)

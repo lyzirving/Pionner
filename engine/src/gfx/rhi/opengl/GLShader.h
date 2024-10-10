@@ -29,6 +29,7 @@ namespace pio
 		virtual void setIVec4(const std::string &name, const glm::ivec4 &vec4) override;
 
 		virtual void setTextureSampler(const std::string& name, TextureSampler slot) override;
+		virtual void freeSamplerUnit() override;
 
 		virtual bool init() override;
 		virtual bool isInit() const override { return m_id > 0; }
@@ -37,7 +38,7 @@ namespace pio
 		virtual void bind() override;
 		virtual void unbind() override;
 
-		virtual bool getSampler(TextureSampler& out) const override;
+		virtual bool getSampler(TextureSampler& out) const override;	
 
 	private:
 		std::string m_vert{}, m_frag{}, m_geo{};
