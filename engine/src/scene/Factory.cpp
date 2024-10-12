@@ -144,6 +144,102 @@ namespace pio
 		return triangles;
 	}
 
+	Ref<TriangleMesh> Factory::MakeSphere(float radius, int32_t itr)
+	{
+		auto triangles = CreateRef<TriangleMesh>();
+		auto& vertice = triangles->getVertice();
+		auto& indice = triangles->getIndice();
+
+		const int32_t horItr = itr;
+		const int32_t verItr = itr;
+		const int32_t total = 2 + (verItr - 1) * horItr;
+
+		auto GetVertexInd = [horItr, verItr, total](int32_t pX, int32_t pY)
+		{
+			if(pX == 0 && pY == 0)
+				return 0;
+			else if(pX == 0 && pY == verItr)
+				return total - 1;
+			else if(pY != 0 && pY != verItr)
+				return (1 + (pY - 1) * horItr + pX);
+
+			return 0;
+		};
+
+		for(int32_t y = 0; y <= verItr; y++)
+		{
+			for(int32_t x = 0; x < horItr; x++)
+			{
+				if((y == 0 && x == 0) || (y != 0 && y != verItr) || (y == verItr && x == 0))
+				{
+					Vertex3d v{};
+					// theta is the angle between vector projected on x-z plane and +z
+					// phi is the angle between vector and +y
+					float theta = float(x) / float(horItr);
+					float phi = float(y) / float(verItr);
+					float xPos = float(std::sin(phi * PIO_PI) * std::sin(theta * 2.f * PIO_PI));
+					float yPos = float(std::cos(phi * PIO_PI));
+					float zPos = float(std::sin(phi * PIO_PI) * std::cos(theta * 2.f * PIO_PI));
+
+					glm::vec3 normal = glm::normalize(glm::vec3(xPos, yPos, zPos));
+					v.Pos = radius * normal;
+					v.TexCoord = glm::vec2(theta, 1.f - phi);
+					v.Normal = normal;					
+
+					vertice.push_back(std::move(v));
+				}
+
+				// add indices for sphere
+				bool pickFirst = (x >= (horItr - 1));
+				if(y == 1)
+				{
+					// add triangles for rendering
+					uint32_t ind = GetVertexInd(x, y);
+					indice.emplace_back(0);
+					indice.emplace_back(ind);
+					indice.emplace_back(pickFirst ? GetVertexInd(0, y) : (ind + 1));					
+				}
+				else if(y == verItr)
+				{
+					uint32_t endInd = total - 1;
+					indice.emplace_back(GetVertexInd(x, y - 1));
+					indice.emplace_back(endInd);
+					indice.emplace_back(GetVertexInd(pickFirst ? 0 : x + 1, y - 1));					
+				}
+				else if(y != 0)
+				{
+					if(pickFirst)
+					{
+						uint32_t lastInd = GetVertexInd(x, y - 1);
+						uint32_t lastFirstInd = GetVertexInd(0, y - 1);
+						uint32_t curInd = GetVertexInd(x, y);
+						uint32_t curFirstInd = GetVertexInd(0, y);
+						
+						indice.emplace_back(lastInd);
+						indice.emplace_back(curInd);
+						indice.emplace_back(lastFirstInd);
+						indice.emplace_back(lastFirstInd);
+						indice.emplace_back(curInd);
+						indice.emplace_back(curFirstInd);						
+					}
+					else
+					{
+						uint32_t lastInd = GetVertexInd(x, y - 1);
+						uint32_t curInd = GetVertexInd(x, y);
+
+						indice.emplace_back(lastInd);
+						indice.emplace_back(curInd); 
+						indice.emplace_back(lastInd + 1);
+						indice.emplace_back(lastInd + 1);
+						indice.emplace_back(curInd);
+						indice.emplace_back(curInd + 1);						
+					}
+				}
+			}
+		}
+		return triangles;
+	}
+
 	Ref<TriangleMesh> Factory::MakeSquare(float w, float h)
 	{
 		auto triangles = CreateRef<TriangleMesh>();

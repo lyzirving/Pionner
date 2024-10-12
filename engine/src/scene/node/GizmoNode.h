@@ -15,17 +15,18 @@ namespace pio
 	{
 		PIO_NODE_DECLARE(GizmoNode, NodeType::Gizmo)
 	public:
-		virtual ~GizmoNode();
+		GizmoNode();
+		virtual ~GizmoNode() = default;
 		virtual GizmoType gizmoType() const = 0;
 		virtual void onInit() override;		
 	};
 
 	class DirLightGizmo : public GizmoNode
-	{
-		PIO_NODE_DECLARE_CONSTRUCTOR(DirLightGizmo)
+	{		
 		PIO_GIZIMO_DEFINE_TYPE(GizmoType::DirLight)
 	public:
-		~DirLightGizmo();
+		DirLightGizmo();
+		~DirLightGizmo() = default;
 	
 		virtual void onInit() override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;

@@ -18,14 +18,15 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(CameraNode, MovableNode)
-
-	CameraNode::~CameraNode() = default;
+	CameraNode::CameraNode() : MovableNode()
+	{		
+	}
 
 	void CameraNode::onInit()
 	{
-		auto context = m_context.lock();
+		MovableNode::onInit();
 
+		auto context = m_context.lock();
 		m_camera = AssetMgr::MakeRuntimeAsset<Camera>();
 		m_UData = CreateRef<CameraUD>();
 		m_UBuffer = UniformBuffer::Create(context, m_UData->Block.getByteUsed(), UBBinding_Camera, BufferUsage::Dynamic);

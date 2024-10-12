@@ -15,6 +15,10 @@ namespace pio
 				return "Plane";
 			case MeshType::Cube:
 				return "Cube";
+			case MeshType::Sphere:
+				return "Sphere";
+			case MeshType::Outline:
+				return "Outline";
 			default:
 				LOGE("err! invalid mesh type[%u]", type);
 				std::abort();

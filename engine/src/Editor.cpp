@@ -137,32 +137,30 @@ namespace pio
 		m_layerMgr = CreateRef<LayerMgr>();
 		m_sceneMgr = CreateRef<SceneMgr>();
 
-		auto scene = CreateRef<Scene>();
-		auto* camNode = scene->addNode<CameraNode>(m_context, "MainCamera")->as<CameraNode>();
+		auto scene = CreateRef<Scene>(m_context);
+		auto* camNode = scene->addNode<CameraNode>("MainCamera")->as<CameraNode>();
 		camNode->setPosition(glm::vec3(0.f, 7.f, 10.f));
 		camNode->setRotation(glm::vec3(-35.f, 0.f, 0.f));
 		
-		auto* dirLightNode = scene->addNode<DirectionalLightNode>(m_context, "DirectionalLight")->as<DirectionalLightNode>();
+		auto* dirLightNode = scene->addNode<DirectionalLightNode>("DirectionalLight")->as<DirectionalLightNode>();
 		dirLightNode->setPosition(glm::vec3(-4.f, 4.f, 4.f));
 		dirLightNode->setRotation(glm::vec3(-30.f, -45.f, 0.f));
 
-		scene->addNode<CubeNode>(m_context, "Cube");
+		auto* cube = scene->addNode<CubeNode>("Cube")->as<CubeNode>();
+		cube->setPosition(glm::vec3(0.f, 1.f, 0.f));
 
-		auto* bottomPlane = scene->addNode<PlaneNode>(m_context, "BottomPlane")->as<PlaneNode>();
-		bottomPlane->setWidth(9.f);
-		bottomPlane->setHeight(6.f);
+		auto* bottomPlane = scene->addNode<PlaneNode>("BottomPlane", 9.f, 6.f)->as<PlaneNode>();
 
-		auto* backPlane = scene->addNode<PlaneNode>(m_context, "BackPlane")->as<PlaneNode>();
-		backPlane->setWidth(9.f);
-		backPlane->setHeight(9.f);
+		auto* backPlane = scene->addNode<PlaneNode>("BackPlane", 9.f, 9.f)->as<PlaneNode>();
 		backPlane->setRotation(glm::vec3(90.f, 0.f, 0.f));
 		backPlane->setPosition(glm::vec3(0.f, 0.f, -2.5f));
 
-		auto* rightPlane = scene->addNode<PlaneNode>(m_context, "RightPlane")->as<PlaneNode>();
-		rightPlane->setWidth(12.f);
-		rightPlane->setHeight(9.f);
+		auto* rightPlane = scene->addNode<PlaneNode>("RightPlane", 12.f, 9.f)->as<PlaneNode>();
 		rightPlane->setRotation(glm::vec3(90.f, -90.f, 0.f));
 		rightPlane->setPosition(glm::vec3(2.5f, 0.f, 0.f));
+
+		auto* sphere = scene->addNode<SphereNode>("Sphere", 1.f)->as<SphereNode>();
+		sphere->setPosition(glm::vec3(-3.f, 1.f, 0.f));
 
 		m_sceneMgr->add(scene, true);
 

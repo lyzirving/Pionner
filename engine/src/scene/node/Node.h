@@ -23,25 +23,7 @@ namespace pio
 										  public:\
 									      virtual NodeType nodeType() const override { return StaticNodeType(); }
 
-	#define PIO_NODE_DECLARE_CONSTRUCTOR(Clazz) public:\
-                                                Clazz(Ref<RenderContext>& context, Ref<Scene>& scene, const entt::entity& key, const std::string& name);\
-												Clazz(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<Node>& parent, const entt::entity& key, const std::string& name);
-
-	#define PIO_NODE_DECLARE(Clazz, TypeName) PIO_NODE_DECLARE_CONSTRUCTOR(Clazz)\
-                                              PIO_NODE_IMPL_TYPE(TypeName)
-											  
-
-	#define PIO_NODE_IMPL_CONSTRUCOR(Clazz, ClazzParent) Clazz::Clazz(Ref<RenderContext>& context, Ref<Scene>& scene, const entt::entity& key, const std::string& name)\
-												: ClazzParent(context, scene, key, name)\
-											{\
-												onInit();\
-											}\
-		                                     \
-											Clazz::Clazz(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<Node>& parent, const entt::entity& key, const std::string& name)\
-												: ClazzParent(context, scene, parent, key, name)\
-											{\
-												onInit();\
-											}
+	#define PIO_NODE_DECLARE(Clazz, TypeName) PIO_NODE_IMPL_TYPE(TypeName)											 
 
 	class Scene;
 	class CameraNode;
@@ -52,8 +34,7 @@ namespace pio
 	{
 		PIO_DECLARE_IS_AS(Node)
 	public:
-		Node(Ref<RenderContext>& context, Ref<Scene>& scene, const entt::entity& key, const std::string& name);
-		Node(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<Node>& parent, const entt::entity& key, const std::string& name);
+		Node();
 
 		virtual ~Node() = default;
 		virtual NodeType nodeType() const = 0;		
@@ -71,8 +52,8 @@ namespace pio
 		Ref<T> self() { return RefCast<Node, T>(shared_from_this()); }
 
 		//Note function should not be called in Node's constructor
-		template<typename T>
-		Ref<Node> addChild(const std::string& name = "") 
+		template<typename T, typename ... Args>
+		Ref<Node> addChild(const std::string& name, const Args&... args) 
 		{
 			auto ctx = m_context.lock();
 			auto scene = m_scene.lock();
@@ -80,7 +61,14 @@ namespace pio
 				return Ref<Node>();
 			
 			auto parent = self<Node>();
-			Ref<Node> node = CreateRef<T>(ctx, scene, parent, getRegistry()->create(), name.empty() ? PIO_NODE_MAKE_NAME : name);
+			Ref<Node> node = CreateRef<T>(args...);
+			node->m_context = ctx;
+			node->m_scene = scene;
+			node->m_parent = parent;
+			node->m_key = getRegistry()->create();
+			node->m_name = name.empty() ? PIO_NODE_MAKE_NAME : name;
+			node->onInit();
+
 			m_children.push_back(node);
 			InsertNode(scene, node);
 			return node;
@@ -127,6 +115,7 @@ namespace pio
 
 	private:
 		friend class Scene;
+		friend class Registry;
 
 		entt::registry* getRegistry() const;
 		static void InsertNode(Ref<Scene>& scene, Ref<Node>& node);
@@ -135,7 +124,7 @@ namespace pio
 		static uint32_t k_NodeNum;
 
 	protected:
-		const entt::entity m_key;
+		entt::entity m_key;
 		UUID32 m_uuid;
 		std::string m_name;
 

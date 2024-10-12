@@ -17,12 +17,13 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(MeshNode, MovableNode)
-
-	MeshNode::~MeshNode() = default;
+	MeshNode::MeshNode() : MovableNode()
+	{		
+	}
 
 	void MeshNode::onInit()
 	{
+		MovableNode::onInit();
 		addComponent<MeshFilter, MeshRenderer>();
 	}
 
@@ -66,12 +67,13 @@ namespace pio
 		}
 	}
 
-	PIO_NODE_IMPL_CONSTRUCOR(PlaneNode, MeshNode)
-
-	PlaneNode::~PlaneNode() = default;
+	PlaneNode::PlaneNode(float w, float h) : MeshNode(), m_w(w), m_h(h)
+	{
+	}
 
 	void PlaneNode::onInit()
 	{
+		MeshNode::onInit();
 		auto context = m_context.lock();
 
 		auto* meshFilter = getComponent<MeshFilter>();
@@ -128,19 +130,19 @@ namespace pio
 		}
 	}
 
-	PIO_NODE_IMPL_CONSTRUCOR(CubeNode, MeshNode)
-
-	CubeNode::~CubeNode() = default;
+	CubeNode::CubeNode(float size) : MeshNode(), m_size(size)
+	{
+	}
 
 	void CubeNode::onInit()
 	{
+		MeshNode::onInit();
 		auto context = m_context.lock();
 
 		auto* meshFilter = getComponent<MeshFilter>();
-		auto* meshRender = getComponent<MeshRenderer>();
-		auto* transform = getComponent<TransformComponent>();
+		auto* meshRender = getComponent<MeshRenderer>();		
 
-		auto meshData = Factory::MakeCube();
+		auto meshData = Factory::MakeCube(m_size);
 		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
 		mesh->setData(meshData);
 
@@ -151,9 +153,33 @@ namespace pio
 
 		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
 		renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice());
-		meshRender->BuffHnd = renderBuff->assetHnd();
+		meshRender->BuffHnd = renderBuff->assetHnd();		
+	}
 
-		transform->Position = glm::vec3(0.f, 1.f, 0.f);
+	SphereNode::SphereNode(float radius, int32_t itr) : MeshNode(), m_radius(radius), m_itr(itr)
+	{		
+	}
+
+	void SphereNode::onInit()
+	{
+		MeshNode::onInit();
+		auto context = m_context.lock();
+
+		auto* meshFilter = getComponent<MeshFilter>();
+		auto* meshRender = getComponent<MeshRenderer>();
+
+		auto meshData = Factory::MakeSphere(m_radius, m_itr);
+		auto mesh = AssetMgr::MakeRuntimeAsset<Mesh>();
+		mesh->setData(meshData);
+
+		meshFilter->Type = MeshType::Sphere;
+		meshFilter->MeshHnd = mesh->assetHnd();
+
+		meshRender->MatHnd = context->getMaterial(GpuAttr::Mat::STANDARD, true)->assetHnd();
+
+		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>(); 
+		renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice()); 
+		meshRender->BuffHnd = renderBuff->assetHnd();
 	}
 
 	template<>
@@ -178,4 +204,14 @@ namespace pio
 		}
 		return false;
 	}
+
+	template<>
+	bool Node::is<SphereNode>() const
+	{
+		if(is<MeshNode>())
+		{
+			return as<MeshNode>()->meshType() == MeshType::Sphere;
+		}
+		return false;
+	}	
 }

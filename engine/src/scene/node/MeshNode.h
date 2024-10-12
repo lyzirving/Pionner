@@ -16,7 +16,8 @@ namespace pio
 	{
 		PIO_NODE_DECLARE(MeshNode, NodeType::Mesh)
 	public:
-		virtual ~MeshNode();
+		MeshNode();
+		virtual ~MeshNode() = default;
 
 		virtual MeshType meshType() const = 0;	
 		virtual void onInit() override;
@@ -33,11 +34,11 @@ namespace pio
 	};
 
 	class PlaneNode : public MeshNode
-	{
-		PIO_NODE_DECLARE_CONSTRUCTOR(PlaneNode)
+	{		
 		PIO_DEFINE_MESH_TYPE(MeshType::Plane)
-	public:
-		~PlaneNode();
+	public:		
+		PlaneNode(float w = 5.f, float h = 5.f);
+		~PlaneNode() = default;
 
 		virtual void onInit() override;
 
@@ -55,13 +56,30 @@ namespace pio
 	};
 
 	class CubeNode : public MeshNode
-	{
-		PIO_NODE_DECLARE_CONSTRUCTOR(CubeNode)
+	{		
 		PIO_DEFINE_MESH_TYPE(MeshType::Cube)
-	public:
-		~CubeNode();
+	public:		
+		CubeNode(float size = 2.f);
+		~CubeNode() = default;
 
 		virtual void onInit() override;
+
+	private:
+		float m_size{ 2.f };
+	};
+
+	class SphereNode : public MeshNode
+	{		
+		PIO_DEFINE_MESH_TYPE(MeshType::Sphere)
+	public:
+		SphereNode(float radius = 2.f, int32_t itr = 64);
+		~SphereNode() = default;
+
+		virtual void onInit() override;
+
+	private:
+		float m_radius{ 2.f };
+		int32_t m_itr{ 64 };
 	};
 
 	template<>
@@ -72,6 +90,9 @@ namespace pio
 
 	template<>
 	bool Node::is<CubeNode>() const;
+
+	template<>
+	bool Node::is<SphereNode>() const;
 }
 
 #endif

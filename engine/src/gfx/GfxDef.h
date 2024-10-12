@@ -120,6 +120,7 @@ namespace pio
 	{
 		Plane, 
 		Cube,
+		Sphere,
 		Outline,
 		Num
 	};

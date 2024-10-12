@@ -11,14 +11,7 @@ namespace pio
 {
 	uint32_t Node::k_NodeNum = 0;	
 
-	Node::Node(Ref<RenderContext>& context, Ref<Scene>& scene, const entt::entity& key, const std::string& name)
-		: m_key(key), m_scene(scene), m_uuid(), m_context(context), m_name(name)
-	{
-		k_NodeNum++;
-	}
-
-	Node::Node(Ref<RenderContext>& context, Ref<Scene>& scene, Ref<Node>& parent, const entt::entity& key, const std::string& name)
-		: m_key(key), m_scene(scene), m_parent(parent), m_uuid(), m_context(context), m_name(name)
+	Node::Node() : m_key(), m_uuid()
 	{
 		k_NodeNum++;
 	}

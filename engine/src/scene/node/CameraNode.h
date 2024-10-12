@@ -14,7 +14,8 @@ namespace pio
 	{
 		PIO_NODE_DECLARE(CameraNode, NodeType::Camera)
 	public:
-		~CameraNode();
+		CameraNode();
+		~CameraNode() = default;
 		
 		virtual void onInit() override;
 		virtual void onUpdate(Ref<RenderContext>& context, RenderingData& renderingData) override;

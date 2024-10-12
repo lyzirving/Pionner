@@ -10,7 +10,8 @@ namespace pio
 	{
 		PIO_NODE_DECLARE(SpriteNode, NodeType::Sprite)
 	public:
-		~SpriteNode();		
+		SpriteNode();
+		~SpriteNode() = default;
 		virtual void onInit() override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
 

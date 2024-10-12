@@ -17,21 +17,25 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(GizmoNode, Node)
-
-	GizmoNode::~GizmoNode() = default;
+	GizmoNode::GizmoNode() : Node()
+	{		
+	}
 
 	void GizmoNode::onInit()
 	{
+		Node::onInit();
 		m_showInInspector = false;
 	}
 
-	PIO_NODE_IMPL_CONSTRUCOR(DirLightGizmo, GizmoNode)
 
-	DirLightGizmo::~DirLightGizmo() = default;
+	DirLightGizmo::DirLightGizmo() : GizmoNode()
+	{		
+	}
 
 	void DirLightGizmo::onInit()
 	{	
+		GizmoNode::onInit();
+
 		auto parent = m_parent.lock();
 		if (!parent)
 		{

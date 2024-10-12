@@ -6,10 +6,10 @@
 namespace pio
 {
 	class MovableNode : public Node
-	{
-		PIO_NODE_DECLARE_CONSTRUCTOR(MovableNode)
+	{		
 	public:
-		virtual ~MovableNode();
+		MovableNode();
+		virtual ~MovableNode() = default;
 		virtual void onInit() override;
 
 		void addTranslation(const glm::vec3& delta);

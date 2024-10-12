@@ -4,12 +4,13 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(MovableNode, Node)
-
-	MovableNode::~MovableNode() = default;
+	MovableNode::MovableNode() : Node()
+	{	
+	}
 
 	void MovableNode::onInit()
 	{
+		Node::onInit();
 		addComponent<TransformComponent>();
 	}
 

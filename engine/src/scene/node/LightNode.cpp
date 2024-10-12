@@ -31,16 +31,23 @@
 
 namespace pio
 {
-	PIO_NODE_IMPL_CONSTRUCOR(LightNode, MovableNode)
+	LightNode::LightNode() : MovableNode()
+	{		
+	}
 
-	LightNode::~LightNode() = default;
+	void LightNode::onInit()
+	{
+		MovableNode::onInit();
+	}
 
-	PIO_NODE_IMPL_CONSTRUCOR(DirectionalLightNode, LightNode)
-
-	DirectionalLightNode::~DirectionalLightNode() = default;
+	DirectionalLightNode::DirectionalLightNode() : LightNode()
+	{		
+	}
 
 	void DirectionalLightNode::onInit()
 	{
+		LightNode::onInit();
+
 		auto context = m_context.lock();
 
 		m_UData = CreateRef<DirectionalLightUD>();		
@@ -148,5 +155,5 @@ namespace pio
 			return as<LightNode>()->lightType() == LightType::DirectionLight;
 		}
 		return false;
-	}
+	}	
 }

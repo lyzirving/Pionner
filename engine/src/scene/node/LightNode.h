@@ -20,17 +20,18 @@ namespace pio
 	{
 		PIO_NODE_DECLARE(LightNode, NodeType::Light)
 	public:
-		virtual ~LightNode();
-		virtual void onInit() override {}
+		LightNode();
+		virtual ~LightNode() = default;
+		virtual void onInit() override;
 		virtual LightType lightType() const = 0;
 	};
 
 	class DirectionalLightNode : public LightNode
-	{
-		PIO_NODE_DECLARE_CONSTRUCTOR(DirectionalLightNode)
+	{		
 		PIO_LIGHT_DEFINE_TYPE(LightType::DirectionLight)
 	public:
-		~DirectionalLightNode();		
+		DirectionalLightNode();
+		~DirectionalLightNode() = default;
 		virtual void onInit() override;
 		virtual void onAttach(Ref<Scene>& scene) override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;

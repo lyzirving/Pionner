@@ -11,10 +11,16 @@ namespace pio
 		Registry() {}
 		~Registry() { shutdown(); }
 
-		template <typename T>
-		Ref<Node> create(Ref<RenderContext>& context, Ref<Scene> scene, const std::string& name = "")
+		template <typename T, typename ... Args>
+		Ref<Node> create(Ref<RenderContext>& context, Ref<Scene> scene, const std::string& name, const Args&... args)
 		{
-			Ref<Node> node = CreateRef<T>(context, scene, m_registry.create(), name.empty() ? PIO_NODE_MAKE_NAME : name);
+			Ref<Node> node = CreateRef<T>(args...);
+			node->m_context = context;
+			node->m_scene = scene;
+			node->m_key = m_registry.create();
+			node->m_name = name.empty() ? PIO_NODE_MAKE_NAME : name;
+			node->onInit();
+
 			m_nodes[node->idx()] = node;
 			return node;
 		}
