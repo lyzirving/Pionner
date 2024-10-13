@@ -97,6 +97,8 @@ namespace pio
 					return "shader/DeferredPass.glsl";
 				case ShaderType::ColorCorrect:
 					return "shader/ColorCorrect.glsl";
+				case ShaderType::Forward:
+					return "shader/ForwardPass.glsl";
 				case ShaderType::Sprite:
 					return "shader/Sprite.glsl";
 				case ShaderType::Outline:

@@ -47,8 +47,7 @@ namespace pio
 		Ref<Window>& window() { return m_window; }
 		Ref<Renderer>& getRenderer() { return m_renderer; }
 		Ref<RenderState>& state() { return m_state; }
-		
-		Ref<Shader> &shader(ShaderType type) { return m_shaders[PIO_UINT8(type)]; }
+				
 		void setRenderingNodes(RenderingNodes&& data) { m_renderingNodes = std::forward<RenderingNodes>(data); }
 		void setRenderingData(RenderingData &&data) { m_renderingData = std::forward<RenderingData>(data); }
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
@@ -161,6 +160,8 @@ namespace pio
 
 		Ref<Material> createMaterial(const std::string& name, ShaderSpecifier spec, RenderingMode mode = RenderingMode_Opaque);
 		Ref<Material> getMaterial(const std::string& name, bool copy = false);
+
+		Ref<Shader>& getShader(ShaderType type) { return m_shaders[PIO_UINT8(type)]; }
 
 		Ref<MeshRenderBuffer>& getScreenMeshBuffer() { return m_screenMeshBuffer; }		
 		// ------------------------------------------------------------------------------------

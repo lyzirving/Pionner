@@ -1,4 +1,5 @@
 #include "RuntimeLayer.h"
+#include "MaterialInspector.h"
 #include "ImGuiUtils.h"
 
 #include "GlobalSettings.h"
@@ -38,10 +39,13 @@ namespace pio
 		m_sceneParam = LayoutParams(window->width(), window->height(), 0.f, 0.f, 0.6f, 1.f);
 		m_hierarchyParam = LayoutParams(window->width(), window->height(), 0.6f, 0.f, 0.75f, 1.f);
 		m_inspectorParam = LayoutParams(window->width(), window->height(), 0.75f, 0.f, 1.f, 1.f);
+
+		MaterialInspector::Init(context);
 	}
 
 	void RuntimeLayer::onDetach()
 	{
+		MaterialInspector::Shutdown();
 	}
 
 	void RuntimeLayer::onUpdate(Ref<RenderContext>& context, Ref<Scene>& scene)

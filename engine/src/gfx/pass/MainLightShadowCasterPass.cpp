@@ -31,7 +31,7 @@ namespace pio
 
 		context->submitRC([shadowCastItems, &context]()
 		{
-			auto& shader = context->shader(ShaderType::MainLightShadowCaster);
+			auto& shader = context->getShader(ShaderType::MainLightShadowCaster);
 			auto lightTechIdx = GlobalSettings::RenderConfig.LightingTech;
 			auto lightTech = context->getLightTech(lightTechIdx);
 			switch (lightTechIdx)

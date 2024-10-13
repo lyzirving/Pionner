@@ -33,7 +33,7 @@ namespace pio
 		auto& target = camNode->renderTarget();
 		PIO_CHECK_RETURN(target, "err! render target has not been set!");
 
-		auto& shader = context->shader(ShaderType::ColorCorrect);
+		auto& shader = context->getShader(ShaderType::ColorCorrect);
 		PIO_CHECK_RETURN(shader, "err! can't find ColorCorrect shader!");
 
 		const auto& attr = m_attrs;

@@ -48,7 +48,7 @@ namespace pio
 
 			if (!uiSprites.empty())
 			{
-				auto spriteShader = context->shader(ShaderType::Sprite);				
+				auto spriteShader = context->getShader(ShaderType::Sprite);				
 				spriteShader->bind();
 
 				context->bindUnimBlock(spriteShader, camBuff, GpuAttr::BINDING_CAM_BLOCK);
@@ -80,7 +80,7 @@ namespace pio
 
 			if (!outlines.empty())
 			{
-				auto outlineShader = context->shader(ShaderType::Outline);
+				auto outlineShader = context->getShader(ShaderType::Outline);
 				outlineShader->bind();
 
 				context->bindUnimBlock(outlineShader, camBuff, GpuAttr::BINDING_CAM_BLOCK);

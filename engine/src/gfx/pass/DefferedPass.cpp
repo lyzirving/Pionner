@@ -87,7 +87,7 @@ namespace pio
             PIO_CHECK_RETURN(camUBuff, "err! invalid camera uniform buffer");
             auto lightUBuff = AssetMgr::GetRuntimeAsset<UniformBuffer>(lightFilter);
             PIO_CHECK_RETURN(lightUBuff, "err! invalid directional light uniform buffer");
-            auto& shader = context->shader(ShaderType::Deferred);
+            auto& shader = context->getShader(ShaderType::Deferred);
             PIO_CHECK_RETURN(shader, "err! Defferred shader is invalid");
 
             auto lightTech = context->getLightTech(GlobalSettings::RenderConfig.LightingTech);                                                          

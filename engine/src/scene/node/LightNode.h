@@ -44,6 +44,7 @@ namespace pio
 
 	private:
 		friend class Node;
+		friend class MaterialInspector;
 
 	private:
 		Ref<DirectionalLightUD> m_UData;

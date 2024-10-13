@@ -1,4 +1,5 @@
 #include "ImGuiUtils.h"
+#include "MaterialInspector.h"
 
 #include "asset/AssetMgr.h"
 
@@ -8,6 +9,7 @@
 #include "scene/node/MeshNode.h"
 #include "scene/node/SpriteNode.h"
 
+#include "gfx/rhi/Texture.h"
 #include "gfx/resource/material/PbrMaterial.h"
 #include "gfx/resource/material/SpriteMaterial.h"
 
@@ -100,18 +102,20 @@ namespace pio
 	void ImGuiUtils::ShowNode(const Ref<Node>& node)
 	{	
 		auto type = node->nodeType();
+		MaterialInspector::Get()->setVisible(type == NodeType::Mesh);
 		switch (type)
 		{
-			case NodeType::Camera:
+			case NodeType::Camera:				
 				DrawCameraPanel(node);
 				break;
 			case NodeType::Light:
+				MaterialInspector::Get()->setVisible(false);
 				DrawLightPanel(node);
 				break;
-			case NodeType::Mesh:
+			case NodeType::Mesh:				
 				DrawMeshPanel(node);
 				break;
-			case NodeType::Sprite:
+			case NodeType::Sprite:				
 				DrawSpritePanel(node);
 				break;
 			default:
@@ -291,12 +295,15 @@ namespace pio
 			ImGui::PopItemWidth();
 		}
 
+		bool bMatTreeNodeOpen = false;
 		if (ImGui::CollapsingHeader("MeshRenderer", ImGuiUtils::k_FlagCollapseHeader))
 		{
 			auto* meshRender = meshNode->getComponent<MeshRenderer>();
-			if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick))
+			bMatTreeNodeOpen = ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick);
+			if (bMatTreeNodeOpen)
 			{				
 				auto material = AssetMgr::GetRuntimeAsset<Material>(meshRender->MatHnd);
+				MaterialInspector::Get()->setMaterial(material);				
 				auto shaderSpec = material->spec();
 				auto renderingMode = material->renderingMode();
 
@@ -344,6 +351,29 @@ namespace pio
 				ImGui::TreePop();
 				ImGui::Spacing();
 			}
+		}
+
+		if (bMatTreeNodeOpen)
+		{
+			MaterialInspector::Get()->onDraw();
+			auto avail = ImGui::GetContentRegionAvail();
+			ImGui::BeginChild("MaterialInspector", ImVec2(avail.x, avail.y), ImGuiChildFlags_None);
+			float aspect0 = avail.x / avail.y;
+			float aspect1 = MaterialInspector::Get()->aspect();
+			glm::vec2 imgSize;
+			//Let image always fills the window size
+			if (aspect0 < aspect1)
+			{
+				imgSize.x = aspect1 * avail.y;
+				imgSize.y = avail.y;
+			}
+			else
+			{
+				imgSize.x = avail.x;
+				imgSize.y = avail.x / aspect1;
+			}
+			ImGuiUtils::DrawImage(MaterialInspector::Get()->colorBuffer()->id(), imgSize, glm::vec2(0.f, 1.f), glm::vec2(1.f, 0.f), 0.f, 0.f);
+			ImGui::EndChild();
 		}
 	}
 
@@ -403,21 +433,21 @@ namespace pio
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Albedo        ");
 		ImGui::SameLine();
-		ImGui::ColorEdit3("##Albedo", &albedo.r);
+		ImGui::ColorEdit3("##Albedo", &albedo.r);		
 		pbrMaterial->setAlbedo(albedo);
 
 		float metallic = pbrMaterial->getMetallic();
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Metallic      ");
-		ImGui::SameLine();
-		ImGui::DragFloat("##Metallic", &metallic, 0.001f, 0.f, 1.f, "%.3f");
+		ImGui::SameLine();		
+		ImGui::SliderFloat("##Metallic", &metallic, 0.f, 1.f, "%.3f");
 		pbrMaterial->setMetallic(metallic);
 
 		float smoothness = pbrMaterial->getSmoothness();
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Smoothness    ");
-		ImGui::SameLine();
-		ImGui::DragFloat("##Smoothness", &smoothness, 0.001f, 0.f, 1.f, "%.3f");
+		ImGui::SameLine();		
+		ImGui::SliderFloat("##Smoothness", &smoothness, 0.f, 1.f, "%.3f");
 		pbrMaterial->setSmoothness(smoothness);
 	}
 

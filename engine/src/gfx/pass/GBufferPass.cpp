@@ -110,7 +110,7 @@ namespace pio
         UUID32 camFilter = it->second;
 
         auto& fbo = m_frameBuff;
-        auto& shader = context->shader(ShaderType::GBuffer);
+        auto& shader = context->getShader(ShaderType::GBuffer);
         const auto& attr = m_attrs;        
 
 		context->submitRC([&context, &fbo, &shader, &attr, camFilter, opaqueMeshItems]()
