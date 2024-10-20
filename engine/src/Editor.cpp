@@ -155,10 +155,6 @@ namespace pio
 		backPlane->setRotation(glm::vec3(90.f, 0.f, 0.f));
 		backPlane->setPosition(glm::vec3(0.f, 0.f, -2.5f));
 
-		auto* rightPlane = scene->addNode<PlaneNode>("RightPlane", 12.f, 9.f)->as<PlaneNode>();
-		rightPlane->setRotation(glm::vec3(90.f, -90.f, 0.f));
-		rightPlane->setPosition(glm::vec3(2.5f, 0.f, 0.f));
-
 		auto* sphere = scene->addNode<SphereNode>("Sphere", 1.f)->as<SphereNode>();
 		sphere->setPosition(glm::vec3(-3.f, 1.f, 0.f));
 

@@ -20,7 +20,7 @@ namespace pio
 	{
 	}
 
-	GLTexture2D::GLTexture2D(Ref<RenderContext>& context, const std::string& path, const TextureSpecific& spec) : Texture2D(context, spec)
+	GLTexture2D::GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec, const std::string& path) : Texture2D(context, spec)
 	{
 		auto startTime = Time::CurrentTimeMs();
 		if (m_spec.FlipVerticalWhenLoad)
@@ -85,7 +85,7 @@ namespace pio
 				LOGD("succeed to init texture2D[%s][%u]", m_spec.Name.c_str(), m_id);
 
 			glBindTexture(GL_TEXTURE_2D, 0);
-			
+
 			if (m_data)
 			{
 				std::free(m_data);
@@ -126,7 +126,7 @@ namespace pio
 
 	void GLTexture2D::active(TextureSampler sampler)
 	{
-		if (sampler == TextureSampler::MaxSlotNum || 
+		if (sampler == TextureSampler::MaxSlotNum ||
 			sampler == TextureSampler::InvalidSlot)
 		{
 			LOGE("err! invalid sampler[%u]", sampler);

@@ -9,7 +9,7 @@ namespace pio
 	{
 	public:
 		GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec);
-		GLTexture2D(Ref<RenderContext>& context, const std::string& path, const TextureSpecific& spec);
+		GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec, const std::string& path);
 		GLTexture2D(Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buff);
 		~GLTexture2D() = default;
 

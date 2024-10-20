@@ -9,7 +9,7 @@
 
 #include "gfx/resource/RenderingData.h"
 
-#include "base/utils/SystemUtils.h"
+#include "base/utils/SystemUtil.h"
 #include "base/CommandQueue.h"
 
 namespace pio
@@ -52,7 +52,7 @@ namespace pio
 		void setRenderingData(RenderingData &&data) { m_renderingData = std::forward<RenderingData>(data); }
 		void swapQueues() { m_submitIdx = (m_submitIdx + 1) % k_queueNum; }
 
-		bool bInRenderThread() const { return m_thread.isRunning() && SystemUtils::GetThreadId() == m_threadId; }
+		bool bInRenderThread() const { return m_thread.isRunning() && SystemUtil::GetThreadId() == m_threadId; }
 
 		// Submmit garbage collection task which will be executed before the 
 		// execution of task and render cmds
@@ -156,6 +156,7 @@ namespace pio
 		* @param buffer Buffer is not marked as const, data inside the buffer will be moved into texture.
 		*/
 		Ref<Texture> createTexture(const TextureSpecific& spec, Buffer& buffer);
+		Ref<Texture> createTexture(const TextureSpecific& spec, const std::string& path);
 		Ref<Texture> getTexture(const std::string& name);
 
 		Ref<Material> createMaterial(const std::string& name, ShaderSpecifier spec, RenderingMode mode = RenderingMode_Opaque);

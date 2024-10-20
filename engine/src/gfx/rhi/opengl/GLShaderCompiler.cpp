@@ -4,8 +4,6 @@
 #include "GLHelper.h"
 #include "GLHeader.h"
 
-#include "base/utils/StringUtil.h"
-
 #include <spdlog/fmt/fmt.h>
 
 #ifdef LOCAL_TAG

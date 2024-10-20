@@ -27,21 +27,21 @@ namespace pio
 		TextureSpecificBuilder whiteBuilder;
 		whiteBuilder.name(GpuAttr::Tex::WHITE)
 			.type(TextureType::TwoDimen)
-			.format(TextureFormat::RGB_24)
+			.format(TextureFormat::RGBA_32)
 			.width(1).height(1)
 			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 		Buffer whiteBuff;
-		whiteBuff.allocate(255, 1 * 1 * 3);		
+		whiteBuff.allocate(255, 1 * 1 * 4);	
 		m_textures[GpuAttr::Tex::WHITE] = Texture::Create(ctx, whiteBuilder.build(), whiteBuff);
 
 		TextureSpecificBuilder blackBuilder;
 		blackBuilder.name(GpuAttr::Tex::BLACK)
 			.type(TextureType::TwoDimen)
-			.format(TextureFormat::RGB_24)
+			.format(TextureFormat::RGBA_32)
 			.width(1).height(1)
 			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 		Buffer blackBuff;
-		blackBuff.allocate(0, 1 * 1 * 3);
+		blackBuff.allocate(0, 1 * 1 * 4);
 		m_textures[GpuAttr::Tex::BLACK] = Texture::Create(ctx, blackBuilder.build(), blackBuff);
 
 		TextureSpecificBuilder distLitBuilder;
@@ -49,7 +49,7 @@ namespace pio
 			.type(TextureType::TwoDimen)
 			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear)
 			.flipV(true);
-		m_textures[GpuAttr::Tex::DIST_LIGHT] = Texture::Create(ctx, AssetMgr::SpritePath(GpuAttr::Tex::DIST_LIGHT, ImageType::PNG), distLitBuilder.build());
+		m_textures[GpuAttr::Tex::DIST_LIGHT] = Texture::Create(ctx, distLitBuilder.build(), AssetMgr::SpritePath(GpuAttr::Tex::DIST_LIGHT, ImageType::PNG));
 	}
 
 	void TextureMgr::release()
@@ -65,9 +65,9 @@ namespace pio
 
 	Ref<Texture> TextureMgr::create(const TextureSpecific& spec)
 	{
-		Ref<Texture> texture;
+		auto texture = get(spec.Name);
 		auto ctx = m_context.lock();
-		if(ctx)
+		if(!texture && ctx)
 		{
 			texture = Texture::Create(ctx, spec);
 			m_textures.insert({ texture->name(), texture });
@@ -77,11 +77,23 @@ namespace pio
 
 	Ref<Texture> TextureMgr::create(const TextureSpecific& spec, Buffer& buffer)
 	{
-		Ref<Texture> texture;
+		auto texture = get(spec.Name);
 		auto ctx = m_context.lock();
-		if(ctx)
+		if(!texture && ctx)
 		{
 			texture = Texture::Create(ctx, spec, buffer);
+			m_textures.insert({ texture->name(), texture });
+		}
+		return texture;
+	}
+
+	Ref<Texture> TextureMgr::create(const TextureSpecific& spec, const std::string& path)
+	{
+		auto texture = get(spec.Name);
+		auto ctx = m_context.lock();
+		if (!texture && ctx)
+		{
+			texture = Texture::Create(ctx, spec, path);
 			m_textures.insert({ texture->name(), texture });
 		}
 		return texture;

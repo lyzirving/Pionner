@@ -37,7 +37,7 @@ namespace pio
 
 	void RenderContext::renderLoop()
 	{
-		m_threadId = SystemUtils::GetThreadId();
+		m_threadId = SystemUtil::GetThreadId();
 		LOGD("enter render thread[%lu]", m_threadId);
 
 		// Initialization
@@ -183,6 +183,11 @@ namespace pio
 	Ref<Texture> RenderContext::createTexture(const TextureSpecific& spec, Buffer& buffer)
 	{
 		return m_textureMgr->create(spec, buffer);
+	}
+
+	Ref<Texture> RenderContext::createTexture(const TextureSpecific& spec, const std::string& path)
+	{
+		return m_textureMgr->create(spec, path);
 	}
 
 	Ref<Texture> RenderContext::getTexture(const std::string& name)

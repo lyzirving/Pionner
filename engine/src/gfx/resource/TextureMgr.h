@@ -30,6 +30,7 @@ namespace pio
 
 		Ref<Texture> create(const TextureSpecific& spec);
 		Ref<Texture> create(const TextureSpecific& spec, Buffer& buffer);
+		Ref<Texture> create(const TextureSpecific& spec, const std::string& path);
 
 	private:
 		WeakRef<RenderContext> m_context;

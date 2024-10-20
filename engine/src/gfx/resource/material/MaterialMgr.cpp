@@ -37,6 +37,16 @@ namespace pio
 
 	Ref<Material> MaterialMgr::create(const std::string& name, ShaderSpecifier spec, RenderingMode mode)
 	{		
-		return Material::Create(name, spec, mode);
+		auto material = get(name);
+		if (!material)
+		{
+			material = Material::Create(name, spec, mode);
+			m_materials.insert({ name, material });
+		}
+		else if (mode != material->renderingMode())
+		{
+			LOGW("warning! rendering mode[%u] is not equal in cache[%u]", mode, material->renderingMode());
+		}
+		return material;
 	}
 }

@@ -67,11 +67,11 @@ namespace pio
 		{
 			switch (lang)
 			{
-			case SourceLang::GLSL:  return "glsl";
-			case SourceLang::HLSL:  return "hlsl";
-			case SourceLang::GLSLH: return "glslh";
-			default:
-				return "none";
+				case SourceLang::GLSL:  return "glsl";
+				case SourceLang::HLSL:  return "hlsl";
+				case SourceLang::GLSLH: return "glslh";
+				default:
+					return "none";
 			}
 		}
 
@@ -85,9 +85,9 @@ namespace pio
 			return SHADER_STAGE_ALL;
 		}
 
-		inline const char *GetShaderPath(ShaderType type)
+		inline const char* GetShaderPath(ShaderType type)
 		{
-			switch(type)
+			switch (type)
 			{
 				case ShaderType::MainLightShadowCaster:
 					return "shader/MainLightShadowCaster.glsl";
@@ -104,10 +104,10 @@ namespace pio
 				case ShaderType::Outline:
 					return "shader/Outline.glsl";
 				default:
-					#ifdef LOCAL_TAG
-					#undef LOCAL_TAG
-					#endif
-					#define LOCAL_TAG "ShaderUtils"
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "ShaderUtils"
 					LOGE("err! invalid shader spec[%u]", type);
 					std::abort();
 					return "Invalid shader spec";
