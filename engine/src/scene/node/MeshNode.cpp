@@ -54,7 +54,17 @@ namespace pio
 		renderBuff->Transform.setScale(transComp->Scale);
 		renderBuff->onUpdate(context);
 
-		Ref<Material> material = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd);
+		Ref<Material> material;
+		if (render->MatHnd == InvalidId)
+		{
+			// for default material
+			material = context->getMaterial(GpuAttr::Mat::STANDARD, true);
+			render->MatHnd = material->assetHnd();
+		}
+		else
+		{
+			material = AssetMgr::GetRuntimeAsset<Material>(render->MatHnd);
+		}		
 		material->onUpdate(context);
 
 		if (bSubmitMesh)
@@ -64,6 +74,15 @@ namespace pio
 			item.RenderBuffFilter = render->BuffHnd;
 			item.MaterialFilter = render->MatHnd;
 			renderingData.submitMesh(std::move(item));
+		}
+	}
+
+	void MeshNode::setMaterial(const Ref<Material>& material)
+	{
+		auto* meshRender = getComponent<MeshRenderer>();
+		if (meshRender->MatHnd != material->assetHnd())
+		{
+			meshRender->MatHnd = material->assetHnd();
 		}
 	}
 
@@ -84,9 +103,7 @@ namespace pio
 		mesh->setData(meshData);
 
 		meshFilter->Type = MeshType::Plane;
-		meshFilter->MeshHnd = mesh->assetHnd();
-		
-		meshRender->MatHnd = context->getMaterial(GpuAttr::Mat::STANDARD, true)->assetHnd();
+		meshFilter->MeshHnd = mesh->assetHnd();		
 
 		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
 		renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice());
@@ -149,8 +166,6 @@ namespace pio
 		meshFilter->Type = MeshType::Cube;
 		meshFilter->MeshHnd = mesh->assetHnd();
 
-		meshRender->MatHnd = context->getMaterial(GpuAttr::Mat::STANDARD, true)->assetHnd();
-
 		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>();
 		renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice());
 		meshRender->BuffHnd = renderBuff->assetHnd();		
@@ -173,9 +188,7 @@ namespace pio
 		mesh->setData(meshData);
 
 		meshFilter->Type = MeshType::Sphere;
-		meshFilter->MeshHnd = mesh->assetHnd();
-
-		meshRender->MatHnd = context->getMaterial(GpuAttr::Mat::STANDARD, true)->assetHnd();
+		meshFilter->MeshHnd = mesh->assetHnd();		
 
 		auto renderBuff = AssetMgr::MakeRuntimeAsset<MeshRenderBuffer>(); 
 		renderBuff->setUp(context, meshData->getVertice(), meshData->getIndice()); 

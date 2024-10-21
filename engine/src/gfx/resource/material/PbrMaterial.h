@@ -26,8 +26,7 @@ namespace pio
 
 		void setAlbedoTexture(const Ref<Texture>& texture) { m_albedoTexture = texture; }
 		void setEmissionTexture(const Ref<Texture>& texture) { m_emissionTexture = texture; }
-		void setMetallicRoughnessTexture(const Ref<Texture>& texture) { m_metallicRoughnessTexture = texture; }
-		void setMetallicGlossiness(const Ref<Texture>& texture) { m_metallicGlossiness = texture; }
+		void setMetallicRoughness(const Ref<Texture>& texture) { m_metallicRoughness = texture; }
 		void setNormalMap(const Ref<Texture>& texture) { m_normalMap = texture; }
 		void setHeightMap(const Ref<Texture>& texture) { m_heightMap = texture; }
 		void setAoTexture(const Ref<Texture>& texture) { m_aoTexture = texture; }
@@ -51,29 +50,30 @@ namespace pio
 
 			static constexpr char* AlbedoTexture = "u_pbrMaterial.AlbedoTexture";
 			static constexpr char* EmissionTexture = "u_pbrMaterial.EmissionTexture";
-			static constexpr char* MetallicRoughnssTexture = "u_pbrMaterial.MetallicRoughnessTexture";
-			static constexpr char* MetallicGlossiness = "u_pbrMaterial.MetallicGlossinessTexture";
+			static constexpr char* MetallicRoughnss = "u_pbrMaterial.MetallicRoughness";			
 			static constexpr char* NormalMap = "u_pbrMaterial.NormalMap";
+			static constexpr char* HeightMap = "u_pbrMaterial.HeightMap";
 			static constexpr char* Ao = "u_pbrMaterial.Ao";
 		};
 
 	private:		
 		glm::vec3 m_albedo{ 1.f };
-		glm::vec3 m_emission{ 0.f };
-		float m_alpha{ 1.f };
+		glm::vec3 m_emission{ 0.f };		
 		float m_metallic{ 0.f };
 		float m_roughness{ 0.5f };// 1 - smoothness
 		float m_occlusion{ 1.f };
+		float m_alpha{ 1.f };
 
 		Ref<Texture> m_albedoTexture;
 		Ref<Texture> m_emissionTexture;
-		Ref<Texture> m_metallicRoughnessTexture;
-		//rgba, r for metalness, a for glossiness(1 - roughness), g and b are not used by now
-		Ref<Texture> m_metallicGlossiness;
+		Ref<Texture> m_metallicRoughness;		
 		Ref<Texture> m_normalMap;
 		//[TODO]
 		Ref<Texture> m_heightMap;
 		Ref<Texture> m_aoTexture;
+
+	private:
+		friend class MaterialImporter;
 	};
 
 	template<>

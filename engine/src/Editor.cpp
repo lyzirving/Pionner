@@ -8,6 +8,7 @@
 #include "event/EventHub.h"
 
 #include "asset/AssetMgr.h"
+#include "asset/MaterialImporter.h"
 
 #include "scene/SceneMgr.h"
 #include "scene/Components.h"
@@ -145,9 +146,9 @@ namespace pio
 		auto* dirLightNode = scene->addNode<DirectionalLightNode>("DirectionalLight")->as<DirectionalLightNode>();
 		dirLightNode->setPosition(glm::vec3(-4.f, 4.f, 4.f));
 		dirLightNode->setRotation(glm::vec3(-30.f, -45.f, 0.f));
-
+		
 		auto* cube = scene->addNode<CubeNode>("Cube")->as<CubeNode>();
-		cube->setPosition(glm::vec3(0.f, 1.f, 0.f));
+		cube->setPosition(glm::vec3(0.f, 1.f, 0.f));				
 
 		auto* bottomPlane = scene->addNode<PlaneNode>("BottomPlane", 9.f, 6.f)->as<PlaneNode>();
 

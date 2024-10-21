@@ -11,6 +11,7 @@ namespace pio
 									        static  MeshType StaticMeshType() { return TypeName; }\
 											public:\
 									        virtual MeshType meshType() const override { return StaticMeshType(); }
+	class Material;
 
 	class MeshNode : public MovableNode
 	{
@@ -22,6 +23,8 @@ namespace pio
 		virtual MeshType meshType() const = 0;	
 		virtual void onInit() override;
 		virtual void onUpdate(Ref<RenderContext>& context, Ref<CameraNode>& camNode, RenderingData& renderingData) override;
+
+		void setMaterial(const Ref<Material>& material);
 
 		bool bDirty() const { return m_invalidate; }
 		void invalidate(bool val = true) { m_invalidate = val; }

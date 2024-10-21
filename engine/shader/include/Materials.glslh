@@ -6,13 +6,16 @@ struct PBRMaterial
     vec3 Emission;    
     float Metalness;
     float Roughness;
+    float Occlusion;
     float Alpha;
     bool UseNormalMap;
 
     sampler2D AlbedoTexture;
-    sampler2D EmissionTexture;
-    sampler2D MetallicRoughnessTexture;
+    sampler2D EmissionTexture;    
+    sampler2D MetallicRoughness;
     sampler2D NormalMap;
+    sampler2D HeightMap;
+    sampler2D Ao;
 };
 
 struct SpriteMaterial 

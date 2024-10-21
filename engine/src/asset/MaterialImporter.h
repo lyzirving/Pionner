@@ -25,7 +25,10 @@ namespace pio
 		Ref<Material> getMaterial() const { return m_material; }
 
 	private:		
-		void load();		
+		void load();
+
+	private:
+		static void ParsePbr(Ref<RenderContext>& context, Ref<Material>& material, const std::string& parentDir, const std::string& fileName);
 
 	private:
 		ShaderSpecifier m_spec;

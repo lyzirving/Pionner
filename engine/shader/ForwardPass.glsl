@@ -49,7 +49,7 @@ out vec4 o_color;
 
 void main() {
 	vec4 baseColor = texture(u_pbrMaterial.AlbedoTexture, v_texCoord);	
-	vec4 metallicRoughness = texture(u_pbrMaterial.MetallicRoughnessTexture, v_texCoord);
+	vec4 metallicRoughness = texture(u_pbrMaterial.MetallicRoughness, v_texCoord);
 
     m_PBRParams.FragPos = v_worldPos;
     m_PBRParams.Albedo = baseColor.rgb * u_pbrMaterial.AlbedoColor;
