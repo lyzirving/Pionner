@@ -6,6 +6,7 @@
 namespace pio
 {
 	class Material;
+	class PbrMaterial;
 	class RenderContext;
 
 	class MaterialImporter
@@ -16,6 +17,7 @@ namespace pio
 		static bool IsMetalness(const std::string& fileName);
 		static bool IsGlossiness(const std::string& fileName);
 		static bool IsRoughness(const std::string& fileName);
+		static bool IsMetallicRoughness(const std::string& fileName);
 		static bool IsMetallicGlossiness(const std::string& fileName);
 		static bool IsEmission(const std::string& fileName);
 		static bool IsAO(const std::string& fileName);
@@ -29,7 +31,9 @@ namespace pio
 		void load();
 
 	private:
-		static void ParsePbr(Ref<RenderContext>& context, Ref<Material>& material, const std::string& parentDir, const std::string& fileName);
+		void parsePbr(const std::string& parentDir, const std::string& fileName);
+		
+		void createMetallicRoughnessIfNeed(PbrMaterial* pbrMat, const std::string& path, const std::string& name);
 
 	private:
 		ShaderSpecifier m_spec;

@@ -82,6 +82,7 @@ namespace pio
 		virtual ~Texture2D() = default;
 
 		virtual void active(TextureSampler sampler) = 0;
+		virtual void* data() const = 0;
 	};
 
 	class RenderBuffer : public Texture

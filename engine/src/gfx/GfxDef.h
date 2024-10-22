@@ -24,6 +24,7 @@ namespace pio
 			static const char* WHITE = "WhiteTexture";
 			static const char* BLACK = "BlackTexture";
 			static const char* DIST_LIGHT = "distant_light";
+			static const char* DEFAULT_METALLIC_ROUGHNESS = "DefaultMetallicRoughness";
 		}
 
 		//Uniform data

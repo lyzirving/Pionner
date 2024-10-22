@@ -28,8 +28,7 @@ namespace pio
 		void setEmissionTexture(const Ref<Texture>& texture) { m_emissionTexture = texture; }
 		void setMetallicRoughness(const Ref<Texture>& texture) { m_metallicRoughness = texture; }
 		void setNormalMap(const Ref<Texture>& texture) { m_normalMap = texture; }
-		void setHeightMap(const Ref<Texture>& texture) { m_heightMap = texture; }
-		void setAoTexture(const Ref<Texture>& texture) { m_aoTexture = texture; }
+		void setHeightMap(const Ref<Texture>& texture) { m_heightMap = texture; }		
 
 		const glm::vec3& getAlbedo() const { return m_albedo; }
 		float getMetallic() const { return m_metallic; }
@@ -52,8 +51,7 @@ namespace pio
 			static constexpr char* EmissionTexture = "u_pbrMaterial.EmissionTexture";
 			static constexpr char* MetallicRoughnss = "u_pbrMaterial.MetallicRoughness";			
 			static constexpr char* NormalMap = "u_pbrMaterial.NormalMap";
-			static constexpr char* HeightMap = "u_pbrMaterial.HeightMap";
-			static constexpr char* Ao = "u_pbrMaterial.Ao";
+			static constexpr char* HeightMap = "u_pbrMaterial.HeightMap";			
 		};
 
 	private:		
@@ -66,11 +64,9 @@ namespace pio
 
 		Ref<Texture> m_albedoTexture;
 		Ref<Texture> m_emissionTexture;
-		Ref<Texture> m_metallicRoughness;		
-		Ref<Texture> m_normalMap;
-		//[TODO]
-		Ref<Texture> m_heightMap;
-		Ref<Texture> m_aoTexture;
+		Ref<Texture> m_metallicRoughness;//r(ao)|g(roughness)|b(metallic)
+		Ref<Texture> m_normalMap;		
+		Ref<Texture> m_heightMap;//@todo
 
 	private:
 		friend class MaterialImporter;

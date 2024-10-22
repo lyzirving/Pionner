@@ -50,6 +50,18 @@ namespace pio
 			.texFilter(TextureFilterMin::Linear, TextureFilterMag::Linear)
 			.flipV(true);
 		m_textures[GpuAttr::Tex::DIST_LIGHT] = Texture::Create(ctx, distLitBuilder.build(), AssetMgr::SpritePath(GpuAttr::Tex::DIST_LIGHT, ImageType::PNG));
+
+		Buffer metallicRoughnessBuff;
+		metallicRoughnessBuff.allocate(255, 1 * 1 * 3);
+		auto* data = metallicRoughnessBuff.as<uint8_t>();
+		ImageUtil::FillSingleChannel(data, 3, 0, 1, 1, (uint8_t)0);
+		TextureSpecificBuilder metallicRough;
+		metallicRough.name(GpuAttr::Tex::DEFAULT_METALLIC_ROUGHNESS)
+			.type(TextureType::TwoDimen)
+			.format(TextureFormat::RGB_24)
+			.width(1).height(1)
+			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
+		m_textures[GpuAttr::Tex::DEFAULT_METALLIC_ROUGHNESS] = Texture::Create(ctx, metallicRough.build(), metallicRoughnessBuff);
 	}
 
 	void TextureMgr::release()

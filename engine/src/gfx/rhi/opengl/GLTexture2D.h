@@ -23,6 +23,7 @@ namespace pio
 		virtual uint32_t size() const override { return m_size; }
 
 		virtual void active(TextureSampler sampler) override;
+		virtual void* data() const override { return m_data; }
 
 	protected:
 		uint8_t* m_data{ nullptr };

@@ -29,7 +29,6 @@ namespace pio
 		m_metallicRoughness = rhs.m_metallicRoughness;
 		m_normalMap = rhs.m_normalMap;
 		m_heightMap = rhs.m_heightMap;
-		m_aoTexture = rhs.m_aoTexture;
 	}
 
 	PbrMaterial& PbrMaterial::operator=(const PbrMaterial& rhs)
@@ -53,10 +52,9 @@ namespace pio
 
 		updateTexture(GpuAttr::AlbedoTexture, m_albedoTexture.use_count() != 0 ? m_albedoTexture : context->getTexture(pio::GpuAttr::Tex::WHITE));
 		updateTexture(GpuAttr::EmissionTexture, m_emissionTexture.use_count() != 0 ? m_emissionTexture : context->getTexture(pio::GpuAttr::Tex::BLACK));
-		updateTexture(GpuAttr::MetallicRoughnss, m_metallicRoughness.use_count() != 0 ? m_metallicRoughness : context->getTexture(pio::GpuAttr::Tex::WHITE));
+		updateTexture(GpuAttr::MetallicRoughnss, m_metallicRoughness.use_count() != 0 ? m_metallicRoughness : context->getTexture(pio::GpuAttr::Tex::DEFAULT_METALLIC_ROUGHNESS));
 		updateTexture(GpuAttr::NormalMap, m_normalMap.use_count() != 0 ? m_normalMap : context->getTexture(pio::GpuAttr::Tex::BLACK));
-		updateTexture(GpuAttr::HeightMap, m_heightMap.use_count() != 0 ? m_heightMap : context->getTexture(pio::GpuAttr::Tex::BLACK));
-		updateTexture(GpuAttr::Ao, m_aoTexture.use_count() != 0 ? m_aoTexture : context->getTexture(pio::GpuAttr::Tex::BLACK));
+		updateTexture(GpuAttr::HeightMap, m_heightMap.use_count() != 0 ? m_heightMap : context->getTexture(pio::GpuAttr::Tex::BLACK));		
 	}
 
 	Ref<Asset> PbrMaterial::clone() const

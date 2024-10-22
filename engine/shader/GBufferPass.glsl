@@ -57,18 +57,17 @@ layout (location = 4) out vec4 GEmission;
 
 void main() {
     vec4 albedoColor = texture(u_pbrMaterial.AlbedoTexture, v_texCoord);
-    vec4 metallicRoughness = texture(u_pbrMaterial.MetallicRoughness, v_texCoord);
-    vec4 ao = texture(u_pbrMaterial.Ao, v_texCoord);
+    vec4 metallicRoughness = texture(u_pbrMaterial.MetallicRoughness, v_texCoord); 
 
     GPosition = vec4(v_worldPos, 1.f);
     GNormal = normalize(vec4(v_normal, 1.f)); 
 
     GAlbedoAlpha = vec4(albedoColor.rgb * u_pbrMaterial.AlbedoColor, u_pbrMaterial.Alpha);
-    // In metallic-roughness flow, g channel is roughness factor, b is metallic factor
+    // In metallic-roughness source texture, g channel is roughness, b is metallic, and r channel is ao
     // Minimum roughness of 0.05 to keep specular highlight
     GMaterial.r = max(metallicRoughness.g * u_pbrMaterial.Roughness, 0.05);
     GMaterial.g = metallicRoughness.b * u_pbrMaterial.Metalness;
-    GMaterial.b = ao.r * u_pbrMaterial.Occlusion;
+    GMaterial.b = metallicRoughness.r * u_pbrMaterial.Occlusion;
     GMaterial.a = 1.f;
 
     GEmission = vec4(texture(u_pbrMaterial.EmissionTexture, v_texCoord).rgb * u_pbrMaterial.Emission, 1.f);

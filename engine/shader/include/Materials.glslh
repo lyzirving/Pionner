@@ -15,7 +15,6 @@ struct PBRMaterial
     sampler2D MetallicRoughness;
     sampler2D NormalMap;
     sampler2D HeightMap;
-    sampler2D Ao;
 };
 
 struct SpriteMaterial 

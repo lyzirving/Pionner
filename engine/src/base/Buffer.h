@@ -39,6 +39,7 @@ namespace pio
 		uint64_t getSize() const { return m_offset; }
 		bool valid() const { return m_offset <= m_capacity; }
 		bool invalid() const { return !valid(); }
+		void* data() const { return m_data; }
 
 		operator bool() const { return m_data != nullptr; }
 		byte &operator[](int index) { return ((byte *)m_data)[index]; }
