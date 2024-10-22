@@ -12,6 +12,7 @@
 #include "base/utils/Time.h"
 #include "base/utils/StringUtil.h"
 #include "base/utils/FileUtil.h"
+#include "base/utils/ImageUtil.h"
 #include "base/utils/LogSystem.h"
 
 //Third party

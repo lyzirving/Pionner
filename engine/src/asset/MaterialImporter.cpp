@@ -8,12 +8,6 @@
 #include "gfx/resource/material/PbrMaterial.h"
 #include "gfx/rhi/Texture.h"
 
-#ifndef STB_IMAGE_STATIC
-#define STB_IMAGE_STATIC
-#define STB_IMAGE_IMPLEMENTATION
-#endif // !STB_IMAGE_STATIC
-#include <stb/stb_image.h>
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -50,6 +44,11 @@ namespace pio
 		return StringUtil::Contains(fileName, "glossiness");
 	}
 
+	bool MaterialImporter::IsRoughness(const std::string& fileName)
+	{
+		return StringUtil::Contains(fileName, "roughness");
+	}
+
 	bool MaterialImporter::IsMetallicGlossiness(const std::string& fileName)
 	{
 		return IsMetalness(fileName) && IsGlossiness(fileName);
@@ -76,20 +75,30 @@ namespace pio
 
 		if (MaterialImporter::IsMetalness(fileName))
 		{
-			int32_t w, h, comp;
-			uint8_t* data;
-			/*if (!pbrMat->m_metallicRoughness)
-			{				
-				data = stbi_load(path.c_str(), &w, &h, &comp, 0);
+			int32_t w{ 0 }, h{ 0 }, comp{ 0 };
+			uint8_t* data{ nullptr };
+			if (!pbrMat->m_metallicRoughness)
+			{
+				if(ImageUtil::GetPicInfo(path.c_str(), w, h, comp))
+				{
+					Buffer buff;
+					buff.allocate(0, w * h * 3);// metallic/roughness/ao
+					TextureSpecificBuilder builder;
+					builder.name(name)
+						   .type(TextureType::TwoDimen)
+						   .format(TextureFormat::RGB_24);
+					pbrMat->m_metallicRoughness = context->createTexture(builder.build(), buff);
+				}
+				else
+				{
+					LOGE("err! fail to get pic info for image[%s]", path.c_str());
+				}
+			}
 
-				TextureSpecificBuilder builder;
-				builder.name(name)
-					   .type(TextureType::TwoDimen)
-					   .format(TextureFormat::RGB_24);
-				Buffer buff;
-				buff.allocate(0, w * h * 3);
-				pbrMat->m_metallicRoughness = context->createTexture(builder.build(), buff);
-			}*/
+			if(pbrMat->m_metallicRoughness)
+			{
+
+			}		
 		}
 		else if (MaterialImporter::IsAlbedo(fileName))
 		{

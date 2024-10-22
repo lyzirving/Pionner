@@ -15,6 +15,7 @@ namespace pio
 		static bool IsNormal(const std::string& fileName);
 		static bool IsMetalness(const std::string& fileName);
 		static bool IsGlossiness(const std::string& fileName);
+		static bool IsRoughness(const std::string& fileName);
 		static bool IsMetallicGlossiness(const std::string& fileName);
 		static bool IsEmission(const std::string& fileName);
 		static bool IsAO(const std::string& fileName);
