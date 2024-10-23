@@ -26,12 +26,20 @@ namespace pio
 	{
 		return StringUtil::Contains(fileName, "albedo") ||
 			   StringUtil::Contains(fileName, "baseColor") ||
-			   StringUtil::Contains(fileName, "diffuse");
+			   StringUtil::Contains(fileName, "diffuse") ||
+			   StringUtil::Contains(fileName, "diff");
 	}
 
 	bool MaterialImporter::IsNormal(const std::string& fileName)
 	{
-		return StringUtil::Contains(fileName, "normal");
+		return StringUtil::Contains(fileName, "normal") ||
+			   StringUtil::Contains(fileName, "nor");
+	}
+
+	bool MaterialImporter::IsHeight(const std::string& fileName)
+	{
+		return StringUtil::Contains(fileName, "height") ||
+			   StringUtil::Contains(fileName, "disp");
 	}
 
 	bool MaterialImporter::IsMetalness(const std::string& fileName)
@@ -124,8 +132,6 @@ namespace pio
 		std::string path = parentDir + "/" + fileName;
 
 		auto* pbrMat = m_material->as<PbrMaterial>();
-		auto whiteTex = m_context->getTexture(GpuAttr::Tex::WHITE);
-		auto blackTex = m_context->getTexture(GpuAttr::Tex::BLACK);
 
 		if (MaterialImporter::IsMetalness(fileName))
 		{
@@ -155,7 +161,7 @@ namespace pio
 				pbrMat->setRoughness(1.f);
 			}
 			else if (IsMetallicGlossiness(fileName))
-			{	
+			{
 				ImageUtil::FillChannelData((uint8_t*)data, 4, 0, (uint8_t*)texData, 3, 2, w, h);//metalness
 				ImageUtil::FillChannelData((uint8_t*)data, 4, 3, (uint8_t*)texData, 3, 1, w, h, true, (uint8_t)255);//roughness
 				pbrMat->setMetallic(1.f); 
@@ -248,17 +254,17 @@ namespace pio
 			if (ImageUtil::GetPicInfo(path.c_str(), w, h, comp))
 			{
 				Buffer buff;
-				buff.allocate(0, w * h * 3);//r(ao)|g(roughness)|b(metallic)
+				buff.allocate(255, w * h * 3);//r(ao)|g(roughness)|b(metallic)
 				void* data = buff.data();
-				ImageUtil::FillSingleChannel((uint8_t*)data, 3, 1, w, h, (uint8_t)255);
-				ImageUtil::FillSingleChannel((uint8_t*)data, 3, 2, w, h, (uint8_t)255);
-
+				ImageUtil::FillSingleChannel((uint8_t*)data, 3, 0, w, h, (uint8_t)0);
 				TextureSpecificBuilder builder;
 				auto texName = name;
 				texName.append("-MetallicRoughness");
 				builder.name(texName)
 					   .type(TextureType::TwoDimen)
-					   .format(TextureFormat::RGB_24);
+					   .format(TextureFormat::RGB_24)
+					   .width(w).height(h)
+					   .texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 				pbrMat->m_metallicRoughness = m_context->createTexture(builder.build(), buff);
 			}
 			else

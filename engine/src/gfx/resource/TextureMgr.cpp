@@ -31,7 +31,7 @@ namespace pio
 			.width(1).height(1)
 			.texFilter(TextureFilterMin::Nearest, TextureFilterMag::Nearest);
 		Buffer whiteBuff;
-		whiteBuff.allocate(255, 1 * 1 * 4);	
+		whiteBuff.allocate(255, 1 * 1 * 4);			
 		m_textures[GpuAttr::Tex::WHITE] = Texture::Create(ctx, whiteBuilder.build(), whiteBuff);
 
 		TextureSpecificBuilder blackBuilder;

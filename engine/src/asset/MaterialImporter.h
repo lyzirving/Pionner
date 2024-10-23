@@ -14,6 +14,7 @@ namespace pio
 	public:
 		static bool IsAlbedo(const std::string& fileName);
 		static bool IsNormal(const std::string& fileName);
+		static bool IsHeight(const std::string& fileName);
 		static bool IsMetalness(const std::string& fileName);
 		static bool IsGlossiness(const std::string& fileName);
 		static bool IsRoughness(const std::string& fileName);
