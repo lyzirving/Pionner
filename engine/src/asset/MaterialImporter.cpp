@@ -158,14 +158,14 @@ namespace pio
 				ImageUtil::FillChannelData((uint8_t*)data, 3, 1, (uint8_t*)texData, 3, 1, w, h);//roughness
 				ImageUtil::FillChannelData((uint8_t*)data, 3, 2, (uint8_t*)texData, 3, 2, w, h);//metalness
 				pbrMat->setMetallic(1.f);
-				pbrMat->setRoughness(1.f);
+				pbrMat->setRoughness(0.5f);
 			}
 			else if (IsMetallicGlossiness(fileName))
 			{
 				ImageUtil::FillChannelData((uint8_t*)data, 4, 0, (uint8_t*)texData, 3, 2, w, h);//metalness
 				ImageUtil::FillChannelData((uint8_t*)data, 4, 3, (uint8_t*)texData, 3, 1, w, h, true, (uint8_t)255);//roughness
 				pbrMat->setMetallic(1.f); 
-				pbrMat->setRoughness(1.f);
+				pbrMat->setRoughness(0.5f);
 			}
 			else
 			{
@@ -194,7 +194,7 @@ namespace pio
 			void* texData = pbrMat->m_metallicRoughness->as<Texture2D>()->data();
 			ImageUtil::FillChannelData((uint8_t*)data, 1, 0, (uint8_t*)texData, 3, 1, w, h);
 			ImageUtil::FreeImage(&data);
-			pbrMat->setRoughness(1.f);			
+			pbrMat->setRoughness(0.5f);			
 		}
 		else if (MaterialImporter::IsAO(fileName))
 		{

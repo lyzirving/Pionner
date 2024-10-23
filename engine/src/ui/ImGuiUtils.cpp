@@ -430,18 +430,54 @@ namespace pio
 			return;
 		}
 		glm::vec3 albedo = pbrMaterial->getAlbedo();
+		auto albedoTex = pbrMaterial->getAlbedoTexture();
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Albedo        ");
 		ImGui::SameLine();
+		if (albedoTex)
+		{
+			auto textSize = ImGui::CalcTextSize("Albedo");
+			ImVec2 size = ImVec2(textSize.y, textSize.y);
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 0.f));			
+			ImVec2 uv0 = ImVec2(0.0f, 1.0f);                            
+			ImVec2 uv1 = ImVec2(1.f, 0.f);    
+			ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);            
+			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+			ImTextureID id = (int32_t*)albedoTex->id();
+			ImGui::ImageButton("##albedo_tex", id, size, uv0, uv1, bg_col, tint_col);
+			ImGui::PopStyleVar();
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_NoSharedDelay))
+				ImGui::SetTooltip(albedoTex->name().c_str(), ImGui::GetStyle().HoverDelayShort);
+			ImGui::SameLine();
+		}
 		ImGui::ColorEdit3("##Albedo", &albedo.r);		
 		pbrMaterial->setAlbedo(albedo);
 
-		float metallic = pbrMaterial->getMetallic();
 		ImGui::AlignTextToFramePadding();
 		ImGui::Text("Metallic      ");
-		ImGui::SameLine();		
-		ImGui::SliderFloat("##Metallic", &metallic, 0.f, 1.f, "%.3f");
-		pbrMaterial->setMetallic(metallic);
+		ImGui::SameLine();
+		auto metalRough = pbrMaterial->getMetallicRoughness();
+		if (metalRough)
+		{
+			auto textSize = ImGui::CalcTextSize("Metallic");			
+			ImVec2 size = ImVec2(textSize.y, textSize.y);
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 0.f));
+			ImVec2 uv0 = ImVec2(0.0f, 1.0f);
+			ImVec2 uv1 = ImVec2(1.f, 0.f);
+			ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+			ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+			ImTextureID id = (int32_t*)metalRough->id();
+			ImGui::ImageButton("##metalRough_tex", id, size, uv0, uv1, bg_col, tint_col);
+			ImGui::PopStyleVar();
+			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort | ImGuiHoveredFlags_NoSharedDelay))
+				ImGui::SetTooltip(metalRough->name().c_str(), ImGui::GetStyle().HoverDelayShort);			
+		}
+		else
+		{
+			float metallic = pbrMaterial->getMetallic();			
+			ImGui::SliderFloat("##Metallic", &metallic, 0.f, 1.f, "%.3f");
+			pbrMaterial->setMetallic(metallic);
+		}		
 
 		float smoothness = pbrMaterial->getSmoothness();
 		ImGui::AlignTextToFramePadding();

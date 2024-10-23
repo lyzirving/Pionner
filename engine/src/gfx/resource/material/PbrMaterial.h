@@ -34,6 +34,9 @@ namespace pio
 		float getMetallic() const { return m_metallic; }
 		float getSmoothness() const { return 1.f - m_roughness; }
 
+		const Ref<Texture>& getAlbedoTexture() const { return m_albedoTexture; }
+		const Ref<Texture>& getMetallicRoughness() const { return m_metallicRoughness; }		
+
 		virtual Ref<Asset> clone() const override;
 
 	public:	
