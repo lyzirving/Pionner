@@ -19,11 +19,15 @@ namespace pio
 		glm::vec3 Pos{ 0.f };		
 		glm::vec2 TexCoord{ 0.f };
 		glm::vec3 Normal{ 0.f };
+		glm::vec3 Tangent{ 0.f };
+		glm::vec3 Bitangent{ 0.f };
 
 		Vertex3d() {}
 		Vertex3d(const glm::vec3& pos) : Pos(pos) {}
 		Vertex3d(const glm::vec3& pos, const glm::vec2& texCoord) : Pos(pos), TexCoord(texCoord) {}
-		Vertex3d(const glm::vec3& pos, const glm::vec2& texCoord, const glm::vec3& normal) : Pos(pos), TexCoord(texCoord), Normal(normal) {}
+		Vertex3d(const glm::vec3& pos, const glm::vec2& texCoord, const glm::vec3& n) : Pos(pos), TexCoord(texCoord), Normal(n) {}
+		Vertex3d(const glm::vec3& pos, const glm::vec2& texCoord, const glm::vec3& n, const glm::vec3& tan) : Pos(pos), TexCoord(texCoord), Normal(n), Tangent(tan) {}
+		Vertex3d(const glm::vec3& pos, const glm::vec2& texCoord, const glm::vec3& n, const glm::vec3& tan, const glm::vec3& bitan) : Pos(pos), TexCoord(texCoord), Normal(n), Tangent(tan), Bitangent(bitan) {}
 	};
 
 	/*

@@ -6,7 +6,7 @@
 #define LOCAL_TAG "Factory"
 
 namespace pio
-{
+{	
 	Ref<TriangleMesh> Factory::MakePlane(float w, float h)
 	{
 		auto triangles = CreateRef<TriangleMesh>();
@@ -32,6 +32,15 @@ namespace pio
 
 				MakeTriangleMesh(v0, v1, v2, v3, triangles);
 			}
+		}
+		auto& vertice = triangles->getVertice();
+		auto& indice = triangles->getIndice();
+		for (size_t i = 0; i < indice.size(); i += 3)
+		{
+			auto& v0 = vertice[indice[i]];
+			auto& v1 = vertice[indice[i + 1]];
+			auto& v2 = vertice[indice[i + 2]];
+			CalcTangent(v0, v1, v2);
 		}
 		return triangles;
 	}
@@ -141,6 +150,17 @@ namespace pio
 			v0.Normal = v1.Normal = v2.Normal = v3.Normal = -World::Up;
 			MakeTriangleMesh(v0, v1, v2, v3, triangles);
 		}
+
+		auto& vertice = triangles->getVertice();
+		auto& indice = triangles->getIndice();
+		for (size_t i = 0; i < indice.size(); i += 3)
+		{
+			auto& v0 = vertice[indice[i]];
+			auto& v1 = vertice[indice[i + 1]];
+			auto& v2 = vertice[indice[i + 2]];
+			CalcTangent(v0, v1, v2);
+		}
+
 		return triangles;
 	}
 
@@ -232,10 +252,18 @@ namespace pio
 						indice.emplace_back(lastInd + 1);
 						indice.emplace_back(lastInd + 1);
 						indice.emplace_back(curInd);
-						indice.emplace_back(curInd + 1);						
+						indice.emplace_back(curInd + 1);		
 					}
 				}
 			}
+		}
+
+		for (size_t i = 0; i < indice.size(); i += 3)
+		{
+			auto& v0 = vertice[indice[i]];
+			auto& v1 = vertice[indice[i + 1]];
+			auto& v2 = vertice[indice[i + 2]];
+			CalcTangent(v0, v1, v2);
 		}
 		return triangles;
 	}
@@ -258,6 +286,16 @@ namespace pio
 		v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Forward;
 
 		MakeTriangleMesh(v0, v1, v2, v3, triangles);
+		
+		auto& vertice = triangles->getVertice();
+		auto& indice = triangles->getIndice();
+		for (size_t i = 0; i < indice.size(); i += 3)
+		{
+			auto& v0 = vertice[indice[i]];
+			auto& v1 = vertice[indice[i + 1]];
+			auto& v2 = vertice[indice[i + 2]];
+			CalcTangent(v0, v1, v2);
+		}
 
 		return triangles;
 	}
@@ -325,6 +363,16 @@ namespace pio
 		v0.Normal = v1.Normal = v2.Normal = v3.Normal = World::Forward;
 
 		MakeTriangleMesh(v0, v1, v2, v3, triangles);
+		
+		auto& vertice = triangles->getVertice();
+		auto& indice = triangles->getIndice();
+		for (size_t i = 0; i < indice.size(); i += 3)
+		{
+			auto& v0 = vertice[indice[i]];
+			auto& v1 = vertice[indice[i + 1]];
+			auto& v2 = vertice[indice[i + 2]];
+			CalcTangent(v0, v1, v2);
+		}
 
 		return triangles;
 	}
@@ -346,5 +394,28 @@ namespace pio
 		indice.push_back(idx + 2);
 		indice.push_back(idx + 3);
 		indice.push_back(idx);
+	}
+
+	void Factory::CalcTangent(Vertex3d& v0, Vertex3d& v1, Vertex3d& v2)
+	{
+		auto edge0 = v1.Pos - v0.Pos;
+		auto edge1 = v2.Pos - v0.Pos;
+		auto uvDelta0 = v1.TexCoord - v0.TexCoord;
+		auto uvDelta1 = v2.TexCoord - v0.TexCoord;
+
+		float f = 1.0f / (uvDelta0.x * uvDelta1.y - uvDelta1.x * uvDelta0.y);
+		glm::vec3 tangent, bitan;
+		tangent.x = f * (uvDelta1.y * edge0.x - uvDelta0.y * edge1.x);
+		tangent.y = f * (uvDelta1.y * edge0.y - uvDelta0.y * edge1.y);
+		tangent.z = f * (uvDelta1.y * edge0.z - uvDelta0.y * edge1.z);
+		tangent = glm::normalize(tangent);
+
+		bitan.x = f * (-uvDelta1.x * edge0.x + uvDelta0.x * edge1.x);
+		bitan.y = f * (-uvDelta1.x * edge0.y + uvDelta0.x * edge1.y);
+		bitan.z = f * (-uvDelta1.x * edge0.z + uvDelta0.x * edge1.z);
+		bitan = glm::normalize(bitan);
+
+		v0.Tangent = v1.Tangent = v2.Tangent = tangent;
+		v0.Bitangent = v1.Bitangent = v2.Bitangent = bitan;
 	}
 }

@@ -20,8 +20,7 @@ namespace pio
 		void setEmission(const glm::vec3& emission) { m_emission = emission; }
 		void setAlpha(float alpha) { m_alpha = alpha; }
 		void setMetallic(float metallic) { m_metallic = metallic; }
-		void setRoughness(float roughness) { m_roughness = roughness; }
-		void setSmoothness(float smoothness) { m_roughness = 1.f - smoothness; }
+		void setSmoothness(float smoothness) { m_smoothness = smoothness; }
 		void setOcclustion(float occlusion) { m_occlusion = occlusion; }
 
 		void setAlbedoTexture(const Ref<Texture>& texture) { m_albedoTexture = texture; }
@@ -32,7 +31,7 @@ namespace pio
 
 		const glm::vec3& getAlbedo() const { return m_albedo; }
 		float getMetallic() const { return m_metallic; }
-		float getSmoothness() const { return 1.f - m_roughness; }
+		float getSmoothness() const { return m_smoothness; }
 
 		const Ref<Texture>& getAlbedoTexture() const { return m_albedoTexture; }
 		const Ref<Texture>& getMetallicRoughness() const { return m_metallicRoughness; }		
@@ -56,12 +55,14 @@ namespace pio
 			static constexpr char* NormalMap = "u_pbrMaterial.NormalMap";
 			static constexpr char* HeightMap = "u_pbrMaterial.HeightMap";			
 		};
+	private:
+		static float Smoothness2Roughness(float val) { return (1.f - val); }
 
 	private:		
 		glm::vec3 m_albedo{ 1.f };
 		glm::vec3 m_emission{ 0.f };		
-		float m_metallic{ 0.f };
-		float m_roughness{ 0.5f };// 1 - smoothness
+		float m_metallic{ 0.f };		
+		float m_smoothness{ 0.5f };
 		float m_occlusion{ 1.f };
 		float m_alpha{ 1.f };
 

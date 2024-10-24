@@ -43,7 +43,9 @@ namespace pio
 		VertexBufferElement pos{ "Pos", ShaderDataType::Float3, false };		
 		VertexBufferElement texCoord{ "TexCoord", ShaderDataType::Float2, false };
 		VertexBufferElement normal{ "Normal", ShaderDataType::Float3, false };
-		VertexBufferLayout layout{ pos, texCoord, normal };
+		VertexBufferElement tangent{ "Tangent", ShaderDataType::Float3, false };
+		VertexBufferElement bitan{ "Bitangent", ShaderDataType::Float3, false };
+		VertexBufferLayout layout{ pos, texCoord, normal, tangent, bitan };
 		return layout;
 	}
 }

@@ -4,3 +4,31 @@ mat3 NormalMat(mat4 transform)
 {
     return transpose(inverse(mat3(transform)));
 }
+
+// tangent, bitangent, normal
+// TBN is used to transform point in tangent space into world space
+mat3 TBN(mat4 modelMat, vec3 tan, vec3 bitan, vec3 normal)
+{
+    vec3 T = normalize(vec3(modelMat * vec4(tan, 0.0)));
+    vec3 B = normalize(vec3(modelMat * vec4(bitan, 0.0)));
+    vec3 N = normalize(vec3(modelMat * vec4(normal, 0.0)));
+    return mat3(T, B, N);
+}
+
+mat3 CalcTBN(mat4 modelMat, vec3 tan, vec3 normal)
+{
+    vec3 T = normalize(vec3(modelMat * vec4(tan, 0.0)));    
+    vec3 N = normalize(vec3(modelMat * vec4(normal, 0.0)));
+    T = normalize(T - dot(T, N) * N);
+    vec3 B = cross(N, T);
+    return mat3(T, B, N);
+}
+
+// Fetch normal from normal map, and turn it into [-1, 1] from [0, 1],
+// the return value is in tangent space
+vec3 FetchNormal(sampler2D normalMap, vec2 texCoord)
+{
+    vec3 N = texture(normalMap, texCoord).rgb;
+    N.y = 1.f - N.y;
+    return 2.f * N - 1.f;
+}

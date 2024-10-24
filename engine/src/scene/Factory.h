@@ -28,6 +28,7 @@ namespace pio
 
 	private:
 		static void MakeTriangleMesh(const Vertex3d& v0, const Vertex3d& v1, const Vertex3d& v2, const Vertex3d& v3, Ref<TriangleMesh>& triangles);
+		static void CalcTangent(Vertex3d& v0, Vertex3d& v1, Vertex3d& v2);
 
 	private:
 		Factory() {}

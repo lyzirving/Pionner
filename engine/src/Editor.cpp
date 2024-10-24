@@ -151,8 +151,8 @@ namespace pio
 		cube->setPosition(glm::vec3(0.f, 1.f, 0.f));				
 
 		auto* bottomPlane = scene->addNode<PlaneNode>("BottomPlane", 9.f, 6.f)->as<PlaneNode>();
-		MaterialImporter matLoader(m_context, ShaderSpec_Standard, "sandy_rocks");
-		bottomPlane->setMaterial(matLoader.getMaterial());
+		MaterialImporter rockLoader(m_context, ShaderSpec_Standard, "sandy_rocks");
+		bottomPlane->setMaterial(rockLoader.getMaterial());
 
 		auto* backPlane = scene->addNode<PlaneNode>("BackPlane", 9.f, 9.f)->as<PlaneNode>();
 		backPlane->setRotation(glm::vec3(90.f, 0.f, 0.f));
@@ -160,6 +160,8 @@ namespace pio
 
 		auto* sphere = scene->addNode<SphereNode>("Sphere", 1.f)->as<SphereNode>();
 		sphere->setPosition(glm::vec3(-3.f, 1.f, 0.f));
+		MaterialImporter denimLoader(m_context, ShaderSpec_Standard, "denim_fabric");
+		sphere->setMaterial(denimLoader.getMaterial());
 
 		m_sceneMgr->add(scene, true);
 
