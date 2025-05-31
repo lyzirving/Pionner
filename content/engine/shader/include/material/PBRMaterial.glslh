@@ -1,0 +1,17 @@
+#pragma once
+
+layout (std140) uniform PBRBlock
+{
+	vec3 Albedo;
+    vec3 Emission;    
+    float Metalness;
+    float Roughness;
+    float Occlusion;
+    float Alpha;
+    bool UseNormalMap;
+} u_PBRMaterial;
+
+uniform sampler2D u_AlbedoMap;
+uniform sampler2D u_EmissionMap;    
+uniform sampler2D u_MetallicRoughnessMap;
+uniform sampler2D u_NormalMap;

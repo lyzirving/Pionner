@@ -1,0 +1,11 @@
+Model Information:
+* title:	Full Moon Fears: Werewolf
+* source:	https://sketchfab.com/3d-models/full-moon-fears-werewolf-1bdf1c2acdcd4bab9c933885519d31db
+* author:	Marcus Rain Skoog (https://sketchfab.com/mistrain)
+
+Model License:
+* license type:	CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions can not be distributed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Full Moon Fears: Werewolf" (https://sketchfab.com/3d-models/full-moon-fears-werewolf-1bdf1c2acdcd4bab9c933885519d31db) by Marcus Rain Skoog (https://sketchfab.com/mistrain) licensed under CC-BY-NC-ND-4.0 (http://creativecommons.org/licenses/by-nc-nd/4.0/)

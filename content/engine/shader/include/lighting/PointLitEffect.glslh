@@ -1,0 +1,94 @@
+#pragma once
+
+#include "PBR.glslh"
+#include "Camera.glslh"
+#include "lighting/PointLitCaster.glslh"
+
+struct PointLit
+{
+    vec3 Position;
+    vec3 Color;
+    int Index;
+    float Intensity;
+	float Radius;
+	float Falloff;
+    float Bias;
+	float ShadowIntensity;
+    int ShadowMode;
+    bool CastShadow;
+};
+
+layout (std140) uniform PointLitBlock
+{
+    PointLit Lits[POINT_LIT_LIMIT];
+    int Num;
+} u_PointLits;
+
+uniform samplerCubeArray u_PointLitsShadow;
+
+vec3 LitEffect_PointLits()
+{
+    vec3 Lo = vec3(0.f);
+    for(int i = 0; i < u_PointLits.Num; i++)
+    {
+        float dist = distance(m_PBRParams.FragPos, u_PointLits.Lits[i].Position);
+        if(dist > u_PointLits.Lits[i].Radius)
+            continue;
+        vec3 L = normalize(u_PointLits.Lits[i].Position - m_PBRParams.FragPos);
+        vec3 H = normalize(m_PBRParams.V + L);
+        float NdotL = max(dot(m_PBRParams.N, L), 0.f); 
+        float NdotH = max(dot(m_PBRParams.N, H), 0.f); 
+        float attenuation = clamp(1.0 - (dist * dist) / (u_PointLits.Lits[i].Radius * u_PointLits.Lits[i].Radius), 0.f, 1.f);
+        attenuation *= mix(attenuation, 1.0, u_PointLits.Lits[i].Falloff);
+
+        // light radiance
+        vec3 radiance = u_PointLits.Lits[i].Color * u_PointLits.Lits[i].Intensity * attenuation;
+        vec3 F = FresnelSchlickRoughness(max(0.f, dot(H, m_PBRParams.V)), m_PBRParams.F0, m_PBRParams.Roughness);
+        float NDF = NdfGGX(NdotH, m_PBRParams.Roughness);  
+        float G = GaSchlickGGX(NdotL, m_PBRParams.NdotV, m_PBRParams.Roughness);
+
+        // Cook-Torrance specular
+        vec3 specular = (NDF * G * F) / max(Epsilon, 4.0 * NdotL * m_PBRParams.NdotV);
+        specular = clamp(specular, vec3(0.0f), vec3(10.0f));
+
+        vec3 ks = F;
+        vec3 kd = (vec3(1.0) - ks) * (1.0 - m_PBRParams.Metalness);// For energy conservation
+        vec3 diffuse = kd * m_PBRParams.Albedo;
+
+        Lo += (diffuse + specular) * radiance * NdotL;
+    }
+    return Lo;
+}
+
+float LitEffect_PointLitShadow()
+{
+    int litNum = 0;
+    float shadow = 0.f;
+
+    for(int idx = 0; idx < u_PointLits.Num; ++idx)
+    {
+        if(!u_PointLits.Lits[idx].CastShadow)
+            continue;
+
+        ++litNum;
+
+        vec3 lit2Frag = m_PBRParams.FragPos - u_PointLits.Lits[idx].Position;
+        vec3 L = normalize(-lit2Frag);
+        float currentDepth = length(lit2Frag);
+        float bias = SlopScaleBias(L, m_PBRParams.N, u_PointLits.Lits[idx].Bias);
+
+        float viewDist = length(u_Camera.Position - m_PBRParams.FragPos);
+        float diskRadius = (1.f + (viewDist / u_Camera.FrustumFar)) / 25.f;
+
+        for(int it = 0; it < SPL_DIR_NUM; ++it)
+        {
+            vec4 coord = vec4(lit2Frag + normalize(SPL_DIR[it]) * diskRadius, float(idx));
+            float closestDepth = texture(u_PointLitsShadow, coord).r;
+            closestDepth *= u_Camera.FrustumFar;   // undo mapping [0;1]
+            if(currentDepth - bias > closestDepth)
+                shadow += 1.0 * u_PointLits.Lits[idx].ShadowIntensity;
+        }
+    }
+    float result = (litNum != 0) ? (shadow / (float(SPL_DIR_NUM) * float(litNum))) : 0.f;
+    return 1.0 - result;
+}

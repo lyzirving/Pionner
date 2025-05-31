@@ -1,0 +1,13 @@
+#pragma once
+
+layout (std140) uniform TexturedBlock
+{
+	vec3 Color;
+    vec2 Tile;    
+    vec2 Scale;
+    vec2 Offset;
+    float Alpha;
+    bool FlipY;
+} u_TexturedMaterial;
+
+uniform sampler2D u_Texture;

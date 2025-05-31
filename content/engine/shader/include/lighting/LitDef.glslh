@@ -1,0 +1,31 @@
+#pragma once
+
+const int LIGHT_TECH_SHADOW_MAP = 0;
+const int LIGHT_TECH_CASCADE_SHADOW_MAP = 1;
+
+const int POINT_LIT_LIMIT = 4;
+const int POINT_LIT_DIRECTION_NUM = 6;
+
+const int CASCADE_NUM = 3;
+
+const int ShadowMode_Hard = 1;
+const int ShadowMode_Soft = 2;
+const int ShadowMode_Soft_2X = 3;
+const int ShadowMode_Soft_4X = 4;
+
+const int SPL_DIR_NUM = 20;
+
+const vec3 SPL_DIR[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
+//Reference to Learn OpenGL/Advanced Lighting/Shadows/Shadow Mapping
+float SlopScaleBias(vec3 lightDir, vec3 N, float bias)
+{
+    return max(bias * 10.f * (1.0 - dot(N, lightDir)), 0.002); 
+}

@@ -1,0 +1,9 @@
+#pragma once
+
+const float Epsilon = 0.00001;
+
+const float PI = 3.14159265359;
+const float MAX_REFLECTION_LOD = 4.f;
+
+const int MAX_BONE_INFLUENCE = 4;
+const int MAX_BONES = 100;

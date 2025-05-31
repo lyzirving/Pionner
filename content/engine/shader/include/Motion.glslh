@@ -1,0 +1,30 @@
+#pragma once
+
+#include "ConstDef.glslh"
+
+layout (std140) uniform MotionBlock
+{
+	mat4 Transform;
+	mat4 LocalTransform;
+	bool bSkeletalOn;
+} u_Motion;
+
+layout (std140) uniform SkeletonBlock
+{
+	mat4 BoneTransform[MAX_BONES];
+	int BoneNum;
+} u_Skeleton;
+
+mat4 Skinning(ivec4 boneIds, vec4 boneWeights)
+{
+    mat4 boneTransform = boneWeights[0] * (u_Skeleton.BoneTransform[boneIds[0]]);
+	boneTransform += boneWeights[1] * (u_Skeleton.BoneTransform[boneIds[1]]);
+	boneTransform += boneWeights[2] * (u_Skeleton.BoneTransform[boneIds[2]]);
+	boneTransform += boneWeights[3] * (u_Skeleton.BoneTransform[boneIds[3]]);
+    return boneTransform;
+}
+
+vec4 GetPosition(vec3 pos, ivec4 boneIds, vec4 weights)
+{
+	return u_Motion.bSkeletalOn ? (u_Motion.Transform * Skinning(boneIds, weights) * vec4(pos, 1.f)) : (u_Motion.Transform * u_Motion.LocalTransform * vec4(pos, 1.f));
+}

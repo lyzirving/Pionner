@@ -1,0 +1,14 @@
+#pragma once
+
+const int PRJ_TYPE_PERSPECTIVE = 0;
+const int PRJ_TYPE_ORTHO = 1;
+
+layout (std140) uniform CameraBlock
+{
+	mat4 ViewMat;
+	mat4 PrjMat;
+	mat4 OrthoMat;
+    vec3 Position;
+    float FrustumFar;
+	int PrjType;
+} u_Camera;

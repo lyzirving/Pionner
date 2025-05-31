@@ -1,0 +1,6 @@
+#pragma once
+
+mat3 NormalMat(mat4 transform)
+{
+    return transpose(inverse(mat3(transform)));
+}

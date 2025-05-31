@@ -1,0 +1,8 @@
+#pragma once
+
+layout (std140) uniform DirectionalLitShadowBlock
+{
+	mat4 ViewMat;
+	mat4 PrjMat;
+    vec2 MapSize;
+} u_DirLitShadowCaster;

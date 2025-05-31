@@ -1,0 +1,60 @@
+#include "VertexBuffer.h"
+
+#include "gfx/renderer/RenderContext.h"
+
+#include "gfx/rhi/opengl/GLVertexBuffer.h"
+
+#ifdef LOCAL_TAG
+#undef LOCAL_TAG
+#endif
+#define LOCAL_TAG "VertexBuffer"
+
+namespace pio
+{
+	Ref<VertexBuffer> VertexBuffer::Create(const Ref<RenderContext>& context, uint32_t size, BufferUsage usage)
+	{
+		switch (context->RenderBackend())
+		{
+		case RenderBackend_OpenGL:
+			return CreateRef<GLVertexBuffer>(context, size, usage);
+		default:
+			LOGE("err! current backend[%u] has not been implemented", context->RenderBackend());
+			std::abort();
+			return Ref<VertexBuffer>();
+		}
+	}
+
+	Ref<VertexBuffer> VertexBuffer::Create(const Ref<RenderContext>& context, const void* data, uint32_t size, BufferUsage usage)
+	{
+		switch (context->RenderBackend())
+		{
+		case RenderBackend_OpenGL:
+			return CreateRef<GLVertexBuffer>(context, data, size, usage);
+		default:
+			LOGE("err! current backend[%u] has not been implemented", context->RenderBackend());
+			std::abort();
+			return Ref<VertexBuffer>();
+		}
+	}
+
+	template<>
+	VertexBufferLayout VertexBuffer::To<Vertex>()
+	{
+		VertexBufferElement pos{ "Pos", ShaderDataType::Float3, false };
+		VertexBufferElement texCoord{ "TexCoord", ShaderDataType::Float2, false };
+		VertexBufferElement normal{ "Normal", ShaderDataType::Float3, false };
+		VertexBufferElement tangent{ "Tangent", ShaderDataType::Float3, false };
+		VertexBufferElement bitan{ "Bitangent", ShaderDataType::Float3, false };
+		VertexBufferLayout layout{ pos, texCoord, normal, tangent, bitan };
+		return layout;
+	}
+
+	template<>
+	VertexBufferLayout VertexBuffer::To<BoneInfluence>()
+	{
+		VertexBufferElement weights{ "Weights", ShaderDataType::Float4, false };
+		VertexBufferElement boneInfoIndices{ "BoneInfoIndices", ShaderDataType::Int4, false };
+		VertexBufferLayout  layout{ weights, boneInfoIndices };
+		return layout;
+	}
+}
