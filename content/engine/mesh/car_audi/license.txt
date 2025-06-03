@@ -1,0 +1,8 @@
+Model Information:
+* title:	Audi TT RS Coupe Performance Package
+* source:	https://sketchfab.com/3d-models/audi-tt-rs-coupe-performance-package-4ec2e9dc2f104e72a14ae7b7de0494cc
+* author:	RPMRender (https://sketchfab.com/RPMRender)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

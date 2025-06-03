@@ -100,7 +100,7 @@ namespace pio
 
 		ImportParams params;
 		params.SetFmt(AssetFormat_Mesh)
-			.SetPath(std::string(Path::MeshRoot()).append(Path::FILE_SEPARATOR).append("werewolf"))
+			.SetPath(std::string(Path::MeshRoot()).append(Path::FILE_SEPARATOR).append("werewolf"/*"car_audi"*/))
 			.SetName("scene")
 			.SetSuffix("gltf")
 			.SetContext(m_Context);
@@ -113,17 +113,23 @@ namespace pio
 			
 			if(loadRet->m_Asset->Is<SkinnedMesh>())
 			{
-				auto wolf = scene->CreateNode<SkinnedMeshNode>("Werewolf");
-				wolf->SetMesh(RefCast<Asset, SkinnedMesh>(loadRet->m_Asset));
-				wolf->SetAnimationClip(0);
-				wolf->SetLoop(true);
-				wolf->StartAnimation();
-				scene->Insert(wolf);
+				auto node = scene->CreateNode<SkinnedMeshNode>("main");
+				node->SetMesh(RefCast<Asset, SkinnedMesh>(loadRet->m_Asset));
+				node->SetAnimationClip(0);
+				node->SetLoop(true);
+				node->StartAnimation();
+				scene->Insert(node);
+			}
+			else if(loadRet->m_Asset->Is<StaticMesh>())
+			{
+				auto node = scene->CreateNode<StaticMeshNode>("main");
+				node->SetMesh(RefCast<Asset, StaticMesh>(loadRet->m_Asset));
+				scene->Insert(node);
 			}
 			else
 			{
 				LOGE("err! invalid asset type");
-			}			
+			}
 		});
 
 		// step 4: create Ui's WidgetMgr
