@@ -17,7 +17,7 @@ out v2f {
 
 void main() {
 	v_TexCoord = a_Texcoord;	
-	gl_Position = u_Camera.PrjMat * u_Camera.ViewMat * u_Motion.Transform * vec4(a_Pos, 1.f);
+	gl_Position = u_Camera.PrjMat * u_Camera.ViewMat * u_Motion.Transform * u_Motion.LocalTransform * vec4(a_Pos, 1.f);
 }
 
 #version 430 core 

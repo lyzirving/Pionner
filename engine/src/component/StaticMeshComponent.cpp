@@ -151,12 +151,6 @@ namespace pio
 			m_RenderBuff.emplace_back(CreateRef<MeshRenderBuffer>());
 			m_RenderBuff[i]->Setup(context, mesh.Vertice, mesh.Indice);
 
-			auto uBlock = CreateRef<UniformBlock>();
-			uBlock->PushBack("Transform", UniformBlock::CreateData(UniformType::Mat4, "Transform"));
-			uBlock->PushBack("LocalTransform", UniformBlock::CreateData(UniformType::Mat4, "LocalTransform"));
-			uBlock->PushBack("bSkeletalOn", UniformBlock::CreateData(UniformType::Bool, "bSkeletalOn"));
-			uBlock->Calculate();
-
 			std::string name(mesh.Name);
 			name.append("_UMotionBuffer");
 			m_MotionBuffers.emplace_back(CreateRef<UMotionBuffer>(context, name));

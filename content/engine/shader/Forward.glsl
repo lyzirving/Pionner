@@ -25,14 +25,14 @@ out v2f {
 }; 
 
 void main() {     
-    v_WorldPos = vec3(u_Motion.Transform * vec4(a_Pos, 1.f));
-    v_Normal = normalize(NormalMat(u_Motion.Transform) * a_Normal);
+    v_WorldPos = vec3(u_Motion.Transform * u_Motion.LocalTransform * vec4(a_Pos, 1.f));
+    v_Normal = normalize(NormalMat(u_Motion.Transform * u_Motion.LocalTransform) * a_Normal);
     v_TexCoord = a_Texcoord; 
     v_TBN = mat3(1.f);
     v_InvTBN = mat3(1.f);
 
     mat4 prjMat = (u_Camera.PrjType == PRJ_TYPE_PERSPECTIVE) ? u_Camera.PrjMat : u_Camera.OrthoMat;
-    gl_Position = prjMat * u_Camera.ViewMat * u_Motion.Transform * vec4(a_Pos, 1.f);
+    gl_Position = prjMat * u_Camera.ViewMat * vec4(v_WorldPos, 1.f);
 }
 
 #version 430 core 

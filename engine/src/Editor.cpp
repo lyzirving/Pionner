@@ -36,9 +36,9 @@
 
 namespace pio
 {
-	Editor *Editor::k_Editor = nullptr;
+	Editor* Editor::k_Editor = nullptr;
 
-	Editor *Editor::Get() { return k_Editor; }
+	Editor* Editor::Get() { return k_Editor; }
 
 	Editor::Editor() : EventSocket()
 	{
@@ -48,7 +48,7 @@ namespace pio
 		LogSystem::Init();
 		Path::Init();
 		EventMgr::Get()->ConnectWin(EventCallback(this, (SLOTFUNCTION)&Editor::OnEvent));
-		TaskGraph::Init();		
+		TaskGraph::Init();
 
 		m_Window = Window::Create(WindowProps("Pionner", 1400, 720, RenderBackend_OpenGL));
 		m_Context = CreateRef<RenderContext>(RenderBackend_OpenGL, m_Window);
@@ -62,13 +62,13 @@ namespace pio
 	}
 
 	void Editor::OnAttach()
-	{		 		
+	{
 		// Take care of the order of each step
 
 		// step 1: create RenderPipeline
 		m_Pipeline = CreateRef<RenderPipeline>(m_Context);
 		m_Pipeline->OnAttach();
-		
+
 		// step 2: create SceneMgr and Scene
 		m_SceneMgr = CreateRef<SceneMgr>(m_Context);
 		auto scene = m_SceneMgr->CreateScene();
@@ -84,12 +84,12 @@ namespace pio
 		camera->SetAspect(GlobalSettings::AspectRatio());
 		scene->Insert(camera);
 
-		auto mainLit = scene->CreateNode<DirectionalLitNode>("DirectionalLight");	
+		auto mainLit = scene->CreateNode<DirectionalLitNode>("DirectionalLight");
 		mainLit->SetRotation(glm::vec3(-35.f, 0.f, 40.f));
 		mainLit->SetPosition(glm::vec3(-3.f, 4.f, 0.f));
 		scene->Insert(mainLit);
 
-		auto ptLit = scene->CreateNode<PointLitNode>("PointLit");		
+		auto ptLit = scene->CreateNode<PointLitNode>("PointLit");
 		ptLit->SetPosition(glm::vec3(1.5, 2.5f, 0.f));
 		ptLit->SetRadius(3.5f);
 		scene->Insert(ptLit);
@@ -110,10 +110,11 @@ namespace pio
 			auto* loadRet = ret->As<LoadRet>();
 			if(!scene || !loadRet)
 				return;
-			
+
+			std::string name("Model");
 			if(loadRet->m_Asset->Is<SkinnedMesh>())
 			{
-				auto node = scene->CreateNode<SkinnedMeshNode>("main");
+				auto node = scene->CreateNode<SkinnedMeshNode>(name);
 				node->SetMesh(RefCast<Asset, SkinnedMesh>(loadRet->m_Asset));
 				node->SetAnimationClip(0);
 				node->SetLoop(true);
@@ -122,7 +123,7 @@ namespace pio
 			}
 			else if(loadRet->m_Asset->Is<StaticMesh>())
 			{
-				auto node = scene->CreateNode<StaticMeshNode>("main");
+				auto node = scene->CreateNode<StaticMeshNode>(name);
 				node->SetMesh(RefCast<Asset, StaticMesh>(loadRet->m_Asset));
 				scene->Insert(node);
 			}
@@ -150,7 +151,7 @@ namespace pio
 		scenePanel->EnableTitle(false);
 		scenePanel->EnableDocking(false);
 		scenePanel->EnableMove(false);
-		scenePanel->SetDrawOrder(2);		
+		scenePanel->SetDrawOrder(2);
 
 		m_WidgetMgr->AddWidget(outlinePanel);
 		m_WidgetMgr->AddWidget(detailPanel);
@@ -158,14 +159,14 @@ namespace pio
 	}
 
 	void Editor::OnDetach()
-	{		
+	{
 		LOGD("begin to destroy resource");
 		AnimationSystem::Shutdown();
 		m_WidgetMgr->OnDetach();
 		m_SceneMgr->OnDetach();
 		m_SceneMgr->OnExit();
 		TaskGraph::Shutdown();
-		m_Pipeline->OnDetach();		
+		m_Pipeline->OnDetach();
 
 		m_Context->Thread().Terminate();
 		LOGD("wake up from render thread");
@@ -175,10 +176,10 @@ namespace pio
 		m_SceneMgr.reset();
 		m_Pipeline.reset();
 		m_Context.reset();
-		m_Window.reset();	
+		m_Window.reset();
 	}
 
-	void Editor::OnEvent(const Ref<Event> &event)
+	void Editor::OnEvent(const Ref<Event>& event)
 	{
 		EventDispatcher dispatcher(event);
 
@@ -188,7 +189,7 @@ namespace pio
 		m_WidgetMgr->DispatchEvent(event);
 	}
 
-	bool Editor::OnWindowClose(const Ref<WindowCloseEvent> &event)
+	bool Editor::OnWindowClose(const Ref<WindowCloseEvent>& event)
 	{
 		LOGD("window is closed");
 		m_Running = false;
@@ -197,7 +198,7 @@ namespace pio
 
 	void Editor::Run()
 	{
-		auto &renderThread = m_Context->Thread();
+		auto& renderThread = m_Context->Thread();
 		renderThread.Run(PIO_BIND_FN_OTHER(RenderContext::RenderLoop, m_Context.get()));
 		// Block until the first frame has been done
 		renderThread.Pump();
@@ -213,7 +214,7 @@ namespace pio
 			// Start rendering previous frame in render thread
 			renderThread.Kick();
 			//---------------------------------------------------------
-			
+
 			Tick();
 		}
 		// Wait for render thread to complete the last frame
@@ -229,6 +230,6 @@ namespace pio
 		EventMgr::Get()->Dispatch();
 
 		m_SceneMgr->Tick(m_Context, m_Pipeline);
-		m_WidgetMgr->Tick(m_Context);		
+		m_WidgetMgr->Tick(m_Context);
 	}
 }

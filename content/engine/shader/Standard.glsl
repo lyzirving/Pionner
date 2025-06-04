@@ -36,7 +36,7 @@ void main() {
     v_Normal = normalize(NormalMat(u_Motion.Transform * boneMat) * a_Normal);
 #else
     v_WorldPos = vec3(u_Motion.Transform * u_Motion.LocalTransform * vec4(a_Pos, 1.f));
-    v_Normal = normalize(NormalMat(u_Motion.Transform) * a_Normal);
+    v_Normal = normalize(NormalMat(u_Motion.Transform * u_Motion.LocalTransform) * a_Normal);
 #endif    
     v_TexCoord = a_Texcoord; 
     v_TBN = mat3(1.f);
