@@ -23,6 +23,7 @@ void main() {
 precision mediump float;
 
 #include "Camera.glslh"
+#include "Surface.glslh"
 #include "lighting/DirLitEffect.glslh"
 #include "lighting/PointLitEffect.glslh"
 
@@ -50,12 +51,21 @@ void main() {
     m_PBRParams.Alpha = baseColor.a;
 	m_PBRParams.Roughness = surface.g;
     m_PBRParams.Metalness = surface.b;
+    m_PBRParams.Occlusion = 1.0;
     m_PBRParams.Emission = texture(u_GEmission, v_TexCoord).rgb;
 
 	m_PBRParams.V = normalize(u_Camera.Position - m_PBRParams.FragPos);
     m_PBRParams.R = reflect(-m_PBRParams.V, m_PBRParams.N);
     m_PBRParams.NdotV = max(dot(m_PBRParams.N, m_PBRParams.V), 0.f);
     m_PBRParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);
+
+    m_SurfaceParams.Pos = texture(u_GPosition, v_TexCoord).xyz;    
+    m_SurfaceParams.V = normalize(u_Camera.Position - m_SurfaceParams.Pos);
+    m_SurfaceParams.N = texture(u_GNormal, v_TexCoord).xyz;
+    m_SurfaceParams.R = reflect(-m_SurfaceParams.V, m_SurfaceParams.N);    
+    m_SurfaceParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);
+    m_SurfaceParams.NoV = max(0.0, dot(m_SurfaceParams.N, m_SurfaceParams.V));
+    m_SurfaceParams.EnergyCompensation = vec3(1.0);
 
     o_FragColor = LightContribution();
 }

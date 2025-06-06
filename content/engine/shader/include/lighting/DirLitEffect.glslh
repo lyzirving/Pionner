@@ -1,6 +1,8 @@
 #pragma once
 
 #include "PBR.glslh"
+#include "Surface.glslh"
+#include "SurfaceShadingStandard.glslh"
 #include "lighting/LitDef.glslh"
 #include "lighting/DirLitShadowCaster.glslh"
 
@@ -18,28 +20,53 @@ layout (std140) uniform DirectionalLitBlock
 
 uniform sampler2D u_ShadowMap;
 
-vec3 LitEffect_DirLit()
+Light GetDirectionalLight()
+{
+    Light light;
+
+    light.ColorIntensity = u_DirLit.Color * u_DirLit.Intensity;
+    light.L = normalize(-u_DirLit.Direction);
+    light.H = normalize(light.L + m_SurfaceParams.V);
+    light.Attenuation = 1.0;
+
+    // Calculate angles between surface normal and light vector.
+    light.NoL = max(0.0, dot(m_SurfaceParams.N, light.L));
+    light.NoH = max(0.0, dot(m_SurfaceParams.N, light.H));
+    light.LoH = max(0.0, dot(light.L, light.H));
+
+    return light;
+}
+
+vec3 LitEffect_DirLit_Old()
 {
     // Negate the direction to expect a direction from the fragment towards the light source
     vec3 Li = normalize(-u_DirLit.Direction);
     vec3 Lh = normalize(Li + m_PBRParams.V);
 	vec3 Lradiance = u_DirLit.Color * u_DirLit.Intensity;
-
+    
     // Calculate angles between surface normal and light vector.
 	float NdotL = max(0.0, dot(m_PBRParams.N, Li));
 	float NdotH = max(0.0, dot(m_PBRParams.N, Lh));
-
+    
     vec3  F = FresnelSchlickRoughness(max(0.0, dot(Lh, m_PBRParams.V)), m_PBRParams.F0, m_PBRParams.Roughness);
     float D = NdfGGX(NdotH, m_PBRParams.Roughness);
     float G = GaSchlickGGX(NdotL, m_PBRParams.NdotV, m_PBRParams.Roughness);
-
+    
     vec3 kd = (vec3(1.0) - F) * (1.0 - m_PBRParams.Metalness);
 	vec3 diffuseBRDF = kd * m_PBRParams.Albedo;
-
+    
     // Cook-Torrance
 	vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * NdotL * m_PBRParams.NdotV);
 	specularBRDF = clamp(specularBRDF, vec3(0.0), vec3(10.0));
     return (diffuseBRDF + specularBRDF) * NdotL * Lradiance;
+}
+
+vec3 LitEffect_DirLit()
+{
+    //Light light = GetDirectionalLight();    
+    //return SurfaceShading(light);
+    
+    return LitEffect_DirLit_Old();
 }
 
 float DirLit_HardShadow(sampler2D shadowMap)

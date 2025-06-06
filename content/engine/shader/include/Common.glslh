@@ -1,10 +1,7 @@
 #pragma once
 
 // SRGB to Linear Space
-vec3 Mon2Lin(vec3 x)
-{
-	return pow(x, vec3(2.2));
-}
+vec3 Mon2Lin(vec3 x) { return pow(x, vec3(2.2)); }
 
 // Nearest int value
 int NeInt(float val)
@@ -13,6 +10,4 @@ int NeInt(float val)
 	return int(index);
 }
 
-float When_Eqi(int x, int y) {
-  return 1.f - abs(float(sign(x - y)));
-}
+float When_Eqi(int x, int y) { return 1.f - abs(float(sign(x - y))); }

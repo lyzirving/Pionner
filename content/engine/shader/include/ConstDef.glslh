@@ -3,7 +3,15 @@
 const float Epsilon = 0.00001;
 
 const float PI = 3.14159265359;
-const float MAX_REFLECTION_LOD = 4.f;
+const float HALF_PI = 1.570796327;
+
+const float MEDIUMP_FLT_MAX = 65504.0;
+const float MEDIUMP_FLT_MIN = 0.00006103515625;
+
+const float MAX_REFLECTION_LOD = 4.0;
 
 const int MAX_BONE_INFLUENCE = 4;
 const int MAX_BONES = 100;
+
+float Saturate(float x) { return clamp(x, 0.0, 1.0); }
+float SaturateMediump(float x) { return min(x, MEDIUMP_FLT_MAX); }
