@@ -24,15 +24,24 @@ const vec3 SPL_DIR[20] = vec3[]
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
 
-struct Light
-{
+struct Light {
     vec3 ColorIntensity;
     vec3 L;
     vec3 H;
     float Attenuation;
+    float NoV;
     float NoL;
     float NoH;
     float LoH;
+};
+
+struct PixelParams {
+	vec3  diffuseColor;
+    vec3  f0;
+    vec3  energyCompensation;
+    float perceptualRoughness;
+    float perceptualRoughnessUnclamped;
+    float roughness;  
 };
 
 //Reference to Learn OpenGL/Advanced Lighting/Shadows/Shadow Mapping

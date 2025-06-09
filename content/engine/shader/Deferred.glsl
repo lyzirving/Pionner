@@ -22,11 +22,6 @@ void main() {
 #pragma stage : frag 
 precision mediump float;
 
-#include "Camera.glslh"
-#include "Surface.glslh"
-#include "lighting/DirLitEffect.glslh"
-#include "lighting/PointLitEffect.glslh"
-
 uniform sampler2D u_GPosition;   // vec3
 uniform sampler2D u_GNormal;     // vec4 noraml(3) + type(1)
 uniform sampler2D u_GAlbedoAlpha;// vec4 albedo(3) + alpha(1)
@@ -36,6 +31,9 @@ uniform sampler2D u_GEmission;   // vec3
 in v2f {
     vec2 v_TexCoord;
 }; 
+
+#include "SurfaceShading.glslh"
+#include "lighting/PointLitEffect.glslh"
 
 vec4 LightContribution();
 
@@ -57,24 +55,22 @@ void main() {
 	m_PBRParams.V = normalize(u_Camera.Position - m_PBRParams.FragPos);
     m_PBRParams.R = reflect(-m_PBRParams.V, m_PBRParams.N);
     m_PBRParams.NdotV = max(dot(m_PBRParams.N, m_PBRParams.V), 0.f);
-    m_PBRParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);
-
-    m_SurfaceParams.Pos = texture(u_GPosition, v_TexCoord).xyz;    
-    m_SurfaceParams.V = normalize(u_Camera.Position - m_SurfaceParams.Pos);
-    m_SurfaceParams.N = texture(u_GNormal, v_TexCoord).xyz;
-    m_SurfaceParams.R = reflect(-m_SurfaceParams.V, m_SurfaceParams.N);    
-    m_SurfaceParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);
-    m_SurfaceParams.NoV = max(0.0, dot(m_SurfaceParams.N, m_SurfaceParams.V));
-    m_SurfaceParams.EnergyCompensation = vec3(1.0);
+    m_PBRParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);    
 
     o_FragColor = LightContribution();
 }
 
 vec4 LightContribution()
 {   
+    MaterialInputs material;
+    InitMaterial(material);
+    MakeMaterial_Defferred(material);
+    PrepareShading_Deffered();
+    vec4 color = EvaluateMaterial(material);
+
     vec3 lightContrib = vec3(0.f);
-    lightContrib += LitEffect_DirLit() * LitEffect_DirLitShadow();
-    lightContrib += LitEffect_PointLits() * LitEffect_PointLitShadow();
-    lightContrib += (m_PBRParams.Albedo * m_PBRParams.Emission);
+    //lightContrib += LitEffect_DirLit() * LitEffect_DirLitShadow();
+    lightContrib += color.rgb * LitEffect_DirLitShadow();
+    lightContrib += LitEffect_PointLits() * LitEffect_PointLitShadow();   
     return vec4(lightContrib.rgb, m_PBRParams.Alpha);
 }

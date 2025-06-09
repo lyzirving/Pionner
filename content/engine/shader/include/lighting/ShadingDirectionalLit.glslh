@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PBR.glslh"
-#include "Surface.glslh"
+#include "SurfaceMaterialInputs.glslh"
 #include "SurfaceShadingStandard.glslh"
 #include "lighting/LitDef.glslh"
 #include "lighting/DirLitShadowCaster.glslh"
@@ -25,13 +25,14 @@ Light GetDirectionalLight()
     Light light;
 
     light.ColorIntensity = u_DirLit.Color * u_DirLit.Intensity;
-    light.L = normalize(-u_DirLit.Direction);
-    light.H = normalize(light.L + m_SurfaceParams.V);
     light.Attenuation = 1.0;
 
-    // Calculate angles between surface normal and light vector.
-    light.NoL = max(0.0, dot(m_SurfaceParams.N, light.L));
-    light.NoH = max(0.0, dot(m_SurfaceParams.N, light.H));
+    light.L = normalize(-u_DirLit.Direction);
+    light.NoV = m_ShadingNoV;
+    light.NoL = max(0.0, dot(m_ShadingNormal, light.L));
+
+    light.H = normalize(light.L + m_ShadingView);    
+    light.NoH = max(0.0, dot(m_ShadingNormal, light.H));
     light.LoH = max(0.0, dot(light.L, light.H));
 
     return light;
@@ -62,10 +63,7 @@ vec3 LitEffect_DirLit_Old()
 }
 
 vec3 LitEffect_DirLit()
-{
-    //Light light = GetDirectionalLight();    
-    //return SurfaceShading(light);
-    
+{       
     return LitEffect_DirLit_Old();
 }
 
@@ -137,4 +135,9 @@ float LitEffect_DirLitShadow()
         shadow = DirLit_PcfShadow(1, u_ShadowMap);
     }    
     return 1.0 - (shadow * u_DirLit.ShadowIntensity);
+}
+
+void EvaluateDirectionalLight(const MaterialInputs material, const PixelParams pixel, inout vec3 color) {
+	Light light = GetDirectionalLight();
+    color += SurfaceShading(light, pixel, 1.0);
 }

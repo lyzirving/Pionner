@@ -1,0 +1,17 @@
+#pragma once
+
+vec3 ComputeDiffuseColor(const vec4 baseColor, float metallic) {
+    return baseColor.rgb * (1.0 - metallic);
+}
+
+float ComputeDielectricF0(float reflectance) {
+    return 0.16 * reflectance * reflectance;
+}
+
+vec3 ComputeF0(const vec4 baseColor, float metallic, float reflectance) {
+    return baseColor.rgb * metallic + (reflectance * (1.0 - metallic));
+}
+
+float PerceptualRoughnessToRoughness(float perceptualRoughness) {
+    return perceptualRoughness * perceptualRoughness;
+}

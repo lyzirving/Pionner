@@ -113,6 +113,7 @@ namespace pio
 				.SetPath(params.Path)
 				.SetName(Path::PathWithoutSuffix(aiTexPath.C_Str()))
 				.SetSuffix(Path::FindSuffix(aiTexPath.C_Str()))
+				.SetChannelNum(3)
 				.SetTexParam(TextureParams(TextureWrap::ClampEdge, TextureWrap::ClampEdge,
 							 TextureFilterMin::Linear, TextureFilterMag::Linear));
 			auto img = AssetMgr::Get()->LoadAsset<Image>(curParams);			

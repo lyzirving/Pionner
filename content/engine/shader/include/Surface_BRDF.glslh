@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ConstDef.glslh"
+#include "Common.glslh"
 
 //------------------------------------------------------------------------------
 // Specular BRDF implementations

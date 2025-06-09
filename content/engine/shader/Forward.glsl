@@ -41,7 +41,7 @@ precision mediump float;
 
 #include "Camera.glslh"
 #include "VisualEffects.glslh"
-#include "lighting/DirLitEffect.glslh"
+#include "lighting/ShadingDirectionalLit.glslh"
 #include "material/PBRMaterial.glslh"
 
 in v2f {

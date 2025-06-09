@@ -123,6 +123,12 @@ namespace pio
 			return *this;
 		}
 
+		ImportParams& SetChannelNum(uint32_t num)
+		{
+			this->Setting.Image.Comp = num;
+			return *this;
+		}
+
 		ImportParams& SetTexParam(const TextureParams& param)
 		{
 			this->Setting.Image.Param = param;

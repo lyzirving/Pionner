@@ -1,0 +1,32 @@
+#pragma once
+
+#include "CommonShading.glslh"
+
+struct MaterialInputs 
+{
+	vec4  baseColor;
+	float roughness;
+	float metallic;
+    float reflectance;
+	float ambientOcclusion;
+	vec4  emissive;
+};
+
+void InitMaterial(out MaterialInputs material) {
+	material.baseColor = vec4(1.0);
+	material.roughness = 1.0;
+	material.metallic = 0.0;
+    material.reflectance = 0.5;
+	material.ambientOcclusion = 1.0;
+	material.emissive = vec4(vec3(0.0), 1.0);
+}
+
+void MakeMaterial_Defferred(inout MaterialInputs material) {
+	vec4 baseColor = texture(u_GAlbedoAlpha, v_TexCoord);	
+	vec3 surface = texture(u_GMaterial, v_TexCoord).rgb;
+
+	material.baseColor = texture(u_GAlbedoAlpha, v_TexCoord);
+	material.roughness = surface.g;
+    material.metallic = surface.b;
+    material.emissive = vec4(texture(u_GEmission, v_TexCoord).rgb, 0.0);
+}

@@ -239,7 +239,7 @@ namespace pio
 			verticeNum += aiMesh->mNumVertices;
 			idxNum += aiMesh->mNumFaces * 3;
 
-			subMesh.Vertice.reserve(aiMesh->mNumVertices);
+			subMesh.Vertice.reserve(aiMesh->mNumVertices);			
 			for(uint32_t i = 0; i < aiMesh->mNumVertices; i++)
 			{
 				Vertex v;

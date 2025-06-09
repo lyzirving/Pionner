@@ -1,0 +1,22 @@
+#pragma once
+
+#include "ConstDef.glslh"
+#include "Camera.glslh"
+
+// These variables should be in a struct but some GPU drivers ignore the
+// precision qualifier on individual struct members
+
+highp vec3 m_ShadingPosition;         // position of the fragment in world space
+      vec3 m_ShadingView;             // normalized vector from the fragment to the eye
+
+vec3  m_ShadingNormal;                 // normalized transformed normal, in world space
+vec3  m_ShadingReflected;              // reflection of view about normal
+float m_ShadingNoV;                    // dot(normal, view), always strictly >= MIN_N_DOT_V
+
+void PrepareShading_Deffered() {
+    m_ShadingPosition = texture(u_GPosition, v_TexCoord).xyz;
+	m_ShadingNormal = texture(u_GNormal, v_TexCoord).xyz;
+    m_ShadingView = normalize(u_Camera.Position - m_ShadingPosition);
+    m_ShadingReflected = reflect(-m_ShadingView, m_ShadingNormal);
+    m_ShadingNoV = max(dot(m_ShadingNormal, m_ShadingView), MIN_N_DOT_V);
+}

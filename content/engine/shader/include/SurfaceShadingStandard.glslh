@@ -1,23 +1,21 @@
 #pragma once
 
-#include "PBR.glslh"
-#include "Surface.glslh"
 #include "lighting/LitDef.glslh"
 #include "Surface_BRDF.glslh"
 
-vec3 IsotropicLobe(const Light light) {
-    float D = Distribution(m_PBRParams.Roughness, light.NoH, light.H);
-    float V = Visibility(m_PBRParams.Roughness, m_SurfaceParams.NoV, light.NoL);
-    vec3 F = Fresnel(m_PBRParams.F0, light.LoH);
+vec3 IsotropicLobe(const Light light, const PixelParams pixel) {
+    float D = Distribution(pixel.roughness, light.NoH, light.H);
+    float V = Visibility(pixel.roughness, light.NoV, light.NoL);
+    vec3 F = Fresnel(pixel.f0, light.LoH);
     return (D * V) * F;
 }
 
-vec3 SpecularLobe(const Light light) {
-    return IsotropicLobe(light);
+vec3 SpecularLobe(const Light light, const PixelParams pixel) {
+    return IsotropicLobe(light, pixel);
 }
 
-vec3 DiffuseLobe(const Light light) {
-    return m_PBRParams.Albedo * Diffuse(m_PBRParams.Roughness, m_SurfaceParams.NoV, light.NoL, light.LoH);
+vec3 DiffuseLobe(const Light light, const PixelParams pixel) {
+    return pixel.diffuseColor * Diffuse(pixel.roughness, light.NoV, light.NoL, light.LoH);
 }
 
 /**
@@ -37,14 +35,15 @@ vec3 DiffuseLobe(const Light light) {
  * on the Cook-Torrance microfacet model, it uses cheaper terms than the surface
  * BRDF's specular lobe (see surface_brdf.fs).
  */
-vec3 SurfaceShading(const Light light) {
+vec3 SurfaceShading(const Light light, const PixelParams pixel, float occlusion) {
     if(light.NoL <= 0.0) {
         return vec3(0.0);
     }
 
-    vec3 Fr = SpecularLobe(light);
-    vec3 Fd = DiffuseLobe(light);
+    vec3 Fr = SpecularLobe(light, pixel);
+    vec3 Fd = DiffuseLobe(light, pixel);
 
-    vec3 color = Fd + Fr * m_SurfaceParams.EnergyCompensation;
-    return (color * light.ColorIntensity) * (light.Attenuation * light.NoL * m_PBRParams.Occlusion);
+    vec3 color = Fd + Fr * pixel.energyCompensation;
+
+    return (color * light.ColorIntensity) * (light.Attenuation * light.NoL * occlusion);
 }

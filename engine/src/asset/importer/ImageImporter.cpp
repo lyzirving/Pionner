@@ -40,6 +40,27 @@ namespace pio
 			return std::shared_ptr<Asset>();
 		}
 		LOGD("succed to load image[%s], [%u, %u, %u]", m_FullPath.c_str(), width, height, comp);
+		//[BugFix] some model's baseColor texture is targeted as 1 component
+		if(m_ImportParams.Setting.Image.Comp > comp && comp == 1)
+		{
+			LOGD("extend image's channel[%s] from[%u] to[%u]", m_FullPath.c_str(), comp, m_ImportParams.Setting.Image.Comp);
+			comp = m_ImportParams.Setting.Image.Comp;
+			uint8_t* extend = (uint8_t *)std::malloc(width * height * comp);
+			for(size_t i = 0; i < height; i++)
+			{
+				for(size_t j = 0; j < width; j++)
+				{
+					auto ind = i * width + j;
+					auto val = data[ind];
+					for(size_t k = 0; k < comp; k++)
+					{						
+						extend[ind + k] = (k == 3) ? 255 : val;
+					}
+				}
+			}
+			std::free(data);
+			data = extend;
+		}
 		auto image = CreateRef<Image>(m_ImportParams);
 		image->m_Width = width;
 		image->m_Height = height;

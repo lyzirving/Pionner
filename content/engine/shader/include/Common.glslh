@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ConstDef.glslh"
+
 // SRGB to Linear Space
 vec3 Mon2Lin(vec3 x) { return pow(x, vec3(2.2)); }
 
@@ -11,3 +13,6 @@ int NeInt(float val)
 }
 
 float When_Eqi(int x, int y) { return 1.f - abs(float(sign(x - y))); }
+
+float Saturate(float x) { return clamp(x, 0.0, 1.0); }
+float SaturateMediump(float x) { return min(x, MEDIUMP_FLT_MAX); }

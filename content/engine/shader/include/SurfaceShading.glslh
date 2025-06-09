@@ -1,0 +1,57 @@
+#pragma once
+
+#include "lighting/ShadingDirectionalLit.glslh"
+#include "SurfaceMaterial.glslh"
+
+void GetCommonPixelParams(const MaterialInputs material, inout PixelParams pixel) {
+    vec4 baseColor = material.baseColor;
+
+    pixel.diffuseColor = ComputeDiffuseColor(material.baseColor, material.metallic);
+
+    float reflectance = ComputeDielectricF0(material.reflectance);
+    pixel.f0 = ComputeF0(baseColor, material.metallic, reflectance);
+}
+
+void GetRoughnessPixelParams(const MaterialInputs material, inout PixelParams pixel) {
+    float perceptualRoughness = material.roughness;
+
+    // This is used by the refraction code and must be saved before we apply specular AA
+    pixel.perceptualRoughnessUnclamped = perceptualRoughness;
+
+    // Clamp the roughness to a minimum value to avoid divisions by 0 during lighting
+    pixel.perceptualRoughness = clamp(perceptualRoughness, MIN_PERCEPTUAL_ROUGHNESS, 1.0);
+
+    // Remaps the roughness to a perceptually linear roughness (roughness^2)
+    pixel.roughness = PerceptualRoughnessToRoughness(pixel.perceptualRoughness);
+}
+
+void GetEnergyCompensationPixelParams(inout PixelParams pixel) {
+    //todo
+    pixel.energyCompensation = vec3(1.0);
+}
+
+/**
+ * Computes all the parameters required to shade the current pixel/fragment.
+ * These parameters are derived from the MaterialInputs structure computed
+ * by the user's material code.
+ *
+ * This function is also responsible for discarding the fragment when alpha
+ * testing fails.
+ */
+void GetPixelParams(const MaterialInputs material, out PixelParams pixel) {
+    GetCommonPixelParams(material, pixel);
+    GetRoughnessPixelParams(material, pixel);
+    GetEnergyCompensationPixelParams(pixel);
+}
+
+vec4 EvaluateMaterial(const MaterialInputs material) {
+    PixelParams pixel;
+    GetPixelParams(material, pixel);
+
+    vec3 color = vec3(0.0);
+    
+    //EvaluateIBL(material, pixel, color);
+    EvaluateDirectionalLight(material, pixel, color);
+
+    return vec4(color, material.baseColor.a);
+}
