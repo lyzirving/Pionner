@@ -150,6 +150,18 @@ namespace pio
 
 	void Scene::OnPostTick(const Ref<RenderContext>& context)
 	{
+		auto& data = context->GetRenderingData();
+		if(!data.TransparentMeshItems.empty() && !m_Cameras.empty())
+		{
+			//sort transparent items, and make it listed from far to near
+			std::sort(data.TransparentMeshItems.begin(), data.TransparentMeshItems.end(), 
+					  [camera = m_Cameras[0]](const MeshRenderingItem& lhs, MeshRenderingItem& rhs)
+			{
+				float lhsDist = glm::distance(lhs.Center, camera->GetPosition());
+				float rhsDist = glm::distance(rhs.Center, camera->GetPosition());
+				return lhsDist > rhsDist;
+			});
+		}
 	}
 
 	void Scene::CreatePhysicsActor(const Ref<Node>& node)

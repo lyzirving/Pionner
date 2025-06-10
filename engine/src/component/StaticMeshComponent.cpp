@@ -127,7 +127,14 @@ namespace pio
 			else
 			{
 				if(material->IsTranslucency())
+				{
+					if(m_TransComp)
+					{
+						auto aabb = (m_TransComp->GetMat() * mesh.Transform) * mesh.BoundingBox;
+						item.Center = aabb.Center();
+					}
 					data.TransparentMeshItems.push_back(item);
+				}
 				else
 					data.OpaqueMeshItems.push_back(item);
 

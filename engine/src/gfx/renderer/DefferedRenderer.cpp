@@ -5,6 +5,7 @@
 #include "gfx/pass/GBufferPass.h"
 #include "gfx/pass/DefferedPass.h"
 #include "gfx/pass/PostProcessPass.h"
+#include "gfx/pass/ForwardPass.h"
 
 #include "gfx/renderer/RenderContext.h"
 
@@ -22,11 +23,13 @@ namespace pio
 		auto pointLitShadowCasterPass = CreateRef<PointLitShadowCasterPass>("PointLitShadowCasterPass", RenderPassEvent(RenderingShadows + 1));
 		auto gPass = CreateRef<GBufferPass>("GBufferPass", RenderingOpaques);		
 		auto deferredPass = CreateRef<DefferedPass>("DefferedPass", AfterRenderingOpaques);
-		auto postProcess = CreateRef<PostProcessPass>("PostProcessPass", RenderingPostProcessing);
+		auto forwardPass = CreateRef<ForwardPass>("ForwardPass", RenderingTransparents);
+		auto postProcess = CreateRef<PostProcessPass>("PostProcessPass", RenderingPostProcessing);		
 
 		m_PassMap.insert({ mainLitShadowCasterPass->GetClassName(), mainLitShadowCasterPass });
 		m_PassMap.insert({ pointLitShadowCasterPass->GetClassName(), pointLitShadowCasterPass });
 		m_PassMap.insert({ gPass->GetClassName(), gPass});
+		m_PassMap.insert({ forwardPass->GetClassName(), forwardPass });
 		m_PassMap.insert({ deferredPass->GetClassName(), deferredPass});
 		m_PassMap.insert({ postProcess->GetClassName(), postProcess });
 	}
