@@ -49,7 +49,8 @@ namespace pio
 
 	void SkinnedMeshNode::OnInit()
 	{
-		AddComponent<SkeletalMeshComponent>();
+		auto comp = AddComponent<SkeletalMeshComponent>();
+		comp->SetTransformComponent(GetComponent<TransformComponent>());
 	}
 
 	void SkinnedMeshNode::OnBeginFrameTick(const Ref<RenderContext>& context)
@@ -59,12 +60,8 @@ namespace pio
 
 	void SkinnedMeshNode::OnTickComponents(const Ref<RenderContext>& context)
 	{
-		auto transComp = GetComponent<TransformComponent>();
-		auto meshComp = GetComponent<SkeletalMeshComponent>();
-
-		transComp->OnTick();
-		meshComp->OnTransformChange(transComp);
-		meshComp->OnTick();
+		GetComponent<TransformComponent>()->OnTick();
+		GetComponent<SkeletalMeshComponent>()->OnTick();
 	}
 
 	void SkinnedMeshNode::OnTick(const Ref<RenderContext>& context)

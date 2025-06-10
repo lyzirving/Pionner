@@ -14,9 +14,9 @@
 namespace pio
 {
 	void WireframeNode::OnInit()
-	{
+	{		
+		StaticMeshNode::OnInit();
 		SetShowOutliner(false);
-		auto comp = AddComponent<StaticMeshComponent>();		
 	}
 
 	void WireframeNode::SetColor(const glm::vec3& color)

@@ -33,6 +33,8 @@ namespace pio
 
 	void DirectionalLitComponent::OnTick()
 	{
+		OnTransformChange();
+
 		if(m_UBlock->AnyChange())
 		{
 			m_Context.lock()->UploadData(m_UBlock->GetBuffer()->As<void*>(), m_UBlock->GetByteUsed(), m_UBuffer);
@@ -42,9 +44,17 @@ namespace pio
 		m_ShadowMap->OnTick();
 	}
 
-	void DirectionalLitComponent::OnTransformChange(const Ref<TransformComponent>& comp)
+	void DirectionalLitComponent::SetTransformComponent(const Ref<TransformComponent>& comp)
 	{
-		const auto& rotate = comp->GetRotation();
+		m_TransComp = comp;
+	}
+
+	void DirectionalLitComponent::OnTransformChange()
+	{
+		if(!m_TransComp)
+			return;
+
+		const auto& rotate = m_TransComp->GetRotation();
 		SetDirection(glm::normalize(rotate.Mat() * (glm::vec4(-World::Forward, 0.f))));
 		
 		m_ShadowMap->SetViewDirection(GetDirection());

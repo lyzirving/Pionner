@@ -34,7 +34,8 @@ namespace pio
 
 	void StaticMeshNode::OnInit()
 	{	
-		AddComponent<StaticMeshComponent>();
+		auto comp = AddComponent<StaticMeshComponent>();
+		comp->SetTransformComponent(GetComponent<TransformComponent>());
 	}
 
 	void StaticMeshNode::OnBeginFrameTick(const Ref<RenderContext>& context)
@@ -44,12 +45,8 @@ namespace pio
 
 	void StaticMeshNode::OnTickComponents(const Ref<RenderContext>& context)
 	{
-		auto transComp = GetComponent<TransformComponent>();
-		auto meshComp = GetComponent<StaticMeshComponent>();
-
-		transComp->OnTick();
-		meshComp->OnTransformChange(transComp);
-		meshComp->OnTick();
+		GetComponent<TransformComponent>()->OnTick();
+		GetComponent<StaticMeshComponent>()->OnTick();
 	}
 
 	void StaticMeshNode::OnTick(const Ref<RenderContext>& context)

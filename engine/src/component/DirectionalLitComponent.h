@@ -19,7 +19,7 @@ namespace pio
 		virtual void OnAttach() override;
 		virtual void OnTick() override;
 
-		void OnTransformChange(const Ref<TransformComponent>& comp);
+		void SetTransformComponent(const Ref<TransformComponent>& comp);		
 
 		const Ref<UniformBuffer>& GetUBuffer() const { return m_UBuffer; }
 		const Ref<ShadowMap>& GetShadowMap() const { return m_ShadowMap; }
@@ -27,6 +27,7 @@ namespace pio
 	private:
 		void CreateUBuffer();
 		void CreateShadowMap();
+		void OnTransformChange();
 
 		PIO_DEFINE_PROPERTY(glm::vec3, Direction, World::Down)
 		PIO_DEFINE_PROPERTY(glm::vec3, Color, glm::vec3(0.6f))
@@ -41,5 +42,6 @@ namespace pio
 		Ref<UniformBlock> m_UBlock;
 		Ref<UniformBuffer> m_UBuffer;
 		Ref<ShadowMap> m_ShadowMap;
+		Ref<TransformComponent> m_TransComp;
 	};
 }

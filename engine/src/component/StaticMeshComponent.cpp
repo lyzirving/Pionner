@@ -48,8 +48,16 @@ namespace pio
 		UpdateIndexedBuffer(index);
 	}
 
-	void StaticMeshComponent::OnTransformChange(const Ref<TransformComponent>& comp)
+	void StaticMeshComponent::SetTransformComponent(const Ref<TransformComponent>& comp)
 	{
+		m_TransComp = comp;
+	}
+
+	void StaticMeshComponent::OnTransformChange()
+	{
+		if(!m_TransComp)
+			return;
+
 		if(!m_Mesh)
 			return;
 
@@ -60,19 +68,21 @@ namespace pio
 		{
 			const auto& mesh = subMesh[i];
 			auto* buffer = m_MotionBuffers[i]->As<UMotionBuffer>();
-			buffer->SetTransform(comp->GetMat());
+			buffer->SetTransform(m_TransComp->GetMat());
 			buffer->SetLocalTransform(mesh.Transform);
 			buffer->SetSkeletalOn(false);
 			
 			if(node->GetMobility() != Mobility_Ignore)
 			{				
-				node->m_BoundingBox.Union((comp->GetMat() * mesh.Transform) * mesh.BoundingBox);
+				node->m_BoundingBox.Union((m_TransComp->GetMat() * mesh.Transform) * mesh.BoundingBox);
 			}			
 		}
 	}
 
 	void StaticMeshComponent::OnTick()
 	{
+		OnTransformChange();
+
 		for(size_t i = 0; i < m_MotionBuffers.size(); ++i)
 		{
 			m_MotionBuffers[i]->As<UMotionBuffer>()->Upload();

@@ -22,8 +22,10 @@
 namespace pio
 {	
 	void SpriteNode::OnInit()
-	{
-		auto comp = AddComponent<StaticMeshComponent>();
+	{		
+		StaticMeshNode::OnInit();
+		auto comp = GetComponent<StaticMeshComponent>();
+
 		auto mesh = RefCast<Asset, StaticMesh>(AssetMgr::Get()->GetAsset<StaticMesh>(Path::MeshKey(MeshAsset::PLANE))->SpawnChild());
 		auto textureMaterial = AssetMgr::Get()->GetAsset<TexturedMaterial>(Path::MaterialKey(MatAsset::TEXTURED))->SpawnChild();
 
@@ -34,15 +36,13 @@ namespace pio
 	void SpriteNode::OnTickComponents(const Ref<RenderContext>& context)
 	{	
 		auto transComp = GetComponent<TransformComponent>();
-		auto meshComp = GetComponent<StaticMeshComponent>();
 
 		auto billboard = Rotator(Math::BillboardRotation(GetScene()->GetMainCamera()->GetComponent<CameraComponent>()->GetViewMat()));
 		Rotator rotator(90.f, 0.f, 0.f);
 		transComp->SetRotation(billboard * rotator);
 
 		transComp->OnTick();
-		meshComp->OnTransformChange(transComp);
-		meshComp->OnTick();
+		GetComponent<StaticMeshComponent>()->OnTick();
 	}
 
 	void SpriteNode::SetFlipY(bool flip)

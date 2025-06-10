@@ -25,7 +25,8 @@ namespace pio
 {
 	void DirectionalLitNode::OnInit()
 	{
-		AddComponent<DirectionalLitComponent>();
+		auto comp = AddComponent<DirectionalLitComponent>();
+		comp->SetTransformComponent(GetComponent<TransformComponent>());
 
 		m_Gizmo = m_Scene.lock()->CreateChildNode<WireframeNode>(Self<Node>(), "DirLitGizmo");
 		auto gizmoMesh = AssetMgr::Get()->GetAsset<StaticMesh>(Path::MeshKey(MeshAsset::DIRLIT_GIZMO));
@@ -109,12 +110,8 @@ namespace pio
 
 	void DirectionalLitNode::OnTickComponents(const Ref<RenderContext>& context)
 	{
-		auto transComp = GetComponent<TransformComponent>();
-		auto litComp = GetComponent<DirectionalLitComponent>();
-
-		transComp->OnTick();
-		litComp->OnTransformChange(transComp);
-		litComp->OnTick();
+		GetComponent<TransformComponent>()->OnTick();
+		GetComponent<DirectionalLitComponent>()->OnTick();
 	}
 
 	void DirectionalLitNode::OnRender(const Ref<RenderContext>& context)

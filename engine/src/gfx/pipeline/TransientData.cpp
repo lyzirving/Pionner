@@ -14,6 +14,7 @@ namespace pio
 		MeshBuff = rhs.MeshBuff;
 		Material = rhs.Material;
 		UniformBuffers = rhs.UniformBuffers;
+		Center = rhs.Center;
 	}
 
 	MeshRenderingItem::MeshRenderingItem(MeshRenderingItem&& rhs) noexcept
@@ -23,6 +24,7 @@ namespace pio
 		MeshBuff = std::move(rhs.MeshBuff);
 		Material = std::move(rhs.Material);
 		UniformBuffers = std::move(rhs.UniformBuffers);
+		Center = std::move(rhs.Center);
 
 		rhs.Mode = RenderingMode_Num;
 	}

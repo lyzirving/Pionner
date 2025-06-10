@@ -15,6 +15,7 @@ namespace pio
 		Ref<MeshRenderBuffer> MeshBuff;
 		Ref<Material> Material;
 		std::vector<Ref<UniformBuffer>> UniformBuffers;
+		glm::vec3 Center{ 0.f };
 
 		MeshRenderingItem() {}
 		MeshRenderingItem(const MeshRenderingItem& rhs);

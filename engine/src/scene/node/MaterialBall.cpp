@@ -102,7 +102,6 @@ namespace pio
 		auto meshComp = GetComponent<StaticMeshComponent>();
 
 		transComp->OnTick();
-		meshComp->OnTransformChange(transComp);
 		meshComp->OnTick();
 
 		const auto& meshBuffs = meshComp->GetRenderBuffer();

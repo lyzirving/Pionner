@@ -67,6 +67,8 @@ namespace pio
 
 	void SkeletalMeshComponent::OnTick()
 	{	
+		OnTransformChange();
+
 		for(size_t i = 0; i < m_MotionBuffers.size(); ++i)
 		{
 			m_MotionBuffers[i]->As<UMotionBuffer>()->Upload();
@@ -84,8 +86,16 @@ namespace pio
 		}
 	}
 
-	void SkeletalMeshComponent::OnTransformChange(const Ref<TransformComponent>& comp)
+	void SkeletalMeshComponent::SetTransformComponent(const Ref<TransformComponent>& comp)
 	{
+		m_TransComp = comp;
+	}
+
+	void SkeletalMeshComponent::OnTransformChange()
+	{
+		if(!m_TransComp)
+			return;
+
 		if(!m_Mesh)
 			return;
 
@@ -95,14 +105,14 @@ namespace pio
 		{
 			const auto& mesh = subMesh[i];
 			auto* buffer = m_MotionBuffers[i]->As<UMotionBuffer>();
-			buffer->SetTransform(comp->GetMat());
+			buffer->SetTransform(m_TransComp->GetMat());
 			buffer->SetLocalTransform(mesh.Transform);
 			buffer->SetSkeletalOn(IsStart());
 
 			if(node->GetMobility() != Mobility_Ignore)
 			{
 				// bounding box can't consider skeletal animation
-				node->m_BoundingBox.Union((comp->GetMat() * mesh.Transform) * mesh.BoundingBox);
+				node->m_BoundingBox.Union((m_TransComp->GetMat() * mesh.Transform) * mesh.BoundingBox);
 			}
 		}
 	}

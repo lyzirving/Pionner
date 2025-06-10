@@ -22,7 +22,7 @@ namespace pio
 		virtual ~SkeletalMeshComponent() = default;
 		virtual void OnTick();
 
-		void OnTransformChange(const Ref<TransformComponent>& comp);
+		void SetTransformComponent(const Ref<TransformComponent>& comp);		
 		void OnBoneTransformChange();
 		void OnRender(RenderingData& data);
 		
@@ -61,6 +61,7 @@ namespace pio
 	protected:
 		void CreateBuffer();
 		void CreateSkinningBuffer();
+		void OnTransformChange();
 
 		PIO_DEFINE_PROPERTY(Ref<SkinnedMesh>, Mesh)
 		PIO_DEFINE_PROPERTY(bool, bCastShadow, true)
@@ -77,5 +78,7 @@ namespace pio
 
 		Ref<UniformBlock> m_SkinningUBlock;
 		Ref<UniformBuffer> m_SkinningUBuffer;
+
+		Ref<TransformComponent> m_TransComp;
 	};
 }
