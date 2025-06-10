@@ -16,6 +16,22 @@
 
 namespace pio
 {
+	TextureWrap AiTexMapMode2WrapMode(aiTextureMapMode mode)
+	{
+		switch(mode)
+		{
+			case aiTextureMapMode_Wrap:
+				return TextureWrap::Repeat;
+			case aiTextureMapMode_Clamp:
+				return TextureWrap::ClampEdge;
+			case aiTextureMapMode_Decal:
+			case aiTextureMapMode_Mirror:				
+			default:
+				LOGW("warning! unimplemented ai texture mode[%u], use clamp edge", mode);
+				return TextureWrap::ClampEdge;
+		}
+	}
+
 	MaterialImporter::MaterialImporter(const ImportParams& params) : Importer(params)
 	{
 	}
@@ -79,7 +95,7 @@ namespace pio
 
 		aiColor3D aiColor{};
 		ai_real aiFloat{ 0.f };
-		aiString aiTexPath;
+		aiString aiTexPath;		
 
 		if (AIMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) == AI_SUCCESS)
 			albedoColor = { aiColor.r, aiColor.g, aiColor.b };
@@ -101,9 +117,11 @@ namespace pio
 		material->SetMetallic(metalness);
 		material->SetRoughness(roughness);
 		material->SetAlpha(opacity);
-
+		aiTextureMapMode mapMode[3]{ aiTextureMapMode_Clamp, aiTextureMapMode_Clamp, aiTextureMapMode_Clamp };
 		// ------------------------ Base Color Start --------------------------------		
-		bool hasAlbedoMap = AIMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath) == AI_SUCCESS;
+		bool hasAlbedoMap = AIMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &aiTexPath, 
+												   nullptr, nullptr, nullptr, nullptr, 
+												   mapMode) == AI_SUCCESS;
 		bool fallback = !hasAlbedoMap;
 		if (hasAlbedoMap)
 		{
@@ -114,7 +132,7 @@ namespace pio
 				.SetName(Path::PathWithoutSuffix(aiTexPath.C_Str()))
 				.SetSuffix(Path::FindSuffix(aiTexPath.C_Str()))
 				.SetChannelNum(3)
-				.SetTexParam(TextureParams(TextureWrap::ClampEdge, TextureWrap::ClampEdge,
+				.SetTexParam(TextureParams(AiTexMapMode2WrapMode(mapMode[0]), AiTexMapMode2WrapMode(mapMode[1]),
 							 TextureFilterMin::Linear, TextureFilterMag::Linear));
 			auto img = AssetMgr::Get()->LoadAsset<Image>(curParams);			
 			if (img)

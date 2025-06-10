@@ -4,7 +4,7 @@
 */
 #version 430 core
 #pragma stage : vert
-precision mediump float;
+precision highp float;
 
 layout (location = 0) in vec3 a_Pos;
 layout (location = 1) in vec2 a_Texcoord;
@@ -47,7 +47,7 @@ void main() {
 
 #version 430 core 
 #pragma stage : frag 
-precision mediump float;
+precision highp float;
 
 #include "material/PBRMaterial.glslh"
 

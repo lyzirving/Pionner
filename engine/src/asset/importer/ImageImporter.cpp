@@ -49,12 +49,12 @@ namespace pio
 			for(size_t i = 0; i < height; i++)
 			{
 				for(size_t j = 0; j < width; j++)
-				{
-					auto ind = i * width + j;
-					auto val = data[ind];
+				{					
+					auto val = data[i * width + j];
+					auto idx = i * width * comp + j * comp;
 					for(size_t k = 0; k < comp; k++)
 					{						
-						extend[ind + k] = (k == 3) ? 255 : val;
+						extend[idx + k] = (k == 3) ? 255 : val;
 					}
 				}
 			}

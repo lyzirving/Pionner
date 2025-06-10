@@ -4,7 +4,7 @@
 */
 #version 430 core
 #pragma stage : vert
-precision mediump float;
+precision highp float;
 
 layout (location = 0) in vec3 a_Pos;
 layout (location = 1) in vec2 a_Texcoord;
@@ -37,12 +37,7 @@ void main() {
 
 #version 430 core 
 #pragma stage : frag 
-precision mediump float;
-
-#include "Camera.glslh"
-#include "VisualEffects.glslh"
-#include "lighting/ShadingDirectionalLit.glslh"
-#include "material/PBRMaterial.glslh"
+precision highp float;
 
 in v2f {
     vec3 v_WorldPos;
@@ -52,38 +47,40 @@ in v2f {
     flat mat3 v_InvTBN;
 }; 
 
-vec4 LightContribution();
+#include "VisualEffects.glslh"
+#include "SurfaceShading.glslh"
+#include "material/PBRMaterial.glslh"
+
+void MakeMaterial(inout MaterialInputs material);
+void PrepareShading();
 
 out vec4 o_FragColor;
 
 void main() {
-	vec4 baseColor = texture(u_AlbedoMap, v_TexCoord);	
-	vec3 surface = texture(u_MetallicRoughnessMap, v_TexCoord).rgb;    
-
-    m_PBRParams.FragPos = v_WorldPos;
-	m_PBRParams.N = v_Normal;
-    m_PBRParams.Albedo = baseColor.rgb * u_PBRMaterial.Albedo;
-    m_PBRParams.Alpha = baseColor.a;
-    // roughness, minimum roughness of 0.05 to keep specular highlight
-	m_PBRParams.Roughness = max(surface.g * u_PBRMaterial.Roughness, 0.05);    
-    m_PBRParams.Metalness = surface.b * u_PBRMaterial.Metalness;
-    m_PBRParams.Emission = texture(u_EmissionMap, v_TexCoord).rgb * u_PBRMaterial.Emission;
-
-    m_PBRParams.V = normalize(u_Camera.Position - m_PBRParams.FragPos);
-    m_PBRParams.R = reflect(-m_PBRParams.V, m_PBRParams.N);
-    m_PBRParams.NdotV = max(dot(m_PBRParams.N, m_PBRParams.V), 0.f);
-    m_PBRParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);
-
-    vec4 color = LightContribution();
-
+	MaterialInputs material;
+    InitMaterial(material);
+    MakeMaterial(material);
+    PrepareShading();
+    vec4 color = EvaluateMaterial(material);
     //@todo: use macro to do post process
     o_FragColor = vec4(GammaCorrect(color.rgb), color.a);
 }
 
-vec4 LightContribution()
-{   
-    vec3 lightContrib = vec3(0.f);
-    lightContrib += LitEffect_DirLit() * LitEffect_DirLitShadow();
-    lightContrib += (m_PBRParams.Albedo * m_PBRParams.Emission);
-    return vec4(lightContrib.rgb, m_PBRParams.Alpha);
+void MakeMaterial(inout MaterialInputs material) {
+    vec4 baseColor = texture(u_AlbedoMap, v_TexCoord);
+	vec3 surface = texture(u_MetallicRoughnessMap, v_TexCoord).rgb; 
+
+	material.baseColor = vec4(baseColor.rgb * u_PBRMaterial.Albedo, baseColor.a);
+    // roughness, minimum roughness of 0.05 to keep specular highlight
+	material.roughness = max(surface.g * u_PBRMaterial.Roughness, 0.05);
+    material.metallic = surface.b * u_PBRMaterial.Metalness;
+    material.emissive = vec4(texture(u_EmissionMap, v_TexCoord).rgb * u_PBRMaterial.Emission, 1.0);
+}
+
+void PrepareShading() {
+    m_ShadingPosition = v_WorldPos;
+	m_ShadingNormal = v_Normal;
+    m_ShadingView = normalize(u_Camera.Position - m_ShadingPosition);
+    m_ShadingReflected = reflect(-m_ShadingView, m_ShadingNormal);
+    m_ShadingNoV = max(dot(m_ShadingNormal, m_ShadingView), MIN_N_DOT_V);
 }

@@ -50,7 +50,6 @@ vec4 EvaluateMaterial(const MaterialInputs material) {
 
     vec3 color = vec3(0.0);
     
-    //EvaluateIBL(material, pixel, color);
     EvaluateDirectionalLight(material, pixel, color);
 
     return vec4(color, material.baseColor.a);
