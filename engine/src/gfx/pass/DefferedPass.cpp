@@ -42,9 +42,17 @@ namespace pio
             .Format(TextureFormat::RGBA_HALF)
             .Width(colorSize.x).Height(colorSize.y)
             .TexWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
-            .TexFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
+            .TexFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);        
+
+        TextureSpecificBuilder depthBuilder;
+        depthBuilder.Name("Defferred Depth Buffer")
+            .Type(TextureType::RenderBuffer)
+            .Format(TextureFormat::DEPTH_24_STENCIL_8)
+            .Width(depthSize.x).Height(depthSize.y);
 
         fboSpec.ColorSpec.push_back(colorBufferSpec.Build());
+        fboSpec.DepthSpec.push_back(depthBuilder.Build());
+
         m_FrameBuff = FrameBuffer::Create(context, fboSpec);
         context->UploadData(m_FrameBuff);
     }

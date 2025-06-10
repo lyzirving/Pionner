@@ -147,6 +147,11 @@ namespace pio
 		meshBuff->Vao->UnBind();
 	}
 
+	bool RenderContext::CopyFrameBufferDepth(const Ref<FrameBuffer>& src, const Ref<FrameBuffer>& dst)
+	{
+		return m_Api->CopyFrameBufferDepth(src, dst);
+	}
+
 	Ref<Texture> RenderContext::CreateTexture(const TextureSpecific& spec)
 	{
 		return m_TextureMgr->Create(spec);

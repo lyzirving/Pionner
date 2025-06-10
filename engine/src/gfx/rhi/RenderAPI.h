@@ -5,6 +5,7 @@
 namespace pio
 {
 	class RenderContext;
+	class FrameBuffer;
 	struct ResourceGCDelegate;
 
 	class RenderAPI : public Object
@@ -24,7 +25,9 @@ namespace pio
 		virtual void DrawElements(DrawMode mode, uint32_t indexNum, IndexInternalFmt fmt) = 0;
 
 		virtual void OnBeginFrame(RenderContext& ctx) = 0;
-		virtual void OnEndFrame(RenderContext& ctx) = 0;		
+		virtual void OnEndFrame(RenderContext& ctx) = 0;
+
+		virtual bool CopyFrameBufferDepth(const Ref<FrameBuffer>& src, const Ref<FrameBuffer>& dst) = 0;
 
 		virtual void ReleaseResource(ResourceGCDelegate &&resource) = 0;
 

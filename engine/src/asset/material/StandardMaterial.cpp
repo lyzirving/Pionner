@@ -17,9 +17,9 @@ namespace pio
 	{
 	}	
 
-	bool StandardMaterial::BindAt(const Ref<Shader>& shader)
+	bool StandardMaterial::Bind(const Ref<Shader>& shader)
 	{
-		if(!Material::BindAt(shader))
+		if(!Material::Bind(shader))
 			return false;
 
 		if(Texture2D* t; m_AlbedoMap && (t = m_AlbedoMap->GetTexture()->As<Texture2D>()))
@@ -41,34 +41,6 @@ namespace pio
 		{
 			t->BindAt(shader, "u_EmissionMap");
 		}
-		return true;
-	}
-
-	bool StandardMaterial::Bind()
-	{
-		if(!Material::Bind())
-			return false;
-
-		if(Texture2D* t; m_AlbedoMap && (t = m_AlbedoMap->GetTexture()->As<Texture2D>()))
-		{
-			t->BindAt(m_Shader, "u_AlbedoMap");
-		}
-
-		if(Texture2D* t; m_MetallicRoughness && (t = m_MetallicRoughness->GetTexture()->As<Texture2D>()))
-		{
-			t->BindAt(m_Shader, "u_MetallicRoughnessMap");
-		}
-
-		if(Texture2D* t; m_NormalMap && (t = m_NormalMap->GetTexture()->As<Texture2D>()))
-		{
-			t->BindAt(m_Shader, "u_NormalMap");
-		}
-
-		if(Texture2D* t; m_EmissionMap && (t = m_EmissionMap->GetTexture()->As<Texture2D>()))
-		{
-			t->BindAt(m_Shader, "u_EmissionMap");
-		}
-
 		return true;
 	}
 

@@ -12,8 +12,7 @@ namespace pio
 	public:
 		TexturedMaterial(const ImportParams& params);
 		virtual ~TexturedMaterial() = default;		
-		virtual bool BindAt(const Ref<Shader>& shader) override;
-		virtual bool Bind() override;
+		virtual bool Bind(const Ref<Shader>& shader) override;
 		virtual bool UnBind() override;
 		virtual Ref<Asset> SpawnChild() override;
 		virtual bool IsTranslucency() const override;

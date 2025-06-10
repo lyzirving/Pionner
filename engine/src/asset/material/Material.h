@@ -20,8 +20,7 @@ namespace pio
 		virtual bool IsInit() const override { return m_UniformBuffer.use_count() != 0; }
 		virtual void OnAttrsChange() override;
 
-		virtual bool BindAt(const Ref<Shader>& shader);
-		virtual bool Bind();		
+		virtual bool Bind(const Ref<Shader>& shader);				
 		virtual bool UnBind();
 
 		virtual bool IsTranslucency() const = 0;

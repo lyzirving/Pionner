@@ -130,6 +130,8 @@ namespace pio
 		void DrawTriangles(const Ref<MeshRenderBuffer>& meshBuff);
 		void DrawLines(const Ref<MeshRenderBuffer>& meshBuff);
 
+		bool CopyFrameBufferDepth(const Ref<FrameBuffer>& src, const Ref<FrameBuffer>& dst);
+
 		// ------------------------------ Render state api ------------------------------------		
 		void SetClear(const Clear& clear) { m_State->SetClear(clear); }
 		void SetCullFace(const CullFace& cull) { m_State->SetCullFace(cull); }

@@ -70,7 +70,7 @@ void MakeMaterial(inout MaterialInputs material) {
     vec4 baseColor = texture(u_AlbedoMap, v_TexCoord);
 	vec3 surface = texture(u_MetallicRoughnessMap, v_TexCoord).rgb; 
 
-	material.baseColor = vec4(baseColor.rgb * u_PBRMaterial.Albedo, baseColor.a);
+	material.baseColor = vec4(baseColor.rgb * u_PBRMaterial.Albedo, u_PBRMaterial.Alpha);
     // roughness, minimum roughness of 0.05 to keep specular highlight
 	material.roughness = max(surface.g * u_PBRMaterial.Roughness, 0.05);
     material.metallic = surface.b * u_PBRMaterial.Metalness;

@@ -17,27 +17,14 @@ namespace pio
 	{
 	}	
 
-	bool TexturedMaterial::BindAt(const Ref<Shader>& shader)
+	bool TexturedMaterial::Bind(const Ref<Shader>& shader)
 	{
-		if(!Material::BindAt(shader))
+		if(!Material::Bind(shader))
 			return false;
 
 		if(Texture2D* t; m_Texture && (t = m_Texture->GetTexture()->As<Texture2D>()))
 		{
 			t->BindAt(shader, "u_Texture");
-		}
-
-		return true;
-	}
-
-	bool TexturedMaterial::Bind()
-	{
-		if(!Material::Bind())
-			return false;
-
-		if(Texture2D* t; m_Texture && (t = m_Texture->GetTexture()->As<Texture2D>()))
-		{
-			t->BindAt(m_Shader, "u_Texture");
 		}
 
 		return true;

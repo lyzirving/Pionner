@@ -46,9 +46,9 @@ namespace pio
 			m_Context.lock()->UploadData(m_UniformBlock->GetBuffer()->As<void*>(), m_UniformBlock->GetByteUsed(), m_UniformBuffer);
 			m_UniformBlock->Invalidate(false);
 		}		
-	}	
+	}
 
-	bool Material::BindAt(const Ref<Shader>& shader)
+	bool Material::Bind(const Ref<Shader>& shader)
 	{
 		if(!shader || !shader->IsInit())
 		{
@@ -69,12 +69,7 @@ namespace pio
 		}
 
 		return m_UniformBuffer->BindBlock(m_Context.lock(), shader);
-	}
-
-	bool Material::Bind()
-	{
-		return BindAt(m_Shader);		
-	}
+	}	
 
 	bool Material::UnBind()
 	{

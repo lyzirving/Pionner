@@ -10,6 +10,7 @@
 #include "gfx/rhi/VertexArray.h"
 #include "gfx/rhi/VertexBuffer.h"
 #include "gfx/rhi/IndexBuffer.h"
+#include "gfx/rhi/FrameBuffer.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -233,6 +234,26 @@ namespace pio
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
 		}
+	}
+
+	bool GLRenderAPI::CopyFrameBufferDepth(const Ref<FrameBuffer>& src, const Ref<FrameBuffer>& dst)
+	{
+		if(!src)
+		{
+			LOGE("src frame buffer is invalid");
+			return false;
+		}
+
+		if(!dst)
+		{
+			LOGE("dst frame buffer is invalid");
+			return false;
+		}
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, src->Id());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst->Id());
+		glBlitFramebuffer(0, 0, src->Width(), src->Height(), 0, 0, dst->Width(), dst->Height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		return GLHelper::CheckError("fail to copy frame buffer[%s]'s depth to [%s]", src->Name().c_str(), dst->Name().c_str());
 	}
 
 	void GLRenderAPI::ReleaseResource(ResourceGCDelegate&& resource)

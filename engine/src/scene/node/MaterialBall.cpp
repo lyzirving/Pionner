@@ -112,7 +112,7 @@ namespace pio
 
 		camBuff->BindBlock(context, shader);
 		dirLitBuff->BindBlock(context, shader);
-		m_Material->BindAt(shader);
+		m_Material->Bind(shader);
 
 		for(size_t i = 0; i < meshBuffs.size(); i++)
 		{

@@ -63,7 +63,7 @@ namespace pio
 
 				camUBuff->BindBlock(ctx, shader);
 
-				item.Material->Bind();
+				item.Material->Bind(shader);
 
 				for(auto& buff : item.UniformBuffers)
 					buff->BindBlock(ctx, shader);
