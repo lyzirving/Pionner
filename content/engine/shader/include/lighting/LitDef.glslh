@@ -24,15 +24,22 @@ const vec3 SPL_DIR[20] = vec3[]
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
 
-struct Light {
+struct Light {    
     vec3 ColorIntensity;
+    vec3 Position;
     vec3 L;
     vec3 H;
     float Attenuation;
+
     float NoV;
     float NoL;
     float NoH;
     float LoH;
+
+    float Bias;
+    float ShadowIntensity;
+    int ShadowMode;
+    bool CastShadow;
 };
 
 struct PixelParams {

@@ -61,9 +61,9 @@ void main() {
     InitMaterial(material);
     MakeMaterial(material);
     PrepareShading();
-    vec4 color = EvaluateMaterial(material);
+    vec3 color = EvaluateMaterial(material);
     //@todo: use macro to do post process
-    o_FragColor = vec4(GammaCorrect(color.rgb), color.a);
+    o_FragColor = vec4(GammaCorrect(color), material.baseColor.a);
 }
 
 void MakeMaterial(inout MaterialInputs material) {

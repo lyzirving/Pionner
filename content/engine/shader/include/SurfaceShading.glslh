@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lighting/ShadingPointLit.glslh"
 #include "lighting/ShadingDirectionalLit.glslh"
 #include "SurfaceMaterial.glslh"
 
@@ -44,13 +45,12 @@ void GetPixelParams(const MaterialInputs material, out PixelParams pixel) {
     GetEnergyCompensationPixelParams(pixel);
 }
 
-vec4 EvaluateMaterial(const MaterialInputs material) {
+vec3 EvaluateMaterial(const MaterialInputs material) {
     PixelParams pixel;
     GetPixelParams(material, pixel);
 
-    vec3 color = vec3(0.0);
-    
-    EvaluateDirectionalLight(material, pixel, color);
-
-    return vec4(color, material.baseColor.a);
+    vec3 color = vec3(0.0);    
+    color += EvaluateDirectionalLight(material, pixel);
+    color += EvaluatePointLight(material, pixel);
+    return color;
 }

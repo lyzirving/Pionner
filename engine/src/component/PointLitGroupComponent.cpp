@@ -17,6 +17,7 @@ namespace pio
 	{
 		CreateBuffer();
 		CreateShadowMap();
+		OnNumChange();
 	}
 
 	void PointLitGroupComponent::OnTick()

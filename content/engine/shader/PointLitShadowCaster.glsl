@@ -29,7 +29,7 @@ layout (triangles) in;
 // @todo: how to set max_vertices dynamically?
 layout (triangle_strip, max_vertices=72) out;
 
-#include "lighting/PointLitCaster.glslh"
+#include "ShadowUniforms.glslh"
 
 // v_FragPos from geometry shader (output per emitvertex())
 out g2f {

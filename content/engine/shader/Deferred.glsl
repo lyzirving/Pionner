@@ -33,33 +33,20 @@ in v2f {
 }; 
 
 #include "SurfaceShading.glslh"
-#include "lighting/PointLitEffect.glslh"
 
 void MakeMaterial(inout MaterialInputs material);
 void PrepareShading();
-vec4 LightContribution();
 
 out vec4 o_FragColor;
 
 void main() {
-	vec4 baseColor = texture(u_GAlbedoAlpha, v_TexCoord);	
-	vec3 surface = texture(u_GMaterial, v_TexCoord).rgb;
+	MaterialInputs material;
+    InitMaterial(material);
+    MakeMaterial(material);
+    PrepareShading();
 
-	m_PBRParams.FragPos = texture(u_GPosition, v_TexCoord).xyz;
-	m_PBRParams.N = texture(u_GNormal, v_TexCoord).xyz;
-    m_PBRParams.Albedo = baseColor.rgb;
-    m_PBRParams.Alpha = baseColor.a;
-	m_PBRParams.Roughness = surface.g;
-    m_PBRParams.Metalness = surface.b;
-    m_PBRParams.Occlusion = 1.0;
-    m_PBRParams.Emission = texture(u_GEmission, v_TexCoord).rgb;
-
-	m_PBRParams.V = normalize(u_Camera.Position - m_PBRParams.FragPos);
-    m_PBRParams.R = reflect(-m_PBRParams.V, m_PBRParams.N);
-    m_PBRParams.NdotV = max(dot(m_PBRParams.N, m_PBRParams.V), 0.f);
-    m_PBRParams.F0 = mix(U_F0, m_PBRParams.Albedo, m_PBRParams.Metalness);    
-
-    o_FragColor = LightContribution();
+    vec3 color = EvaluateMaterial(material);
+    o_FragColor = vec4(color.rgb, material.baseColor.a);
 }
 
 void MakeMaterial(inout MaterialInputs material) {		
@@ -76,19 +63,4 @@ void PrepareShading() {
     m_ShadingView = normalize(u_Camera.Position - m_ShadingPosition);
     m_ShadingReflected = reflect(-m_ShadingView, m_ShadingNormal);
     m_ShadingNoV = max(dot(m_ShadingNormal, m_ShadingView), MIN_N_DOT_V);
-}
-
-vec4 LightContribution()
-{   
-    MaterialInputs material;
-    InitMaterial(material);
-    MakeMaterial(material);
-    PrepareShading();
-    vec4 color = EvaluateMaterial(material);
-
-    vec3 lightContrib = vec3(0.f);
-    //lightContrib += LitEffect_DirLit() * LitEffect_DirLitShadow();
-    lightContrib += color.rgb * LitEffect_DirLitShadow();
-    lightContrib += LitEffect_PointLits() * LitEffect_PointLitShadow();   
-    return vec4(lightContrib.rgb, material.baseColor.a);
 }

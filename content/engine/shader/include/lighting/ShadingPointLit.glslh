@@ -1,0 +1,70 @@
+#pragma once
+
+#include "SurfaceShadow.glslh"
+#include "SurfaceMaterialInputs.glslh"
+#include "SurfaceShadingStandard.glslh"
+
+struct PointLit
+{
+    vec3 Position;
+    vec3 Color;
+    int Index;
+    float Intensity;
+	float Radius;
+	float Falloff;
+    float Bias;
+	float ShadowIntensity;
+    int ShadowMode;
+    bool CastShadow;
+};
+
+layout (std140) uniform PointLitBlock
+{
+    PointLit Lits[POINT_LIT_LIMIT];
+    int Num;
+} u_PointLits;
+
+Light GetPointLight(int i)
+{
+    Light light;
+
+    light.Position = u_PointLits.Lits[i].Position;
+    light.L = normalize(u_PointLits.Lits[i].Position - m_ShadingPosition);
+    light.NoV = m_ShadingNoV;
+    light.NoL = max(0.0, dot(m_ShadingNormal, light.L));
+
+    light.H = normalize(light.L + m_ShadingView); 
+    light.NoH = max(0.0, dot(m_ShadingNormal, light.H));
+    light.LoH = max(0.0, dot(light.L, light.H));
+
+    float dist = distance(m_ShadingPosition, light.Position);
+    light.Attenuation = clamp(1.0 - (dist * dist) / (u_PointLits.Lits[i].Radius * u_PointLits.Lits[i].Radius), 0.f, 1.f);
+    light.Attenuation *= mix(light.Attenuation, 1.0, u_PointLits.Lits[i].Falloff);
+
+    light.ColorIntensity = u_PointLits.Lits[i].Color * u_PointLits.Lits[i].Intensity * light.Attenuation;
+
+    light.Bias = u_PointLits.Lits[i].Bias;
+    light.ShadowIntensity = u_PointLits.Lits[i].ShadowIntensity;
+    light.ShadowMode = u_PointLits.Lits[i].ShadowMode;
+    light.CastShadow = u_PointLits.Lits[i].CastShadow;
+
+    return light;
+}
+
+bool LitOutOfRange(int index) {
+    float dist = distance(m_ShadingPosition, u_PointLits.Lits[index].Position);
+    return dist > u_PointLits.Lits[index].Radius;
+}
+
+vec3 EvaluatePointLight(const MaterialInputs material, const PixelParams pixel) {
+    vec3 color = vec3(0.0);
+    for(int i = 0; i < u_PointLits.Num; ++i) {
+        if(LitOutOfRange(i)) {
+            continue;
+        }
+        Light light = GetPointLight(i);
+        float visibility = SurfacePointLitShadow(light, i);        
+        color += SurfaceShading(light, pixel, visibility);
+    }
+    return color;
+}

@@ -4,11 +4,13 @@
 
 #include "component/CameraComponent.h"
 #include "component/DirectionalLitComponent.h"
+#include "component/PointLitGroupComponent.h"
 #include "component/StaticMeshComponent.h"
 #include "component/TransformComponent.h"
 
 #include "gfx/renderer/RenderContext.h"
 #include "gfx/renderer/MeshRenderBuffer.h"
+#include "gfx/renderer/PointLitShadowMap.h"
 
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/FrameBuffer.h"
@@ -74,6 +76,9 @@ namespace pio
 		dirLitComp->SetDirection(glm::normalize(rotator.Mat() * (glm::vec4(-World::Forward, 0.f))));
 		dirLitComp->SetbCastShadow(false);
 		dirLitComp->OnTick();
+
+		auto pointLitGroup = AddComponent<PointLitGroupComponent>();
+		pointLitGroup->OnTick();
 	}
 
 	void MaterialBall::SetMaterial(const Ref<Material>& material)
@@ -96,6 +101,8 @@ namespace pio
 		auto context = m_Context.lock();
 		auto camBuff = GetComponent<CameraComponent>()->GetUBuffer();
 		auto dirLitBuff = GetComponent<DirectionalLitComponent>()->GetUBuffer();
+		auto pointLitBuff = GetComponent<PointLitGroupComponent>()->GetUBuffer();
+		auto* pointLitShadow = GetComponent<PointLitGroupComponent>()->GetShadowMap()->DepthBuffer()->As<CubeMapArray>();
 		auto shader = context->FindShader(SHADER_SPEC_FORWARD);
 
 		auto transComp = GetComponent<TransformComponent>();
@@ -112,7 +119,9 @@ namespace pio
 
 		camBuff->BindBlock(context, shader);
 		dirLitBuff->BindBlock(context, shader);
-		m_Material->Bind(shader);
+		pointLitBuff->BindBlock(context, shader);
+		pointLitShadow->BindAt(shader, GpuAttr::UNI_PTLIT_SHADOW_MAP);
+		m_Material->Bind(shader);		
 
 		for(size_t i = 0; i < meshBuffs.size(); i++)
 		{
@@ -123,6 +132,8 @@ namespace pio
 
 		m_Material->UnBind();
 		dirLitBuff->UnBind();
+		pointLitShadow->UnBind();
+		pointLitBuff->UnBind();
 		camBuff->UnBind();
 		shader->UnBind();
 		context->OnEndFrameBuffer(m_FrameBuff);

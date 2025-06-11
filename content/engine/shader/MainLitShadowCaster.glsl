@@ -6,8 +6,8 @@
 #pragma stage : vert
 precision mediump float;
 
-#include "lighting/DirLitShadowCaster.glslh"
 #include "Motion.glslh"
+#include "ShadowUniforms.glslh"
 
 layout (location = 0) in vec3 a_Pos;
 layout (location = 5) in vec4 a_Weights;

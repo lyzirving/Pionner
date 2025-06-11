@@ -1,0 +1,36 @@
+#pragma once
+
+#include "lighting/LitDef.glslh"
+
+// ---------------- Directional Light Shadow Begin -----------------
+layout (std140) uniform DirectionalLitShadowBlock
+{
+	mat4 ViewMat;
+	mat4 PrjMat;
+    vec2 MapSize;
+} u_DirLitShadowCaster;
+
+uniform sampler2D u_ShadowMap;
+// ---------------- Directional Light Shadow End --------------------
+
+// ---------------- Point Light Shadow Begin -----------------
+struct PointLitShadowCasterAttr
+{
+    mat4 LitSpaceMat[POINT_LIT_DIRECTION_NUM];
+    vec3 Position;    
+    bool CastShadow;
+};
+
+layout (std140) uniform PointLitShadowCasterBlock
+{
+    // @todo:????
+    // The num of PointLitShadowCasterAttr array will influence the fps
+    // if POINT_LIT_LIMIT is set to be 10, and the fps is largely slowed down
+    // The slow down of fps is caused by the limit of bandwidth?
+    PointLitShadowCasterAttr LitAttr[POINT_LIT_LIMIT];
+    float FrustumFar;
+    int LitNum;	
+} u_PointLitCaster;
+
+uniform samplerCubeArray u_PointLitsShadow;
+// ---------------- Point Light Shadow End --------------------

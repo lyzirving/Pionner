@@ -62,14 +62,37 @@ namespace pio
             auto dirLitBuff = data.UBuffs[UBBinding_DirectionalLit];
             PIO_CHECK_RETURN(dirLitBuff, "directional lit is invalid in ForwardPass");
 
+            auto* shadowMap = data.Pipeline.DirLitShadowMap->As<ShadowMap>();
+            PIO_CHECK_RETURN(shadowMap, "shadow map is invalid in ForwardPass");
+            auto* depthBuff = shadowMap->DepthBuffer()->As<Texture2D>();
+            PIO_CHECK_RETURN(depthBuff, "shadow map is invalid in ForwardPass");
+            auto shadowUBuffer = shadowMap->GetUBuffer();
+            PIO_CHECK_RETURN(shadowUBuffer, "shadow map's ubuffer is invalid in ForwardPass");
+
+            auto pointLitBuff = data.UBuffs[UBBinding_PointLit];
+            CubeMapArray* pointLitDepth{ nullptr };
+            if(data.Pipeline.PointLitShadowMap) {
+                pointLitDepth = data.Pipeline.PointLitShadowMap->DepthBuffer()->As<CubeMapArray>();
+            }
+
             ctx->OnBeginFrameBuffer(defferdBuff, self->GetRenderState());
             shader->Bind();
 
             camUBuff->BindBlock(ctx, shader);
-            dirLitBuff->BindBlock(ctx, shader);
+            dirLitBuff->BindBlock(ctx, shader);            
+
+            // dir lit shadow
+            shadowUBuffer->BindBlock(ctx, shader);            
+
+            if(pointLitBuff) { pointLitBuff->BindBlock(ctx, shader); }            
 
             for(size_t i = 0; i < data.TransparentMeshItems.size(); ++i)
             {
+                depthBuff->BindAt(shader, GpuAttr::UNI_SHADOW_MAP);
+                if(pointLitDepth) { 
+                    pointLitDepth->BindAt(shader, GpuAttr::UNI_PTLIT_SHADOW_MAP); 
+                }
+
                 auto& item = data.TransparentMeshItems[i];
 
                 item.Material->Bind(shader);
@@ -86,6 +109,12 @@ namespace pio
 
                 shader->FreeSamplerUnit();
             }
+
+            depthBuff->UnBind();
+            shadowUBuffer->UnBind();
+
+            if(pointLitBuff) { pointLitBuff->UnBind(); }
+            if(pointLitDepth) { pointLitDepth->UnBind(); }
 
             camUBuff->UnBind();
             shader->UnBind();
