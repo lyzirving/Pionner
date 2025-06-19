@@ -60,5 +60,6 @@ namespace pio
 		std::vector<MeshRenderingItem> WireframeItems{};
 		std::vector<MeshRenderingItem> SpriteItems{};
 		PipelineData Pipeline;
+		uint32_t PermutationFlags{ 0 };
 	};
 }

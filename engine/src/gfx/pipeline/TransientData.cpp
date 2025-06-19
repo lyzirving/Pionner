@@ -91,6 +91,7 @@ namespace pio
 		WireframeItems = rhs.WireframeItems;
 		SpriteItems = rhs.SpriteItems;
 		Pipeline = rhs.Pipeline;
+		PermutationFlags = rhs.PermutationFlags;
 	}
 
 	RenderingData::RenderingData(RenderingData&& rhs) noexcept
@@ -106,6 +107,7 @@ namespace pio
 		WireframeItems = std::move(rhs.WireframeItems);
 		SpriteItems = std::move(rhs.SpriteItems);
 		Pipeline = std::move(rhs.Pipeline);
+		PermutationFlags = std::move(rhs.PermutationFlags);
 	}
 
 	RenderingData& RenderingData::operator=(const RenderingData& rhs)

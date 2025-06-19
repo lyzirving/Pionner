@@ -55,7 +55,7 @@ namespace pio
             if(!ctx->CopyFrameBufferDepth(data.Pipeline.GBuffer, defferdBuff))
                 return;
 
-            auto shader = ctx->FindShader(SHADER_SPEC_FORWARD);
+            auto shader = ctx->FindShader(SHADER_SPEC_FORWARD, data.PermutationFlags);
             PIO_CHECK_RETURN(shader, "shader is invalid in ForwardPass");
             auto camUBuff = data.UBuffs[UBBinding_Camera];
             PIO_CHECK_RETURN(camUBuff, "camera is invalid in ForwardPass");

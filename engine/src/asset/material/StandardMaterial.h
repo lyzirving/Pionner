@@ -46,6 +46,8 @@ namespace pio
 		PIO_DEFINE_PROPERTY(float, Metallic, 0.f)
 		PIO_DEFINE_PROPERTY(float, Roughness, 0.5)
 		PIO_DEFINE_PROPERTY(float, Occlusion, 1.f)
+		PIO_DEFINE_PROPERTY(float, ClearCoatFactor, 0.f)
+		PIO_DEFINE_PROPERTY(float, ClearCoatRoughnessFactor, 0.f)
 		PIO_DEFINE_PROPERTY(float, Alpha, 1.f)
 		PIO_DEFINE_PROPERTY(bool, bUseNormalMap, false)
 	};

@@ -613,6 +613,24 @@ namespace pio
 			ImGui::SameLine();
 			ImGui::SliderFloat("##Roughness", &roughness, 0.f, 1.f, "%.3f");
 			material->SetRoughness(roughness);
+
+			if(material->HasFlag(ShaderPermutationFlag::USE_CLEARCOAT))
+			{	
+				auto clearCoat = material->GetClearCoatFactor();
+				auto clearCoatRoughness = material->GetClearCoatRoughnessFactor();
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("ClearCoat  ");
+				ImGui::SameLine();
+				ImGui::SliderFloat("##ClearCoatFactor", &clearCoat, 0.f, 1.f, "%.3f");
+				material->SetClearCoatFactor(clearCoat);
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("ClearCoatRoughness");
+				ImGui::SameLine();
+				ImGui::SliderFloat("##ClearCoatRoughness", &clearCoatRoughness, 0.f, 1.f, "%.3f");
+				material->SetClearCoatRoughnessFactor(clearCoatRoughness);
+			}
 		}
 	}
 

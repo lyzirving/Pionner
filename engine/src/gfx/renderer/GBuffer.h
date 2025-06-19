@@ -21,7 +21,7 @@ namespace pio
 		Texture2D* GetNormalBuffer() { return m_FrameBuff->ColorBuffers()[1]->As<Texture2D>(); }
 		Texture2D* GetAlbedoBuffer() { return m_FrameBuff->ColorBuffers()[2]->As<Texture2D>(); }
 		Texture2D* GetMaterialBuffer() { return m_FrameBuff->ColorBuffers()[3]->As<Texture2D>(); }
-		Texture2D* GetEmissionBuffer() { return m_FrameBuff->ColorBuffers()[4]->As<Texture2D>(); }
+		Texture2D* GetMaterialSubBuffer() { return m_FrameBuff->ColorBuffers()[4]->As<Texture2D>(); }
 		Texture2D* GetDepthBuffer() { return m_FrameBuff->DepthBuffer()->As<Texture2D>(); }
 	};
 }

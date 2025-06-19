@@ -140,6 +140,9 @@ namespace pio
 
 				if(material->IsCastShadow())
 					data.ShadowCasterItems.push_back(item);
+
+				if(material->AnyFlag())
+					data.PermutationFlags |= material->GetPermutationFlags();
 			}					
 		}
 	}	

@@ -79,7 +79,7 @@ namespace pio
             PIO_CHECK_RETURN(dirLitBuff, "directional lit is invalid in DefferedPass");
             GBuffer* gBuff = data.Pipeline.GBuffer.use_count() != 0 ? data.Pipeline.GBuffer->As<GBuffer>() : nullptr;
             PIO_CHECK_RETURN(gBuff, "GBuffer is invalid in DefferedPass");
-            auto shader = ctx->FindShader(SHADER_SPEC_DEFERRED);
+            auto shader = ctx->FindShader(SHADER_SPEC_DEFERRED, data.PermutationFlags);
             PIO_CHECK_RETURN(shader, "shader is invalid in DefferedPass");
             auto* shadowMap = data.Pipeline.DirLitShadowMap->As<ShadowMap>();
             PIO_CHECK_RETURN(shadowMap, "shadow map is invalid in DefferedPass");

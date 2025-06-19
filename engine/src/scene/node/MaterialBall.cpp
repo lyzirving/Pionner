@@ -103,7 +103,7 @@ namespace pio
 		auto dirLitBuff = GetComponent<DirectionalLitComponent>()->GetUBuffer();
 		auto pointLitBuff = GetComponent<PointLitGroupComponent>()->GetUBuffer();
 		auto* pointLitShadow = GetComponent<PointLitGroupComponent>()->GetShadowMap()->DepthBuffer()->As<CubeMapArray>();
-		auto shader = context->FindShader(SHADER_SPEC_FORWARD);
+		auto shader = context->FindShader(SHADER_SPEC_FORWARD, m_Material->GetPermutationFlags());
 
 		auto transComp = GetComponent<TransformComponent>();
 		auto meshComp = GetComponent<StaticMeshComponent>();

@@ -165,6 +165,11 @@ namespace pio
 			{
 				builder.AddMacro(ShaderMacro::Get(ShaderPermutationFlag::USE_SKELETON));
 			}
+
+			if(flags & ((uint32_t)ShaderPermutationFlag::USE_CLEARCOAT))
+			{
+				builder.AddMacro(ShaderMacro::Get(ShaderPermutationFlag::USE_CLEARCOAT));
+			}
 		}
 	}
 }

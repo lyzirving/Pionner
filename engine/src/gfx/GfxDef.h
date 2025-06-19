@@ -39,8 +39,8 @@ namespace pio
 		static const char* UNI_GBUFFER_POS      = "u_GPosition";
 		static const char* UNI_GBUFFER_NORMAL   = "u_GNormal";
 		static const char* UNI_GBUFFER_ALBEDO   = "u_GAlbedoAlpha";
-		static const char* UNI_GBUFFER_MATERIAL = "u_GMaterial";
-		static const char* UNI_GBUFFER_EMISSION = "u_GEmission";
+		static const char* UNI_GBUFFER_MATERIAL = "u_GMaterial";		
+		static const char* UNI_GBUFFER_MATERIAL_SUB = "u_GMaterialSub";
 
 		static const char* UNI_COLOR_BUFFER = "u_ColorBuffer";
 	}
@@ -125,19 +125,23 @@ namespace pio
 	enum class ShaderPermutationFlag : uint32_t
 	{
 		USE_SKELETON = 1 << 0,
-		NUM
+		USE_CLEARCOAT = 1 << 1,
+		NUM = 2
 	};
 
 	namespace ShaderMacro
 	{
 		constexpr const char* USE_SKELETON = "USE_SKELETON";
+		constexpr const char* USE_CLEARCOAT = "USE_CLEARCOAT";
 
 		inline const char* Get(ShaderPermutationFlag flag)
 		{
 			switch(flag)
 			{
-				case pio::ShaderPermutationFlag::USE_SKELETON:
+				case ShaderPermutationFlag::USE_SKELETON:
 					return USE_SKELETON;
+				case ShaderPermutationFlag::USE_CLEARCOAT:
+					return USE_CLEARCOAT;
 				default:
 					LOGE("err! invalid flag[%u]", (uint32_t)flag);
 					std::abort();

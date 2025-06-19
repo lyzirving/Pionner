@@ -182,6 +182,16 @@ namespace pio
 		return m_ShaderLab->Get(spec);
 	}
 
+	Ref<Shader> RenderContext::FindShader(ShaderSpecifier spec, uint32_t permutationFlags)
+	{
+		auto shader = m_ShaderLab->Get(spec);
+		if(permutationFlags != 0)
+		{
+			shader = shader->MakeMutant(permutationFlags);
+		}
+		return shader;
+	}
+
 	void RenderContext::InitResource()
 	{
 		auto context = Self<RenderContext>();	

@@ -39,6 +39,20 @@ vec3 F_Schlick(const vec3 f0, float VoH) {
     return f + f0 * (1.0 - f);
 }
 
+vec3 F_Schlick(const vec3 f0, float f90, float VoH) {
+    // Schlick 1994, "An Inexpensive BRDF Model for Physically-Based Rendering"
+    return f0 + (f90 - f0) * pow(1.0 - VoH, 5.0);
+}
+
+float F_Schlick(float f0, float f90, float VoH) {
+    return f0 + (f90 - f0) * pow(1.0 - VoH, 5.0);
+}
+
+float V_Kelemen(float LoH) {
+    // Kelemen 2001, "A Microfacet Based Coupled Specular-Matte BRDF Model with Importance Sampling"
+    return SaturateMediump(0.25 / (LoH * LoH));
+}
+
 float Distribution(float roughness, float NoH, const vec3 h) {
     return D_GGX(roughness, NoH, h);
 }
@@ -61,4 +75,12 @@ float Fd_Lambert() {
 
 float Diffuse(float roughness, float NoV, float NoL, float LoH) {
     return Fd_Lambert();
+}
+
+float DistributionClearCoat(float roughness, float NoH, const vec3 h) {
+    return D_GGX(roughness, NoH, h);
+}
+
+float VisibilityClearCoat(float LoH) {
+    return V_Kelemen(LoH);
 }

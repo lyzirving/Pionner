@@ -26,6 +26,18 @@ void GetRoughnessPixelParams(const MaterialInputs material, inout PixelParams pi
     pixel.roughness = PerceptualRoughnessToRoughness(pixel.perceptualRoughness);
 }
 
+void GetClearCoatPixelParams(const MaterialInputs material, inout PixelParams pixel) {
+#ifdef USE_CLEARCOAT
+    pixel.clearCoat = material.clearCoat;
+
+    // Clamp the clear coat roughness to avoid divisions by 0
+    float clearCoatPerceptualRoughness = clamp(material.clearCoatRoughness, MIN_PERCEPTUAL_ROUGHNESS, 1.0);
+
+    pixel.clearCoatPerceptualRoughness = clearCoatPerceptualRoughness;
+    pixel.clearCoatRoughness = PerceptualRoughnessToRoughness(clearCoatPerceptualRoughness);
+#endif
+}
+
 void GetEnergyCompensationPixelParams(inout PixelParams pixel) {
     //todo
     pixel.energyCompensation = vec3(1.0);
@@ -42,6 +54,7 @@ void GetEnergyCompensationPixelParams(inout PixelParams pixel) {
 void GetPixelParams(const MaterialInputs material, out PixelParams pixel) {
     GetCommonPixelParams(material, pixel);
     GetRoughnessPixelParams(material, pixel);
+    GetClearCoatPixelParams(material, pixel);
     GetEnergyCompensationPixelParams(pixel);
 }
 

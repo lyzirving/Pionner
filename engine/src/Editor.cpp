@@ -87,6 +87,7 @@ namespace pio
 		auto mainLit = scene->CreateNode<DirectionalLitNode>("DirectionalLight");
 		mainLit->SetRotation(glm::vec3(-35.f, 0.f, 40.f));
 		mainLit->SetPosition(glm::vec3(-3.f, 4.f, 0.f));
+		mainLit->SetIntensity(3.3f);
 		scene->Insert(mainLit);
 
 		auto ptLit = scene->CreateNode<PointLitNode>("PointLit");

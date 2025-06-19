@@ -75,6 +75,8 @@ void MakeMaterial(inout MaterialInputs material) {
 	material.roughness = max(surface.g * u_PBRMaterial.Roughness, 0.05);
     material.metallic = surface.b * u_PBRMaterial.Metalness;
     material.emissive = vec4(texture(u_EmissionMap, v_TexCoord).rgb * u_PBRMaterial.Emission, 1.0);
+    material.clearCoat = u_PBRMaterial.ClearCoat;
+    material.clearCoatRoughness = u_PBRMaterial.ClearCoatRoughness;
 }
 
 void PrepareShading() {

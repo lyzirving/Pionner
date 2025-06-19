@@ -37,10 +37,12 @@ namespace pio
 		ShadowCastMode GetShadowCastMode() const { return m_ShadowCastMode; }
 		const Ref<UniformBuffer>& GetUBuffer() const { return m_UniformBuffer; }
 		
+		bool AnyFlag() const { return m_PermutationFlags != 0; }
 		bool HasFlag(ShaderPermutationFlag flag) const { return m_PermutationFlags & ((uint32_t)flag); }
 		void AddFlag(ShaderPermutationFlag flag) { m_PermutationFlags |= (uint32_t)flag; }
 		void RemoveFlag(ShaderPermutationFlag flag) { m_PermutationFlags &= ~((uint32_t)flag); }
 		void ClearFlag() { m_PermutationFlags = 0; }
+		uint32_t GetPermutationFlags() const { return m_PermutationFlags; }
 
 	protected:
 		virtual void BuildShader();

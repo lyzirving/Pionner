@@ -90,12 +90,15 @@ namespace pio
 		//default
 		glm::vec3 albedoColor{ 0.7f }, emission{ 0.f };
 		float roughness{ 0.5f }, metalness{ 0.f };
+		//intensity of clear coat, 0.0 is marked as default
+		float clearCoatFactor{ 0.f };
+		float clearCoatRoughnessFactor{ 0.f };
 		// 0(fully transparent) -- 1(fully opaque)
 		float opacity{ 1.f };
 
 		aiColor3D aiColor{};
 		ai_real aiFloat{ 0.f };
-		aiString aiTexPath;		
+		aiString aiTexPath;
 
 		if (AIMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor) == AI_SUCCESS)
 			albedoColor = { aiColor.r, aiColor.g, aiColor.b };
@@ -109,13 +112,27 @@ namespace pio
 		if (AIMaterial->Get(AI_MATKEY_METALLIC_FACTOR, aiFloat) == AI_SUCCESS)
 			metalness = aiFloat;
 
+		if(AIMaterial->Get(AI_MATKEY_CLEARCOAT_FACTOR, aiFloat) == AI_SUCCESS)
+			clearCoatFactor = aiFloat;
+
+		if(AIMaterial->Get(AI_MATKEY_CLEARCOAT_ROUGHNESS_FACTOR, aiFloat) == AI_SUCCESS)
+			clearCoatRoughnessFactor = aiFloat;
+
 		if (AIMaterial->Get(AI_MATKEY_OPACITY, aiFloat) == AI_SUCCESS)
 			opacity = aiFloat;
+
+		if(!Math::IsZero(clearCoatFactor))
+		{
+			LOGD("material[%s] add flag USE_CLEARCOAT", material->Name().c_str());
+			material->AddFlag(ShaderPermutationFlag::USE_CLEARCOAT);
+		}
 
 		material->SetAlbedo(albedoColor);
 		material->SetEmission(emission);
 		material->SetMetallic(metalness);
 		material->SetRoughness(roughness);
+		material->SetClearCoatFactor(clearCoatFactor);
+		material->SetClearCoatRoughnessFactor(clearCoatRoughnessFactor);
 		material->SetAlpha(opacity);
 		aiTextureMapMode mapMode[3]{ aiTextureMapMode_Clamp, aiTextureMapMode_Clamp, aiTextureMapMode_Clamp };
 		// ------------------------ Base Color Start --------------------------------		

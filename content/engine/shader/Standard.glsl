@@ -64,7 +64,7 @@ layout (location = 0) out vec4 GPosition;
 layout (location = 1) out vec4 GNormal;
 layout (location = 2) out vec4 GAlbedoAlpha;
 layout (location = 3) out vec4 GMaterial;// ao(r) + roughness(g) + metalness(b)
-layout (location = 4) out vec4 GEmission;
+layout (location = 4) out vec4 GMaterialSub;
 
 void main() {
     vec4 albedoColor = texture(u_AlbedoMap, v_TexCoord);
@@ -81,8 +81,9 @@ void main() {
     GMaterial.g = max(material.g * u_PBRMaterial.Roughness, 0.05);
     // metallic
     GMaterial.b = material.b * u_PBRMaterial.Metalness;
-    // padding
-    GMaterial.a = 1.f;
+    // clearCoat
+    GMaterial.a = u_PBRMaterial.ClearCoat;
+    GMaterialSub.a = u_PBRMaterial.ClearCoatRoughness;
 
-    GEmission = vec4(texture(u_EmissionMap, v_TexCoord).rgb * u_PBRMaterial.Emission, 1.f);
+    GMaterialSub.rgb = texture(u_EmissionMap, v_TexCoord).rgb * u_PBRMaterial.Emission;    
 }

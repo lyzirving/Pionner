@@ -12,7 +12,28 @@
 #define LOCAL_TAG "GLShaderCompiler"
 
 namespace pio
-{
+{	
+	void PrintTokens(const std::vector<std::string>& tokens)
+	{
+		if(tokens.empty())
+		{
+			LOGD("tokens are empty");
+			return;
+		}
+		std::stringstream ss;
+		ss << "tokens: ";
+		for(size_t i = 0; i < tokens.size(); i++)
+		{
+			ss << "[" << i << "] = " << tokens[i].c_str();
+			if(i < tokens.size() - 1)
+			{
+				ss << ", ";
+			}
+		}
+		ss << "\0\n";
+		LOGD("%s", ss.str().c_str());
+	}
+
 	GLShaderCompiler::GLShaderCompiler() : ShaderCompiler()
 	{
 	}
@@ -288,12 +309,24 @@ namespace pio
 			source = StringUtil::DeleteSubstr(source, data.LineStart, data.LineEnd);
 			return;
 		}
+
+		std::stringstream sourceStream;
+		// clear comments in includer
+		ShaderProcessor::CopyWithoutComments(includerSource.begin(), includerSource.end(), std::ostream_iterator<char>(sourceStream));
+		includerSource = sourceStream.str();
+		if(includerSource.empty())
+		{
+			LOGE("err! includer[%s] is invalid after remove comments", data.FilePath.c_str());
+			return;
+		}
+
 		size_t pos = includerSource.find('#');
 		while (pos != std::string::npos)
 		{
 			size_t endOfLine = includerSource.find_first_of("\r\n", pos);
 			endOfLine = (endOfLine == std::string::npos) ? includerSource.size() : (endOfLine + 1);
 			const std::vector<std::string> tokens = StringUtil::SplitStringAndKeepDelims(includerSource.substr(pos, endOfLine - pos));
+			//PrintTokens(tokens);
 			bool deleteSource{ false };
 			if (tokens.size() >= 2)
 			{
@@ -319,6 +352,11 @@ namespace pio
 				{
 					deleteSource = true;
 					expanded[data.FilePath] = true;
+				}
+				else if(tokens[1] == ShaderProcessor::MACRO_IFDEF || tokens[1] == ShaderProcessor::MACRO_ELSE ||
+						tokens[1] == ShaderProcessor::MACRO_ENDIF)
+				{
+					pos += 1;
 				}
 			}	
 			else

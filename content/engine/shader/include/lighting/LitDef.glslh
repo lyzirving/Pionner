@@ -48,7 +48,10 @@ struct PixelParams {
     vec3  energyCompensation;
     float perceptualRoughness;
     float perceptualRoughnessUnclamped;
-    float roughness;  
+    float roughness;
+    float clearCoat;
+    float clearCoatRoughness;
+    float clearCoatPerceptualRoughness;    
 };
 
 //Reference to Learn OpenGL/Advanced Lighting/Shadows/Shadow Mapping

@@ -93,6 +93,8 @@ namespace pio
 		OnMetallicChange();
 		OnRoughnessChange();
 		OnOcclusionChange();
+		OnClearCoatFactorChange();
+		OnClearCoatRoughnessFactorChange();
 		OnAlphaChange();
 		OnbUseNormalMapChange();
 	}
@@ -108,6 +110,8 @@ namespace pio
 		m_UniformBlock->PushBack("Metalness", UniformBlock::CreateData(UniformType::Float, "Metalness"));
 		m_UniformBlock->PushBack("Roughness", UniformBlock::CreateData(UniformType::Float, "Roughness"));
 		m_UniformBlock->PushBack("Occlusion", UniformBlock::CreateData(UniformType::Float, "Occlusion"));
+		m_UniformBlock->PushBack("ClearCoat", UniformBlock::CreateData(UniformType::Float, "ClearCoat"));
+		m_UniformBlock->PushBack("ClearCoatRoughness", UniformBlock::CreateData(UniformType::Float, "ClearCoatRoughness"));
 		m_UniformBlock->PushBack("Alpha", UniformBlock::CreateData(UniformType::Float, "Alpha"));
 		m_UniformBlock->PushBack("UseNormalMap", UniformBlock::CreateData(UniformType::Bool, "UseNormalMap"));
 		m_UniformBlock->Calculate();
@@ -158,6 +162,24 @@ namespace pio
 		{			
 			auto occlusionUD = (*m_UniformBlock)["Occlusion"];
 			m_UniformBlock->WriteAt(&m_Occlusion, sizeof(float), occlusionUD->GetAlignOffset());
+		}
+	}
+
+	void StandardMaterial::OnClearCoatFactorChange()
+	{
+		if(m_UniformBlock)
+		{
+			auto clearCoatUD = (*m_UniformBlock)["ClearCoat"];
+			m_UniformBlock->WriteAt(&m_ClearCoatFactor, sizeof(float), clearCoatUD->GetAlignOffset());
+		}
+	}
+
+	void StandardMaterial::OnClearCoatRoughnessFactorChange()
+	{
+		if(m_UniformBlock)
+		{
+			auto clearCoatRoughnessUD = (*m_UniformBlock)["ClearCoatRoughness"];
+			m_UniformBlock->WriteAt(&m_ClearCoatRoughnessFactor, sizeof(float), clearCoatRoughnessUD->GetAlignOffset());
 		}
 	}
 

@@ -25,8 +25,8 @@ precision highp float;
 uniform sampler2D u_GPosition;   // vec3
 uniform sampler2D u_GNormal;     // vec4 noraml(3) + type(1)
 uniform sampler2D u_GAlbedoAlpha;// vec4 albedo(3) + alpha(1)
-uniform sampler2D u_GMaterial;   // vec3 ao(r) + roughness(g) + metalness(b)
-uniform sampler2D u_GEmission;   // vec3
+uniform sampler2D u_GMaterial;   // vec4 ao(r) + roughness(g) + metalness(b) + clearCoat(a)
+uniform sampler2D u_GMaterialSub;// vec4 emission(rgb) + clearCoatRoughness(a)
 
 in v2f {
     vec2 v_TexCoord;
@@ -50,11 +50,14 @@ void main() {
 }
 
 void MakeMaterial(inout MaterialInputs material) {		
-	vec3 surface = texture(u_GMaterial, v_TexCoord).rgb;
+	vec4 surface = texture(u_GMaterial, v_TexCoord);
+    vec4 surfaceSub = texture(u_GMaterialSub, v_TexCoord);
 	material.baseColor = texture(u_GAlbedoAlpha, v_TexCoord);
 	material.roughness = surface.g;
     material.metallic = surface.b;
-    material.emissive = vec4(texture(u_GEmission, v_TexCoord).rgb, 1.0);
+    material.emissive = vec4(surfaceSub.rgb, 1.0);
+    material.clearCoat = surface.a;
+    material.clearCoatRoughness = surfaceSub.a;
 }
 
 void PrepareShading() {

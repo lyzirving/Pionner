@@ -57,8 +57,8 @@ namespace pio
             .TexWrap(TextureWrap::ClampEdge, TextureWrap::ClampEdge)
             .TexFilter(TextureFilterMin::Linear, TextureFilterMag::Linear);
 
-        TextureSpecificBuilder emissionBuffBuilder;
-        emissionBuffBuilder.Name(GpuAttr::UNI_GBUFFER_EMISSION)
+        TextureSpecificBuilder matSubBuffBuilder;
+        matSubBuffBuilder.Name(GpuAttr::UNI_GBUFFER_MATERIAL_SUB)
             .Type(TextureType::TwoDimen)
             .Format(TextureFormat::RGBA_HALF)
             .Width(colorSize.x).Height(colorSize.y)
@@ -75,7 +75,7 @@ namespace pio
         fboSpec.ColorSpec.push_back(normalBuffBuilder.Build());
         fboSpec.ColorSpec.push_back(albeoBuffBuilder.Build());
         fboSpec.ColorSpec.push_back(matBuffBuilder.Build());
-        fboSpec.ColorSpec.push_back(emissionBuffBuilder.Build());
+        fboSpec.ColorSpec.push_back(matSubBuffBuilder.Build());
         fboSpec.DepthSpec.push_back(depthBuilder.Build());
 
         m_FrameBuff = FrameBuffer::Create(context, fboSpec);
@@ -88,7 +88,7 @@ namespace pio
         GetNormalBuffer()->BindAt(shader, GpuAttr::UNI_GBUFFER_NORMAL);
         GetAlbedoBuffer()->BindAt(shader, GpuAttr::UNI_GBUFFER_ALBEDO);
         GetMaterialBuffer()->BindAt(shader, GpuAttr::UNI_GBUFFER_MATERIAL);
-        GetEmissionBuffer()->BindAt(shader, GpuAttr::UNI_GBUFFER_EMISSION);
+        GetMaterialSubBuffer()->BindAt(shader, GpuAttr::UNI_GBUFFER_MATERIAL_SUB);
     }
 
     void GBuffer::UnBindContent()
@@ -97,6 +97,6 @@ namespace pio
         GetNormalBuffer()->UnBind();
         GetAlbedoBuffer()->UnBind();
         GetMaterialBuffer()->UnBind();
-        GetEmissionBuffer()->UnBind();
+        GetMaterialSubBuffer()->UnBind();
     }
 }

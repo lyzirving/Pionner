@@ -309,7 +309,7 @@ namespace pio
 				case aiShadingMode_PBR_BRDF:
 				default:
 					LOGD("PBR Material,i[%u], mode[%u], path[%s], name[%s]",
-						 i, aiMode, param.Path, param.Name);
+						 i, aiMode, param.Path.c_str(), param.Name.c_str());
 					param.SetMatSpec(MaterialFormat_Standard);
 					break;
 			}

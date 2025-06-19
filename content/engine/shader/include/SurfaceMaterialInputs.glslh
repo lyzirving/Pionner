@@ -9,6 +9,8 @@ struct MaterialInputs
 	float metallic;
     float reflectance;
 	float ambientOcclusion;
+	float clearCoat;
+	float clearCoatRoughness;
 	vec4  emissive;
 };
 
@@ -18,5 +20,7 @@ void InitMaterial(out MaterialInputs material) {
 	material.metallic = 0.0;
     material.reflectance = 0.5;
 	material.ambientOcclusion = 1.0;
+	material.clearCoat = 0.0;
+	material.clearCoatRoughness = 0.0;
 	material.emissive = vec4(vec3(0.0), 1.0);
 }

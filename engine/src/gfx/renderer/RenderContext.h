@@ -150,7 +150,8 @@ namespace pio
 		Ref<Texture> CreateTexture(const TextureSpecific& spec, const std::string& path);
 		Ref<Texture> GetTexture(const std::string& name);
 		
-		Ref<Shader> FindShader(ShaderSpecifier spec);	
+		Ref<Shader> FindShader(ShaderSpecifier spec);
+		Ref<Shader> FindShader(ShaderSpecifier spec, uint32_t permutationFlags);
 		// ------------------------------------------------------------------------------------
 		Ref<MeshRenderBuffer> GetScreenMeshBuff() const { return m_ScreenMeshBuffer; }
 

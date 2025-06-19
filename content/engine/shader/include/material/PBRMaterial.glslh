@@ -7,6 +7,8 @@ layout (std140) uniform PBRBlock
     float Metalness;
     float Roughness;
     float Occlusion;
+    float ClearCoat;
+    float ClearCoatRoughness;
     float Alpha;
     bool UseNormalMap;
 } u_PBRMaterial;
