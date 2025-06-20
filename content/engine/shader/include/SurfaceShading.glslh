@@ -2,6 +2,7 @@
 
 #include "lighting/ShadingPointLit.glslh"
 #include "lighting/ShadingDirectionalLit.glslh"
+#include "lighting/SurfaceLightIndirect.glslh"
 #include "SurfaceMaterial.glslh"
 
 void GetCommonPixelParams(const MaterialInputs material, inout PixelParams pixel) {
@@ -39,8 +40,12 @@ void GetClearCoatPixelParams(const MaterialInputs material, inout PixelParams pi
 }
 
 void GetEnergyCompensationPixelParams(inout PixelParams pixel) {
-    //todo
-    pixel.energyCompensation = vec3(1.0);
+    #ifdef USE_INDIRECT_LIGHT
+        pixel.dfg = PrefilteredDFG(pixel.perceptualRoughness, m_ShadingNoV);
+        pixel.energyCompensation = 1.0 + pixel.f0 * (1.0 / pixel.dfg.y - 1.0);
+    #else
+        pixel.energyCompensation = vec3(1.0);
+    #endif
 }
 
 /**
@@ -62,7 +67,10 @@ vec3 EvaluateMaterial(const MaterialInputs material) {
     PixelParams pixel;
     GetPixelParams(material, pixel);
 
-    vec3 color = vec3(0.0);    
+    vec3 color = vec3(0.0); 
+    #ifdef USE_INDIRECT_LIGHT
+        color += EvaluateIBL(material, pixel);
+    #endif
     color += EvaluateDirectionalLight(material, pixel);
     color += EvaluatePointLight(material, pixel);
     return color;

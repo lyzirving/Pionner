@@ -37,6 +37,7 @@ namespace pio
 		PipelineData& operator=(PipelineData&& rhs) noexcept;
 
 		Ref<FrameBuffer> DirLitShadowMap;
+		Ref<FrameBuffer> IndirectLight;
 		Ref<FrameBuffer> PointLitShadowMap;
 		Ref<FrameBuffer> GBuffer;
 		Ref<FrameBuffer> DefferedBuffer;

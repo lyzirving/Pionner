@@ -36,6 +36,7 @@ namespace pio
 
 	void ForwardPass::OnExecute(const Ref<RenderContext>& context, const Ref<CameraNode>& camera)
     {
+        return;
         if(context->GetRenderingData().TransparentMeshItems.empty())
             return;
 

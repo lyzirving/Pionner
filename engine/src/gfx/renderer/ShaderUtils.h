@@ -170,6 +170,11 @@ namespace pio
 			{
 				builder.AddMacro(ShaderMacro::Get(ShaderPermutationFlag::USE_CLEARCOAT));
 			}
+
+			if(flags & ((uint32_t)ShaderPermutationFlag::USE_INDIRECT_LIGHT))
+			{
+				builder.AddMacro(ShaderMacro::Get(ShaderPermutationFlag::USE_INDIRECT_LIGHT));
+			}
 		}
 	}
 }

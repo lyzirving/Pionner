@@ -47,6 +47,22 @@ namespace pio
 			.SetContext(param.Context);
 		AssetMgr::Get()->LoadAsset(pointLitIconParam);
 
+		ImportParams iblParam;
+		iblParam.SetFmt(AssetFormat_Image)
+			.SetPath(Path::ImageRoot())
+			.SetName(ImageAsset::IBL)
+			.SetSuffix(Path::PNG_SUFFIX)
+			.SetContext(param.Context);
+		AssetMgr::Get()->LoadAsset(iblParam);
+
+		ImportParams iblSpecularParam;
+		iblSpecularParam.SetFmt(AssetFormat_Image)
+			.SetPath(Path::ImageRoot())
+			.SetName(ImageAsset::IBL_SPECULAR)
+			.SetSuffix(Path::PNG_SUFFIX)
+			.SetContext(param.Context);
+		AssetMgr::Get()->LoadAsset(iblSpecularParam);
+
 		ImportParams matParam;
 		matParam.SetFmt(AssetFormat_Material)
 			.SetPath(Path::MaterialRoot())

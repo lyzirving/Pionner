@@ -1,0 +1,7 @@
+#pragma once
+
+#include "lighting/LitDef.glslh"
+
+uniform sampler2D   u_IblDFG;
+uniform samplerCube u_IblSpecular;
+uniform sampler2D   u_SSR;

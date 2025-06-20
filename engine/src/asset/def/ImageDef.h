@@ -9,6 +9,8 @@ namespace pio
 		constexpr const char* WHITE = "white";
 		constexpr const char* BLACK = "black";
 		constexpr const char* ICON_POINT_LIT = "point_light";
+		constexpr const char* IBL = "ibl";
+		constexpr const char* IBL_SPECULAR = "ibl_specular";
 	};
 
 	enum ImageFormat : uint8_t

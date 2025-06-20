@@ -34,6 +34,9 @@ namespace pio
 		//Uniform data		
 		static const char* UNI_SHADOW_MAP = "u_ShadowMap";
 		static const char* UNI_PTLIT_SHADOW_MAP = "u_PointLitsShadow";
+		static const char* UNI_IBL_DFG = "u_IblDFG";
+		static const char* UNI_IBL_SPECULAR = "u_IblSpecular";
+		static const char* UNI_IBL_SSR = "u_SSR";
 
 		//GBuffer in Deferred pass
 		static const char* UNI_GBUFFER_POS      = "u_GPosition";
@@ -124,15 +127,17 @@ namespace pio
 
 	enum class ShaderPermutationFlag : uint32_t
 	{
-		USE_SKELETON = 1 << 0,
-		USE_CLEARCOAT = 1 << 1,
-		NUM = 2
+		USE_SKELETON       = 1 << 0,
+		USE_CLEARCOAT      = 1 << 1,
+		USE_INDIRECT_LIGHT = 1 << 2,
+		NUM = 3
 	};
 
 	namespace ShaderMacro
 	{
 		constexpr const char* USE_SKELETON = "USE_SKELETON";
 		constexpr const char* USE_CLEARCOAT = "USE_CLEARCOAT";
+		constexpr const char* USE_INDIRECT_LIGHT = "USE_INDIRECT_LIGHT";
 
 		inline const char* Get(ShaderPermutationFlag flag)
 		{
@@ -142,6 +147,8 @@ namespace pio
 					return USE_SKELETON;
 				case ShaderPermutationFlag::USE_CLEARCOAT:
 					return USE_CLEARCOAT;
+				case ShaderPermutationFlag::USE_INDIRECT_LIGHT:
+					return USE_INDIRECT_LIGHT;
 				default:
 					LOGE("err! invalid flag[%u]", (uint32_t)flag);
 					std::abort();

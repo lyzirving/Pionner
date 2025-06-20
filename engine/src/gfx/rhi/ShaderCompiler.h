@@ -14,6 +14,7 @@ namespace pio
 		static const char* MACRO_INCLUDE = "include";
 		static const char* MACRO_IFDEF   = "ifdef";
 		static const char* MACRO_ELSE    = "else";
+		static const char* MACRO_ELSEIF  = "elseif";
 		static const char* MACRO_ENDIF   = "endif";
 
 		static const char* MACRO_PRAGMA_STAGE = "stage";

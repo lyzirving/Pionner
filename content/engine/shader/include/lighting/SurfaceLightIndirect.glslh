@@ -1,0 +1,55 @@
+#pragma once
+
+#include "lighting/IndirectLightUniforms.glslh"
+#include "SurfaceMaterialInputs.glslh"
+
+vec3 PrefilteredDFG_LUT(float lod, float NoV) {
+    return textureLod(u_IblDFG, vec2(NoV, lod), 0.0).rgb;
+}
+
+vec3 PrefilteredDFG(float perceptualRoughness, float NoV) {
+    // PrefilteredDFG_LUT() takes a LOD, which is sqrt(roughness) = perceptualRoughness
+    return PrefilteredDFG_LUT(perceptualRoughness, NoV);
+}
+
+vec3 SpecularDFG(const PixelParams pixel) {
+    return mix(pixel.dfg.xxx, pixel.dfg.yyy, pixel.f0);
+}
+
+vec3 GetSpecularDominantDirection(const vec3 n, const vec3 r, float roughness) {
+    return mix(r, n, roughness * roughness);
+}
+
+vec3 GetReflectedVector(const PixelParams pixel, const vec3 n) {
+    return GetSpecularDominantDirection(n, m_ShadingReflected, pixel.roughness);
+}
+
+float PerceptualRoughnessToLod(float perceptualRoughness) {
+    // The mapping below is a quadratic fit for log2(perceptualRoughness)+iblRoughnessOneLevel when
+    // iblRoughnessOneLevel is 4. We found empirically that this mapping works very well for
+    // a 256 cubemap with 5 levels used. But also scales well for other iblRoughnessOneLevel values.
+
+    //todo
+    //return frameUniforms.iblRoughnessOneLevel * perceptualRoughness * (2.0 - perceptualRoughness);
+    return 4.0 * perceptualRoughness * (2.0 - perceptualRoughness);
+}
+
+vec3 PrefilteredRadiance(const vec3 r, float perceptualRoughness) {
+    float lod = PerceptualRoughnessToLod(perceptualRoughness);
+    return textureLod(u_IblSpecular, r, lod).rgb;
+}
+
+vec3 EvaluateIBL(const MaterialInputs material, const PixelParams pixel) {
+	// specular layer
+    vec3 Fr = vec3(0.0);
+    
+	vec4 ssrFr = vec4(0.0);
+    
+	// IBL_INTEGRATION_PREFILTERED_CUBEMAP
+	//vec3 E = SpecularDFG(pixel);
+    //if (ssrFr.a < 1.0) { // prevent reading the IBL if possible
+    //    vec3 r = GetReflectedVector(pixel, m_ShadingNormal);
+    //    Fr = E * PrefilteredRadiance(r, pixel.perceptualRoughness);
+    //}
+    return vec3(0.0, 0.0, 0.0);
+}

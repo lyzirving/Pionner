@@ -47,7 +47,7 @@ in v2f {
     flat mat3 v_InvTBN;
 }; 
 
-#include "VisualEffects.glslh"
+#include "CommonGraphics.glslh"
 #include "SurfaceShading.glslh"
 #include "material/PBRMaterial.glslh"
 

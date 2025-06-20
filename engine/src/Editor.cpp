@@ -20,6 +20,7 @@
 #include "scene/node/DirectionalLitNode.h"
 #include "scene/node/PointLitNode.h"
 #include "scene/node/SkinnedMeshNode.h"
+#include "scene/node/IndirectLightNode.h"
 
 #include "animation/AnimationSystem.h"
 
@@ -89,6 +90,8 @@ namespace pio
 		mainLit->SetPosition(glm::vec3(-3.f, 4.f, 0.f));
 		mainLit->SetIntensity(3.3f);
 		scene->Insert(mainLit);
+		
+		//scene->Insert(scene->CreateNode<IndirectLightNode>("IndirectLight"));
 
 		auto ptLit = scene->CreateNode<PointLitNode>("PointLit");
 		ptLit->SetPosition(glm::vec3(1.5, 2.5f, 0.f));

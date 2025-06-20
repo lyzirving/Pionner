@@ -166,7 +166,7 @@ namespace pio
 							++cursor;
 							std::string content("#define ");							
 							content.append(*macroIt).
-								    append("\r\n");
+								    append("\n\n");
 							newSource.insert(cursor, content);
 							//find end of current insertion
 							cursor = newSource.find_first_of("\r\n", cursor);
@@ -354,7 +354,7 @@ namespace pio
 					expanded[data.FilePath] = true;
 				}
 				else if(tokens[1] == ShaderProcessor::MACRO_IFDEF || tokens[1] == ShaderProcessor::MACRO_ELSE ||
-						tokens[1] == ShaderProcessor::MACRO_ENDIF)
+						tokens[1] == ShaderProcessor::MACRO_ENDIF || tokens[1] == ShaderProcessor::MACRO_ELSEIF)
 				{
 					pos += 1;
 				}

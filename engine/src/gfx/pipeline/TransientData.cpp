@@ -50,6 +50,7 @@ namespace pio
 	PipelineData::PipelineData(const PipelineData& rhs)
 	{
 		DirLitShadowMap = rhs.DirLitShadowMap;
+		IndirectLight = rhs.IndirectLight;
 		PointLitShadowMap = rhs.PointLitShadowMap;
 		GBuffer = rhs.GBuffer;
 		DefferedBuffer = rhs.DefferedBuffer;
@@ -58,6 +59,7 @@ namespace pio
 	PipelineData::PipelineData(PipelineData&& rhs) noexcept
 	{
 		DirLitShadowMap = std::move(rhs.DirLitShadowMap);
+		IndirectLight = std::move(rhs.IndirectLight);
 		PointLitShadowMap = std::move(rhs.PointLitShadowMap);
 		GBuffer = std::move(rhs.GBuffer);
 		DefferedBuffer = std::move(rhs.DefferedBuffer);

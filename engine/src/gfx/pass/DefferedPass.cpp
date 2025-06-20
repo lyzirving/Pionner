@@ -6,6 +6,7 @@
 #include "gfx/renderer/GBuffer.h"
 #include "gfx/renderer/ShadowMap.h"
 #include "gfx/renderer/PointLitShadowMap.h"
+#include "gfx/renderer/IndirectLight.h"
 
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/FrameBuffer.h"
@@ -93,6 +94,8 @@ namespace pio
             {
                 pointLitDepth = data.Pipeline.PointLitShadowMap->DepthBuffer()->As<CubeMapArray>();
             }
+            auto indirectLitRef = data.Pipeline.IndirectLight;
+            IndirectLight* indirectLit = indirectLitRef ? indirectLitRef->As<IndirectLight>() : nullptr;
 
             ctx->OnBeginFrameBuffer(self->GetFrameBuffer(), self->GetRenderState());
 
@@ -102,18 +105,20 @@ namespace pio
             dirLitBuff->BindBlock(ctx, shader); 
             shadowUBuffer->BindBlock(ctx, shader);
 
+            if(indirectLit) { indirectLit->BindAt(shader); }
             if(pointLitBuff) { pointLitBuff->BindBlock(ctx, shader); }
             if(pointLitDepth) { pointLitDepth->BindAt(shader, GpuAttr::UNI_PTLIT_SHADOW_MAP); }
 
             gBuff->BindContent(shader);
-            depthBuff->BindAt(shader, GpuAttr::UNI_SHADOW_MAP);
+            depthBuff->BindAt(shader, GpuAttr::UNI_SHADOW_MAP);                       
 
             ctx->DrawTriangles(ctx->GetScreenMeshBuff());
 
+            if(indirectLit) { indirectLit->UnBindAt(); }
             if(pointLitBuff) { pointLitBuff->UnBind(); }
             if(pointLitDepth) { pointLitDepth->UnBind(); }
             depthBuff->UnBind();
-            shadowUBuffer->UnBind();
+            shadowUBuffer->UnBind();            
             dirLitBuff->UnBind();
             camUBuff->UnBind();            
             gBuff->UnBindContent();

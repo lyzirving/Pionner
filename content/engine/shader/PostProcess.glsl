@@ -21,7 +21,7 @@ void main() {
 #pragma stage : frag 
 precision mediump float;
 
-#include "VisualEffects.glslh"
+#include "CommonGraphics.glslh"
 
 uniform sampler2D u_ColorBuffer;
 
