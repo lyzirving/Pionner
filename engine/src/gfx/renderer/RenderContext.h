@@ -146,8 +146,7 @@ namespace pio
 		* @param buffer Buffer is not marked as const, data inside the buffer will be moved into texture.
 		*/
 		Ref<Texture> CreateTexture(const TextureSpecific& spec, Buffer& buffer);
-		Ref<Texture> CreateTexture(const TextureSpecific& spec, uint8_t** buffer);
-		Ref<Texture> CreateTexture(const TextureSpecific& spec, const std::string& path);
+		Ref<Texture> CreateTexture(const TextureSpecific& spec, void** buffer);		
 		Ref<Texture> GetTexture(const std::string& name);
 		
 		Ref<Shader> FindShader(ShaderSpecifier spec);

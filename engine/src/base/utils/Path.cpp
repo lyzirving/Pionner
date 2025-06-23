@@ -25,7 +25,9 @@ namespace pio
 	static std::string k_ShaderRoot{};
 
 	const char* Path::JPG_SUFFIX = "jpg";
+	const char* Path::JPEG_SUFFIX = "jpeg";
 	const char* Path::PNG_SUFFIX = "png";
+	const char* Path::HDR_SUFFIX = "hdr";
 	const char* Path::MAT_SUFFIX = "material";
 	const char* Path::MESH_SUFFIX = "mesh";
 	const char* Path::SKELETON_SUFFIX = "skeleton";

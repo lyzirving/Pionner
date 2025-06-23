@@ -27,13 +27,24 @@ namespace pio
 		return stbi_info(filePath, &w, &h, &comp) == 1;
 	}
 
+	void ImageUtil::FlipVerticalOnLoad(bool flip)
+	{
+		stbi_set_flip_vertically_on_load(flip);
+	}
+
 	bool ImageUtil::LoadImage(const std::string& path, uint8_t** data, int32_t& w, int32_t& h, int32_t& comp, int32_t reqComp)
 	{		
 		*data = stbi_load(path.c_str(), &w, &h, &comp, reqComp);
 		return (*data) != nullptr;
 	}
 
-	void ImageUtil::FreeImage(uint8_t** data)
+	bool ImageUtil::LoadImage(const std::string& path, float** data, int32_t& w, int32_t& h, int32_t& comp, int32_t reqComp)
+	{
+		*data = stbi_loadf(path.c_str(), &w, &h, &comp, reqComp);
+		return (*data) != nullptr;
+	}
+
+	void ImageUtil::FreeImage(void** data)
 	{
 		if (*data)
 		{

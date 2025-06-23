@@ -68,10 +68,9 @@ namespace pio
 	private:
 		friend class TextureMgr;
 		
-		static Ref<Texture> Create(const Ref<RenderContext>& context, const TextureSpecific& spec);
-		static Ref<Texture> Create(const Ref<RenderContext>& context, const TextureSpecific& spec, const std::string& path);
+		static Ref<Texture> Create(const Ref<RenderContext>& context, const TextureSpecific& spec);		
 		static Ref<Texture> Create(const Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buffer);
-		static Ref<Texture> Create(const Ref<RenderContext>& context, const TextureSpecific& spec, uint8_t** buffer);
+		static Ref<Texture> Create(const Ref<RenderContext>& context, const TextureSpecific& spec, void** buffer);
 
 	protected:
 		TextureSpecific m_Spec;

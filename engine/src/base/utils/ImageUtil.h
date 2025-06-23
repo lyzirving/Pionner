@@ -8,9 +8,11 @@ namespace pio
 	{
 	public:
 		static uint8_t* CreateImageData(int32_t w, int32_t h, int32_t comp, uint8_t val);
-		static bool GetPicInfo(const char* filePath, int32_t& w, int32_t& h, int32_t& comp);		
+		static bool GetPicInfo(const char* filePath, int32_t& w, int32_t& h, int32_t& comp);
+		static void FlipVerticalOnLoad(bool flip);
 		static bool LoadImage(const std::string& path, uint8_t** data, int32_t& w, int32_t &h, int32_t& comp, int32_t reqComp = 0);
-		static void FreeImage(uint8_t** data);
+		static bool LoadImage(const std::string& path, float** data, int32_t& w, int32_t& h, int32_t& comp, int32_t reqComp = 0);
+		static void FreeImage(void** data);
 
 		template<typename T>
 		static bool FillSingleChannel(T* src, int32_t channel, int32_t req, int32_t w, int32_t h, const T& val)

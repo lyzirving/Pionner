@@ -63,6 +63,16 @@ namespace pio
 			.SetContext(param.Context);
 		AssetMgr::Get()->LoadAsset(iblSpecularParam);
 
+		ImportParams lightRoomParam;
+		lightRoomParam.SetFmt(AssetFormat_Image)
+			.SetPath(Path::ImageRoot())
+			.SetName(ImageAsset::LIGHT_ROOM)
+			.SetSuffix(Path::HDR_SUFFIX)
+			.SetImageInternalType(ImageInternal_Equirectangular)
+			.SetTexParam(TextureParams(TextureWrap::ClampEdge, TextureWrap::ClampEdge, TextureFilterMin::Linear, TextureFilterMag::Linear))
+			.SetContext(param.Context);
+		AssetMgr::Get()->LoadAsset(lightRoomParam);
+
 		ImportParams matParam;
 		matParam.SetFmt(AssetFormat_Material)
 			.SetPath(Path::MaterialRoot())
@@ -140,7 +150,7 @@ namespace pio
 	Ref<Asset> AssetMgr::LoadAsset_Impl(const ImportParams& param)
 	{
 		auto result = Importer::Build(param)->Load();
-		if(param.ActivateOnLoad)
+		if(param.ActivateOnLoad && result)
 			result->Init();
 
 		return result;

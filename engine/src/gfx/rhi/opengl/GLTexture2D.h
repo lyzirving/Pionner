@@ -8,10 +8,9 @@ namespace pio
 	{
 		RTTR_ENABLE(Texture2D)
 	public:
-		GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec);
-		GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec, const std::string& path);
+		GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec);		
 		GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buff);
-		GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec, uint8_t** buff);
+		GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec, void** buff);
 		~GLTexture2D() = default;
 
 		virtual bool Init() override;
@@ -28,6 +27,6 @@ namespace pio
 		virtual void* Data() const override { return m_Data; }
 
 	protected:
-		uint8_t* m_Data{ nullptr };
+		void* m_Data{ nullptr };
 	};
 }

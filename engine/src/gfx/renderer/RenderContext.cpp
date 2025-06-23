@@ -162,14 +162,9 @@ namespace pio
 		return m_TextureMgr->Create(spec, buffer);
 	}
 
-	Ref<Texture> RenderContext::CreateTexture(const TextureSpecific& spec, uint8_t** buffer)
+	Ref<Texture> RenderContext::CreateTexture(const TextureSpecific& spec, void** buffer)
 	{
 		return m_TextureMgr->Create(spec, buffer);
-	}
-
-	Ref<Texture> RenderContext::CreateTexture(const TextureSpecific& spec, const std::string& path)
-	{
-		return m_TextureMgr->Create(spec, path);
 	}
 
 	Ref<Texture> RenderContext::GetTexture(const std::string& name)

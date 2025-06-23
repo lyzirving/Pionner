@@ -66,10 +66,14 @@ namespace pio
 				for (uint32_t i = 0; i < m_ColorBuffs.size(); i++)
 				{
 					m_ColorBuffs[i]->Bind();
-					if (m_ColorBuffs[i]->Is<Texture2D>())
+					if(m_ColorBuffs[i]->Is<CubeMap>())
+					{
+						//todo
+					} 
+					else if (m_ColorBuffs[i]->Is<Texture2D>())
 					{
 						glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorBuffs[i]->Id(), 0);
-					}
+					}					
 					colorAttachments.push_back(GL_COLOR_ATTACHMENT0 + i);
 				}
 				glDrawBuffers(colorAttachments.size(), colorAttachments.data());
@@ -112,7 +116,7 @@ namespace pio
 				glReadBuffer(GL_NONE);
 			}
 
-			if (GLHelper::CheckFrameBufferStatus("fail to generate frame buffer[%s]", m_Spec.Name.c_str()))
+			if (GLHelper::CheckFrameBufferStatus("fail to check frame buffer[%s][%u]'s status", m_Spec.Name.c_str(), m_ID))
 				LOGD("succeed to init frame buffer[%s][%u]", m_Spec.Name.c_str(), m_ID);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);

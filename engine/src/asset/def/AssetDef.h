@@ -24,6 +24,7 @@ namespace pio
 	{
 		struct
 		{
+			ImageInternalType InternalType{ ImageInternal_Pixel };
 			TextureParams Param{};
 			int32_t Width{ 0 }, Height{ 0 };
 			int32_t Comp{ 0 };
@@ -120,6 +121,12 @@ namespace pio
 			this->Setting.Image.Data = *data;
 			this->Setting.Image.bUseData = true;
 			*data = nullptr;
+			return *this;
+		}
+
+		ImportParams& SetImageInternalType(ImageInternalType type)
+		{
+			this->Setting.Image.InternalType = type;
 			return *this;
 		}
 

@@ -17,6 +17,7 @@ namespace pio
 			case TextureFormat::RGB_24:
 			case TextureFormat::RGBA_HALF:
 			case TextureFormat::RGB_16:
+			case TextureFormat::RGB_16F:
 				return 3;
 			case TextureFormat::RG_FLOAT:
 			case TextureFormat::DEPTH_24_STENCIL_8:
@@ -52,6 +53,7 @@ namespace pio
 				return 3;
 			case TextureFormat::RGBA_HALF:
 			case TextureFormat::RGB_16:
+			case TextureFormat::RGB_16F:
 			case TextureFormat::R_16:
 			case TextureFormat::DEPTH_16:
 				return 2;

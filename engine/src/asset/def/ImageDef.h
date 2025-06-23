@@ -11,6 +11,7 @@ namespace pio
 		constexpr const char* ICON_POINT_LIT = "point_light";
 		constexpr const char* IBL = "ibl";
 		constexpr const char* IBL_SPECULAR = "ibl_specular";
+		constexpr const char* LIGHT_ROOM = "lightroom_m0";
 	};
 
 	enum ImageFormat : uint8_t
@@ -19,7 +20,15 @@ namespace pio
 		ImageFormat_BITMAP,
 		ImageFormat_PNG,
 		ImageFormat_JPG,
-		ImageFormat_JPEG
+		ImageFormat_JPEG,
+		ImageFormat_HDR
+	};
+
+	enum ImageInternalType : uint8_t
+	{
+		ImageInternal_Pixel,
+		ImageInternal_Equirectangular,
+		ImageInternal_CubeMap,
 	};
 
 	enum class TextureWrap : uint8_t
@@ -49,6 +58,7 @@ namespace pio
 		RGBA_32,    //8 bits per channel
 		RGB_24,     //8 bits per channel
 		RGB_16,     //integer values in the range [0, 65535] per channel
+		RGB_16F,
 		R_16,       //integer values in the range [0, 65535] per channel
 		R_8,
 		Alpha_8,

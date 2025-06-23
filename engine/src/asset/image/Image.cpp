@@ -49,7 +49,7 @@ namespace pio
 		m_Texture = context->CreateTexture(builder.Build(), &m_Data);
 	}
 
-	void Image::SetData(uint8_t** data, int32_t w, int32_t h, int32_t comp)
+	void Image::SetData(void** data, int32_t w, int32_t h, int32_t comp)
 	{
 		if(data && m_Data != *data)
 		{
@@ -68,17 +68,21 @@ namespace pio
 	ImageFormat Image::ParseFormat(const std::string& fullPath)
 	{
 		auto suffix = Path::FindSuffix(fullPath);
-		if(suffix == "png")
+		if(suffix == Path::PNG_SUFFIX)
 		{
 			return ImageFormat_PNG;
 		}
-		else if(suffix == "jpeg")
+		else if(suffix == Path::JPEG_SUFFIX)
 		{
 			return ImageFormat_JPEG;
 		}
-		else if(suffix == "jpg")
+		else if(suffix == Path::JPG_SUFFIX)
 		{
 			return ImageFormat_JPG;
+		}
+		else if(suffix == Path::HDR_SUFFIX)
+		{
+			return ImageFormat_HDR;
 		}
 		else
 		{

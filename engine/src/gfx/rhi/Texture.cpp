@@ -82,37 +82,6 @@ namespace pio
 		}
 	}
 
-	Ref<Texture> Texture::Create(const Ref<RenderContext>& context, const TextureSpecific& spec, const std::string& path)
-	{
-		switch (context->RenderBackend())
-		{
-			case RenderBackendFlags::RenderBackend_OpenGL:
-			{
-				switch (spec.Type)
-				{
-					case TextureType::TwoDimen:
-					case TextureType::SingleChannel:
-					case TextureType::NormalMap:
-					{
-						return CreateRef<GLTexture2D>(context, spec, path);
-					}
-					default:
-					{
-						LOGE("err! texture[%u] from [%s] has not been implemented", spec.Type, path.c_str());
-						std::abort();
-						return Ref<Texture>();
-					}
-				}
-			}
-			default:
-			{
-				LOGE("err! render backend[%u] has not been implemented", context->RenderBackend());
-				std::abort();
-				return Ref<Texture>();
-			}
-		}
-	}
-
 	Ref<Texture> Texture::Create(const Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buffer)
 	{
 		switch(context->RenderBackend())
@@ -144,7 +113,7 @@ namespace pio
 		}
 	}
 
-	Ref<Texture> Texture::Create(const Ref<RenderContext>& context, const TextureSpecific& spec, uint8_t** buffer)
+	Ref<Texture> Texture::Create(const Ref<RenderContext>& context, const TextureSpecific& spec, void** buffer)
 	{
 		switch(context->RenderBackend())
 		{
@@ -157,7 +126,7 @@ namespace pio
 					case TextureType::NormalMap:
 					{
 						return CreateRef<GLTexture2D>(context, spec, buffer);
-					}
+					}					
 					default:
 					{
 						LOGE("err! texture type[%u] has not been implemented", spec.Type);

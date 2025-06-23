@@ -5,12 +5,6 @@
 
 #include "gfx/rhi/Shader.h"
 
-#ifndef STB_IMAGE_STATIC
-#define STB_IMAGE_STATIC
-#define STB_IMAGE_IMPLEMENTATION
-#endif // !STB_IMAGE_STATIC
-#include <stb/stb_image.h>
-
 #ifdef LOCAL_TAG
 #undef LOCAL_TAG
 #endif
@@ -20,44 +14,14 @@ namespace pio
 {
 	GLTexture2D::GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec) : Texture2D(context, spec)
 	{
-	}
-
-	GLTexture2D::GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec, const std::string& path) : Texture2D(context, spec)
-	{
-		auto startTime = Time::CurrentTimeMs();
-		if (m_Spec.FlipVerticalWhenLoad)
-			stbi_set_flip_vertically_on_load(true);//Flip the image, let the data start from left-bottom
-
-		m_Data = stbi_load(path.c_str(), &m_Spec.Width, &m_Spec.Height, &m_Spec.Channel, 0);
-		if (m_Data)
-		{
-			m_Size = m_Spec.Width * m_Spec.Height * m_Spec.Channel;
-			switch (m_Spec.Channel)
-			{
-				case 3:
-					m_Spec.Format = TextureFormat::RGB_24;
-					break;
-				case 4:
-					m_Spec.Format = TextureFormat::RGBA_32;
-					break;
-				case 1:
-				default:
-					m_Spec.Format = TextureFormat::R_8;
-					break;
-			}
-			LOGD("load image[%s], size[%u, %u], channel[%u], cost time[%lu]ms", path.c_str(), m_Spec.Width, m_Spec.Height, m_Spec.Channel, (Time::CurrentTimeMs() - startTime));
-		}
-
-		if (m_Spec.FlipVerticalWhenLoad)
-			stbi_set_flip_vertically_on_load(false);
-	}
+	}	
 
 	GLTexture2D::GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec, Buffer& buff) : Texture2D(context, spec)
 	{
 		buff.move(&m_Data);
 	}
 
-	GLTexture2D::GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec, uint8_t** buff) : Texture2D(context, spec)
+	GLTexture2D::GLTexture2D(const Ref<RenderContext>& context, const TextureSpecific& spec, void** buff) : Texture2D(context, spec)
 	{
 		m_Data = *buff;
 		*buff = nullptr;

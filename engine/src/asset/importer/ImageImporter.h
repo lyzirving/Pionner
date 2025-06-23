@@ -15,5 +15,11 @@ namespace pio
 	private:
 		Ref<Asset> LoadFromPath();
 		Ref<Asset> LoadFromData();
+
+		Ref<Asset> LoadImage2D(ImageFormat format);
+		Ref<Asset> LoadImageHDR(ImageFormat format);
+
+	private:
+		static bool IsImage2D(ImageFormat format);
 	};
 }

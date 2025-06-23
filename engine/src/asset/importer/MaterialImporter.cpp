@@ -276,7 +276,8 @@ namespace pio
 				//fetch metallic from B channel and fill it into B channel
 				int32_t srcReq = c >= 3 ? 3 : 1;
 				ImageUtil::FillChannelData(data, c, srcReq, imgData, 3, 3, w, h);
-				ImageUtil::FreeImage(&data);
+				void* temp = data;
+				ImageUtil::FreeImage(&temp);
 
 				ImportParams curParams;
 				curParams.SetFmt(AssetFormat_Image)
@@ -308,7 +309,7 @@ namespace pio
 				uint8_t* imgData{ nullptr };
 				if (metalicRoughnessImg)
 				{
-					imgData = metalicRoughnessImg->Data();
+					imgData = (uint8_t*)metalicRoughnessImg->Data();
 					ImageUtil::FillChannelData(data, c, srcReq, imgData, 3, 2, w, h);
 				}
 				else
@@ -327,7 +328,8 @@ namespace pio
 						.SetImageData(w, h, c, &imgData);
 					metalicRoughnessImg = AssetMgr::Get()->LoadAsset<Image>(curParams);
 				}
-				ImageUtil::FreeImage(&data);
+				void* temp = data;
+				ImageUtil::FreeImage(&temp);
 			}
 			else
 			{

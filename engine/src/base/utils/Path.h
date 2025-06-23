@@ -36,7 +36,9 @@ namespace pio
 		static const char* CONTENT;
 		static const char* FILE_SEPARATOR;
 		static const char* JPG_SUFFIX;
+		static const char* JPEG_SUFFIX;
 		static const char* PNG_SUFFIX;
+		static const char* HDR_SUFFIX;
 		static const char* MAT_SUFFIX;
 		static const char* MESH_SUFFIX;
 		static const char* SKELETON_SUFFIX;

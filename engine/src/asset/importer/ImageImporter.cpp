@@ -1,5 +1,7 @@
 #include "ImageImporter.h"
+
 #include "asset/image/Image.h"
+#include "asset/image/ImageHDR.h"
 
 #include "base/utils/ImageUtil.h"
 
@@ -32,43 +34,16 @@ namespace pio
 		if (imageFormat == ImageFormat_None)
 			return std::shared_ptr<Image>();
 
-		uint8_t* data{ nullptr };
-		int32_t width{ 0 }, height{ 0 }, comp{ 0 };
-		if (!ImageUtil::LoadImage(m_FullPath.c_str(), &data, width, height, comp))
+		if(IsImage2D(imageFormat))
 		{
-			LOGE("fail to load image from[%s]", m_FullPath.c_str());
-			return std::shared_ptr<Asset>();
+			return LoadImage2D(imageFormat);
 		}
-		LOGD("succed to load image[%s], [%u, %u, %u]", m_FullPath.c_str(), width, height, comp);
-		//[BugFix] some model's baseColor texture is targeted as 1 component
-		if(m_ImportParams.Setting.Image.Comp > comp && comp == 1)
-		{
-			LOGD("extend image's channel[%s] from[%u] to[%u]", m_FullPath.c_str(), comp, m_ImportParams.Setting.Image.Comp);
-			comp = m_ImportParams.Setting.Image.Comp;
-			uint8_t* extend = (uint8_t *)std::malloc(width * height * comp);
-			for(size_t i = 0; i < height; i++)
-			{
-				for(size_t j = 0; j < width; j++)
-				{					
-					auto val = data[i * width + j];
-					auto idx = i * width * comp + j * comp;
-					for(size_t k = 0; k < comp; k++)
-					{						
-						extend[idx + k] = (k == 3) ? 255 : val;
-					}
-				}
-			}
-			std::free(data);
-			data = extend;
+		else if(imageFormat == ImageFormat_HDR)
+		{			
+			return LoadImageHDR(imageFormat);
 		}
-		auto image = CreateRef<Image>(m_ImportParams);
-		image->m_Width = width;
-		image->m_Height = height;
-		image->m_Comp = comp;
-		image->m_Format = imageFormat;
-		image->m_Data = data;
-		image->m_TextureParams = m_ImportParams.Setting.Image.Param;
-		return image;
+		LOGE("err! invalid image format[%u] for path[%s]", imageFormat, m_FullPath.c_str());
+		return Ref<Asset>();
 	}
 
 	Ref<Asset> ImageImporter::LoadFromData()
@@ -83,4 +58,81 @@ namespace pio
 		m_ImportParams.Setting.Image.Data = nullptr;
 		return image;
 	}
+
+	Ref<Asset> ImageImporter::LoadImage2D(ImageFormat format)
+	{
+		uint8_t* data{ nullptr };
+		int32_t width{ 0 }, height{ 0 }, comp{ 0 };
+		if(!ImageUtil::LoadImage(m_FullPath.c_str(), &data, width, height, comp))
+		{
+			LOGE("fail to load image from[%s]", m_FullPath.c_str());
+			return std::shared_ptr<Asset>();
+		}
+		LOGD("succed to load image[%s], [%u, %u, %u]", m_FullPath.c_str(), width, height, comp);
+		//[BugFix] some model's baseColor texture is targeted as 1 component
+		if(m_ImportParams.Setting.Image.Comp > comp && comp == 1)
+		{
+			LOGD("extend image's channel[%s] from[%u] to[%u]", m_FullPath.c_str(), comp, m_ImportParams.Setting.Image.Comp);
+			comp = m_ImportParams.Setting.Image.Comp;
+			uint8_t* extend = (uint8_t*)std::malloc(width * height * comp);
+			for(size_t i = 0; i < height; i++)
+			{
+				for(size_t j = 0; j < width; j++)
+				{
+					auto val = data[i * width + j];
+					auto idx = i * width * comp + j * comp;
+					for(size_t k = 0; k < comp; k++)
+					{
+						extend[idx + k] = (k == 3) ? 255 : val;
+					}
+				}
+			}
+			std::free(data);
+			data = extend;
+		}
+		auto image = CreateRef<Image>(m_ImportParams);
+		image->m_Width = width;
+		image->m_Height = height;
+		image->m_Comp = comp;
+		image->m_Format = format;
+		image->m_Data = data;
+		image->m_TextureParams = m_ImportParams.Setting.Image.Param;
+		return image;
+	}
+
+	Ref<Asset> ImageImporter::LoadImageHDR(ImageFormat format)
+	{
+		float* data{ nullptr };
+		int32_t width{ 0 }, height{ 0 }, comp{ 0 };
+		ImageUtil::FlipVerticalOnLoad(true);
+		if(!ImageUtil::LoadImage(m_FullPath.c_str(), &data, width, height, comp))
+		{
+			LOGE("fail to load image from[%s]", m_FullPath.c_str());
+			return std::shared_ptr<Asset>();
+		}
+		ImageUtil::FlipVerticalOnLoad(false);
+		LOGD("succed to load image[%s], [%u, %u, %u]", m_FullPath.c_str(), width, height, comp);
+		auto image = CreateRef<ImageHDR>(m_ImportParams);
+		image->m_Width = width;
+		image->m_Height = height;
+		image->m_Comp = comp;
+		image->m_Format = format;
+		image->m_Data = data;
+		image->m_TextureParams = m_ImportParams.Setting.Image.Param;
+		return image;
+	}
+
+	bool ImageImporter::IsImage2D(ImageFormat format)
+	{
+		switch(format)
+		{
+			case ImageFormat_BITMAP:
+			case ImageFormat_PNG:
+			case ImageFormat_JPG:
+			case ImageFormat_JPEG:
+				return true;			
+			default:
+				return false;
+		}		
+	}	
 }

@@ -62,25 +62,13 @@ namespace pio
 		return texture;
 	}
 
-	Ref<Texture> TextureMgr::Create(const TextureSpecific& spec, uint8_t** buffer)
+	Ref<Texture> TextureMgr::Create(const TextureSpecific& spec, void** buffer)
 	{
 		auto texture = Get(spec.Name);
 		auto ctx = m_Context.lock();
 		if(!texture && ctx)
 		{
 			texture = Texture::Create(ctx, spec, buffer);
-			m_Textures.insert({ texture->Name(), texture });
-		}
-		return texture;
-	}
-
-	Ref<Texture> TextureMgr::Create(const TextureSpecific& spec, const std::string& path)
-	{
-		auto texture = Get(spec.Name);
-		auto ctx = m_Context.lock();
-		if (!texture && ctx)
-		{
-			texture = Texture::Create(ctx, spec, path);
 			m_Textures.insert({ texture->Name(), texture });
 		}
 		return texture;
