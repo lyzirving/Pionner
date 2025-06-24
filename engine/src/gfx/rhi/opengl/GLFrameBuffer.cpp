@@ -66,11 +66,7 @@ namespace pio
 				for (uint32_t i = 0; i < m_ColorBuffs.size(); i++)
 				{
 					m_ColorBuffs[i]->Bind();
-					if(m_ColorBuffs[i]->Is<CubeMap>())
-					{
-						//todo
-					} 
-					else if (m_ColorBuffs[i]->Is<Texture2D>())
+					if (m_ColorBuffs[i]->Is<Texture2D>())
 					{
 						glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorBuffs[i]->Id(), 0);
 					}					
@@ -107,6 +103,11 @@ namespace pio
 				{
 					glFramebufferTexture2D(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_Spec.DepthSpec[m_DepSel].Format),
 										   GL_TEXTURE_2D, m_DepthBuffs[m_DepSel]->Id(), 0);
+				}
+				else if(m_DepthBuffs[m_DepSel]->Is<RenderBuffer>())
+				{					
+					glFramebufferRenderbuffer(GL_FRAMEBUFFER, GLHelper::GetDepthAttachment(m_Spec.DepthSpec[m_DepSel].Format), 
+											  GL_RENDERBUFFER, m_DepthBuffs[m_DepSel]->Id());
 				}
 				else
 				{

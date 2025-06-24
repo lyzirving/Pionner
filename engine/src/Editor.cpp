@@ -104,7 +104,7 @@ namespace pio
 
 		ImportParams params;
 		params.SetFmt(AssetFormat_Mesh)
-			.SetPath(std::string(Path::MeshRoot()).append(Path::FILE_SEPARATOR).append("werewolf"/*"car_audi"*/))
+			.SetPath(std::string(Path::MeshRoot()).append(Path::FILE_SEPARATOR).append(/*"werewolf"*/"car_audi"))
 			.SetName("scene")
 			.SetSuffix("gltf")
 			.SetContext(m_Context);

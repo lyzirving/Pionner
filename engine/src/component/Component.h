@@ -17,6 +17,16 @@ namespace pio
 		virtual void OnDetach() {}
 		virtual void OnTick() {}
 
+	public:
+		template<typename T>
+		static Ref<T> NewComponent(const Ref<RenderContext>& context)
+		{
+			Ref<Component> comp = CreateRef<T>();
+			comp->m_Context = context;
+			comp->OnAttach();
+			return RefCast<Component, T>(comp);
+		}
+
 	protected:
 		bool HaveParentHost() const;
 

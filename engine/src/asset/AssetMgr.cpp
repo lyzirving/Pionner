@@ -45,33 +45,7 @@ namespace pio
 			.SetName(ImageAsset::ICON_POINT_LIT)
 			.SetSuffix(Path::PNG_SUFFIX)
 			.SetContext(param.Context);
-		AssetMgr::Get()->LoadAsset(pointLitIconParam);
-
-		ImportParams iblParam;
-		iblParam.SetFmt(AssetFormat_Image)
-			.SetPath(Path::ImageRoot())
-			.SetName(ImageAsset::IBL)
-			.SetSuffix(Path::PNG_SUFFIX)
-			.SetContext(param.Context);
-		AssetMgr::Get()->LoadAsset(iblParam);
-
-		ImportParams iblSpecularParam;
-		iblSpecularParam.SetFmt(AssetFormat_Image)
-			.SetPath(Path::ImageRoot())
-			.SetName(ImageAsset::IBL_SPECULAR)
-			.SetSuffix(Path::PNG_SUFFIX)
-			.SetContext(param.Context);
-		AssetMgr::Get()->LoadAsset(iblSpecularParam);
-
-		ImportParams lightRoomParam;
-		lightRoomParam.SetFmt(AssetFormat_Image)
-			.SetPath(Path::ImageRoot())
-			.SetName(ImageAsset::LIGHT_ROOM)
-			.SetSuffix(Path::HDR_SUFFIX)
-			.SetImageInternalType(ImageInternal_Equirectangular)
-			.SetTexParam(TextureParams(TextureWrap::ClampEdge, TextureWrap::ClampEdge, TextureFilterMin::Linear, TextureFilterMag::Linear))
-			.SetContext(param.Context);
-		AssetMgr::Get()->LoadAsset(lightRoomParam);
+		AssetMgr::Get()->LoadAsset(pointLitIconParam);				
 
 		ImportParams matParam;
 		matParam.SetFmt(AssetFormat_Material)
@@ -140,6 +114,32 @@ namespace pio
 			.SetSubMesh(MeshFactory::MakePointLightGizmo(2.f))
 			.SetMatSpec(MaterialFormat_Textured);
 		AssetMgr::Get()->LoadAsset(pointLitGizmoParam);
+
+		ImportParams iblParam;
+		iblParam.SetFmt(AssetFormat_Image)
+			.SetPath(Path::ImageRoot())
+			.SetName(ImageAsset::IBL)
+			.SetSuffix(Path::PNG_SUFFIX)
+			.SetContext(param.Context);
+		AssetMgr::Get()->LoadAsset(iblParam);
+
+		ImportParams iblSpecularParam;
+		iblSpecularParam.SetFmt(AssetFormat_Image)
+			.SetPath(Path::ImageRoot())
+			.SetName(ImageAsset::IBL_SPECULAR)
+			.SetSuffix(Path::PNG_SUFFIX)
+			.SetContext(param.Context);
+		AssetMgr::Get()->LoadAsset(iblSpecularParam);
+
+		ImportParams lightRoomParam;
+		lightRoomParam.SetFmt(AssetFormat_Image)
+			.SetPath(Path::ImageRoot())
+			.SetName(ImageAsset::LIGHT_ROOM)
+			.SetSuffix(Path::HDR_SUFFIX)
+			.SetImageInternalType(ImageInternal_Equirectangular)
+			.SetTexParam(TextureParams(TextureWrap::ClampEdge, TextureWrap::ClampEdge, TextureFilterMin::Linear, TextureFilterMag::Linear))
+			.SetContext(param.Context);
+		AssetMgr::Get()->LoadAsset(lightRoomParam);
 	}
 
 	void AssetMgr::Shutdown()

@@ -5,6 +5,8 @@
 namespace pio
 {
 	class ImageHDR;
+	class Texture;
+	class StaticMeshComponent;
 
 	class CubeMapBuildPass : public RenderPass
 	{
@@ -19,5 +21,7 @@ namespace pio
 
 	private:
 		WeakRef<ImageHDR> m_ImageHDR;
+		Ref<Texture> m_CubeMap;
+		Ref<StaticMeshComponent> m_MeshComp;				
 	};
 }

@@ -111,6 +111,8 @@ namespace pio
 					return "Textured";
 				case SHADER_SPEC_FORWARD:
 					return "Forward";
+				case SHADER_SPEC_EQUIRECMAP:
+					return "EquirectangularMap";
 				default:
 				#ifdef LOCAL_TAG
 				#undef LOCAL_TAG

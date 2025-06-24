@@ -60,5 +60,6 @@ namespace pio
 	
 		m_ToolPass = CreateRef<CubeMapBuildPass>(Self<ImageHDR>(), "CubeMapBuildTool");
 		m_ToolPass->OnAttach(context);
+		m_ToolPass->OnExecute(context, Ref<CameraNode>());
 	}
 }
