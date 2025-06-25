@@ -29,6 +29,8 @@ namespace pio
 				return "MotionBlock";
 			case UBBinging_Skeleton:
 				return "SkeletonBlock";
+			case UBBinging_IndirectLight:
+				return "IndirectLightBlock";
 			default:
 				LOGE("err! unknown binding[%u]!", binding);
 				std::abort();

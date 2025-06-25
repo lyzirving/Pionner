@@ -376,12 +376,12 @@ namespace pio
 			case TextureFormat::RGB_16:
 			case TextureFormat::R_16:
 				return GL_UNSIGNED_SHORT;
+			case TextureFormat::RGB_16F:
 			case TextureFormat::RGBA_FLOAT:
 			case TextureFormat::RG_FLOAT:			
 			case TextureFormat::R_FLOAT:
 			case TextureFormat::DEPTH_32F:
-				return GL_FLOAT;
-			case TextureFormat::RGB_16F:
+				return GL_FLOAT;			
 			case TextureFormat::RGBA_HALF:			
 				return GL_HALF_FLOAT;
 			case TextureFormat::DEPTH_16:

@@ -24,6 +24,7 @@ namespace pio
 		void SetTransformComponent(const Ref<TransformComponent>& comp);		
 		void OnRender(RenderingData& data);		
 
+		const Ref<MeshRenderBuffer>& GetRenderBuffer(int32_t index) const { return m_RenderBuff[index]; }
 		const std::vector<Ref<MeshRenderBuffer>>& GetRenderBuffer() const { return m_RenderBuff; }
 		const std::vector<Ref<UniformBuffer>>& GetMotionBuffer() const { return m_MotionBuffers; }
 

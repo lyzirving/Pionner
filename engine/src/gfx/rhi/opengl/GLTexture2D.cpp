@@ -42,9 +42,9 @@ namespace pio
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GLHelper::GetTextureWrap(m_Spec.WrapT));
 			glTexImage2D(GL_TEXTURE_2D, 0,
 						 GLHelper::GetTextureInternalFmt(m_Spec.Format),
-						 m_Spec.Width, m_Spec.Height, 0,
-						 GLHelper::GetTexturePixelFmt(m_Spec.Format),
-						 GLHelper::GetTexturePixelType(m_Spec.Format),
+						 m_Spec.Width, m_Spec.Height, 0,						 
+						 GLHelper::GetTexturePixelFmt(m_Spec.Format), //specify data' format from cpu
+						 GLHelper::GetTexturePixelType(m_Spec.Format),//specify data' type from cpu
 						 m_Data);
 
 			float borderColor[] = { m_Spec.BorderColor.x, m_Spec.BorderColor.y, m_Spec.BorderColor.z, m_Spec.BorderColor.w };

@@ -2,6 +2,12 @@
 
 #include "lighting/LitDef.glslh"
 
+layout (std140) uniform IndirectLightBlock
+{
+	vec3 SphericalHarmonics[9];
+	bool bValid;
+} u_IndirectLight;
+
 uniform sampler2D   u_IblDFG;
 uniform samplerCube u_IblSpecular;
 uniform sampler2D   u_SSR;

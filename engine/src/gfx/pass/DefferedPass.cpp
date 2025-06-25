@@ -105,7 +105,7 @@ namespace pio
             dirLitBuff->BindBlock(ctx, shader); 
             shadowUBuffer->BindBlock(ctx, shader);
 
-            if(indirectLit) { indirectLit->BindAt(shader); }
+            if(indirectLit) { indirectLit->BindAt(ctx, shader); }
             if(pointLitBuff) { pointLitBuff->BindBlock(ctx, shader); }
             if(pointLitDepth) { pointLitDepth->BindAt(shader, GpuAttr::UNI_PTLIT_SHADOW_MAP); }
 

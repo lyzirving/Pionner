@@ -1,5 +1,6 @@
 #include "GLCubeMap.h"
 
+#include "gfx/rhi/FrameBuffer.h"
 #include "gfx/rhi/Shader.h"
 #include "gfx/rhi/opengl/GLHelper.h"
 #include "gfx/rhi/opengl/GLHeader.h"
@@ -125,5 +126,17 @@ namespace pio
 		{
 			LOGE("cube map[%s] invalid state[%u]", m_Spec.Name.c_str(), m_ID);
 		}
+	}
+
+	bool GLCubeMap::AttachFrameBuffer(const Ref<FrameBuffer>& fbo, uint32_t colorAttachment, uint32_t texTarget)
+	{
+		if(!fbo || !fbo->IsInit())
+		{
+			LOGE("err! frame buffer is invalid");
+			return false;
+		}
+		Init();
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorAttachment, GL_TEXTURE_CUBE_MAP_POSITIVE_X + texTarget, Id(), 0);
+		return GLHelper::CheckError("fail to attach frame buffer[%s] for cube map[%s][%u]", fbo->Name().c_str(), Name().c_str(), Id());
 	}
 }

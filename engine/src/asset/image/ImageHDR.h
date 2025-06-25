@@ -14,8 +14,11 @@ namespace pio
 		virtual ~ImageHDR() = default;		
 		virtual void OnInit() override;
 
+		void SetCubeMap(const Ref<Texture>& cubeMap) { m_Texture = cubeMap; }
+		const Ref<Texture>& GetEquiAngular() const {  return m_SourceTexture; }
+
 	private:
-		void BuildFromEquirectangular();
+		void BuildFromEquiAngular();
 
 	private:
 		// Texture for Equirectangular image

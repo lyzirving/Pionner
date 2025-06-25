@@ -5,7 +5,7 @@
 namespace pio
 {
 	class ImageHDR;
-	class Texture;
+	class CubeMap;
 	class StaticMeshComponent;
 
 	class CubeMapBuildPass : public RenderPass
@@ -15,13 +15,17 @@ namespace pio
 		CubeMapBuildPass(const Ref<ImageHDR>& image, const std::string& name);
 		~CubeMapBuildPass() = default;
 
+		Ref<ImageHDR> GetImageHDR() const { return m_ImageHDR.lock(); }		
+		const Ref<StaticMeshComponent>& GetMeshComp() const { return m_MeshComp; }
+
+		Ref<CubeMap> GetCubeMap() const;
+
 		virtual void OnAttach(const Ref<RenderContext>& context) override;
 		virtual void OnDetach(const Ref<RenderContext>& context) override;
 		virtual void OnExecute(const Ref<RenderContext>& context, const Ref<CameraNode>& camera) override;
 
 	private:
 		WeakRef<ImageHDR> m_ImageHDR;
-		Ref<Texture> m_CubeMap;
 		Ref<StaticMeshComponent> m_MeshComp;				
 	};
 }

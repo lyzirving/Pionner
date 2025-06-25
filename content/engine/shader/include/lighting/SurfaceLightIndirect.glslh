@@ -2,6 +2,22 @@
 
 #include "lighting/IndirectLightUniforms.glslh"
 #include "SurfaceMaterialInputs.glslh"
+#include "Surface_BRDF.glslh"
+
+vec3 IrradianceSH(vec3 n) {
+    // uniform vec3 sphericalHarmonics[9]
+    // We can use only the first 2 bands for better performance
+    return
+          u_IndirectLight.SphericalHarmonics[0]
+        + u_IndirectLight.SphericalHarmonics[1] * (n.y)
+        + u_IndirectLight.SphericalHarmonics[2] * (n.z)
+        + u_IndirectLight.SphericalHarmonics[3] * (n.x)
+        + u_IndirectLight.SphericalHarmonics[4] * (n.y * n.x)
+        + u_IndirectLight.SphericalHarmonics[5] * (n.y * n.z)
+        + u_IndirectLight.SphericalHarmonics[6] * (3.0 * n.z * n.z - 1.0)
+        + u_IndirectLight.SphericalHarmonics[7] * (n.z * n.x)
+        + u_IndirectLight.SphericalHarmonics[8] * (n.x * n.x - n.y * n.y);
+}
 
 vec3 PrefilteredDFG_LUT(float lod, float NoV) {
     return textureLod(u_IblDFG, vec2(NoV, lod), 0.0).rgb;
@@ -39,17 +55,27 @@ vec3 PrefilteredRadiance(const vec3 r, float perceptualRoughness) {
     return textureLod(u_IblSpecular, r, lod).rgb;
 }
 
+vec3 SimpleFilamentIBL(const MaterialInputs material, const PixelParams pixel)
+{
+    if(!u_IndirectLight.bValid)
+        return vec3(0.0, 0.0, 0.0);
+
+    // Specular indirect
+    vec3 r = GetReflectedVector(pixel, m_ShadingNormal);
+    vec3 indirectSpecular = PrefilteredRadiance(r, pixel.perceptualRoughness);
+    vec2 env = PrefilteredDFG_LUT(pixel.perceptualRoughness, m_ShadingNoV).rg;
+    vec3 specularColor = pixel.f0 * env.x + pixel.f90 * env.y;
+
+    // Diffuse indirect
+    // We multiply by the Lambertian BRDF to compute radiance from irradiance
+    // With the Disney BRDF we would have to remove the Fresnel term that
+    // depends on NoL (it would be rolled into the SH). The Lambertian BRDF
+    // can be baked directly in the SH to save a multiplication here
+    vec3 indirectDiffuse = max(IrradianceSH(m_ShadingNormal), 0.0) * Fd_Lambert();
+
+    return (material.baseColor.rgb * indirectDiffuse + indirectSpecular * specularColor) * 0.1;
+}
+
 vec3 EvaluateIBL(const MaterialInputs material, const PixelParams pixel) {
-	// specular layer
-    vec3 Fr = vec3(0.0);
-    
-	vec4 ssrFr = vec4(0.0);
-    
-	// IBL_INTEGRATION_PREFILTERED_CUBEMAP
-	//vec3 E = SpecularDFG(pixel);
-    //if (ssrFr.a < 1.0) { // prevent reading the IBL if possible
-    //    vec3 r = GetReflectedVector(pixel, m_ShadingNormal);
-    //    Fr = E * PrefilteredRadiance(r, pixel.perceptualRoughness);
-    //}
-    return vec3(0.0, 0.0, 0.0);
+    return SimpleFilamentIBL(material, pixel);
 }

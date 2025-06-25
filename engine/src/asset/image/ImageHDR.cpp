@@ -30,7 +30,7 @@ namespace pio
 
 		if(m_Params.Setting.Image.InternalType == ImageInternal_Equirectangular)
 		{
-			BuildFromEquirectangular();
+			BuildFromEquiAngular();
 		}
 		else
 		{
@@ -39,7 +39,7 @@ namespace pio
 		}		
 	}
 
-	void ImageHDR::BuildFromEquirectangular()
+	void ImageHDR::BuildFromEquiAngular()
 	{
 		auto context = m_Context.lock();
 		if(!context)

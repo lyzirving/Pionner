@@ -47,6 +47,7 @@ namespace pio
 	};
 
 	class RenderContext;
+	class FrameBuffer;
 	class Buffer;
 	class Shader;
 
@@ -57,6 +58,7 @@ namespace pio
 		Texture(const Ref<RenderContext>& context, const TextureSpecific& spec) : RenderResource(context, RenderResourceType::Texture, spec.Name), m_Spec(spec) {}
 		Texture(const Ref<RenderContext>& context, const TextureSpecific& spec, RenderResourceType type) : RenderResource(context, type, spec.Name), m_Spec(spec) {}
 		virtual ~Texture() = default;
+		virtual bool AttachFrameBuffer(const Ref<FrameBuffer>& fbo, uint32_t colorAttachment, uint32_t texTarget) { return false; }
 
 		TextureSpecific& Spec() { return m_Spec; }
 		const TextureSpecific& Spec() const { return m_Spec; }

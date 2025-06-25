@@ -110,6 +110,7 @@ namespace pio
 		UBBinding_PointLitShadow,
 		UBBinging_Motion,
 		UBBinging_Skeleton,
+		UBBinging_IndirectLight,
 		UBBinding_Num
 	};
 

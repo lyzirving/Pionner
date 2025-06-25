@@ -66,7 +66,15 @@ namespace pio
 				for (uint32_t i = 0; i < m_ColorBuffs.size(); i++)
 				{
 					m_ColorBuffs[i]->Bind();
-					if (m_ColorBuffs[i]->Is<Texture2D>())
+					if(m_ColorBuffs[i]->Is<CubeMap>())
+					{
+						auto* cubeMap = m_ColorBuffs[i]->As<CubeMap>();
+						for(size_t j = 0; j < CubeMapDir_Num; ++j)
+						{
+							cubeMap->AttachFrameBuffer(Self<FrameBuffer>(), i, j);
+						}
+					}
+					else if (m_ColorBuffs[i]->Is<Texture2D>())
 					{
 						glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_ColorBuffs[i]->Id(), 0);
 					}					

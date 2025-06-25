@@ -12,6 +12,7 @@ void GetCommonPixelParams(const MaterialInputs material, inout PixelParams pixel
 
     float reflectance = ComputeDielectricF0(material.reflectance);
     pixel.f0 = ComputeF0(baseColor, material.metallic, reflectance);
+    pixel.f90 = vec3(Saturate(dot(pixel.f0, vec3(50.0 * 0.33))));
 }
 
 void GetRoughnessPixelParams(const MaterialInputs material, inout PixelParams pixel) {

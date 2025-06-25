@@ -23,5 +23,7 @@ namespace pio
 
 		virtual void Active(TextureSampler sampler) override;
 		virtual void* Data() const override { return nullptr; }
+
+		virtual bool AttachFrameBuffer(const Ref<FrameBuffer>& fbo, uint32_t colorAttachment, uint32_t texTarget) override;
 	};
 }

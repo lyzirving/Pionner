@@ -52,6 +52,11 @@ namespace pio
 		glm::vec4 Color{ 0.f, 0.f, 0.f, 1.f };
 		std::bitset<ClearBits_Count> Bits{};
 
+		Clear& SetColor(const glm::vec4& color) { Color = color; return *this; }
+		Clear& SetColorBit(bool set = true) { if(set) { Bits.set(ClearBits_Color); } else { Bits.reset(ClearBits_Color); }  return *this; }
+		Clear& SetDepthBit(bool set = true) { if(set) { Bits.set(ClearBits_Depth); } else { Bits.reset(ClearBits_Depth); }  return *this; }
+		Clear& SetStencilBit(bool set = true) { if(set) { Bits.set(ClearBits_Stencil); } else { Bits.reset(ClearBits_Stencil); }  return *this; }
+
 		bool operator==(const Clear& rhs) const;
 		bool operator!=(const Clear& rhs) const { return !((*this) == rhs); }
 
