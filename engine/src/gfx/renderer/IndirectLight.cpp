@@ -75,29 +75,23 @@ namespace pio
 	{
 		TryGetIblSpecular();
 		CheckValid();
-		m_UBuffer->Upload();
+		m_UBuffer->As<UIndirectLightBuffer>()->Upload();
 	}
 
-	void IndirectLight::BindAt(const Ref<RenderContext>& context, const Ref<Shader>& shader)
+	void IndirectLight::BindAt(const Ref<Shader>& shader)
 	{
-		if(m_UBuffer)
-			m_UBuffer->BindBlock(context, shader);
-		
 		if(m_IblDFG)
 			m_IblDFG->BindAt(shader, GpuAttr::UNI_IBL_DFG);
 
 		if(m_IblSpecular)
 			m_IblSpecular->BindAt(shader, GpuAttr::UNI_IBL_SPECULAR);
-		
+
 		if(m_SSR)
 			m_SSR->BindAt(shader, GpuAttr::UNI_IBL_SSR);
 	}
 
 	void IndirectLight::UnBindAt()
 	{
-		if(m_UBuffer)
-			m_UBuffer->UnBind();
-
 		if(m_IblDFG)
 			m_IblDFG->UnBind();
 
@@ -140,6 +134,6 @@ namespace pio
 
 	void IndirectLight::CheckValid()
 	{
-		m_UBuffer->SetValid(m_IblSpecular.use_count() != 0 && m_IblDFG.use_count() != 0);
+		m_UBuffer->As<UIndirectLightBuffer>()->SetValid(m_IblSpecular.use_count() != 0 && m_IblDFG.use_count() != 0);
 	}
 }

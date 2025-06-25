@@ -113,7 +113,11 @@ namespace pio
             dirLitBuff->BindBlock(ctx, shader); 
             shadowUBuffer->BindBlock(ctx, shader);
 
-            if(indirectLit) { indirectLit->BindAt(ctx, shader); }
+            if(indirectLit) 
+            { 
+                indirectLit->GetUBuffer()->BindBlock(ctx, shader);
+                indirectLit->BindAt(shader); 
+            }
             if(pointLitBuff) { pointLitBuff->BindBlock(ctx, shader); }
             if(pointLitDepth) { pointLitDepth->BindAt(shader, GpuAttr::UNI_PTLIT_SHADOW_MAP); }
 
@@ -122,7 +126,11 @@ namespace pio
 
             ctx->DrawTriangles(ctx->GetScreenMeshBuff());
 
-            if(indirectLit) { indirectLit->UnBindAt(); }
+            if(indirectLit) 
+            { 
+                indirectLit->GetUBuffer()->UnBind();
+                indirectLit->UnBindAt(); 
+            }
             if(pointLitBuff) { pointLitBuff->UnBind(); }
             if(pointLitDepth) { pointLitDepth->UnBind(); }
             depthBuff->UnBind();

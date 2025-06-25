@@ -30,15 +30,18 @@ namespace pio
 		virtual ~IndirectLight() = default;
 
 		void OnTick();
-		void BindAt(const Ref<RenderContext>& context, const Ref<Shader>& shader);
+
+		void BindAt(const Ref<Shader>& shader);
 		void UnBindAt();
+
+		const Ref<UniformBuffer>& GetUBuffer() const { return m_UBuffer; }
 
 	private:
 		bool TryGetIblSpecular();
 		void CheckValid();
 
 	private:
-		Ref<UIndirectLightBuffer> m_UBuffer;
+		Ref<UniformBuffer> m_UBuffer;
 		Ref<CubeMap> m_IblSpecular;
 		Ref<Texture2D> m_IblDFG;		
 		Ref<Texture2D> m_SSR;
