@@ -46,6 +46,11 @@ namespace pio
 		static const char* UNI_GBUFFER_MATERIAL_SUB = "u_GMaterialSub";
 
 		static const char* UNI_COLOR_BUFFER = "u_ColorBuffer";
+
+		namespace Stencil
+		{
+			static const uint8_t VALID_GEOMETRY = 1;
+		}
 	}
 
 	enum RenderingMode : uint8_t

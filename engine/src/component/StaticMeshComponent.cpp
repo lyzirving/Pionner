@@ -71,11 +71,11 @@ namespace pio
 			buffer->SetTransform(m_TransComp->GetMat());
 			buffer->SetLocalTransform(mesh.Transform);
 			buffer->SetSkeletalOn(false);
-			
+
 			if(node->GetMobility() != Mobility_Ignore)
-			{				
+			{
 				node->m_BoundingBox.Union((m_TransComp->GetMat() * mesh.Transform) * mesh.BoundingBox);
-			}			
+			}
 		}
 	}
 
@@ -103,7 +103,7 @@ namespace pio
 		bool bSprite = m_Host.lock()->Is<SpriteNode>();
 
 		const auto& subMesh = m_Mesh->GetSubMesh();
-		const auto& materialList = m_Mesh->GetMaterial();		
+		const auto& materialList = m_Mesh->GetMaterial();
 		for(size_t i = 0; i < subMesh.size(); i++)
 		{
 			const auto& mesh = subMesh[i];
@@ -143,9 +143,9 @@ namespace pio
 
 				if(material->AnyFlag())
 					data.PermutationFlags |= material->GetPermutationFlags();
-			}					
+			}
 		}
-	}	
+	}
 
 	void StaticMeshComponent::CreateBuffer()
 	{

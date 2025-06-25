@@ -24,12 +24,16 @@ namespace pio
 	{
 		m_FrameBuff = CreateRef<GBuffer>(context, "GBuffer");
 
+		StencilTest stencil = StencilTest::Common();
+		stencil.SetMask(0xff);
+		stencil.SetOp(StencilOp(FuncAttr::Keep, FuncAttr::Keep, FuncAttr::Replace));
+		stencil.SetFunc(StencilFunc(FuncAttr::Always, GpuAttr::Stencil::VALID_GEOMETRY, 0xff));
 		//no transparent shading
 		m_Attrs.SetClear(Clear::Common())
 			.SetBlend(Blend::Disable())
 			.SetDepth(DepthTest::Common())
             .SetCull(CullFace::Common())
-			.SetStencil(StencilTest::Disable());
+			.SetStencil(stencil);
 	}
 
 	void GBufferPass::OnDetach(const Ref<RenderContext>& context)

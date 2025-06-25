@@ -22,11 +22,16 @@ namespace pio
 {
     void DefferedPass::OnAttach(const Ref<RenderContext>& context)
     {
+        StencilTest stencil = StencilTest::Common();
+        stencil.SetMask(0xff);
+        stencil.SetOp(StencilOp(FuncAttr::Keep, FuncAttr::Keep, FuncAttr::Keep));
+        stencil.SetFunc(StencilFunc(FuncAttr::Equal, GpuAttr::Stencil::VALID_GEOMETRY, 0xff));
+
         m_Attrs.SetClear(Clear::Common())
             .SetCull(CullFace::Common())
             .SetBlend(Blend::Disable())
             .SetDepth(DepthTest::Disable())            
-            .SetStencil(StencilTest::Disable());
+            .SetStencil(stencil);
 
         auto colorSize = GlobalSettings::ColorResolution();
         auto depthSize = GlobalSettings::ShadowResolution();
@@ -95,9 +100,12 @@ namespace pio
                 pointLitDepth = data.Pipeline.PointLitShadowMap->DepthBuffer()->As<CubeMapArray>();
             }
             auto indirectLitRef = data.Pipeline.IndirectLight;
-            IndirectLight* indirectLit = indirectLitRef ? indirectLitRef->As<IndirectLight>() : nullptr;
+            IndirectLight* indirectLit = indirectLitRef ? indirectLitRef->As<IndirectLight>() : nullptr;            
 
             ctx->OnBeginFrameBuffer(self->GetFrameBuffer(), self->GetRenderState());
+
+            if(!ctx->CopyFrameBufferStencil(data.Pipeline.GBuffer, self->GetFrameBuffer()))
+                return;
 
             shader->Bind();
             

@@ -24,6 +24,7 @@ namespace pio
 		virtual void OnEndFrame(RenderContext& ctx) override;
 
 		virtual bool CopyFrameBufferDepth(const Ref<FrameBuffer>& src, const Ref<FrameBuffer>& dst) override;
+		virtual bool CopyFrameBufferStencil(const Ref<FrameBuffer>& src, const Ref<FrameBuffer>& dst) override;
 
 		virtual void ReleaseResource(ResourceGCDelegate &&resource) override;
 

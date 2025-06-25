@@ -36,14 +36,14 @@ namespace pio
 		// Initialization
 		m_Window->Init();
 		m_Window->MakeCurrent();
-		m_Window->SetVSync(true);		
+		m_Window->SetVSync(true);
 		m_Api->SetupBackend();
 		m_Api->SetupUiBackend(m_Window->NativeWindow());
 
 		InitResource();
 
 		LOGD("enter render loop");
-		while (m_Thread.IsRunning())
+		while(m_Thread.IsRunning())
 		{
 			m_Window->PollEvents();
 
@@ -79,18 +79,18 @@ namespace pio
 			auto context = weakSelf.lock();
 			if(!context)
 				return;
-			
+
 			context->OnBindScreenFrameBuffer();
 		});
 	}
 
-	void RenderContext::OnBeginFrameBuffer(const Ref<FrameBuffer>& frameBuffer,const RenderStateAttrs& attrs)
-	{		
-		if (m_BindFbo == frameBuffer->Id() && frameBuffer->Id() != 0)
+	void RenderContext::OnBeginFrameBuffer(const Ref<FrameBuffer>& frameBuffer, const RenderStateAttrs& attrs)
+	{
+		if(m_BindFbo == frameBuffer->Id() && frameBuffer->Id() != 0)
 		{
 			m_State->ApplyStateChange(attrs);
 			return;
-		}		
+		}
 		m_Api->SetViewport(0, 0, frameBuffer->Width(), frameBuffer->Height());
 		frameBuffer->Bind();
 		m_State->SetStateMachine(attrs);
@@ -114,7 +114,7 @@ namespace pio
 
 	void RenderContext::OnEndFrameBuffer(const Ref<FrameBuffer>& frameBuffer)
 	{
-		if (frameBuffer)
+		if(frameBuffer)
 			frameBuffer->UnBind();
 		m_BindFbo = 0;
 		m_Api->SetViewport(m_Viewport.offsetX(), m_Viewport.offsetY(), m_Viewport.ratioW(), m_Viewport.ratioH());// restore viewport
@@ -150,6 +150,11 @@ namespace pio
 	bool RenderContext::CopyFrameBufferDepth(const Ref<FrameBuffer>& src, const Ref<FrameBuffer>& dst)
 	{
 		return m_Api->CopyFrameBufferDepth(src, dst);
+	}
+
+	bool RenderContext::CopyFrameBufferStencil(const Ref<FrameBuffer>& src, const Ref<FrameBuffer>& dst)
+	{
+		return m_Api->CopyFrameBufferStencil(src, dst);
 	}
 
 	Ref<Texture> RenderContext::CreateTexture(const TextureSpecific& spec)
@@ -189,7 +194,7 @@ namespace pio
 
 	void RenderContext::InitResource()
 	{
-		auto context = Self<RenderContext>();	
+		auto context = Self<RenderContext>();
 
 		m_TextureMgr = CreateRef<TextureMgr>(context);
 		m_ShaderLab = CreateRef<ShaderLab>(context);
@@ -239,7 +244,7 @@ namespace pio
 
 	void RenderContext::OnWindowSizeChange(int32_t x, int32_t y, int32_t w, int32_t h)
 	{
-		if(m_Viewport.w() != w || m_Viewport.h() != h || 
+		if(m_Viewport.w() != w || m_Viewport.h() != h ||
 		   m_Viewport.x() != x || m_Viewport.y() != y)
 		{
 			m_Viewport.setX(x);
