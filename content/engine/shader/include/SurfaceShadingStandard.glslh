@@ -59,14 +59,23 @@ vec3 SurfaceShading(const Light light, const PixelParams pixel, float occlusion)
 
     vec3 color = Fd + Fr * pixel.energyCompensation;
 
-    #ifdef USE_CLEARCOAT
-        float Fcc;
-        float clearCoat = ClearCoatLobe(light, pixel, Fcc);
-        float attenuation = 1.0 - Fcc;
+    #ifdef USE_CLEARCOAT        
+        if(pixel.clearCoat > MIN_N_DOT_V) {
+            float Fcc;
+            float clearCoat = ClearCoatLobe(light, pixel, Fcc);
+            float attenuation = 1.0 - Fcc;
     
-        color *= attenuation;
-        color += vec3(clearCoat);
+            color *= attenuation * light.NoL;
+            
+            // If the material has a normal map, we want to use the geometric normal
+            // instead to avoid applying the normal map details to the clear coat layer
+            float clearCoatNoL = Saturate(dot(m_ShadingNormal, light.L));
+            color += clearCoat * clearCoatNoL;
+
+            // Early exit to avoid the extra multiplication by NoL
+            return (color * light.Color) * (light.Intensity * light.Attenuation * occlusion);
+        }        
     #endif    
 
-    return (color * light.ColorIntensity) * (light.Attenuation * light.NoL * occlusion);
+    return (color * light.Color) * (light.Intensity * light.Attenuation * light.NoL * occlusion);
 }

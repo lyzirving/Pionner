@@ -20,7 +20,8 @@ Light GetDirectionalLight()
 {
     Light light;
 
-    light.ColorIntensity = u_DirLit.Color * u_DirLit.Intensity;
+    light.Color = u_DirLit.Color;
+    light.Intensity = u_DirLit.Intensity;
     light.Attenuation = 1.0;
 
     light.L = normalize(-u_DirLit.Direction);

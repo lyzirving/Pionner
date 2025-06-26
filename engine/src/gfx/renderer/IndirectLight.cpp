@@ -30,6 +30,7 @@ namespace pio
 										  UBBinging_IndirectLight, BufferUsage::Dynamic);
 
 		//@todo: read the prebuild file
+		//lightroom_m0
 		glm::vec3 sphericalHarmonics[9] = 
 		{
 			glm::vec3(0.785786807537079,  0.785786807537079,  0.785786807537079), // L00, irradiance, pre-scaled base
@@ -42,6 +43,20 @@ namespace pio
 			glm::vec3(-0.091809459030628, -0.091809459030628, -0.091809459030628),// L21, irradiance, pre-scaled base
 			glm::vec3(-0.006748968269676, -0.006748968269676, -0.006748968269676) // L22, irradiance, pre-scaled base
 		};
+
+		//_hdr_ref
+		//glm::vec3 sphericalHarmonics[9] =
+		//{
+		//	glm::vec3( 0.154950365424156,  0.154950365424156,  0.154950365424156), // L00, irradiance, pre-scaled base
+		//	glm::vec3( 0.089805006980896,  0.089805006980896,  0.089805006980896), // L1-1, irradiance, pre-scaled base
+		//	glm::vec3(-0.000017400750949, -0.000017400750949, -0.000017400750949), // L10, irradiance, pre-scaled base
+		//	glm::vec3( 0.000014474419913,  0.000014474419913,  0.000014474419913), // L11, irradiance, pre-scaled base
+		//	glm::vec3( 0.000017713457055,  0.000017713457055,  0.000017713457055), // L2-2, irradiance, pre-scaled base
+		//	glm::vec3(-0.000022521249775, -0.000022521249775, -0.000022521249775), // L2-1, irradiance, pre-scaled base
+		//	glm::vec3( 0.012709731236100,  0.012709731236100,  0.012709731236100), // L20, irradiance, pre-scaled base
+		//	glm::vec3( 0.000000013761870,  0.000000013761870,  0.000000013761870),// L21, irradiance, pre-scaled base
+		//	glm::vec3( 0.038129970431328,  0.038129970431328,  0.038129970431328) // L22, irradiance, pre-scaled base
+		//};
 
 		SetValues(sphericalHarmonics);
 		OnValidChange();

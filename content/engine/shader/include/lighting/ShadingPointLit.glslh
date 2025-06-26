@@ -41,7 +41,8 @@ Light GetPointLight(int i)
     light.Attenuation = clamp(1.0 - (dist * dist) / (u_PointLits.Lits[i].Radius * u_PointLits.Lits[i].Radius), 0.f, 1.f);
     light.Attenuation *= mix(light.Attenuation, 1.0, u_PointLits.Lits[i].Falloff);
 
-    light.ColorIntensity = u_PointLits.Lits[i].Color * u_PointLits.Lits[i].Intensity * light.Attenuation;
+    light.Color = u_PointLits.Lits[i].Color;
+    light.Intensity = u_PointLits.Lits[i].Intensity * light.Attenuation;
 
     light.Bias = u_PointLits.Lits[i].Bias;
     light.ShadowIntensity = u_PointLits.Lits[i].ShadowIntensity;

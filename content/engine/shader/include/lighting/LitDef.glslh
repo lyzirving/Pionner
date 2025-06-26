@@ -25,10 +25,11 @@ const vec3 SPL_DIR[20] = vec3[]
 );
 
 struct Light {    
-    vec3 ColorIntensity;
+    vec3 Color;
     vec3 Position;
     vec3 L;
     vec3 H;
+    float Intensity;
     float Attenuation;
 
     float NoV;
