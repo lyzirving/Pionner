@@ -1,14 +1,13 @@
 #pragma once
 
-const float Epsilon = 0.00001;
+const float EPSILON = 1e-4;
+const float MIN_N_DOT_V = 1e-4;
 
 const float PI = 3.14159265359;
 const float HALF_PI = 1.570796327;
 
 const float MEDIUMP_FLT_MAX = 65504.0;
 const float MEDIUMP_FLT_MIN = 0.00006103515625;
-
-const float MIN_N_DOT_V = 1e-4;
 
 const float MIN_PERCEPTUAL_ROUGHNESS = 0.089;
 
